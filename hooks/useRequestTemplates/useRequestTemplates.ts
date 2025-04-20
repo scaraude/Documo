@@ -49,6 +49,7 @@ export const useRequestTemplates = () => {
     };
 
     return {
+        isLoaded,
         templates,
         addTemplate,
         deleteTemplate,

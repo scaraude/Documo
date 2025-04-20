@@ -1,4 +1,4 @@
-import { ActionSection, LogsHistoric, Navbar } from '@/components'
+import { ActionSection, LogsHistoric } from '@/components'
 
 interface Log {
   name: string

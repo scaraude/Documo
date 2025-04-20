@@ -3,17 +3,31 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useRequestTemplates } from '@/hooks'
 
 export default function NewRequest() {
     const [id, setId] = useState('')
+    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const router = useRouter()
+    const { templates, isLoaded } = useRequestTemplates()
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
+        if (!selectedTemplateId) return
+
+        const selectedTemplate = templates.find(t => t.id === selectedTemplateId)
         // In a real app, you would send this to your API
-        console.log('New request for ID:', id)
+        console.log('New request for ID:', id, 'with template:', selectedTemplate)
         // Redirect back to home page after submission
         router.push('/')
+    }
+
+    if (!isLoaded) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <p>Chargement...</p>
+            </div>
+        )
     }
 
     return (
@@ -25,21 +39,59 @@ export default function NewRequest() {
                     </h2>
                 </div>
                 <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    {/* Template Selection */}
                     <div>
-                        <label htmlFor="id" className="block text-sm font-medium text-gray-700">
-                            ID
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Sélectionnez un modèle
                         </label>
-                        <input
-                            id="id"
-                            name="id"
-                            type="text"
-                            required
-                            className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                            value={id}
-                            onChange={(e) => setId(e.target.value)}
-                            placeholder="Entrez l'ID"
-                        />
+                        <div className="space-y-2">
+                            {templates.length === 0 ? (
+                                <p className="text-sm text-gray-500">Aucun modèle disponible</p>
+                            ) : (
+                                templates.map((template) => (
+                                    <label
+                                        key={template.id}
+                                        className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50"
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="template"
+                                            value={template.id}
+                                            checked={selectedTemplateId === template.id}
+                                            onChange={() => setSelectedTemplateId(template.id)}
+                                            className="mr-3"
+                                        />
+                                        <div>
+                                            <span className="font-medium">{template.title}</span>
+                                            <p className="text-sm text-gray-500">
+                                                {template.requestedDocuments.length} document(s)
+                                            </p>
+                                        </div>
+                                    </label>
+                                ))
+                            )}
+                        </div>
                     </div>
+
+                    {/* ID Input - Only shown when a template is selected */}
+                    {selectedTemplateId && (
+                        <div>
+                            <label htmlFor="id" className="block text-sm font-medium text-gray-700">
+                                ID
+                            </label>
+                            <input
+                                id="id"
+                                name="id"
+                                type="text"
+                                required
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                                value={id}
+                                onChange={(e) => setId(e.target.value)}
+                                placeholder="Entrez l'ID"
+                            />
+                        </div>
+                    )}
+
                     <div className="flex justify-between">
                         <Link href="/">
                             <button
@@ -51,7 +103,11 @@ export default function NewRequest() {
                         </Link>
                         <button
                             type="submit"
-                            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md"
+                            disabled={!selectedTemplateId || !id}
+                            className={`px-4 py-2 text-sm font-medium text-white rounded-md
+                                ${selectedTemplateId && id
+                                    ? 'bg-blue-600 hover:bg-blue-700'
+                                    : 'bg-gray-400 cursor-not-allowed'}`}
                         >
                             Soumettre
                         </button>
