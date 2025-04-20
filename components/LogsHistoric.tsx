@@ -5,7 +5,7 @@ interface Log {
 }
 
 export const LogsHistoric = ({ logs }: { logs: Log[] }) =>
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-6 py-20">
         <h2 className="text-xl font-semibold mb-4">Historique des demandes</h2>
         <div className="overflow-x-auto">
             <table className="w-full bg-white rounded-lg shadow">

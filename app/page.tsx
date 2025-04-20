@@ -1,5 +1,4 @@
-
-import { ActionSection, LogsHistoric, Presentation } from '../components'
+import { ActionSection, LogsHistoric, Navbar } from '../components'
 
 interface Log {
   name: string
@@ -16,18 +15,20 @@ export default function Home() {
   ]
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Top half container */}
-      <div className="flex-1 flex flex-col sm:flex-row">
-        {/* Top left quarter - Image and text */}
-        <Presentation />
+    <>
+      <Navbar />
+      <div className="min-h-screen flex flex-col p-18">
+        {/* Top half container */}
+        <div className="flex sm:flex-row">
+          {/* Top left quarter - Image and text */}
 
-        {/* Top right quarter - New request button */}
-        <ActionSection />
+          {/* Top right quarter - New request button */}
+          <ActionSection />
+        </div>
+
+        {/* Bottom half - Logs */}
+        <LogsHistoric logs={logs} />
       </div>
-
-      {/* Bottom half - Logs */}
-      <LogsHistoric logs={logs} />
-    </div>
+    </>
   )
 }
