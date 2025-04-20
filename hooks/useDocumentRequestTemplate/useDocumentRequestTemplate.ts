@@ -4,7 +4,7 @@ import { DocumentRequestTemplate } from './types';
 
 const STORAGE_KEY = 'document-request-templates';
 
-export const useRequestTemplates = () => {
+export const useDocumentRequestTemplates = () => {
     const [templates, setTemplates] = useState<DocumentRequestTemplate[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 

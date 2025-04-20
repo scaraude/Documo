@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { useDocumentTemplates } from '@/hooks';
+import { useDocumentRequestTemplates } from '@/hooks';
 
 const AVAILABLE_DOCUMENTS = [
     'Carte d\'identité',
@@ -13,7 +13,7 @@ const AVAILABLE_DOCUMENTS = [
 const RequestTemplateCreator = () => {
     const [templateTitle, setTemplateTitle] = useState('');
     const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
-    const { templates, addTemplate, deleteTemplate } = useDocumentTemplates();
+    const { templates, addTemplate, deleteTemplate } = useDocumentRequestTemplates();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

@@ -3,13 +3,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useRequestTemplates } from '@/hooks'
+import { useDocumentRequestTemplates } from '@/hooks'
 
 export default function NewRequest() {
     const [id, setId] = useState('')
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const router = useRouter()
-    const { templates, isLoaded } = useRequestTemplates()
+    const { templates, isLoaded } = useDocumentRequestTemplates()
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
