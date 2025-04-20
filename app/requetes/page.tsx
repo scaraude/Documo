@@ -10,7 +10,7 @@ const AVAILABLE_DOCUMENTS = [
     'RIB'
 ];
 
-const DocumentTemplateCreator = () => {
+const RequestTemplateCreator = () => {
     const [templateTitle, setTemplateTitle] = useState('');
     const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
     const { templates, addTemplate, deleteTemplate } = useDocumentTemplates();
@@ -106,4 +106,4 @@ const DocumentTemplateCreator = () => {
     );
 };
 
-export default DocumentTemplateCreator;
+export default RequestTemplateCreator;

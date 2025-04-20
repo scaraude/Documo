@@ -1,1 +1,1 @@
-export { useDocumentTemplates } from './useDocumentTemplates/useDocumentTemplates'
+export { useRequestTemplates as useDocumentTemplates } from './useRequestTemplates/useRequestTemplates'
