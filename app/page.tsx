@@ -1,4 +1,4 @@
-import { ActionSection, LogsHistoric } from '@/components'
+import { ActionSection, RequestsList } from '@/components'
 
 interface Log {
   name: string
@@ -25,7 +25,7 @@ export default function Home() {
       </div>
 
       {/* Bottom half - Logs */}
-      <LogsHistoric logs={logs} />
+      <RequestsList />
     </div>
   )
 }
