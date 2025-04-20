@@ -3,22 +3,25 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useDocumentRequestTemplates } from '@/hooks'
+import { useDocumentRequest, useDocumentRequestTemplates } from '@/hooks'
 
 export default function NewRequest() {
     const [id, setId] = useState('')
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const router = useRouter()
     const { templates, isLoaded } = useDocumentRequestTemplates()
+    const { createRequest } = useDocumentRequest()
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (!selectedTemplateId) return
 
         const selectedTemplate = templates.find(t => t.id === selectedTemplateId)
-        // In a real app, you would send this to your API
-        console.log('New request for ID:', id, 'with template:', selectedTemplate)
-        // Redirect back to home page after submission
+        if (!selectedTemplate) return
+
+        const newRequest = createRequest(selectedTemplate.requestedDocuments)
+
+        console.log('New request created:', newRequest)
         router.push('/')
     }
 
