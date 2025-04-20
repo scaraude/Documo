@@ -1,9 +1,17 @@
 'use client'
+
 import { useDocumentRequest } from '@/hooks'
-import type { DocumentRequest } from '@/hooks/types'
+import type { DocumentRequest } from '../hooks/types';
+
 
 export const RequestsList = () => {
-    const { requests, isLoaded } = useDocumentRequest()
+    const { requests, isLoaded, deleteRequest } = useDocumentRequest();
+
+    const handleDelete = (id: string) => {
+        if (window.confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
+            deleteRequest(id)
+        }
+    }
 
     const getStatusBadgeClasses = (status: DocumentRequest['status']) => {
         switch (status) {
@@ -53,14 +61,16 @@ export const RequestsList = () => {
                                 Date de création
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                                Date d'expiration
+                                Date de expiration
+                            </th>
+                            <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">
                             </th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {requests.length === 0 ? (
                             <tr>
-                                <td colSpan={5} className="px-6 py-4 text-center text-gray-500">
+                                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
                                     Aucune demande en cours
                                 </td>
                             </tr>
@@ -88,6 +98,14 @@ export const RequestsList = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {formatDate(request.expiresAt)}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button
+                                            onClick={() => handleDelete(request.id)}
+                                            className="text-red-700 hover:text-red-950 mx-2"
+                                        >
+                                            Supprimer
+                                        </button>
                                     </td>
                                 </tr>
                             ))
