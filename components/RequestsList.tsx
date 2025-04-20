@@ -67,7 +67,7 @@ export const RequestsList = () => {
                         ) : (
                             requests.map((request) => (
                                 <tr key={request.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">{request.id}</td>
+                                    <td className="px-6 py-4 whitespace-nowrap">{request.civilId}</td>
                                     <td className="px-6 py-4">
                                         <ul className="list-disc list-inside">
                                             {request.requestedDocuments.map((doc, index) => (

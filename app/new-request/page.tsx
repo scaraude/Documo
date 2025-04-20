@@ -19,7 +19,7 @@ export default function NewRequest() {
         const selectedTemplate = templates.find(t => t.id === selectedTemplateId)
         if (!selectedTemplate) return
 
-        const newRequest = createRequest(selectedTemplate.requestedDocuments)
+        const newRequest = createRequest(id, selectedTemplate.requestedDocuments)
 
         console.log('New request created:', newRequest)
         router.push('/')

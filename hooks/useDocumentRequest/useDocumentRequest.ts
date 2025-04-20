@@ -32,10 +32,11 @@ export function useDocumentRequest() {
         loadDocumentRequest()
     }, [])
 
-    const createRequest = (requestedDocuments: string[], expirationDays: number = DEFAULT_EXPIRATION_DAYS): DocumentRequest => {
+    const createRequest = (civilId: string, requestedDocuments: string[], expirationDays: number = DEFAULT_EXPIRATION_DAYS): DocumentRequest => {
         const now = new Date()
         const newRequest: DocumentRequest = {
             id: `req_${now.getTime()}_${Math.random().toString(36).substr(2, 9)}`,
+            civilId,
             requestedDocuments,
             status: 'pending',
             createdAt: now,
