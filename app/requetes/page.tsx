@@ -1,18 +1,11 @@
 'use client'
 import React, { useState } from 'react';
-import { useDocumentRequestTemplates } from '@/hooks';
-
-const AVAILABLE_DOCUMENTS = [
-    'Carte d\'identité',
-    'Justificatif de domicile',
-    'Attestation de sécurité sociale',
-    'Avis d\'imposition',
-    'RIB'
-];
+import { AVAILABLE_DOCUMENTS, useDocumentRequestTemplates } from '@/hooks';
+import { AvailableDocument } from '../../hooks/useDocumentRequestTemplate/types';
 
 const RequestTemplateCreator = () => {
     const [templateTitle, setTemplateTitle] = useState('');
-    const [selectedDocuments, setSelectedDocuments] = useState<string[]>([]);
+    const [selectedDocuments, setSelectedDocuments] = useState<AvailableDocument[]>([]);
     const { templates, addTemplate, deleteTemplate } = useDocumentRequestTemplates();
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -22,6 +15,7 @@ const RequestTemplateCreator = () => {
         setTemplateTitle('');
         setSelectedDocuments([]);
     };
+
 
     return (
         <div className="max-w-2xl mx-auto p-6">
@@ -47,7 +41,7 @@ const RequestTemplateCreator = () => {
                         Documents requis
                     </label>
                     <div className="space-y-2">
-                        {AVAILABLE_DOCUMENTS.map((doc) => (
+                        {Object.values(AVAILABLE_DOCUMENTS).map((doc) => (
                             <label key={doc} className="flex items-center">
                                 <input
                                     type="checkbox"

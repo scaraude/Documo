@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { DocumentRequest } from './types'
+import { AvailableDocument } from '../useDocumentRequestTemplate/types'
 
 
 const STORAGE_KEY = 'requests'
@@ -32,7 +33,7 @@ export function useDocumentRequest() {
         loadDocumentRequest()
     }, [])
 
-    const createRequest = (civilId: string, requestedDocuments: string[], expirationDays: number = DEFAULT_EXPIRATION_DAYS): DocumentRequest => {
+    const createRequest = (civilId: string, requestedDocuments: AvailableDocument[], expirationDays: number = DEFAULT_EXPIRATION_DAYS): DocumentRequest => {
         const now = new Date()
         const newRequest: DocumentRequest = {
             id: `req_${now.getTime()}_${Math.random().toString(36).substr(2, 9)}`,

@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { DocumentRequestTemplate } from './types';
+import { AVAILABLE_DOCUMENTS, AvailableDocument, DocumentRequestTemplate } from './types';
 
 const STORAGE_KEY = 'document-request-templates';
 
@@ -24,7 +24,7 @@ export const useDocumentRequestTemplates = () => {
         }
     }, [templates, isLoaded]);
 
-    const addTemplate = (title: string, requestedDocuments: string[]) => {
+    const addTemplate = (title: string, requestedDocuments: AvailableDocument[]) => {
         const newTemplate: DocumentRequestTemplate = {
             id: crypto.randomUUID(),
             title,
@@ -38,7 +38,7 @@ export const useDocumentRequestTemplates = () => {
         setTemplates(templates.filter(template => template.id !== id));
     };
 
-    const updateTemplate = (id: string, title: string, requestedDocuments: string[]) => {
+    const updateTemplate = (id: string, title: string, requestedDocuments: AvailableDocument[]) => {
         setTemplates(
             templates.map(template =>
                 template.id === id

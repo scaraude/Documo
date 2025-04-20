@@ -1,7 +1,9 @@
+import { AvailableDocument } from "../useDocumentRequestTemplate/types";
+
 export interface DocumentRequest {
     id: string;
     civilId: string;
-    requestedDocuments: string[];
+    requestedDocuments: AvailableDocument[];
     status: 'pending' | 'accepted' | 'rejected' | 'completed';
     createdAt: Date;
     expiresAt: Date;
