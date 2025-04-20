@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useDocumentRequest, useDocumentRequestTemplates } from '@/hooks'
@@ -33,6 +33,16 @@ export default function NewRequest() {
         )
     }
 
+    const ButtonCreateNewModel = (): ReactNode =>
+        <div className="w-full flex flex-col items-center justify-center">
+            <p className="text-sm text-gray-500 py-3">Aucun modèle disponible</p>
+            <button
+                onClick={() => router.push('/requetes')}
+                className="px-26 py-2 my-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            > Créer un modèle </button>
+        </div>
+
+
     return (
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-4">
             <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
@@ -48,31 +58,30 @@ export default function NewRequest() {
                             Sélectionnez un modèle
                         </label>
                         <div className="space-y-2">
-                            {templates.length === 0 ? (
-                                <p className="text-sm text-gray-500">Aucun modèle disponible</p>
-                            ) : (
-                                templates.map((template) => (
-                                    <label
-                                        key={template.id}
-                                        className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50"
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="template"
-                                            value={template.id}
-                                            checked={selectedTemplateId === template.id}
-                                            onChange={() => setSelectedTemplateId(template.id)}
-                                            className="mr-3"
-                                        />
-                                        <div>
-                                            <span className="font-medium">{template.title}</span>
-                                            <p className="text-sm text-gray-500">
-                                                {template.requestedDocuments.length} document(s)
-                                            </p>
-                                        </div>
-                                    </label>
-                                ))
-                            )}
+                            {templates.length === 0 ?
+                                <ButtonCreateNewModel /> : (
+                                    templates.map((template) => (
+                                        <label
+                                            key={template.id}
+                                            className="flex items-center p-3 border rounded-md cursor-pointer hover:bg-gray-50"
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="template"
+                                                value={template.id}
+                                                checked={selectedTemplateId === template.id}
+                                                onChange={() => setSelectedTemplateId(template.id)}
+                                                className="mr-3"
+                                            />
+                                            <div>
+                                                <span className="font-medium">{template.title}</span>
+                                                <p className="text-sm text-gray-500">
+                                                    {template.requestedDocuments.length} document(s)
+                                                </p>
+                                            </div>
+                                        </label>
+                                    ))
+                                )}
                         </div>
                     </div>
 
