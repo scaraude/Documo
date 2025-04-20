@@ -3,14 +3,15 @@
 import { ReactNode, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useDocumentRequest, useDocumentRequestTemplates } from '@/hooks'
+import { AVAILABLE_DOCUMENTS, useDocumentRequest, useDocumentRequestTemplates } from '@/hooks'
 
 export default function NewRequest() {
     const [id, setId] = useState('')
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const router = useRouter()
-    const { templates, isLoaded } = useDocumentRequestTemplates()
+    const { templates, isLoaded, addTemplate } = useDocumentRequestTemplates()
     const { createRequest } = useDocumentRequest()
+
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -31,6 +32,10 @@ export default function NewRequest() {
                 <p>Chargement...</p>
             </div>
         )
+    } else {
+        if (templates.length === 0) {
+            addTemplate('Vérification bancaire', [AVAILABLE_DOCUMENTS.IDENTITY_CARD, AVAILABLE_DOCUMENTS.BANK_DETAILS])
+        }
     }
 
     const ButtonCreateNewModel = (): ReactNode =>
