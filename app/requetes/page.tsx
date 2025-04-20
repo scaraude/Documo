@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react';
-import { useDocumentTemplates } from '../../hooks/useDocumentTemplates/useDocumentTemplates';
+import { useDocumentTemplates } from '@/hooks';
 
 const AVAILABLE_DOCUMENTS = [
     'Carte d\'identité',
