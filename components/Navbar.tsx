@@ -1,11 +1,12 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { ROUTES } from '@/constants'
 
 const navLinks = [
-    { href: '/', label: 'Demandes' },
-    { href: '/requetes', label: 'Requetes' },
-    { href: '/dossiers', label: 'Dossiers' }
+    { href: ROUTES.HOME, label: 'Demandes' },
+    { href: ROUTES.REQUESTS.HOME, label: 'Modèles' },
+    { href: ROUTES.DOCUMENTS.HOME, label: 'Documents' }
 ]
 
 export const Navbar = () => {

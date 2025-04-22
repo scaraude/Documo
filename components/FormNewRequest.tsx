@@ -7,6 +7,7 @@ import { SelectTemplate } from "./SelectTemplate"
 import { IDInput } from "./IDInput"
 import Link from "next/link"
 import { sendNotification } from '@/lib/api/notifications'
+import { ROUTES } from "@/constants"
 
 export const FormNewRequest = () => {
     const [id, setId] = useState('')
@@ -42,7 +43,7 @@ export const FormNewRequest = () => {
             window.open('/notification', '_blank');
         }
 
-        router.push('/')
+        router.push(ROUTES.HOME)
     }
 
     return (
