@@ -1,6 +1,6 @@
-// /lib/api/templates/index.ts
-import { AvailableDocument } from '@/hooks';
+import * as storage from '../storage';
 import { DocumentRequestTemplate, CreateTemplateParams } from '../types';
+import { AvailableDocument } from '@/hooks/useDocumentRequestTemplate/types';
 
 const STORAGE_KEY = 'document-request-templates';
 
@@ -9,9 +9,8 @@ const STORAGE_KEY = 'document-request-templates';
  */
 export async function getTemplates(): Promise<DocumentRequestTemplate[]> {
     try {
-        const stored = localStorage.getItem(STORAGE_KEY);
-        if (!stored) return [];
-        return JSON.parse(stored);
+        const templates = storage.getItem<DocumentRequestTemplate[]>(STORAGE_KEY);
+        return templates || [];
     } catch (error) {
         console.error('Error fetching templates:', error);
         throw new Error('Failed to fetch templates');
@@ -35,7 +34,7 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Docu
         const templates = await getTemplates();
         const updatedTemplates = [...templates, newTemplate];
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTemplates));
+        storage.setItem(STORAGE_KEY, updatedTemplates);
         return newTemplate;
     } catch (error) {
         console.error('Error creating template:', error);
@@ -50,7 +49,7 @@ export async function deleteTemplate(id: string): Promise<void> {
     try {
         const templates = await getTemplates();
         const filteredTemplates = templates.filter(template => template.id !== id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredTemplates));
+        storage.setItem(STORAGE_KEY, filteredTemplates);
     } catch (error) {
         console.error('Error deleting template:', error);
         throw new Error('Failed to delete template');
@@ -84,10 +83,23 @@ export async function updateTemplate(
             throw new Error(`Template with ID ${id} not found`);
         }
 
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedTemplates));
+        storage.setItem(STORAGE_KEY, updatedTemplates);
         return updatedTemplate;
     } catch (error) {
         console.error('Error updating template:', error);
         throw new Error('Failed to update template');
+    }
+}
+
+/**
+ * Get a template by ID
+ */
+export async function getTemplateById(id: string): Promise<DocumentRequestTemplate | undefined> {
+    try {
+        const templates = await getTemplates();
+        return templates.find(template => template.id === id);
+    } catch (error) {
+        console.error('Error fetching template:', error);
+        throw new Error('Failed to fetch template');
     }
 }

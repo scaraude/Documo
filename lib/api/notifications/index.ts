@@ -1,4 +1,6 @@
-import { DocumentRequest } from '../types';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as storage from '../storage';
+import { DocumentRequest, NotificationResponse } from '../types';
 
 const PENDING_NOTIFICATION_KEY = 'pendingNotification';
 const NOTIFICATION_RESPONSE_KEY = 'notificationResponse';
@@ -8,7 +10,7 @@ const NOTIFICATION_RESPONSE_KEY = 'notificationResponse';
  */
 export async function sendNotification(request: DocumentRequest): Promise<void> {
     try {
-        localStorage.setItem(PENDING_NOTIFICATION_KEY, JSON.stringify(request));
+        storage.setItem(PENDING_NOTIFICATION_KEY, request);
     } catch (error) {
         console.error('Error sending notification:', error);
         throw new Error('Failed to send notification');
@@ -20,17 +22,16 @@ export async function sendNotification(request: DocumentRequest): Promise<void> 
  */
 export async function getPendingNotification(): Promise<DocumentRequest | null> {
     try {
-        const notificationData = localStorage.getItem(PENDING_NOTIFICATION_KEY);
+        const notificationData = storage.getItem<any>(PENDING_NOTIFICATION_KEY);
         if (!notificationData) return null;
 
-        const parsedData = JSON.parse(notificationData);
-
         // Transform date strings to Date objects
-        if (parsedData.createdAt) parsedData.createdAt = new Date(parsedData.createdAt);
-        if (parsedData.expiresAt) parsedData.expiresAt = new Date(parsedData.expiresAt);
-        if (parsedData.lastUpdatedAt) parsedData.lastUpdatedAt = new Date(parsedData.lastUpdatedAt);
-
-        return parsedData;
+        return {
+            ...notificationData,
+            createdAt: new Date(notificationData.createdAt),
+            expiresAt: new Date(notificationData.expiresAt),
+            lastUpdatedAt: new Date(notificationData.lastUpdatedAt),
+        };
     } catch (error) {
         console.error('Error getting notification:', error);
         throw new Error('Failed to get notification');
@@ -42,7 +43,7 @@ export async function getPendingNotification(): Promise<DocumentRequest | null> 
  */
 export async function clearPendingNotification(): Promise<void> {
     try {
-        localStorage.removeItem(PENDING_NOTIFICATION_KEY);
+        storage.removeItem(PENDING_NOTIFICATION_KEY);
     } catch (error) {
         console.error('Error clearing notification:', error);
         throw new Error('Failed to clear notification');
@@ -57,12 +58,12 @@ export async function saveNotificationResponse(
     response: 'accepted' | 'rejected'
 ): Promise<void> {
     try {
-        const responseData = {
+        const responseData: NotificationResponse = {
             requestId,
             response,
             timestamp: new Date().toISOString()
         };
-        localStorage.setItem(NOTIFICATION_RESPONSE_KEY, JSON.stringify(responseData));
+        storage.setItem(NOTIFICATION_RESPONSE_KEY, responseData);
     } catch (error) {
         console.error('Error saving response:', error);
         throw new Error('Failed to save response');
@@ -72,18 +73,14 @@ export async function saveNotificationResponse(
 /**
  * Check for notification response
  */
-export async function checkNotificationResponse(): Promise<{
-    requestId: string;
-    response: 'accepted' | 'rejected';
-    timestamp: string;
-} | null> {
+export async function checkNotificationResponse(): Promise<NotificationResponse | null> {
     try {
-        const responseData = localStorage.getItem(NOTIFICATION_RESPONSE_KEY);
+        const responseData = storage.getItem<NotificationResponse>(NOTIFICATION_RESPONSE_KEY);
         if (!responseData) return null;
 
-        const response = JSON.parse(responseData);
-        localStorage.removeItem(NOTIFICATION_RESPONSE_KEY);
-        return response;
+        // Clear the response after reading it
+        storage.removeItem(NOTIFICATION_RESPONSE_KEY);
+        return responseData;
     } catch (error) {
         console.error('Error checking response:', error);
         throw new Error('Failed to check response');

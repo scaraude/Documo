@@ -1,3 +1,4 @@
+// /lib/api/types.ts
 import { AvailableDocument } from '@/hooks/useDocumentRequestTemplate/types';
 
 // Request Types
@@ -29,4 +30,11 @@ export interface DocumentRequestTemplate {
 export interface CreateTemplateParams {
     title: string;
     requestedDocuments: AvailableDocument[];
+}
+
+// Notification Types
+export interface NotificationResponse {
+    requestId: string;
+    response: 'accepted' | 'rejected';
+    timestamp: string;
 }
