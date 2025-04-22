@@ -24,7 +24,7 @@ export const FormCreateTemplate = ({ addTemplate }: FormCreateTemplateProps) => 
     };
 
     return (
-        <>
+        <div className="p-4 pb-0.5 mb-6 rounded-2xl bg-slate-200 md:shadow-lg">
             <h1 className="text-2xl font-bold mb-6">Créer un modèle de demande</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6 mb-8">
@@ -74,6 +74,6 @@ export const FormCreateTemplate = ({ addTemplate }: FormCreateTemplateProps) => 
                     Enregistrer le modèle
                 </button>
             </form>
-        </>
+        </div>
     )
 }

@@ -36,7 +36,7 @@ export const FormNewRequest = () => {
     }
 
     return (
-        <div className="max-w-md w-full space-y-8 mt-20 bg-white p-8 rounded-lg shadow-lg">
+        <div className="max-w-md w-full space-y-8 mt-20 bg-gray-100 white p-8 rounded-lg shadow-lg">
             <div>
                 <h2 className="text-center text-3xl font-extrabold text-gray-900">
                     Nouvelle Demande
