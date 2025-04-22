@@ -11,7 +11,7 @@ import { sendNotification } from '@/lib/api/notifications'
 export const FormNewRequest = () => {
     const [id, setId] = useState('')
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
-    const [showSimulation, setShowSimulation] = useState(false)
+    const [showSimulation, setShowSimulation] = useState(true)
     const router = useRouter()
     const { templates, hasTemplates } = useDocumentRequestTemplates()
     const { createRequest } = useDocumentRequest()
