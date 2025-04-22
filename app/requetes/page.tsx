@@ -2,23 +2,27 @@
 import React, { useState } from 'react';
 import { AVAILABLE_DOCUMENTS, useDocumentRequestTemplates } from '@/hooks';
 import { AvailableDocument } from '../../hooks/useDocumentRequestTemplate/types';
+import { DisplayTemplates } from '@/components';
 
 const RequestTemplateCreator = () => {
     const [templateTitle, setTemplateTitle] = useState('');
     const [selectedDocuments, setSelectedDocuments] = useState<AvailableDocument[]>([]);
     const { templates, addTemplate, deleteTemplate } = useDocumentRequestTemplates();
 
+    const resetForm = () => {
+        setTemplateTitle('');
+        setSelectedDocuments([]);
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         addTemplate(templateTitle, selectedDocuments);
-        // Reset form
-        setTemplateTitle('');
-        setSelectedDocuments([]);
+
+        resetForm();
     };
 
-
-    return (
-        <div className="max-w-2xl mx-auto p-6">
+    const FormCreateTemplate = () => (
+        <>
             <h1 className="text-2xl font-bold mb-6">Créer un modèle de demande</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6 mb-8">
@@ -68,34 +72,13 @@ const RequestTemplateCreator = () => {
                     Enregistrer le modèle
                 </button>
             </form>
+        </>
+    )
+    return (
+        <div className="max-w-2xl mx-auto p-6">
+            <FormCreateTemplate />
 
-            <div>
-                <h2 className="text-xl font-semibold mb-4">Modèles enregistrés</h2>
-                {templates.length === 0 ? (
-                    <p className="text-gray-500">Aucun modèle enregistré</p>
-                ) : (
-                    <ul className="space-y-4">
-                        {templates.map((template) => (
-                            <li key={template.id} className="border p-4 rounded">
-                                <div className="flex justify-between items-center mb-2">
-                                    <h3 className="font-medium">{template.title}</h3>
-                                    <button
-                                        onClick={() => deleteTemplate(template.id)}
-                                        className="text-red-600 hover:text-red-800"
-                                    >
-                                        Supprimer
-                                    </button>
-                                </div>
-                                <ul className="list-disc list-inside text-sm text-gray-600">
-                                    {template.requestedDocuments.map((doc) => (
-                                        <li key={doc}>{doc}</li>
-                                    ))}
-                                </ul>
-                            </li>
-                        ))}
-                    </ul>
-                )}
-            </div>
+            <DisplayTemplates templates={templates} deleteTemplate={deleteTemplate} />
         </div>
     );
 };
