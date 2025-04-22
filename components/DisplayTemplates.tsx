@@ -1,7 +1,12 @@
 import { ReactNode } from "react"
 import type { DocumentRequestTemplate } from "../hooks/useDocumentRequestTemplate/types"
 
-export const DisplayTemplates = ({ templates, deleteTemplate }: { templates: DocumentRequestTemplate[], deleteTemplate: (id: string) => void }): ReactNode => {
+interface DisplayTemplatesProps {
+    templates: DocumentRequestTemplate[];
+    deleteTemplate: (id: string) => void;
+};
+
+export const DisplayTemplates = ({ templates, deleteTemplate }: DisplayTemplatesProps): ReactNode => {
     const hasModel = templates.length > 0;
 
     return <div>
