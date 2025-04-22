@@ -1,6 +1,6 @@
 import * as storage from '../storage';
 import { DocumentRequestTemplate, CreateTemplateParams } from '../types';
-import { AvailableDocument } from '@/hooks/useDocumentRequestTemplate/types';
+import { DocumentType } from '@/constants';
 
 const STORAGE_KEY = 'document-request-templates';
 
@@ -61,7 +61,7 @@ export async function deleteTemplate(id: string): Promise<void> {
  */
 export async function updateTemplate(
     id: string,
-    data: { title?: string; requestedDocuments?: AvailableDocument[] }
+    data: { title?: string; requestedDocuments?: DocumentType[] }
 ): Promise<DocumentRequestTemplate> {
     try {
         const templates = await getTemplates();
