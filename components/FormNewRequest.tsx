@@ -6,14 +6,15 @@ import { ButtonCreateNewModel } from "./ButtonCreateNewModel"
 import { SelectTemplate } from "./SelectTemplate"
 import { IDInput } from "./IDInput"
 import Link from "next/link"
+import { sendNotification } from '@/utils/notification'
 
 export const FormNewRequest = () => {
     const [id, setId] = useState('')
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+    const [showSimulation, setShowSimulation] = useState(false)
     const router = useRouter()
     const { templates, hasTemplates } = useDocumentRequestTemplates()
     const { createRequest } = useDocumentRequest()
-
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -25,6 +26,12 @@ export const FormNewRequest = () => {
         const newRequest = createRequest(id, selectedTemplate.requestedDocuments)
 
         console.log('New request created:', newRequest)
+
+        if (showSimulation) {
+            // Send notification to simulate a new device receiving it
+            sendNotification(newRequest)
+        }
+
         router.push('/')
     }
 
@@ -55,6 +62,22 @@ export const FormNewRequest = () => {
 
                 {selectedTemplateId &&
                     <IDInput id={id} setId={setId} />}
+
+                {selectedTemplateId && (
+                    <div className="flex items-center">
+                        <input
+                            id="simulate"
+                            name="simulate"
+                            type="checkbox"
+                            checked={showSimulation}
+                            onChange={(e) => setShowSimulation(e.target.checked)}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <label htmlFor="simulate" className="ml-2 block text-sm text-gray-700">
+                            Simuler la notification sur un autre appareil
+                        </label>
+                    </div>
+                )}
 
                 <div className="flex justify-between">
                     <Link href="/">

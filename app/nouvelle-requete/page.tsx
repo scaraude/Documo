@@ -11,7 +11,8 @@ export default function NewRequest() {
                 <p>Chargement...</p>
             </div>
         )
-    } else {
+    } // [DEMO]: ADDED FOR DEMO PURPOSE
+    else {
         if (!hasTemplates) {
             addTemplate('Vérification bancaire', [AVAILABLE_DOCUMENTS.IDENTITY_CARD, AVAILABLE_DOCUMENTS.BANK_DETAILS])
         }

@@ -2,10 +2,32 @@
 
 import { useDocumentRequest } from '@/hooks'
 import type { DocumentRequest } from '../hooks/types';
+import { useEffect } from 'react';
+import { checkNotificationResponse } from '@/utils/notification';
 
 
 export const RequestsList = () => {
-    const { requests, isLoaded, deleteRequest } = useDocumentRequest();
+    const { requests, isLoaded, deleteRequest, updateRequestStatus } = useDocumentRequest();
+
+    useEffect(() => {
+        const checkForResponses = () => {
+            const response = checkNotificationResponse()
+            if (response) {
+                console.log('Notification response received:', response)
+                updateRequestStatus(response.requestId, response.response === 'accepted' ? 'accepted' : 'rejected')
+            }
+        }
+
+        // Check immediately on load
+        checkForResponses()
+
+        // Also set up an interval to check periodically
+        const intervalId = setInterval(checkForResponses, 2000)
+
+        // Clean up the interval on unmount
+        return () => clearInterval(intervalId)
+    }, [updateRequestStatus])
+
 
     const handleDelete = (id: string) => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer cette demande ?')) {
