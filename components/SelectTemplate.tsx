@@ -1,4 +1,11 @@
-export const SelectTemplate = ({ templates, selectedTemplateId, setSelectedTemplateId }: { templates: DocumentRequestTemplate[], selectedTemplateId: string | null, setSelectedTemplateId: Dispatch<SetStateAction<string | null>> }): ReactNode =>
+import { DocumentRequestTemplate } from "../hooks/useDocumentRequestTemplate/types";
+
+interface SelectTemplateProps {
+    templates: DocumentRequestTemplate[];
+    selectedTemplateId: string | null;
+    setSelectedTemplateId: React.Dispatch<React.SetStateAction<string | null>>;
+}
+export const SelectTemplate = ({ templates, selectedTemplateId, setSelectedTemplateId }: SelectTemplateProps): React.ReactNode =>
 (
     templates.map((template) => (
         <label
