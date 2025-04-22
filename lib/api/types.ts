@@ -1,12 +1,12 @@
 // /lib/api/types.ts
-import { AvailableDocument } from '@/hooks/useDocumentRequestTemplate/types';
+import { RequestStatus, DocumentType } from '@/constants';
 
 // Request Types
 export interface DocumentRequest {
     id: string;
     civilId: string;
-    requestedDocuments: AvailableDocument[];
-    status: 'pending' | 'accepted' | 'rejected' | 'completed';
+    requestedDocuments: DocumentType[];
+    status: RequestStatus;
     createdAt: Date;
     expiresAt: Date;
     lastUpdatedAt: Date;
@@ -14,7 +14,7 @@ export interface DocumentRequest {
 
 export interface CreateRequestParams {
     civilId: string;
-    requestedDocuments: AvailableDocument[];
+    requestedDocuments: DocumentType[];
     expirationDays?: number;
 }
 
@@ -22,14 +22,14 @@ export interface CreateRequestParams {
 export interface DocumentRequestTemplate {
     id: string;
     title: string;
-    requestedDocuments: AvailableDocument[];
+    requestedDocuments: DocumentType[];
     createdAt: string;
     organizationId?: string;
 }
 
 export interface CreateTemplateParams {
     title: string;
-    requestedDocuments: AvailableDocument[];
+    requestedDocuments: DocumentType[];
 }
 
 // Notification Types

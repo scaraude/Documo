@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { DocumentRequestTemplate } from '@/lib/api/types';
 import * as templatesApi from '@/lib/api/templates';
-import { AvailableDocument } from './types';
+import { DocumentType } from '@/constants';
 
 export function useDocumentRequestTemplates() {
     const [templates, setTemplates] = useState<DocumentRequestTemplate[]>([]);
@@ -29,7 +29,7 @@ export function useDocumentRequestTemplates() {
     }, []);
 
     // Add template wrapper
-    const addTemplate = async (title: string, requestedDocuments: AvailableDocument[]) => {
+    const addTemplate = async (title: string, requestedDocuments: DocumentType[]) => {
         try {
             setIsLoading(true);
             const newTemplate = await templatesApi.createTemplate({
@@ -65,7 +65,7 @@ export function useDocumentRequestTemplates() {
     const updateTemplate = async (
         id: string,
         title: string,
-        requestedDocuments: AvailableDocument[]
+        requestedDocuments: DocumentType[]
     ) => {
         try {
             setIsLoading(true);

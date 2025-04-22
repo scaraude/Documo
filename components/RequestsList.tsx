@@ -3,6 +3,7 @@
 import { useDocumentRequest, type DocumentRequest } from '@/hooks'
 import { useEffect } from 'react';
 import { checkNotificationResponse } from '@/lib/api/notifications';
+import { RequestStatus } from '@/constants';
 
 export const RequestsList = () => {
     const { requests, isLoaded, deleteRequest, updateRequestStatus } = useDocumentRequest();
@@ -33,7 +34,7 @@ export const RequestsList = () => {
         }
     }
 
-    const getStatusBadgeClasses = (status: DocumentRequest['status']) => {
+    const getStatusBadgeClasses = (status: RequestStatus) => {
         switch (status) {
             case 'accepted':
                 return 'bg-green-100 text-green-800'
@@ -47,7 +48,7 @@ export const RequestsList = () => {
         }
     }
 
-    const getStatusText = (status: DocumentRequest['status']) => {
+    const getStatusText = (status: RequestStatus) => {
         switch (status) {
             case 'pending': return 'En attente';
             case 'accepted': return 'Accepté';

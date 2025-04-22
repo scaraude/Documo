@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { REQUEST_STATUS, RequestStatus } from '@/constants';
 import * as storage from '../storage';
 import { DocumentRequest, CreateRequestParams } from '../types';
 
@@ -38,7 +39,7 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
             id: `req_${now.getTime()}_${Math.random().toString(36).substring(2, 9)}`,
             civilId,
             requestedDocuments,
-            status: 'pending',
+            status: REQUEST_STATUS.PENDING,
             createdAt: now,
             expiresAt: new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000),
             lastUpdatedAt: now
@@ -58,7 +59,7 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
 /**
  * Update request status
  */
-export async function updateRequestStatus(id: string, status: DocumentRequest['status']): Promise<DocumentRequest> {
+export async function updateRequestStatus(id: string, status: RequestStatus): Promise<DocumentRequest> {
     try {
         const requests = await getRequests();
         let updatedRequest: DocumentRequest | undefined;

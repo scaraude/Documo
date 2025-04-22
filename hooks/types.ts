@@ -1,4 +1,4 @@
-import type { DocumentType } from "@/constants";
+import type { DocumentType, RequestStatus } from "@/constants";
 
 export interface DocumentRequestTemplate {
     id: string;
@@ -12,7 +12,7 @@ export interface DocumentRequest {
     id: string;
     civilId: string;
     requestedDocuments: DocumentType[];
-    status: 'pending' | 'accepted' | 'rejected' | 'completed';
+    status: RequestStatus;
     createdAt: Date;
     expiresAt: Date;
     lastUpdatedAt: Date;

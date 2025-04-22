@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { DocumentRequest } from '@/lib/api/types';
 import * as requestsApi from '@/lib/api/requests';
-import { AvailableDocument } from './types';
+import type { DocumentType, RequestStatus } from '@/constants';
 
 export function useDocumentRequest() {
     const [requests, setRequests] = useState<DocumentRequest[]>([]);
@@ -29,7 +29,7 @@ export function useDocumentRequest() {
     }, []);
 
     // Create request wrapper
-    const createRequest = async (civilId: string, requestedDocuments: AvailableDocument[], expirationDays?: number) => {
+    const createRequest = async (civilId: string, requestedDocuments: DocumentType[], expirationDays?: number) => {
         try {
             setIsLoading(true);
             const newRequest = await requestsApi.createRequest({
@@ -49,7 +49,7 @@ export function useDocumentRequest() {
     };
 
     // Update request status
-    const updateRequestStatus = async (id: string, status: DocumentRequest['status']) => {
+    const updateRequestStatus = async (id: string, status: RequestStatus) => {
         try {
             setIsLoading(true);
             const updatedRequest = await requestsApi.updateRequestStatus(id, status);
