@@ -1,13 +1,13 @@
 'use client'
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
-import { AVAILABLE_DOCUMENTS, useDocumentRequest, useDocumentRequestTemplates } from "@/hooks"
+import { useDocumentRequest, useDocumentRequestTemplates } from "@/hooks"
 import { ButtonCreateNewModel } from "./ButtonCreateNewModel"
 import { SelectTemplate } from "./SelectTemplate"
 import { IDInput } from "./IDInput"
 import Link from "next/link"
 import { sendNotification } from '@/lib/api/notifications'
-import { ROUTES } from "@/constants"
+import { DOCUMENT_TYPES, ROUTES } from "@/constants"
 
 export const FormNewRequest = () => {
     const [id, setId] = useState('')
@@ -22,7 +22,7 @@ export const FormNewRequest = () => {
     useEffect(() => {
         if (!hasTemplates && !hasRun.current) {
             hasRun.current = true;
-            addTemplate('Vérification bancaire', [AVAILABLE_DOCUMENTS.IDENTITY_CARD, AVAILABLE_DOCUMENTS.BANK_DETAILS]);
+            addTemplate('Vérification bancaire', [DOCUMENT_TYPES.IDENTITY_CARD, DOCUMENT_TYPES.BANK_DETAILS]);
         }
     }, [hasTemplates, addTemplate]);
 

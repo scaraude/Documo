@@ -1,17 +1,9 @@
-export const AVAILABLE_DOCUMENTS = {
-    IDENTITY_CARD: 'Carte d\'identité',
-    PROOF_OF_ADDRESS: 'Justificatif de domicile',
-    SOCIAL_SECURITY_CERTIFICATE: 'Attestation de sécurité sociale',
-    TAX_NOTICE: 'Avis d\'imposition',
-    BANK_DETAILS: 'RIB'
-} as const;
-
-export type AvailableDocument = typeof AVAILABLE_DOCUMENTS[keyof typeof AVAILABLE_DOCUMENTS];
+import type { DocumentType } from "@/constants";
 
 export interface DocumentRequestTemplate {
     id: string;
     title: string;
-    requestedDocuments: AvailableDocument[];
+    requestedDocuments: DocumentType[];
     createdAt: string;
     organizationId?: string;  // For multi-tenant scenarios
 }
@@ -19,7 +11,7 @@ export interface DocumentRequestTemplate {
 export interface DocumentRequest {
     id: string;
     civilId: string;
-    requestedDocuments: AvailableDocument[];
+    requestedDocuments: DocumentType[];
     status: 'pending' | 'accepted' | 'rejected' | 'completed';
     createdAt: Date;
     expiresAt: Date;

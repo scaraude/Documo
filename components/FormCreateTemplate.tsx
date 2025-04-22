@@ -1,14 +1,14 @@
 'use client'
-import { AVAILABLE_DOCUMENTS, AvailableDocument } from "@/hooks";
 import { useState } from "react";
+import { DOCUMENT_TYPES, DocumentType } from "@/constants";
 
 interface FormCreateTemplateProps {
-    addTemplate: (title: string, requestedDocuments: AvailableDocument[]) => void;
+    addTemplate: (title: string, requestedDocuments: DocumentType[]) => void;
 }
 
 export const FormCreateTemplate = ({ addTemplate }: FormCreateTemplateProps) => {
     const [templateTitle, setTemplateTitle] = useState('');
-    const [selectedDocuments, setSelectedDocuments] = useState<AvailableDocument[]>([]);
+    const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
 
     const resetForm = () => {
         setTemplateTitle('');
@@ -46,7 +46,7 @@ export const FormCreateTemplate = ({ addTemplate }: FormCreateTemplateProps) => 
                         Documents requis
                     </label>
                     <div className="space-y-2">
-                        {Object.values(AVAILABLE_DOCUMENTS).map((doc) => (
+                        {Object.values(DOCUMENT_TYPES).map((doc) => (
                             <label key={doc} className="flex items-center">
                                 <input
                                     type="checkbox"
