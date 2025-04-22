@@ -5,7 +5,6 @@ import type { DocumentRequest } from '../hooks/types';
 import { useEffect } from 'react';
 import { checkNotificationResponse } from '@/utils/notification';
 
-
 export const RequestsList = () => {
     const { requests, isLoaded, deleteRequest, updateRequestStatus } = useDocumentRequest();
 
@@ -49,6 +48,16 @@ export const RequestsList = () => {
         }
     }
 
+    const getStatusText = (status: DocumentRequest['status']) => {
+        switch (status) {
+            case 'pending': return 'En attente';
+            case 'accepted': return 'Accepté';
+            case 'rejected': return 'Refusé';
+            case 'completed': return 'Complété';
+            default: return status;
+        }
+    }
+
     const formatDate = (date: Date) => {
         return new Date(date).toLocaleDateString('fr-FR', {
             day: 'numeric',
@@ -63,10 +72,57 @@ export const RequestsList = () => {
         return <div className="flex-1 p-6 py-20">Chargement...</div>
     }
 
+    // Card view for mobile
+    const RequestCard = ({ request }: { request: DocumentRequest }) => (
+        <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+            <div className="flex justify-between items-center mb-2">
+                <h3 className="font-medium">ID: {request.civilId}</h3>
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClasses(request.status)}`}>
+                    {getStatusText(request.status)}
+                </span>
+            </div>
+            <div className="mb-2">
+                <h4 className="text-sm font-medium text-gray-500">Documents demandés:</h4>
+                <ul className="list-disc list-inside">
+                    {request.requestedDocuments.map((doc, index) => (
+                        <li key={index} className="text-sm text-gray-600">{doc}</li>
+                    ))}
+                </ul>
+            </div>
+            <div className="text-xs text-gray-500 mb-2">
+                <div>Créé le: {formatDate(request.createdAt)}</div>
+                <div>Expire le: {formatDate(request.expiresAt)}</div>
+            </div>
+            <div className="flex justify-end">
+                <button
+                    onClick={() => handleDelete(request.id)}
+                    className="text-red-700 hover:text-red-950 text-sm"
+                >
+                    Supprimer
+                </button>
+            </div>
+        </div>
+    );
+
     return (
-        <div className="flex-1 p-6 py-20">
+        <div className="flex-1 p-4 md:p-6 py-10 md:py-20">
             <h2 className="text-xl font-semibold mb-4">Demandes en cours</h2>
-            <div className="overflow-x-auto">
+
+            {/* Mobile card view */}
+            <div className="md:hidden">
+                {requests.length === 0 ? (
+                    <div className="text-center text-gray-500 py-4">
+                        Aucune demande en cours
+                    </div>
+                ) : (
+                    requests.map((request) => (
+                        <RequestCard key={request.id} request={request} />
+                    ))
+                )}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden md:block overflow-x-auto">
                 <table className="w-full bg-white rounded-lg shadow">
                     <thead>
                         <tr className="bg-gray-200">
@@ -109,10 +165,7 @@ export const RequestsList = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClasses(request.status)}`}>
-                                            {request.status === 'pending' ? 'En attente' :
-                                                request.status === 'accepted' ? 'Accepté' :
-                                                    request.status === 'rejected' ? 'Refusé' :
-                                                        'Complété'}
+                                            {getStatusText(request.status)}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
