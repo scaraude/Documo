@@ -1,4 +1,4 @@
-import { DocumentRequestTemplate } from "../hooks/useDocumentRequestTemplate/types";
+import { DocumentRequestTemplate } from "@/hooks";
 
 interface SelectTemplateProps {
     templates: DocumentRequestTemplate[];

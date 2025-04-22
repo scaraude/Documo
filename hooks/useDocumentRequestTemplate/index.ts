@@ -1,2 +1,2 @@
-export * from "./useDocumentRequest";
+export * from "./types"
 export * from "./useDocumentRequestTemplate";

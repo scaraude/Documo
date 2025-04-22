@@ -1,4 +1,4 @@
-import { DocumentRequest } from "@/hooks/types";
+import { DocumentRequest } from "@/hooks";
 
 /**
  * Send a notification to simulate receiving a document request on another device

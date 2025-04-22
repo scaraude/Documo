@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DocumentRequest } from '@/hooks/types'
+import { DocumentRequest } from '@/hooks'
 
 export default function NotificationPage() {
     const [notification, setNotification] = useState<DocumentRequest | null>(null)

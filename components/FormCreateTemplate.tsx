@@ -1,6 +1,5 @@
 'use client'
-import { AVAILABLE_DOCUMENTS } from "@/hooks";
-import { AvailableDocument } from "../hooks/useDocumentRequestTemplate/types";
+import { AVAILABLE_DOCUMENTS, AvailableDocument } from "@/hooks";
 import { useState } from "react";
 
 interface FormCreateTemplateProps {

@@ -1,5 +1,5 @@
 import { ReactNode } from "react"
-import type { DocumentRequestTemplate } from "../hooks/useDocumentRequestTemplate/types"
+import type { DocumentRequestTemplate } from "@/hooks"
 
 interface DisplayTemplatesProps {
     templates: DocumentRequestTemplate[];

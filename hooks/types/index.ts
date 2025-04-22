@@ -1,1 +1,0 @@
-export type { DocumentRequest } from './../useDocumentRequest/types';

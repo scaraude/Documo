@@ -1,7 +1,6 @@
 'use client'
 
-import { useDocumentRequest } from '@/hooks'
-import type { DocumentRequest } from '../hooks/types';
+import { useDocumentRequest, type DocumentRequest } from '@/hooks'
 import { useEffect } from 'react';
 import { checkNotificationResponse } from '@/utils/notification';
 
