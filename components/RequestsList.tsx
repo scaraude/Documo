@@ -2,14 +2,14 @@
 
 import { useDocumentRequest, type DocumentRequest } from '@/hooks'
 import { useEffect } from 'react';
-import { checkNotificationResponse } from '@/utils/notification';
+import { checkNotificationResponse } from '@/lib/api/notifications';
 
 export const RequestsList = () => {
     const { requests, isLoaded, deleteRequest, updateRequestStatus } = useDocumentRequest();
 
     useEffect(() => {
-        const checkForResponses = () => {
-            const response = checkNotificationResponse()
+        const checkForResponses = async () => {
+            const response = await checkNotificationResponse()
             if (response) {
                 console.log('Notification response received:', response)
                 updateRequestStatus(response.requestId, response.response === 'accepted' ? 'accepted' : 'rejected')

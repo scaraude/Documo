@@ -1,64 +1,89 @@
+// /app/notification/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DocumentRequest } from '@/hooks'
+import { DocumentRequest } from '@/lib/api/types'
+import * as notificationApi from '@/lib/api/notifications'
 
 export default function NotificationPage() {
     const [notification, setNotification] = useState<DocumentRequest | null>(null)
     const [showNotification, setShowNotification] = useState(false)
+    const [error, setError] = useState<Error | null>(null)
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        // Get notification data from localStorage
-        const notificationData = localStorage.getItem('pendingNotification')
-
-        if (notificationData) {
+        async function loadNotification() {
             try {
-                const parsedData = JSON.parse(notificationData)
+                setIsLoading(true)
+                const pendingNotification = await notificationApi.getPendingNotification()
 
-                // Transform date strings back to Date objects
-                if (parsedData.createdAt) parsedData.createdAt = new Date(parsedData.createdAt)
-                if (parsedData.expiresAt) parsedData.expiresAt = new Date(parsedData.expiresAt)
-                if (parsedData.lastUpdatedAt) parsedData.lastUpdatedAt = new Date(parsedData.lastUpdatedAt)
+                if (pendingNotification) {
+                    setNotification(pendingNotification)
+                    setShowNotification(true)
 
-                setNotification(parsedData)
-                setShowNotification(true)
+                    // Clear the notification from localStorage to prevent showing it multiple times
+                    await notificationApi.clearPendingNotification()
 
-                // Clear the notification from localStorage to prevent showing it multiple times
-                localStorage.removeItem('pendingNotification')
-
-                // Play notification sound
-                const audio = new Audio('/notification-sound.mp3')
-                audio.play().catch(error => console.log('Failed to play notification sound:', error))
-            } catch (error) {
-                console.error('Error parsing notification data:', error)
+                    // Play notification sound
+                    const audio = new Audio('/notification-sound.mp3')
+                    audio.play().catch(error => console.log('Failed to play notification sound:', error))
+                }
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('Failed to load notification'))
+                console.error('Error loading notification:', err)
+            } finally {
+                setIsLoading(false)
             }
         }
+
+        loadNotification()
     }, [])
 
-    const handleAccept = () => {
+    const handleAccept = async () => {
         if (notification) {
-            // In a real application, this would send an API request
-            // For simulation, just indicate the response in localStorage
-            localStorage.setItem('notificationResponse', JSON.stringify({
-                requestId: notification.id,
-                response: 'accepted',
-                timestamp: new Date().toISOString()
-            }))
-            setShowNotification(false)
-            window.close() // Close the notification tab
+            try {
+                await notificationApi.saveNotificationResponse(notification.id, 'accepted')
+                setShowNotification(false)
+                window.close() // Close the notification tab
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('Failed to accept request'))
+                console.error('Error accepting request:', err)
+            }
         }
     }
 
-    const handleDeny = () => {
+    const handleDeny = async () => {
         if (notification) {
-            localStorage.setItem('notificationResponse', JSON.stringify({
-                requestId: notification.id,
-                response: 'rejected',
-                timestamp: new Date().toISOString()
-            }))
-            setShowNotification(false)
-            window.close() // Close the notification tab
+            try {
+                await notificationApi.saveNotificationResponse(notification.id, 'rejected')
+                setShowNotification(false)
+                window.close() // Close the notification tab
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('Failed to reject request'))
+                console.error('Error rejecting request:', err)
+            }
         }
+    }
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-gray-800">Chargement...</h1>
+                </div>
+            </div>
+        )
+    }
+
+    if (error) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-100">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold text-red-800">Erreur</h1>
+                    <p className="text-gray-600 mt-2">{error.message}</p>
+                </div>
+            </div>
+        )
     }
 
     if (!showNotification) {

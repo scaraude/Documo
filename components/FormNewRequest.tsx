@@ -6,7 +6,7 @@ import { ButtonCreateNewModel } from "./ButtonCreateNewModel"
 import { SelectTemplate } from "./SelectTemplate"
 import { IDInput } from "./IDInput"
 import Link from "next/link"
-import { sendNotification } from '@/utils/notification'
+import { sendNotification } from '@/lib/api/notifications'
 
 export const FormNewRequest = () => {
     const [id, setId] = useState('')
@@ -16,20 +16,21 @@ export const FormNewRequest = () => {
     const { templates, hasTemplates } = useDocumentRequestTemplates()
     const { createRequest } = useDocumentRequest()
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!selectedTemplateId) return
 
         const selectedTemplate = templates.find(t => t.id === selectedTemplateId)
         if (!selectedTemplate) return
 
-        const newRequest = createRequest(id, selectedTemplate.requestedDocuments)
+        const newRequest = await createRequest(id, selectedTemplate.requestedDocuments)
 
         console.log('New request created:', newRequest)
 
         if (showSimulation) {
             // Send notification to simulate a new device receiving it
             sendNotification(newRequest)
+            window.open('/notification', '_blank');
         }
 
         router.push('/')

@@ -1,89 +1,87 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { DocumentRequest } from './types'
-import { AvailableDocument } from '../useDocumentRequestTemplate/types'
-
-
-const STORAGE_KEY = 'requests'
-const DEFAULT_EXPIRATION_DAYS = 7
+import { DocumentRequest } from '@/lib/api/types'
+import * as requestsApi from '@/lib/api/requests'
+import { AvailableDocument } from '@/hooks'
 
 export function useDocumentRequest() {
-    const [documentRequests, setDocumentRequests] = useState<DocumentRequest[]>([])
+    const [requests, setRequests] = useState<DocumentRequest[]>([])
     const [isLoaded, setIsLoaded] = useState(false)
+    const [isLoading, setIsLoading] = useState(false)
+    const [error, setError] = useState<Error | null>(null)
 
+    // Load all requests on component mount
     useEffect(() => {
-        const loadDocumentRequest = () => {
+        async function loadRequests() {
             try {
-                const storedDocumentRequest = localStorage.getItem(STORAGE_KEY)
-                if (storedDocumentRequest) {
-                    const parsedDocumentRequest = JSON.parse(storedDocumentRequest).map((req: any) => ({
-                        ...req,
-                        createdAt: new Date(req.createdAt),
-                        expiresAt: new Date(req.expiresAt),
-                        lastUpdatedAt: new Date(req.lastUpdatedAt)
-                    }))
-                    setDocumentRequests(parsedDocumentRequest)
-                }
-            } catch (error) {
-                console.error('Error loading requests:', error)
+                setIsLoading(true)
+                const data = await requestsApi.getRequests()
+                setRequests(data)
+                setIsLoaded(true)
+            } catch (err) {
+                setError(err instanceof Error ? err : new Error('Unknown error'))
+            } finally {
+                setIsLoading(false)
             }
-            setIsLoaded(true)
         }
 
-        loadDocumentRequest()
+        loadRequests()
     }, [])
 
-    const createRequest = (civilId: string, requestedDocuments: AvailableDocument[], expirationDays: number = DEFAULT_EXPIRATION_DAYS): DocumentRequest => {
-        const now = new Date()
-        const newRequest: DocumentRequest = {
-            id: `req_${now.getTime()}_${Math.random().toString(36).substr(2, 9)}`,
-            civilId,
-            requestedDocuments,
-            status: 'pending',
-            createdAt: now,
-            expiresAt: new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000),
-            lastUpdatedAt: now
+    // Create request wrapper
+    const createRequest = async (civilId: string, requestedDocuments: AvailableDocument[], expirationDays?: number) => {
+        try {
+            setIsLoading(true)
+            const newRequest = await requestsApi.createRequest({
+                civilId,
+                requestedDocuments,
+                expirationDays
+            })
+
+            setRequests(prev => [...prev, newRequest])
+            return newRequest
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('Failed to create request'))
+            throw err
+        } finally {
+            setIsLoading(false)
         }
-
-        const updatedDocumentRequest = [...documentRequests, newRequest]
-        setDocumentRequests(updatedDocumentRequest)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDocumentRequest))
-
-        return newRequest
     }
 
-    const updateRequestStatus = (id: string, newStatus: DocumentRequest['status']) => {
-        const updatedDocumentRequest = documentRequests.map(request => {
-            if (request.id === id) {
-                return {
-                    ...request,
-                    status: newStatus,
-                    lastUpdatedAt: new Date()
-                }
-            }
-            return request
-        })
-
-        setDocumentRequests(updatedDocumentRequest)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedDocumentRequest))
+    // Other methods with similar patterns
+    const updateRequestStatus = async (id: string, status: DocumentRequest['status']) => {
+        try {
+            setIsLoading(true)
+            const updatedRequest = await requestsApi.updateRequestStatus(id, status)
+            setRequests(prev =>
+                prev.map(req => req.id === id ? updatedRequest : req)
+            )
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('Failed to update request'))
+        } finally {
+            setIsLoading(false)
+        }
     }
 
-    const getRequestById = (id: string): DocumentRequest | undefined => {
-        return documentRequests.find(request => request.id === id)
-    }
-
-    const deleteRequest = (id: string) => {
-        const filteredDocumentRequest = documentRequests.filter(request => request.id !== id)
-        setDocumentRequests(filteredDocumentRequest)
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredDocumentRequest))
+    const deleteRequest = async (id: string) => {
+        try {
+            setIsLoading(true)
+            await requestsApi.deleteRequest(id)
+            setRequests(prev => prev.filter(req => req.id !== id))
+        } catch (err) {
+            setError(err instanceof Error ? err : new Error('Failed to delete request'))
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     return {
-        requests: documentRequests,
+        requests,
         isLoaded,
+        isLoading,
+        error,
         createRequest,
         updateRequestStatus,
-        getRequestById,
         deleteRequest
     }
 }
