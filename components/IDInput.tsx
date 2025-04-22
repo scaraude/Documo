@@ -19,6 +19,7 @@ export const IDInput = ({ id, setId }: IDInputProps): ReactNode => (
             value={id}
             onChange={(e) => setId(e.target.value)}
             placeholder="Entrez l'ID"
+            autoFocus
         />
     </div>
 )
