@@ -49,6 +49,7 @@ export const useDocumentRequestTemplates = () => {
     };
 
     return {
+        hasTemplates: templates.length > 0,
         isLoaded,
         templates,
         addTemplate,
