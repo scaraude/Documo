@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { useDocumentRequest, useDocumentRequestTemplates } from "@/hooks"
+import { useEffect, useRef, useState } from "react"
+import { AVAILABLE_DOCUMENTS, useDocumentRequest, useDocumentRequestTemplates } from "@/hooks"
 import { ButtonCreateNewModel } from "./ButtonCreateNewModel"
 import { SelectTemplate } from "./SelectTemplate"
 import { IDInput } from "./IDInput"
@@ -13,8 +13,17 @@ export const FormNewRequest = () => {
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const [showSimulation, setShowSimulation] = useState(true)
     const router = useRouter()
-    const { templates, hasTemplates } = useDocumentRequestTemplates()
+    const { templates, hasTemplates, addTemplate } = useDocumentRequestTemplates()
     const { createRequest } = useDocumentRequest()
+    const hasRun = useRef(false);
+
+    //[DEMO] use for semo purpose
+    useEffect(() => {
+        if (!hasTemplates && !hasRun.current) {
+            hasRun.current = true;
+            addTemplate('Vérification bancaire', [AVAILABLE_DOCUMENTS.IDENTITY_CARD, AVAILABLE_DOCUMENTS.BANK_DETAILS]);
+        }
+    }, [hasTemplates, addTemplate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()

@@ -1,9 +1,9 @@
 'use client'
-import { AVAILABLE_DOCUMENTS, useDocumentRequestTemplates } from '@/hooks'
+import { useDocumentRequestTemplates } from '@/hooks'
 import { FormNewRequest } from '@/components'
 
 export default function NewRequest() {
-    const { isLoaded, addTemplate, hasTemplates } = useDocumentRequestTemplates()
+    const { isLoaded } = useDocumentRequestTemplates()
 
     if (!isLoaded) {
         return (
@@ -11,11 +11,6 @@ export default function NewRequest() {
                 <p>Chargement...</p>
             </div>
         )
-    } // [DEMO]: ADDED FOR DEMO PURPOSE
-    else {
-        if (!hasTemplates) {
-            addTemplate('Vérification bancaire', [AVAILABLE_DOCUMENTS.IDENTITY_CARD, AVAILABLE_DOCUMENTS.BANK_DETAILS])
-        }
     }
 
     return (
