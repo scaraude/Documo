@@ -2,11 +2,11 @@
 import { useState } from "react";
 import { DOCUMENT_TYPES, DocumentType } from "@/constants";
 
-interface FormCreateTemplateProps {
+interface RequestTemplateFormProps {
     addTemplate: (title: string, requestedDocuments: DocumentType[]) => void;
 }
 
-export const FormCreateTemplate = ({ addTemplate }: FormCreateTemplateProps) => {
+export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) => {
     const [templateTitle, setTemplateTitle] = useState('');
     const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
 

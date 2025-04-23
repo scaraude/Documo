@@ -1,15 +1,15 @@
-import * as storage from '../storage';
-import { DocumentRequestTemplate, CreateTemplateParams } from '../types';
+import * as storage from '@/lib/api/storage';
 import { DocumentType } from '@/constants';
+import { CreateRequestTemplateParams, RequestTemplate } from '../types';
 
 const STORAGE_KEY = 'document-request-templates';
 
 /**
  * Get all templates
  */
-export async function getTemplates(): Promise<DocumentRequestTemplate[]> {
+export async function getTemplates(): Promise<RequestTemplate[]> {
     try {
-        const templates = storage.getItem<DocumentRequestTemplate[]>(STORAGE_KEY);
+        const templates = storage.getItem<RequestTemplate[]>(STORAGE_KEY);
         return templates || [];
     } catch (error) {
         console.error('Error fetching templates:', error);
@@ -20,11 +20,11 @@ export async function getTemplates(): Promise<DocumentRequestTemplate[]> {
 /**
  * Create a new template
  */
-export async function createTemplate(params: CreateTemplateParams): Promise<DocumentRequestTemplate> {
+export async function createTemplate(params: CreateRequestTemplateParams): Promise<RequestTemplate> {
     try {
         const { title, requestedDocuments } = params;
 
-        const newTemplate: DocumentRequestTemplate = {
+        const newTemplate: RequestTemplate = {
             id: crypto.randomUUID(),
             title,
             requestedDocuments,
@@ -62,10 +62,10 @@ export async function deleteTemplate(id: string): Promise<void> {
 export async function updateTemplate(
     id: string,
     data: { title?: string; requestedDocuments?: DocumentType[] }
-): Promise<DocumentRequestTemplate> {
+): Promise<RequestTemplate> {
     try {
         const templates = await getTemplates();
-        let updatedTemplate: DocumentRequestTemplate | undefined;
+        let updatedTemplate: RequestTemplate | undefined;
 
         const updatedTemplates = templates.map(template => {
             if (template.id === id) {
@@ -94,7 +94,7 @@ export async function updateTemplate(
 /**
  * Get a template by ID
  */
-export async function getTemplateById(id: string): Promise<DocumentRequestTemplate | undefined> {
+export async function getTemplateById(id: string): Promise<RequestTemplate | undefined> {
     try {
         const templates = await getTemplates();
         return templates.find(template => template.id === id);

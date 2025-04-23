@@ -1,8 +1,8 @@
 export const ROUTES = {
     HOME: '/',
     REQUESTS: {
-        HOME: '/requetes',
-        NEW: '/nouvelle-requete',
+        HOME: '/templates',
+        NEW: '/new-request',
         // DETAIL: (id: string) => `/requests/${id}`,
     },
     DOCUMENTS: {

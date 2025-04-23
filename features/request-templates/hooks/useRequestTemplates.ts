@@ -1,11 +1,11 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { DocumentRequestTemplate } from '@/lib/api/types';
-import * as templatesApi from '@/lib/api/templates';
+import * as templatesApi from '../api/requestTemplatesApi';
 import { DocumentType } from '@/constants';
+import { RequestTemplate } from '../types';
 
-export function useDocumentRequestTemplates() {
-    const [templates, setTemplates] = useState<DocumentRequestTemplate[]>([]);
+export function useRequestTemplates() {
+    const [templates, setTemplates] = useState<RequestTemplate[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
