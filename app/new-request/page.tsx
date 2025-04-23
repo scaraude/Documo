@@ -1,9 +1,9 @@
 'use client'
-import { useDocumentRequestTemplates } from '@/hooks'
-import { FormNewRequest } from '@/components'
+import { useRequestTemplates } from '@/features/request-templates'
+import { FormCreateRequest } from '@/features/requests/components'
 
 export default function NewRequest() {
-    const { isLoaded } = useDocumentRequestTemplates()
+    const { isLoaded } = useRequestTemplates()
 
     if (!isLoaded) {
         return (
@@ -15,7 +15,7 @@ export default function NewRequest() {
 
     return (
         <div className="min-h-screen flex flex-col items-center bg-gray-50 p-4">
-            <FormNewRequest />
+            <FormCreateRequest />
         </div>
     )
 }

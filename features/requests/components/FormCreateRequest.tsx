@@ -1,21 +1,21 @@
 'use client'
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
-import { useDocumentRequest, useDocumentRequestTemplates } from "@/hooks"
-import { ButtonCreateNewModel } from "./ButtonCreateNewModel"
-import { SelectTemplate } from "./SelectTemplate"
-import { IDInput } from "./IDInput"
 import Link from "next/link"
 import { sendNotification } from '@/lib/api/notifications'
 import { DOCUMENT_TYPES, ROUTES } from "@/shared/constants"
+import { useRequest } from "../hooks/useRequest"
+import { useRequestTemplates } from "@/features/request-templates"
+import { ButtonCreateModel, IDInput } from "@/shared/components/"
+import { SelectTemplate } from "./SelectTemplate"
 
-export const FormNewRequest = () => {
+export const FormCreateRequest = () => {
     const [id, setId] = useState('')
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const [showSimulation, setShowSimulation] = useState(true)
     const router = useRouter()
-    const { templates, hasTemplates, addTemplate } = useDocumentRequestTemplates()
-    const { createRequest } = useDocumentRequest()
+    const { templates, hasTemplates, addTemplate } = useRequestTemplates()
+    const { createRequest } = useRequest()
     const hasRun = useRef(false);
 
     //[DEMO] use for semo purpose
@@ -61,7 +61,7 @@ export const FormNewRequest = () => {
                     </label>
                     <div className="space-y-2">
                         {!hasTemplates ?
-                            <ButtonCreateNewModel /> :
+                            <ButtonCreateModel /> :
                             <SelectTemplate
                                 templates={templates}
                                 selectedTemplateId={selectedTemplateId}

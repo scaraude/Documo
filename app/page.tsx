@@ -1,4 +1,5 @@
-import { ActionSection, RequestsList } from '@/components'
+import { ActionSection } from '@/components'
+import { RequestsList } from '@/features/requests/components'
 
 export default function Home() {
   return (

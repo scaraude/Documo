@@ -3,7 +3,7 @@ import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
 import { ROUTES } from "@/shared/constants";
 
-export const ButtonCreateNewModel = (): ReactNode => {
+export const ButtonCreateModel = (): ReactNode => {
     const router = useRouter();
 
     return (
