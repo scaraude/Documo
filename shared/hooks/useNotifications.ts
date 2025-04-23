@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react';
-import { DocumentRequest, NotificationResponse } from '@/lib/api/types';
-import * as notificationsApi from '@/lib/api/notifications';
+import { DocumentRequest } from '@/shared/types';
+import * as notificationsApi from '@/features/notifications/api';
+import { NotificationResponse } from '@/features/notifications/types';
 
 export function useNotifications() {
     const [isLoading, setIsLoading] = useState(false);

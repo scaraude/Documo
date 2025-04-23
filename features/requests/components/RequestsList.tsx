@@ -1,12 +1,12 @@
 'use client'
-
-import { useDocumentRequest, type DocumentRequest } from '@/hooks'
 import { useEffect } from 'react';
-import { checkNotificationResponse } from '@/lib/api/notifications';
 import { RequestStatus } from '@/shared/constants';
+import { useRequest } from '../hooks/useRequest';
+import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
+import { DocumentRequest } from '@/shared/types';
 
 export const RequestsList = () => {
-    const { requests, isLoaded, deleteRequest, updateRequestStatus } = useDocumentRequest();
+    const { requests, isLoaded, deleteRequest, updateRequestStatus } = useRequest();
 
     useEffect(() => {
         const checkForResponses = async () => {

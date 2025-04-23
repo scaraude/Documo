@@ -1,6 +1,7 @@
 import { REQUEST_STATUS, RequestStatus } from '@/shared/constants';
 import * as storage from '@/lib/api/storage';
-import { CreateRequestParams, DocumentRequest } from '../types';
+import { CreateRequestParams } from '../types';
+import { DocumentRequest } from '@/shared/types';
 
 const STORAGE_KEY = 'requests';
 const DEFAULT_EXPIRATION_DAYS = 7;

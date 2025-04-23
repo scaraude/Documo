@@ -1,14 +1,4 @@
-import { RequestStatus, DocumentType } from "@/shared/constants";
-
-export interface DocumentRequest {
-    id: string;
-    civilId: string;
-    requestedDocuments: DocumentType[];
-    status: RequestStatus;
-    createdAt: Date;
-    expiresAt: Date;
-    lastUpdatedAt: Date;
-}
+import { DocumentType } from "@/shared/constants";
 
 export interface CreateRequestParams {
     civilId: string;

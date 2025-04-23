@@ -1,28 +1,28 @@
-// /app/notification/page.tsx
 'use client'
 
 import { useEffect, useState } from 'react'
-import { DocumentRequest } from '@/lib/api/types'
-import * as notificationApi from '@/lib/api/notifications'
+import { DocumentRequest } from '@/shared/types'
+import { useNotifications } from '@/shared/hooks'
 
 export default function NotificationPage() {
     const [notification, setNotification] = useState<DocumentRequest | null>(null)
     const [showNotification, setShowNotification] = useState(false)
     const [error, setError] = useState<Error | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const notifications = useNotifications();
 
     useEffect(() => {
         async function loadNotification() {
             try {
                 setIsLoading(true)
-                const pendingNotification = await notificationApi.getPendingNotification()
+                const pendingNotification = await notifications.getPendingNotification()
 
                 if (pendingNotification) {
                     setNotification(pendingNotification)
                     setShowNotification(true)
 
                     // Clear the notification from localStorage to prevent showing it multiple times
-                    await notificationApi.clearPendingNotification()
+                    await notifications.clearPendingNotification()
 
                     // Play notification sound
                     const audio = new Audio('/notification-sound.mp3')
@@ -37,12 +37,12 @@ export default function NotificationPage() {
         }
 
         loadNotification()
-    }, [])
+    }, [notifications])
 
     const handleAccept = async () => {
         if (notification) {
             try {
-                await notificationApi.saveNotificationResponse(notification.id, 'accepted')
+                await notifications.saveNotificationResponse(notification.id, 'accepted')
                 setShowNotification(false)
                 window.close() // Close the notification tab
             } catch (err) {
@@ -55,7 +55,7 @@ export default function NotificationPage() {
     const handleDeny = async () => {
         if (notification) {
             try {
-                await notificationApi.saveNotificationResponse(notification.id, 'rejected')
+                await notifications.saveNotificationResponse(notification.id, 'rejected')
                 setShowNotification(false)
                 window.close() // Close the notification tab
             } catch (err) {

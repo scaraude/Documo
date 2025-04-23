@@ -1,8 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { DocumentRequest } from '@/lib/api/types';
-import * as requestsApi from '@/lib/api/requests';
+import * as requestsApi from '../api/requestApi';
 import type { DocumentType, RequestStatus } from '@/shared/constants';
+import { DocumentRequest } from '@/shared/types';
 
 export function useRequest() {
     const [requests, setRequests] = useState<DocumentRequest[]>([]);

@@ -2,12 +2,12 @@
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
-import { sendNotification } from '@/lib/api/notifications'
 import { DOCUMENT_TYPES, ROUTES } from "@/shared/constants"
 import { useRequest } from "../hooks/useRequest"
 import { useRequestTemplates } from "@/features/request-templates"
 import { ButtonCreateModel, IDInput } from "@/shared/components/"
 import { SelectTemplate } from "./SelectTemplate"
+import { sendNotification } from "../../notifications/api/notificationsApi"
 
 export const FormCreateRequest = () => {
     const [id, setId] = useState('')

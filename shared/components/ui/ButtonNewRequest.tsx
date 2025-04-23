@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ROUTES } from '@/shared/constants'
 
-export const ActionSection = () => {
+export const ButtonNewRequest = () => {
     return (
         <div className="w-full flex-1 py-6 sm:py-8 md:py-12 lg:h-64 flex items-center justify-center px-4 sm:px-6">
             <Link href={ROUTES.REQUESTS.NEW}>

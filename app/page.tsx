@@ -1,5 +1,5 @@
-import { ActionSection } from '@/components'
 import { RequestsList } from '@/features/requests/components'
+import { ButtonNewRequest } from '../shared/components'
 
 export default function Home() {
   return (
@@ -7,7 +7,7 @@ export default function Home() {
       {/* Call to action section */}
       <div className="w-full bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <ActionSection />
+          <ButtonNewRequest />
         </div>
       </div>
 
