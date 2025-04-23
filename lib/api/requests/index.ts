@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { REQUEST_STATUS, RequestStatus } from '@/constants';
+import { REQUEST_STATUS, RequestStatus } from '@/shared/constants';
 import * as storage from '../storage';
 import { DocumentRequest, CreateRequestParams } from '../types';
 

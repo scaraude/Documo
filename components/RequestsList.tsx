@@ -3,7 +3,7 @@
 import { useDocumentRequest, type DocumentRequest } from '@/hooks'
 import { useEffect } from 'react';
 import { checkNotificationResponse } from '@/lib/api/notifications';
-import { RequestStatus } from '@/constants';
+import { RequestStatus } from '@/shared/constants';
 
 export const RequestsList = () => {
     const { requests, isLoaded, deleteRequest, updateRequestStatus } = useDocumentRequest();

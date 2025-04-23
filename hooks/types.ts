@@ -1,4 +1,4 @@
-import type { DocumentType, RequestStatus } from "@/constants";
+import type { DocumentType, RequestStatus } from "@/shared/constants";
 
 export interface DocumentRequest {
     id: string;

@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import * as templatesApi from '../api/requestTemplatesApi';
-import { DocumentType } from '@/constants';
+import { DocumentType } from '@/shared/constants';
 import { RequestTemplate } from '../types';
 
 export function useRequestTemplates() {

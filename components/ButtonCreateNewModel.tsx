@@ -1,7 +1,7 @@
 'use client'
 import { useRouter } from "next/navigation";
 import { ReactNode } from "react";
-import { ROUTES } from "@/constants";
+import { ROUTES } from "@/shared/constants";
 
 export const ButtonCreateNewModel = (): ReactNode => {
     const router = useRouter();

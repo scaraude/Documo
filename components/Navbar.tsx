@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-import { ROUTES } from '@/constants'
+import { ROUTES } from '@/shared/constants'
 
 const navLinks = [
     { href: ROUTES.HOME, label: 'Demandes' },

@@ -1,5 +1,5 @@
 import * as storage from '@/lib/api/storage';
-import { DocumentType } from '@/constants';
+import { DocumentType } from '@/shared/constants';
 import { CreateRequestTemplateParams, RequestTemplate } from '../types';
 
 const STORAGE_KEY = 'document-request-templates';

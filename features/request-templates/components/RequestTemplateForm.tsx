@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { DOCUMENT_TYPES, DocumentType } from "@/constants";
+import { DOCUMENT_TYPES, DocumentType } from "@/shared/constants";
 
 interface RequestTemplateFormProps {
     addTemplate: (title: string, requestedDocuments: DocumentType[]) => void;

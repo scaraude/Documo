@@ -7,7 +7,7 @@ import { SelectTemplate } from "./SelectTemplate"
 import { IDInput } from "./IDInput"
 import Link from "next/link"
 import { sendNotification } from '@/lib/api/notifications'
-import { DOCUMENT_TYPES, ROUTES } from "@/constants"
+import { DOCUMENT_TYPES, ROUTES } from "@/shared/constants"
 
 export const FormNewRequest = () => {
     const [id, setId] = useState('')

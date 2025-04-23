@@ -1,5 +1,5 @@
 // /lib/api/types.ts
-import { RequestStatus, DocumentType } from '@/constants';
+import { RequestStatus, DocumentType } from '@/shared/constants';
 
 // Request Types
 export interface DocumentRequest {

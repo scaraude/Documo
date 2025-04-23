@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { DocumentRequest } from '@/lib/api/types';
 import * as requestsApi from '@/lib/api/requests';
-import type { DocumentType, RequestStatus } from '@/constants';
+import type { DocumentType, RequestStatus } from '@/shared/constants';
 
 export function useDocumentRequest() {
     const [requests, setRequests] = useState<DocumentRequest[]>([]);

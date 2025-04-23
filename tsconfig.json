@@ -30,6 +30,12 @@
       ],
       "@/*": [
         "./*"
+      ],
+      "@/shared/*": [
+        "./shared/*"
+      ],
+      "@/features/*": [
+        "./features/*"
       ]
     },
     "allowJs": true

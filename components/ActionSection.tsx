@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ROUTES } from '@/constants'
+import { ROUTES } from '@/shared/constants'
 
 export const ActionSection = () => {
     return (

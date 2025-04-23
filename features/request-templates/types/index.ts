@@ -1,4 +1,4 @@
-import { DocumentType } from "@/constants/documents/types";
+import { DocumentType } from "@/shared/constants/documents/types";
 
 export interface RequestTemplate {
     id: string;
