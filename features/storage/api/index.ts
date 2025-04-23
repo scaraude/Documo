@@ -1,5 +1,3 @@
-// /lib/api/storage/index.ts
-
 /**
  * Get an item from localStorage
  * @param key Storage key

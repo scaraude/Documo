@@ -1,5 +1,5 @@
 import { REQUEST_STATUS, RequestStatus } from '@/shared/constants';
-import * as storage from '@/lib/api/storage';
+import * as storage from '@/features/storage/api';
 import { CreateRequestParams } from '../types';
 import { DocumentRequest } from '@/shared/types';
 

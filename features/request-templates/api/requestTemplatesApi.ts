@@ -1,4 +1,4 @@
-import * as storage from '@/lib/api/storage';
+import * as storage from '@/features/storage/api';
 import { DocumentType } from '@/shared/constants';
 import { CreateRequestTemplateParams, RequestTemplate } from '../types';
 

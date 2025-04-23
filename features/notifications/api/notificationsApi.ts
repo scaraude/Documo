@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { DocumentRequest } from '@/shared/types';
-import * as storage from '@/lib/api/storage';
+import * as storage from '@/features/storage/api';
 import { NotificationResponse } from '../types';
 
 const PENDING_NOTIFICATION_KEY = 'pendingNotification';
