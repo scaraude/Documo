@@ -3,12 +3,10 @@ import { ROUTES } from '@/shared/constants'
 
 export const ButtonNewModel = () => {
     return (
-        <div className="w-full flex-1 py-6 sm:py-8 md:py-12 flex items-center justify-center px-4 sm:px-6">
-            <Link href={ROUTES.REQUESTS.HOME}>
-                <button className="w-full sm:w-auto bg-stone-300 hover:bg-stone-400 text-white font-bold py-3 px-6 sm:px-8 md:px-10 text-base sm:text-lg md:text-xl rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
-                    Nouveau Modèle
-                </button>
-            </Link>
-        </div>
+        <Link href={ROUTES.REQUESTS.HOME}>
+            <button className="w-full sm:w-auto bg-stone-300 hover:bg-stone-400 text-white font-bold py-3 px-6 sm:px-8 md:px-10 text-base sm:text-lg md:text-xl rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Nouveau Modèle
+            </button>
+        </Link>
     )
 }

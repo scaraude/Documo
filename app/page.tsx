@@ -9,8 +9,10 @@ export default function Home() {
       <HeroSection />
       <div className="w-full bg-gray-50">
         <div className="max-w-7xl mx-auto flex">
-          <ButtonNewModel />
-          <ButtonNewRequest />
+          <div className="w-full flex-1 py-6 sm:py-8 md:py-12 flex items-center justify-around px-4 sm:px-6">
+            <ButtonNewModel />
+            <ButtonNewRequest />
+          </div>
         </div>
       </div>
 
