@@ -1,8 +1,8 @@
 'use client'
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useState } from "react"
 import Link from "next/link"
-import { DOCUMENT_TYPES, ROUTES } from "@/shared/constants"
+import { ROUTES } from "@/shared/constants"
 import { useRequest } from "../hooks/useRequest"
 import { useRequestTemplates } from "@/features/request-templates"
 import { ButtonCreateModel, IDInput } from "@/shared/components/"
@@ -14,17 +14,8 @@ export const FormCreateRequest = () => {
     const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
     const [showSimulation, setShowSimulation] = useState(true)
     const router = useRouter()
-    const { templates, hasTemplates, addTemplate } = useRequestTemplates()
+    const { templates, hasTemplates } = useRequestTemplates()
     const { createRequest } = useRequest()
-    const hasRun = useRef(false);
-
-    //[DEMO] use for semo purpose
-    useEffect(() => {
-        if (!hasTemplates && !hasRun.current) {
-            hasRun.current = true;
-            addTemplate('Vérification bancaire', [DOCUMENT_TYPES.IDENTITY_CARD, DOCUMENT_TYPES.BANK_DETAILS]);
-        }
-    }, [hasTemplates, addTemplate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -38,7 +29,6 @@ export const FormCreateRequest = () => {
         console.log('New request created:', newRequest)
 
         if (showSimulation) {
-            // Send notification to simulate a new device receiving it
             sendNotification(newRequest)
             window.open('/notification', '_blank');
         }
