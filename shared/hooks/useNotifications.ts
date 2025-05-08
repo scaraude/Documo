@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { DocumentRequest } from '@/shared/types';
 import * as notificationsApi from '@/features/notifications/api';
 import { NotificationResponse } from '@/features/notifications/types';
@@ -11,7 +11,7 @@ export function useNotifications() {
     /**
      * Send a notification request
      */
-    const sendNotification = async (request: DocumentRequest) => {
+    const sendNotification = useCallback(async (request: DocumentRequest) => {
         try {
             setIsLoading(true);
             await notificationsApi.sendNotification(request);
@@ -21,12 +21,12 @@ export function useNotifications() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     /**
      * Get pending notification
      */
-    const getPendingNotification = async (): Promise<DocumentRequest | null> => {
+    const getPendingNotification = useCallback(async (): Promise<DocumentRequest | null> => {
         try {
             setIsLoading(true);
             return await notificationsApi.getPendingNotification();
@@ -36,12 +36,12 @@ export function useNotifications() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     /**
      * Clear pending notification
      */
-    const clearPendingNotification = async () => {
+    const clearPendingNotification = useCallback(async () => {
         try {
             setIsLoading(true);
             await notificationsApi.clearPendingNotification();
@@ -51,12 +51,12 @@ export function useNotifications() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     /**
      * Save notification response
      */
-    const saveNotificationResponse = async (
+    const saveNotificationResponse = useCallback(async (
         requestId: string,
         response: 'accepted' | 'rejected'
     ) => {
@@ -69,12 +69,12 @@ export function useNotifications() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     /**
      * Check for notification response
      */
-    const checkNotificationResponse = async (): Promise<NotificationResponse | null> => {
+    const checkNotificationResponse = useCallback(async (): Promise<NotificationResponse | null> => {
         try {
             setIsLoading(true);
             return await notificationsApi.checkNotificationResponse();
@@ -84,12 +84,12 @@ export function useNotifications() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     /**
      * Setup notification listener (checks for responses at intervals)
      */
-    const setupNotificationListener = (
+    const setupNotificationListener = useCallback((
         callback: (response: NotificationResponse) => void,
         interval = 2000
     ) => {
@@ -108,9 +108,9 @@ export function useNotifications() {
 
         // Return cleanup function
         return () => clearInterval(intervalId);
-    };
+    }, [checkNotificationResponse]);
 
-    return {
+    return useMemo(() => ({
         isLoading,
         error,
         sendNotification,
@@ -119,5 +119,13 @@ export function useNotifications() {
         saveNotificationResponse,
         checkNotificationResponse,
         setupNotificationListener
-    };
-}
+    }),
+        [isLoading,
+            error,
+            sendNotification,
+            getPendingNotification,
+            clearPendingNotification,
+            saveNotificationResponse,
+            checkNotificationResponse,
+            setupNotificationListener]);
+};      
