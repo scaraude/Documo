@@ -2,6 +2,7 @@ import { REQUEST_STATUS, RequestStatus } from '@/shared/constants';
 import * as storage from '@/features/storage/api';
 import { CreateRequestParams } from '../types';
 import { DocumentRequest } from '@/shared/types';
+import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY = 'requests';
 const DEFAULT_EXPIRATION_DAYS = 7;
@@ -36,7 +37,7 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
         const now = new Date();
 
         const newRequest: DocumentRequest = {
-            id: `req_${now.getTime()}_${Math.random().toString(36).substring(2, 9)}`,
+            id: uuidv4(),
             civilId,
             requestedDocuments,
             status: REQUEST_STATUS.PENDING,

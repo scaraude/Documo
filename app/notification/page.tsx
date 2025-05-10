@@ -3,8 +3,11 @@
 import { useEffect, useState } from 'react'
 import { DocumentRequest } from '@/shared/types'
 import { useNotifications } from '@/shared/hooks'
+import { useRouter } from 'next/navigation'
+import { ROUTES } from '../../shared/constants'
 
 export default function NotificationPage() {
+    const router = useRouter();
     const [notification, setNotification] = useState<DocumentRequest | null>(null)
     const [showNotification, setShowNotification] = useState(false)
     const [error, setError] = useState<Error | null>(null)
@@ -44,7 +47,7 @@ export default function NotificationPage() {
             try {
                 await notifications.saveNotificationResponse(notification.id, 'accepted')
                 setShowNotification(false)
-                window.close() // Close the notification tab
+                router.push(ROUTES.DOCUMENTS.UPLOAD)
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('Failed to accept request'))
                 console.error('Error accepting request:', err)
