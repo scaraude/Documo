@@ -16,7 +16,7 @@ export function useDocumentUpload() {
         };
     };
 
-    const uploadDocument = async ({
+    const secureUploadDocument = async ({
         requestId,
         file,
         type,
@@ -61,12 +61,6 @@ export function useDocumentUpload() {
                 } : null);
             }
 
-            // Validate document
-            setUploadProgress(prev => prev ? {
-                ...prev,
-                status: 'validating'
-            } : null);
-
             // Update progress
             setUploadProgress(prev => prev ? {
                 ...prev,
@@ -87,8 +81,7 @@ export function useDocumentUpload() {
 
     return {
         encryptFile,
-        extractMetadata,
-        uploadDocument,
+        secureUploadDocument,
         uploadProgress
     };
 } 

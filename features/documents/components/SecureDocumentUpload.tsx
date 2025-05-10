@@ -18,7 +18,7 @@ export function SecureDocumentUpload({
     onUploadComplete,
     onUploadError
 }: Readonly<SecureDocumentUploadProps>) {
-    const { uploadDocument, uploadProgress } = useDocumentUpload();
+    const { secureUploadDocument, uploadProgress } = useDocumentUpload();
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
         const file = acceptedFiles[0];
@@ -26,7 +26,7 @@ export function SecureDocumentUpload({
 
         try {
 
-            const document = await uploadDocument({
+            const document = await secureUploadDocument({
                 requestId,
                 file,
                 type: documentType,
@@ -39,7 +39,7 @@ export function SecureDocumentUpload({
         } catch (error) {
             onUploadError(error instanceof Error ? error : new Error('Upload failed'));
         }
-    }, [requestId, documentType, uploadDocument, onUploadComplete, onUploadError]);
+    }, [requestId, documentType, secureUploadDocument, onUploadComplete, onUploadError]);
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
