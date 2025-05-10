@@ -32,7 +32,6 @@ export interface UploadDocumentParams {
     requestId: string;
     file: File;
     type: typeof DOCUMENT_TYPES[keyof typeof DOCUMENT_TYPES];
-    encryptionKey: CryptoKey;
     onProgress?: (progress: number) => void;
 }
 

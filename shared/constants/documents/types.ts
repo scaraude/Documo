@@ -25,7 +25,7 @@ export const ALLOWED_FILE_TYPES = {
     PNG: 'image/png'
 } as const;
 
-export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export interface DocumentValidationResult {
     isValid: boolean;
@@ -41,17 +41,17 @@ export interface DocumentValidationRules {
 export const DOCUMENT_VALIDATION_RULES: Record<DOCUMENT_TYPES, DocumentValidationRules> = {
     [DOCUMENT_TYPES.IDENTITY_CARD]: {
         allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
-        maxSize: 5 * 1024 * 1024, // 5MB
+        maxSize: MAX_FILE_SIZE, // 5MB
         requiredFields: ['expiryDate', 'documentNumber']
     },
     [DOCUMENT_TYPES.PASSPORT]: {
         allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
-        maxSize: 5 * 1024 * 1024,
+        maxSize: MAX_FILE_SIZE,
         requiredFields: ['expiryDate', 'passportNumber']
     },
     [DOCUMENT_TYPES.DRIVERS_LICENSE]: {
         allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
-        maxSize: 5 * 1024 * 1024,
+        maxSize: MAX_FILE_SIZE,
         requiredFields: ['expiryDate', 'licenseNumber']
     },
     [DOCUMENT_TYPES.UTILITY_BILL]: {

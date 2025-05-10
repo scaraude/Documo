@@ -25,7 +25,7 @@ export default function DocumentUploadPage() {
 
                 <div className="space-y-8">
                     <div>
-                        <h2 className="text-lg font-semibold mb-4">Identity Card</h2>
+                        <h2 className="text-lg font-semibold mb-4">Carte d&apos;identité</h2>
                         <SecureDocumentUpload
                             requestId="test-request"
                             documentType={DOCUMENT_TYPES.IDENTITY_CARD}
@@ -35,7 +35,7 @@ export default function DocumentUploadPage() {
                     </div>
 
                     <div>
-                        <h2 className="text-lg font-semibold mb-4">Passport</h2>
+                        <h2 className="text-lg font-semibold mb-4">Passeport</h2>
                         <SecureDocumentUpload
                             requestId="test-request"
                             documentType={DOCUMENT_TYPES.PASSPORT}
@@ -45,10 +45,10 @@ export default function DocumentUploadPage() {
                     </div>
 
                     <div>
-                        <h2 className="text-lg font-semibold mb-4">Utility Bill</h2>
+                        <h2 className="text-lg font-semibold mb-4">RIB: Relevé d&apos;identité bancaire</h2>
                         <SecureDocumentUpload
                             requestId="test-request"
-                            documentType={DOCUMENT_TYPES.UTILITY_BILL}
+                            documentType={DOCUMENT_TYPES.BANK_STATEMENT}
                             onUploadComplete={handleUploadComplete}
                             onUploadError={handleUploadError}
                         />

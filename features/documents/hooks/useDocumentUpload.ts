@@ -1,19 +1,26 @@
 import { useState } from 'react';
-import { Document, DocumentUploadProgress, UploadDocumentParams } from '../types';
+import { Document, DocumentMetadata, DocumentUploadProgress, UploadDocumentParams } from '../types';
 import { DocumentStatus } from '@/shared/constants/documents/types';
-import { encryptFile } from '../utils/encryption';
-import { validateDocument } from '../utils/validation';
+import { encryptFile, generateEncryptionKey } from '../utils/encryption';
 import { uploadDocument as uploadDocumentToApi } from '../api/documentsApi';
 
 export function useDocumentUpload() {
     const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress | null>(null);
 
+    const extractMetadata = (file: File): DocumentMetadata => {
+        return {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lastModified: file.lastModified
+        };
+    };
+
     const uploadDocument = async ({
         requestId,
         file,
         type,
-        encryptionKey,
-        onProgress
+        onProgress,
     }: UploadDocumentParams): Promise<Document> => {
         try {
             // Create document metadata
@@ -22,12 +29,7 @@ export function useDocumentUpload() {
                 requestId,
                 type,
                 status: DocumentStatus.UPLOADING,
-                metadata: {
-                    name: file.name,
-                    type: file.type,
-                    size: file.size,
-                    lastModified: file.lastModified
-                },
+                metadata: extractMetadata(file),
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
@@ -40,6 +42,7 @@ export function useDocumentUpload() {
             });
 
             // Encrypt file
+            const encryptionKey = await generateEncryptionKey();
             const encryptedFile = await encryptFile(file, encryptionKey);
 
             // Upload encrypted file to API
@@ -64,18 +67,6 @@ export function useDocumentUpload() {
                 status: 'validating'
             } : null);
 
-            const validationResult = await validateDocument(uploadedDocument, file);
-            if (!validationResult.isValid) {
-                uploadedDocument.status = DocumentStatus.INVALID;
-                uploadedDocument.validationErrors = validationResult.errors;
-                throw new Error(validationResult.errors.join(', '));
-            }
-
-            // Update document status
-            uploadedDocument.status = DocumentStatus.VALID;
-            uploadedDocument.encryptionKey = encryptionKey;
-            uploadedDocument.updatedAt = new Date();
-
             // Update progress
             setUploadProgress(prev => prev ? {
                 ...prev,
@@ -95,6 +86,8 @@ export function useDocumentUpload() {
     };
 
     return {
+        encryptFile,
+        extractMetadata,
         uploadDocument,
         uploadProgress
     };

@@ -4,7 +4,6 @@ import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { DocumentType, MAX_FILE_SIZE } from '@/shared/constants/documents/types';
 import { useDocumentUpload } from '../hooks/useDocumentUpload';
-import { generateEncryptionKey } from '../utils/encryption';
 
 interface SecureDocumentUploadProps {
     requestId: string;
@@ -26,15 +25,11 @@ export function SecureDocumentUpload({
         if (!file) return;
 
         try {
-            // Generate encryption key
-            const encryptionKey = await generateEncryptionKey();
 
-            // Upload document
             const document = await uploadDocument({
                 requestId,
                 file,
                 type: documentType,
-                encryptionKey,
                 onProgress: (progress) => {
                     console.log(`Upload progress: ${progress}%`);
                 }
