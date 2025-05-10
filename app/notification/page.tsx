@@ -47,7 +47,7 @@ export default function NotificationPage() {
             try {
                 await notifications.saveNotificationResponse(notification.id, 'accepted')
                 setShowNotification(false)
-                router.push(ROUTES.DOCUMENTS.UPLOAD)
+                router.push(`${ROUTES.DOCUMENTS.UPLOAD}${notification.id}`)
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('Failed to accept request'))
                 console.error('Error accepting request:', err)

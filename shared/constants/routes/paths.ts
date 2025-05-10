@@ -7,7 +7,7 @@ export const ROUTES = {
     },
     DOCUMENTS: {
         HOME: '/documents',
-        UPLOAD: '/documents/upload',
+        UPLOAD: '/documents/upload/',
     },
 
 } as const;
