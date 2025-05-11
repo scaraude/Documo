@@ -1,11 +1,17 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Document, DocumentMetadata, DocumentUploadProgress, UploadDocumentParams } from '../types';
-import { DocumentStatus } from '@/shared/constants/documents/types';
+import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
 import { encryptFile, generateEncryptionKey } from '../utils/encryption';
 import { uploadDocument as uploadDocumentToApi } from '../api/documentsApi';
+import { getRequestById } from '../../requests/api/requestApi';
 
 export function useDocumentUpload() {
     const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress | null>(null);
+
+    const getDocumentToFetchFromRequestId = useCallback(async (requestId: string): Promise<DOCUMENT_TYPES[]> => {
+        const documents = await getRequestById(requestId);
+        return documents?.requestedDocuments || [];
+    }, []);
 
     const extractMetadata = (file: File): DocumentMetadata => {
         return {
@@ -34,6 +40,7 @@ export function useDocumentUpload() {
                 updatedAt: new Date()
             };
 
+            console.log('Document to upload:', document);
             // Update progress
             setUploadProgress({
                 documentId: document.id,
@@ -41,10 +48,12 @@ export function useDocumentUpload() {
                 status: 'uploading'
             });
 
+            console.log('encrypting');
             // Encrypt file
             const encryptionKey = await generateEncryptionKey();
             const encryptedFile = await encryptFile(file, encryptionKey);
 
+            console.log('updloading');
             // Upload encrypted file to API
             const uploadedDocument = await uploadDocumentToApi({
                 ...document,
@@ -82,6 +91,7 @@ export function useDocumentUpload() {
     return {
         encryptFile,
         secureUploadDocument,
-        uploadProgress
+        uploadProgress,
+        getDocumentToFetchFromRequestId
     };
 } 

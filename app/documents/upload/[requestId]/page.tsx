@@ -1,15 +1,40 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SecureDocumentUpload } from '@/features/documents/components/SecureDocumentUpload';
 import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
 import { useParams } from 'next/navigation';
+import { useDocumentUpload } from '@/features/documents/hooks/useDocumentUpload';
 
 export default function DocumentUploadPage() {
     const params = useParams();
     const requestId = params.requestId?.toString();
+    const { getDocumentToFetchFromRequestId } = useDocumentUpload();
     const [uploadedDocumentId, setUploadedDocumentId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [documentTypes, setDocumentTypes] = useState<DOCUMENT_TYPES[]>([]);
+
+    useEffect(() => {
+        if (!requestId) {
+            setError('Request ID is required.');
+            return;
+        }
+        const fetchDocumentTypes = async () => {
+            try {
+                const documentTypes = await getDocumentToFetchFromRequestId(requestId);
+                setDocumentTypes(documentTypes);
+                if (documentTypes.length === 0) {
+                    setError('No document types found for this request ID.');
+                }
+            } catch (err) {
+                setError('Failed to fetch document types.');
+                console.error('Error fetching document types:', err);
+            }
+        };
+
+        fetchDocumentTypes();
+    }, [requestId, getDocumentToFetchFromRequestId]);
+
 
     if (!requestId) {
         return <div>Error: Request ID is required.</div>;
@@ -25,9 +50,7 @@ export default function DocumentUploadPage() {
         setUploadedDocumentId(null);
     };
 
-    const DEMO_SECTION = [DOCUMENT_TYPES.IDENTITY_CARD, DOCUMENT_TYPES.PASSPORT];
-
-    const DragAndDropDocumentInput = (documentType: DOCUMENT_TYPES) => {
+    const DragAndDropDocumentInput = ({ documentType }: { documentType: DOCUMENT_TYPES }) => {
 
         const documentSections = [
             { title: "Carte d'identité", type: DOCUMENT_TYPES.IDENTITY_CARD },
@@ -40,11 +63,11 @@ export default function DocumentUploadPage() {
         const sectionToDisplay = documentSections.find(section => section.type === documentType);
 
         if (!sectionToDisplay) {
-            return;
+            return null;
         }
 
         return (
-            <div className="space-y-8" key={documentType}>
+            <div className="space-y-8">
                 <h2 className="text-lg font-semibold mb-4">{sectionToDisplay.title}</h2>
                 <SecureDocumentUpload
                     requestId={requestId}
@@ -62,9 +85,10 @@ export default function DocumentUploadPage() {
                 <h1 className="text-2xl font-bold mb-8">Upload Document</h1>
 
                 <div className="space-y-8">
-                    {DEMO_SECTION.map((documentType) => (
-                        DragAndDropDocumentInput(documentType)
-                    ))}
+                    {documentTypes.map((documentType) => {
+                        // console.log('Rendering DragAndDropDocumentInput with documentType:', documentType);
+                        return <DragAndDropDocumentInput key={documentType} documentType={documentType} />
+                    })}
                 </div>
 
                 {uploadedDocumentId && (
