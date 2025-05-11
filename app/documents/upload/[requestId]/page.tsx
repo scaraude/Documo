@@ -1,10 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { SecureDocumentUpload } from '@/features/documents/components/SecureDocumentUpload';
-import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
 import { useParams } from 'next/navigation';
-import { useDocumentUpload } from '@/features/documents/hooks/useDocumentUpload';
+import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
+import { DragAndDropDocumentInput, useDocumentUpload } from '@/features/documents';
 
 export default function DocumentUploadPage() {
     const params = useParams();
@@ -35,7 +34,6 @@ export default function DocumentUploadPage() {
         fetchDocumentTypes();
     }, [requestId, getDocumentToFetchFromRequestId]);
 
-
     if (!requestId) {
         return <div>Error: Request ID is required.</div>;
     }
@@ -50,45 +48,21 @@ export default function DocumentUploadPage() {
         setUploadedDocumentId(null);
     };
 
-    const DragAndDropDocumentInput = ({ documentType }: { documentType: DOCUMENT_TYPES }) => {
-
-        const documentSections = [
-            { title: "Carte d'identité", type: DOCUMENT_TYPES.IDENTITY_CARD },
-            { title: "Passeport", type: DOCUMENT_TYPES.PASSPORT },
-            { title: "RIB: Relevé d'identité bancaire", type: DOCUMENT_TYPES.BANK_STATEMENT },
-            { title: "Justificatif de domicile", type: DOCUMENT_TYPES.UTILITY_BILL },
-            { title: "Permis de conduire", type: DOCUMENT_TYPES.DRIVERS_LICENSE },
-        ];
-
-        const sectionToDisplay = documentSections.find(section => section.type === documentType);
-
-        if (!sectionToDisplay) {
-            return null;
-        }
-
-        return (
-            <div className="space-y-8">
-                <h2 className="text-lg font-semibold mb-4">{sectionToDisplay.title}</h2>
-                <SecureDocumentUpload
-                    requestId={requestId}
-                    documentType={sectionToDisplay.type}
-                    onUploadComplete={handleUploadComplete}
-                    onUploadError={handleUploadError}
-                />
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen p-8">
             <div className="max-w-2xl mx-auto">
                 <h1 className="text-2xl font-bold mb-8">Upload Document</h1>
 
                 <div className="space-y-8">
-                    {documentTypes.map((documentType) => {
-                        // console.log('Rendering DragAndDropDocumentInput with documentType:', documentType);
-                        return <DragAndDropDocumentInput key={documentType} documentType={documentType} />
-                    })}
+                    {documentTypes.map((documentType) => (
+                        <DragAndDropDocumentInput
+                            key={documentType}
+                            documentType={documentType}
+                            requestId={requestId}
+                            onUploadComplete={handleUploadComplete}
+                            onUploadError={handleUploadError}
+                        />
+                    ))}
                 </div>
 
                 {uploadedDocumentId && (
@@ -105,4 +79,4 @@ export default function DocumentUploadPage() {
             </div>
         </div>
     );
-} 
+}

@@ -55,25 +55,7 @@ export function SecureDocumentUpload({
 
     return (
         <div className="w-full">
-            <div
-                {...getRootProps()}
-                className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
-          ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500'}`}
-            >
-                <input {...getInputProps()} />
-                {isDragActive ? (
-                    <p className="text-blue-500">Drop the file here...</p>
-                ) : (
-                    <div>
-                        <p className="text-gray-600">Drag and drop a file here, or click to select</p>
-                        <p className="text-sm text-gray-500 mt-2">
-                            Supported formats: PDF, JPEG, PNG (max {MAX_FILE_SIZE / 1024 / 1024}MB)
-                        </p>
-                    </div>
-                )}
-            </div>
-
-            {uploadProgress && (
+            {uploadProgress ? (
                 <div className="mt-4">
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
@@ -88,7 +70,27 @@ export function SecureDocumentUpload({
                         {uploadProgress.status === 'error' && `Error: ${uploadProgress.error}`}
                     </p>
                 </div>
-            )}
+            )
+                : (
+                    <div
+                        {...getRootProps()}
+                        className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
+                    ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500'}`}
+                    >
+                        <input {...getInputProps()} />
+                        {isDragActive ? (
+                            <p className="text-blue-500">Drop the file here...</p>
+                        ) : (
+                            <div>
+                                <p className="text-gray-600">Drag and drop a file here, or click to select</p>
+                                <p className="text-sm text-gray-500 mt-2">
+                                    Supported formats: PDF, JPEG, PNG (max {MAX_FILE_SIZE / 1024 / 1024}MB)
+                                </p>
+                            </div>
+                        )}
+                    </div>
+                )
+            }
         </div>
     );
 } 
