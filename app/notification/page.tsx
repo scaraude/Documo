@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { DocumentRequest } from '@/shared/types'
-import { useNotifications } from '@/shared/hooks'
+import { useNotifications } from '@/shared/hooks/useNotifications'
 import { useRouter } from 'next/navigation'
 import { ROUTES } from '../../shared/constants'
 
@@ -12,24 +12,20 @@ export default function NotificationPage() {
     const [showNotification, setShowNotification] = useState(false)
     const [error, setError] = useState<Error | null>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const notifications = useNotifications();
+    const { getPendingNotification, clearPendingNotification, saveNotificationResponse } = useNotifications();
 
     useEffect(() => {
         async function loadNotification() {
             try {
                 setIsLoading(true)
-                const pendingNotification = await notifications.getPendingNotification()
+                const pendingNotification = await getPendingNotification()
 
                 if (pendingNotification) {
                     setNotification(pendingNotification)
                     setShowNotification(true)
 
                     // Clear the notification from localStorage to prevent showing it multiple times
-                    await notifications.clearPendingNotification()
-
-                    // Play notification sound
-                    const audio = new Audio('/notification-sound.mp3')
-                    audio.play().catch(error => console.log('Failed to play notification sound:', error))
+                    await clearPendingNotification()
                 }
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('Failed to load notification'))
@@ -40,12 +36,12 @@ export default function NotificationPage() {
         }
 
         loadNotification()
-    }, [notifications])
+    }, [clearPendingNotification, getPendingNotification])
 
     const handleAccept = async () => {
         if (notification) {
             try {
-                await notifications.saveNotificationResponse(notification.id, 'accepted')
+                await saveNotificationResponse(notification.id, 'accepted')
                 setShowNotification(false)
                 router.push(`${ROUTES.DOCUMENTS.UPLOAD}${notification.id}`)
             } catch (err) {
@@ -58,7 +54,7 @@ export default function NotificationPage() {
     const handleDeny = async () => {
         if (notification) {
             try {
-                await notifications.saveNotificationResponse(notification.id, 'rejected')
+                await saveNotificationResponse(notification.id, 'rejected')
                 setShowNotification(false)
                 window.close() // Close the notification tab
             } catch (err) {
