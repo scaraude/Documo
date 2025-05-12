@@ -1,6 +1,7 @@
+import { RequestTemplate } from "../../request-templates";
 
 interface SelectTemplateProps {
-    templates: DocumentRequestTemplate[];
+    templates: RequestTemplate[];
     selectedTemplateId: string | null;
     setSelectedTemplateId: React.Dispatch<React.SetStateAction<string | null>>;
 }
