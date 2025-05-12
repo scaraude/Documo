@@ -34,6 +34,7 @@ export default function DocumentUploadPage() {
         fetchDocumentTypes();
     }, [requestId, getDocumentToFetchFromRequestId]);
 
+
     if (!requestId) {
         return <div>Error: Request ID is required.</div>;
     }
