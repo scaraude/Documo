@@ -4,7 +4,7 @@ export interface RequestTemplate {
     id: string;
     title: string;
     requestedDocuments: DocumentType[];
-    createdAt: string;
+    createdAt: Date;
 }
 
 export interface CreateRequestTemplateParams {

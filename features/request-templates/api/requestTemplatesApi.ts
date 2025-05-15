@@ -28,7 +28,7 @@ export async function createTemplate(params: CreateRequestTemplateParams): Promi
             id: crypto.randomUUID(),
             title,
             requestedDocuments,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
         };
 
         const templates = await getTemplates();
