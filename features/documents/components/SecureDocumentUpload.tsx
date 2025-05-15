@@ -59,6 +59,10 @@ export function SecureDocumentUpload({
                 <div className="mt-4">
                     <div className="w-full bg-gray-200 rounded-full h-2.5">
                         <div
+                            role="progressbar"
+                            aria-valuenow={uploadProgress.progress}
+                            aria-valuemin={0}
+                            aria-valuemax={100}
                             className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
                             style={{ width: `${uploadProgress.progress}%` }}
                         />
@@ -74,6 +78,9 @@ export function SecureDocumentUpload({
                 : (
                     <div
                         {...getRootProps()}
+                        data-testid="dropzone"
+                        role="button"
+                        tabIndex={0}
                         className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors
                     ${isDragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-blue-500'}`}
                     >
@@ -93,4 +100,4 @@ export function SecureDocumentUpload({
             }
         </div>
     );
-} 
+}
