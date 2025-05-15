@@ -28,10 +28,11 @@ export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) =
 
             <form onSubmit={handleSubmit} className="space-y-6 mb-8">
                 <div>
-                    <label className="block text-sm font-medium mb-2">
+                    <label htmlFor="template-title" className="block text-sm font-medium mb-2">
                         Titre du modèle
                     </label>
                     <input
+                        id="template-title"
                         type="text"
                         value={templateTitle}
                         onChange={(e) => setTemplateTitle(e.target.value)}
@@ -49,6 +50,7 @@ export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) =
                         {Object.values(DOCUMENT_TYPES).map((doc) => (
                             <label key={doc} className="flex items-center">
                                 <input
+                                    id={`document-${doc}`}
                                     type="checkbox"
                                     checked={selectedDocuments.includes(doc)}
                                     onChange={(e) => {
@@ -60,7 +62,7 @@ export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) =
                                     }}
                                     className="mr-2"
                                 />
-                                {doc}
+                                <span>{doc}</span>
                             </label>
                         ))}
                     </div>

@@ -4,6 +4,7 @@ import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/typ
 import { encryptFile, generateEncryptionKey } from '../utils/encryption';
 import { uploadDocument as uploadDocumentToApi } from '../api/documentsApi';
 import { getRequestById } from '../../requests/api/requestApi';
+import { v4 as uuidv4 } from 'uuid';
 
 export function useDocumentUpload() {
     const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress | null>(null);
@@ -31,7 +32,7 @@ export function useDocumentUpload() {
         try {
             // Create document metadata
             const document: Document = {
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 requestId,
                 type,
                 status: DocumentStatus.UPLOADING,

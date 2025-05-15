@@ -1,6 +1,7 @@
 import * as storage from '@/features/storage/api';
 import { DocumentType } from '@/shared/constants';
 import { CreateRequestTemplateParams, RequestTemplate } from '../types';
+import { v4 as uuidv4 } from 'uuid';
 
 const STORAGE_KEY = 'document-request-templates';
 
@@ -25,7 +26,7 @@ export async function createTemplate(params: CreateRequestTemplateParams): Promi
         const { title, requestedDocuments } = params;
 
         const newTemplate: RequestTemplate = {
-            id: crypto.randomUUID(),
+            id: uuidv4(),
             title,
             requestedDocuments,
             createdAt: new Date(),
