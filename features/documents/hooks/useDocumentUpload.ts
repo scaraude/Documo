@@ -41,7 +41,6 @@ export function useDocumentUpload() {
                 updatedAt: new Date()
             };
 
-            console.log('Document to upload:', document);
             // Update progress
             setUploadProgress({
                 documentId: document.id,
@@ -49,12 +48,10 @@ export function useDocumentUpload() {
                 status: 'uploading'
             });
 
-            console.log('encrypting');
             // Encrypt file
             const encryptionKey = await generateEncryptionKey();
             const encryptedFile = await encryptFile(file, encryptionKey);
 
-            console.log('updloading');
             // Upload encrypted file to API
             const uploadedDocument = await uploadDocumentToApi({
                 ...document,
@@ -95,4 +92,4 @@ export function useDocumentUpload() {
         uploadProgress,
         getDocumentToFetchFromRequestId
     };
-} 
+}
