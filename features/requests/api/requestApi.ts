@@ -20,7 +20,7 @@ export async function getRequests(): Promise<DocumentRequest[]> {
             ...req,
             createdAt: new Date(req.createdAt),
             expiresAt: new Date(req.expiresAt),
-            lastUpdatedAt: new Date(req.lastUpdatedAt)
+            lastUpdatedAt: new Date(req.updatedAt)
         }));
     } catch (error) {
         console.error('Error fetching requests:', error);
@@ -43,7 +43,7 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
             status: REQUEST_STATUS.PENDING,
             createdAt: now,
             expiresAt: new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000),
-            lastUpdatedAt: now
+            updatedAt: now
         };
 
         const requests = await getRequests();
@@ -70,7 +70,7 @@ export async function updateRequestStatus(id: string, status: RequestStatus): Pr
                 updatedRequest = {
                     ...request,
                     status,
-                    lastUpdatedAt: new Date()
+                    updatedAt: new Date()
                 };
                 return updatedRequest;
             }

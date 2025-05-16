@@ -31,7 +31,7 @@ export async function getPendingNotification(): Promise<DocumentRequest | null> 
             ...notificationData,
             createdAt: new Date(notificationData.createdAt),
             expiresAt: new Date(notificationData.expiresAt),
-            lastUpdatedAt: new Date(notificationData.lastUpdatedAt),
+            updatedAt: new Date(notificationData.lastUpdatedAt),
         };
     } catch (error) {
         console.error('Error getting notification:', error);

@@ -23,7 +23,7 @@ describe('RequestsList Component', () => {
       status: REQUEST_STATUS.PENDING,
       createdAt: new Date('2023-01-01'),
       expiresAt: new Date('2023-01-08'),
-      lastUpdatedAt: new Date('2023-01-01')
+      updatedAt: new Date('2023-01-01')
     },
     {
       id: '2',
@@ -32,7 +32,7 @@ describe('RequestsList Component', () => {
       status: REQUEST_STATUS.ACCEPTED,
       createdAt: new Date('2023-01-02'),
       expiresAt: new Date('2023-01-09'),
-      lastUpdatedAt: new Date('2023-01-03')
+      updatedAt: new Date('2023-01-03')
     }
   ];
 

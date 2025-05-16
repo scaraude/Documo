@@ -7,5 +7,5 @@ export interface DocumentRequest {
     status: RequestStatus;
     createdAt: Date;
     expiresAt: Date;
-    lastUpdatedAt: Date;
+    updatedAt: Date;
 }
