@@ -3,7 +3,7 @@ import { useDocumentUpload } from '../useDocumentUpload';
 import { encryptFile, generateEncryptionKey } from '../../utils/encryption';
 import { uploadDocument } from '../../api/documentsApi';
 import { getRequestById } from '../../../requests/api/requestApi';
-import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
+import { APP_DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
 
 // Add URL mock
 const mockCreateObjectURL = jest.fn();
@@ -43,10 +43,10 @@ describe('useDocumentUpload Hook', () => {
             status: DocumentStatus.UPLOADED
         });
         (getRequestById as jest.Mock).mockResolvedValue({
-            requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD]
+            requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD]
         });
         // Silence console.logs
-        jest.spyOn(console, 'log').mockImplementation(() => {});
+        jest.spyOn(console, 'log').mockImplementation(() => { });
     });
 
     afterEach(() => {
@@ -59,7 +59,7 @@ describe('useDocumentUpload Hook', () => {
         const documents = await result.current.getDocumentToFetchFromRequestId('request-1');
 
         expect(getRequestById).toHaveBeenCalledWith('request-1');
-        expect(documents).toEqual([DOCUMENT_TYPES.IDENTITY_CARD]);
+        expect(documents).toEqual([APP_DOCUMENT_TYPES.IDENTITY_CARD]);
     });
 
     test('secureUploadDocument handles successful upload', async () => {
@@ -71,7 +71,7 @@ describe('useDocumentUpload Hook', () => {
             uploadedDoc = await result.current.secureUploadDocument({
                 requestId: 'request-1',
                 file: mockFile,
-                type: DOCUMENT_TYPES.IDENTITY_CARD,
+                type: APP_DOCUMENT_TYPES.IDENTITY_CARD,
                 onProgress: mockOnProgress
             });
         });
@@ -80,7 +80,7 @@ describe('useDocumentUpload Hook', () => {
         expect(generateEncryptionKey).toHaveBeenCalled();
         expect(encryptFile).toHaveBeenCalledWith(mockFile, mockKey);
         expect(uploadDocument).toHaveBeenCalled();
-        
+
         // Verify progress updates
         expect(mockOnProgress).toHaveBeenCalled();
         expect(result.current.uploadProgress).toEqual({
@@ -99,14 +99,14 @@ describe('useDocumentUpload Hook', () => {
     test('secureUploadDocument handles upload failure', async () => {
         const error = new Error('Upload failed');
         (uploadDocument as jest.Mock).mockRejectedValueOnce(error);
-        
+
         const { result } = renderHook(() => useDocumentUpload());
 
         await act(async () => {
             await expect(result.current.secureUploadDocument({
                 requestId: 'request-1',
                 file: mockFile,
-                type: DOCUMENT_TYPES.IDENTITY_CARD
+                type: APP_DOCUMENT_TYPES.IDENTITY_CARD
             })).rejects.toThrow('Upload failed');
         });
 
@@ -131,7 +131,7 @@ describe('useDocumentUpload Hook', () => {
             await result.current.secureUploadDocument({
                 requestId: 'request-1',
                 file: mockFileWithMetadata,
-                type: DOCUMENT_TYPES.IDENTITY_CARD
+                type: APP_DOCUMENT_TYPES.IDENTITY_CARD
             });
         });
 

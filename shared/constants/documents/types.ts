@@ -8,7 +8,7 @@ export enum DocumentStatus {
     ERROR = 'ERROR'
 }
 
-export enum DOCUMENT_TYPES {
+export enum APP_DOCUMENT_TYPES {
     IDENTITY_CARD = 'IDENTITY_CARD',
     PASSPORT = 'PASSPORT',
     DRIVERS_LICENSE = 'DRIVERS_LICENSE',
@@ -17,7 +17,7 @@ export enum DOCUMENT_TYPES {
     OTHER = 'OTHER'
 }
 
-export type DocumentType = DOCUMENT_TYPES;
+export type AppDocumentType = APP_DOCUMENT_TYPES;
 
 export const ALLOWED_FILE_TYPES = {
     PDF: 'application/pdf',
@@ -38,33 +38,33 @@ export interface DocumentValidationRules {
     requiredFields?: string[];
 }
 
-export const DOCUMENT_VALIDATION_RULES: Record<DOCUMENT_TYPES, DocumentValidationRules> = {
-    [DOCUMENT_TYPES.IDENTITY_CARD]: {
+export const DOCUMENT_VALIDATION_RULES: Record<APP_DOCUMENT_TYPES, DocumentValidationRules> = {
+    [APP_DOCUMENT_TYPES.IDENTITY_CARD]: {
         allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
         maxSize: MAX_FILE_SIZE, // 5MB
         requiredFields: ['expiryDate', 'documentNumber']
     },
-    [DOCUMENT_TYPES.PASSPORT]: {
+    [APP_DOCUMENT_TYPES.PASSPORT]: {
         allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
         maxSize: MAX_FILE_SIZE,
         requiredFields: ['expiryDate', 'passportNumber']
     },
-    [DOCUMENT_TYPES.DRIVERS_LICENSE]: {
+    [APP_DOCUMENT_TYPES.DRIVERS_LICENSE]: {
         allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
         maxSize: MAX_FILE_SIZE,
         requiredFields: ['expiryDate', 'licenseNumber']
     },
-    [DOCUMENT_TYPES.UTILITY_BILL]: {
+    [APP_DOCUMENT_TYPES.UTILITY_BILL]: {
         allowedTypes: [ALLOWED_FILE_TYPES.PDF],
         maxSize: MAX_FILE_SIZE,
         requiredFields: ['issueDate', 'accountNumber']
     },
-    [DOCUMENT_TYPES.BANK_STATEMENT]: {
+    [APP_DOCUMENT_TYPES.BANK_STATEMENT]: {
         allowedTypes: [ALLOWED_FILE_TYPES.PDF],
         maxSize: MAX_FILE_SIZE,
         requiredFields: ['issueDate', 'accountNumber']
     },
-    [DOCUMENT_TYPES.OTHER]: {
+    [APP_DOCUMENT_TYPES.OTHER]: {
         allowedTypes: [ALLOWED_FILE_TYPES.PDF, ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
         maxSize: MAX_FILE_SIZE
     }

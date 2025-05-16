@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, waitFor, act } from '@testing-library/react';
 import DocumentUploadPage from '../page';
 import { useDocumentUpload } from '@/features/documents';
-import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
+import { AppDocumentType, APP_DOCUMENT_TYPES } from '@/shared/constants/documents/types';
 import '@testing-library/jest-dom';
 
 // Mock next/navigation
@@ -24,7 +24,7 @@ jest.mock('@/features/documents/components/DragAndDropDocumentInput', () => ({
     __esModule: true,
     DragAndDropDocumentInput: jest.fn(
         (props: {
-            documentType: DOCUMENT_TYPES;
+            documentType: AppDocumentType;
             requestId: string;
             onUploadComplete: (documentId: string) => void;
             onUploadError: (error: Error) => void
@@ -42,7 +42,7 @@ jest.mock('@/features/documents', () => ({
     useDocumentUpload: jest.fn(),
     DragAndDropDocumentInput: jest.fn(
         (props: {
-            documentType: DOCUMENT_TYPES;
+            documentType: AppDocumentType;
             requestId: string;
             onUploadComplete: (documentId: string) => void;
             onUploadError: (error: Error) => void
@@ -92,8 +92,8 @@ describe('DocumentUploadPage', () => {
 
     test('renders document inputs after loading document types', async () => {
         mockGetDocumentToFetchFromRequestId.mockResolvedValue([
-            DOCUMENT_TYPES.IDENTITY_CARD,
-            DOCUMENT_TYPES.UTILITY_BILL
+            APP_DOCUMENT_TYPES.IDENTITY_CARD,
+            APP_DOCUMENT_TYPES.UTILITY_BILL
         ]);
 
         await act(async () => {
@@ -103,8 +103,8 @@ describe('DocumentUploadPage', () => {
         // Need to wait for state updates from async callbacks
         await waitFor(() => {
             expect(mockGetDocumentToFetchFromRequestId).toHaveBeenCalledWith('test-request-id');
-            expect(screen.getByTestId(`drag-drop-input-${DOCUMENT_TYPES.IDENTITY_CARD}`)).toBeInTheDocument();
-            expect(screen.getByTestId(`drag-drop-input-${DOCUMENT_TYPES.UTILITY_BILL}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`drag-drop-input-${APP_DOCUMENT_TYPES.IDENTITY_CARD}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`drag-drop-input-${APP_DOCUMENT_TYPES.UTILITY_BILL}`)).toBeInTheDocument();
         });
     });
 
@@ -135,7 +135,7 @@ describe('DocumentUploadPage', () => {
     });
 
     test('handles successful document upload', async () => {
-        mockGetDocumentToFetchFromRequestId.mockResolvedValue([DOCUMENT_TYPES.PASSPORT]);
+        mockGetDocumentToFetchFromRequestId.mockResolvedValue([APP_DOCUMENT_TYPES.PASSPORT]);
 
         await act(async () => {
             render(<DocumentUploadPage />);
@@ -143,7 +143,7 @@ describe('DocumentUploadPage', () => {
 
         // Wait for the component to load document types
         await waitFor(() => {
-            expect(screen.getByTestId(`drag-drop-input-${DOCUMENT_TYPES.PASSPORT}`)).toBeInTheDocument();
+            expect(screen.getByTestId(`drag-drop-input-${APP_DOCUMENT_TYPES.PASSPORT}`)).toBeInTheDocument();
         });
 
         // Check that success message is initially not shown

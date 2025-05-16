@@ -1,4 +1,4 @@
-import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
+import { AppDocumentType } from '@/shared/constants/documents/types';
 
 export interface DocumentUploadProgress {
     documentId: string;
@@ -10,7 +10,7 @@ export interface DocumentUploadProgress {
 export interface UploadDocumentParams {
     requestId: string;
     file: File;
-    type: typeof DOCUMENT_TYPES[keyof typeof DOCUMENT_TYPES];
+    type: AppDocumentType,
     onProgress?: (progress: number) => void;
 }
 

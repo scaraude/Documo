@@ -1,7 +1,7 @@
 import { render, screen, act } from '@testing-library/react';
 import { SecureDocumentUpload } from '../SecureDocumentUpload';
 import { useDocumentUpload } from '../../hooks/useDocumentUpload';
-import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants/documents/types';
 
 // Mock hooks and dependencies
 jest.mock('../../hooks/useDocumentUpload');
@@ -29,7 +29,7 @@ const mockUseDocumentUpload = useDocumentUpload as jest.MockedFunction<typeof us
 describe('SecureDocumentUpload', () => {
     const defaultProps = {
         requestId: 'test-request',
-        documentType: DOCUMENT_TYPES.IDENTITY_CARD,
+        documentType: APP_DOCUMENT_TYPES.IDENTITY_CARD,
         onUploadComplete: jest.fn(),
         onUploadError: jest.fn()
     };
@@ -85,7 +85,7 @@ describe('SecureDocumentUpload', () => {
         expect(mockSecureUploadDocument).toHaveBeenCalledWith({
             requestId: 'test-request',
             file: expect.any(File),
-            type: DOCUMENT_TYPES.IDENTITY_CARD,
+            type: APP_DOCUMENT_TYPES.IDENTITY_CARD,
             onProgress: expect.any(Function)
         });
         expect(defaultProps.onUploadComplete).toHaveBeenCalledWith('doc-123');

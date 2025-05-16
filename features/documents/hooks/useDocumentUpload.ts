@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 import { DocumentUploadProgress, UploadDocumentParams } from '../types';
-import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
+import { AppDocumentType, DocumentStatus } from '@/shared/constants/documents/types';
 import { encryptFile, generateEncryptionKey } from '../utils/encryption';
 import { uploadDocument as uploadDocumentToApi } from '../api/documentsApi';
 import { getRequestById } from '../../requests/api/requestApi';
@@ -10,7 +10,7 @@ import { AppDocumentMetadata, AppDocument } from '@/shared/types';
 export function useDocumentUpload() {
     const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress | null>(null);
 
-    const getDocumentToFetchFromRequestId = useCallback(async (requestId: string): Promise<DOCUMENT_TYPES[]> => {
+    const getDocumentToFetchFromRequestId = useCallback(async (requestId: string): Promise<AppDocumentType[]> => {
         const documents = await getRequestById(requestId);
         return documents?.requestedDocuments || [];
     }, []);

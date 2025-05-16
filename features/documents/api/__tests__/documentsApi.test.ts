@@ -1,7 +1,7 @@
 import { getDocuments, uploadDocument, updateDocumentStatus, deleteDocument, getDocument, getDocumentsByRequest } from '../documentsApi';
 import * as storage from '@/features/storage/api';
 import { AppDocument } from '@/shared/types';
-import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
+import { APP_DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
 
 // Mock storage API
 jest.mock('@/features/storage/api', () => ({
@@ -16,7 +16,7 @@ describe('Documents API', () => {
         {
             id: '1',
             requestId: 'req-1',
-            type: DOCUMENT_TYPES.IDENTITY_CARD,
+            type: APP_DOCUMENT_TYPES.IDENTITY_CARD,
             status: DocumentStatus.UPLOADED,
             metadata: {
                 name: 'id-card.jpg',
@@ -30,7 +30,7 @@ describe('Documents API', () => {
         {
             id: '2',
             requestId: 'req-2',
-            type: DOCUMENT_TYPES.PASSPORT,
+            type: APP_DOCUMENT_TYPES.PASSPORT,
             status: DocumentStatus.PENDING,
             metadata: {
                 name: 'passport.pdf',
@@ -82,7 +82,7 @@ describe('Documents API', () => {
         const newDocument: AppDocument = {
             id: '3',
             requestId: 'req-3',
-            type: DOCUMENT_TYPES.BANK_STATEMENT,
+            type: APP_DOCUMENT_TYPES.BANK_STATEMENT,
             status: DocumentStatus.UPLOADING,
             metadata: {
                 name: 'statement.pdf',

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
+import { AppDocumentType } from '@/shared/constants/documents/types';
 import { DragAndDropDocumentInput, useDocumentUpload } from '@/features/documents';
 
 export default function DocumentUploadPage() {
@@ -11,7 +11,7 @@ export default function DocumentUploadPage() {
     const { getDocumentToFetchFromRequestId } = useDocumentUpload();
     const [uploadedDocumentId, setUploadedDocumentId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [documentTypes, setDocumentTypes] = useState<DOCUMENT_TYPES[]>([]);
+    const [documentTypes, setDocumentTypes] = useState<AppDocumentType[]>([]);
 
     useEffect(() => {
         if (!requestId) {

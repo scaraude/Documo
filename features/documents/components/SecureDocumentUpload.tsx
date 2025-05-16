@@ -2,12 +2,12 @@
 
 import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { DocumentType, MAX_FILE_SIZE } from '@/shared/constants/documents/types';
+import { AppDocumentType, MAX_FILE_SIZE } from '@/shared/constants/documents/types';
 import { useDocumentUpload } from '../hooks/useDocumentUpload';
 
 interface SecureDocumentUploadProps {
     requestId: string;
-    documentType: DocumentType;
+    documentType: AppDocumentType;
     onUploadComplete: (documentId: string) => void;
     onUploadError: (error: Error) => void;
 }

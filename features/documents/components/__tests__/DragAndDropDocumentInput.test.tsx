@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { DragAndDropDocumentInput } from '../DragAndDropDocumentInput';
-import { DOCUMENT_TYPES } from '@/shared/constants/documents/types';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants/documents/types';
 
 // Mock SecureDocumentUpload component
 jest.mock('../SecureDocumentUpload', () => ({
@@ -9,7 +9,7 @@ jest.mock('../SecureDocumentUpload', () => ({
 
 describe('DragAndDropDocumentInput', () => {
     const defaultProps = {
-        documentType: DOCUMENT_TYPES.IDENTITY_CARD,
+        documentType: APP_DOCUMENT_TYPES.IDENTITY_CARD,
         requestId: 'request-123',
         onUploadComplete: jest.fn(),
         onUploadError: jest.fn()
@@ -26,7 +26,7 @@ describe('DragAndDropDocumentInput', () => {
         render(
             <DragAndDropDocumentInput
                 {...defaultProps}
-                documentType={DOCUMENT_TYPES.PASSPORT}
+                documentType={APP_DOCUMENT_TYPES.PASSPORT}
             />
         );
 
@@ -37,7 +37,7 @@ describe('DragAndDropDocumentInput', () => {
         render(
             <DragAndDropDocumentInput
                 {...defaultProps}
-                documentType={DOCUMENT_TYPES.BANK_STATEMENT}
+                documentType={APP_DOCUMENT_TYPES.BANK_STATEMENT}
             />
         );
 
@@ -48,7 +48,7 @@ describe('DragAndDropDocumentInput', () => {
         const { container } = render(
             <DragAndDropDocumentInput
                 {...defaultProps}
-                documentType={'INVALID_TYPE' as DOCUMENT_TYPES}
+                documentType={'INVALID_TYPE' as APP_DOCUMENT_TYPES}
             />
         );
 

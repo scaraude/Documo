@@ -1,6 +1,6 @@
 import { validateDocument } from '../validation';
 import { generateFileHash } from '../encryption';
-import { ALLOWED_FILE_TYPES, DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
+import { ALLOWED_FILE_TYPES, APP_DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
 import { AppDocument } from '@/shared/types';
 
 // Mock encryption utility
@@ -17,7 +17,7 @@ describe('validateDocument', () => {
         status: DocumentStatus.PENDING, // Replace with a valid status from your Document type if it's an enum
         createdAt: new Date(),
         updatedAt: new Date(),
-        type: DOCUMENT_TYPES.IDENTITY_CARD,
+        type: APP_DOCUMENT_TYPES.IDENTITY_CARD,
         metadata: {
             hash: 'existing-hash-123',
             name: 'test.jpg',
