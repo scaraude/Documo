@@ -42,28 +42,33 @@ export async function uploadDocument(document: Document): Promise<Document> {
 export async function updateDocumentStatus(id: string, status: DocumentStatus): Promise<Document> {
     try {
         const documents = await getDocuments();
-        let updatedDocument: Document | undefined;
+        const existingDocument = documents.find(doc => doc.id === id);
 
-        const updatedDocuments = documents.map(doc => {
-            if (doc.id === id) {
-                updatedDocument = {
-                    ...doc,
-                    status,
-                    updatedAt: new Date()
-                };
-                return updatedDocument;
-            }
-            return doc;
-        });
-
-        if (!updatedDocument) {
+        if (!existingDocument) {
             throw new Error(`Document with ID ${id} not found`);
         }
 
-        storage.setItem(STORAGE_KEY, updatedDocuments);
+        const updatedDocument = {
+            ...existingDocument,
+            status,
+            updatedAt: new Date()
+        };
+
+        const updatedDocuments = documents.map(doc =>
+            doc.id === id ? updatedDocument : doc
+        );
+
+        await storage.setItem(STORAGE_KEY, updatedDocuments);
         return updatedDocument;
     } catch (error) {
-        console.error('Error updating document status:', error);
+        // Don't transform known errors
+        if (error instanceof Error && error.message.includes('not found')) {
+            throw error;
+        }
+        // Re-throw storage and other errors
+        if (error instanceof Error) {
+            throw error;
+        }
         throw new Error('Failed to update document status');
     }
 }
@@ -74,10 +79,23 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus): 
 export async function deleteDocument(id: string): Promise<void> {
     try {
         const documents = await getDocuments();
+        const documentToDelete = documents.find(doc => doc.id === id);
+
+        if (!documentToDelete) {
+            throw new Error(`Document with ID ${id} not found`);
+        }
+
         const filteredDocuments = documents.filter(doc => doc.id !== id);
-        storage.setItem(STORAGE_KEY, filteredDocuments);
+        await storage.setItem(STORAGE_KEY, filteredDocuments);
     } catch (error) {
-        console.error('Error deleting document:', error);
+        // Don't transform known errors
+        if (error instanceof Error && error.message.includes('not found')) {
+            throw error;
+        }
+        // Re-throw storage and other errors
+        if (error instanceof Error) {
+            throw error;
+        }
         throw new Error('Failed to delete document');
     }
 }
@@ -96,4 +114,4 @@ export async function getDocumentsByRequest(requestId: string): Promise<Document
 
     const documents = await getDocuments();
     return documents.filter(doc => doc.requestId === requestId);
-} 
+}
