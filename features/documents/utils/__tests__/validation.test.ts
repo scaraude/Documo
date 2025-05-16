@@ -1,7 +1,7 @@
 import { validateDocument } from '../validation';
 import { generateFileHash } from '../encryption';
 import { ALLOWED_FILE_TYPES, DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
-import { Document } from '../../types';
+import { AppDocument } from '@/shared/types';
 
 // Mock encryption utility
 jest.mock('../encryption', () => ({
@@ -11,7 +11,7 @@ jest.mock('../encryption', () => ({
 const mockGenerateFileHash = generateFileHash as jest.MockedFunction<typeof generateFileHash>;
 
 describe('validateDocument', () => {
-    const mockDocument: Document = {
+    const mockDocument: AppDocument = {
         id: '1',
         requestId: 'req-1',
         status: DocumentStatus.PENDING, // Replace with a valid status from your Document type if it's an enum

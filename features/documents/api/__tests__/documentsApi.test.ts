@@ -1,6 +1,6 @@
 import { getDocuments, uploadDocument, updateDocumentStatus, deleteDocument, getDocument, getDocumentsByRequest } from '../documentsApi';
 import * as storage from '@/features/storage/api';
-import { Document } from '../../types';
+import { AppDocument } from '@/shared/types';
 import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
 
 // Mock storage API
@@ -12,7 +12,7 @@ jest.mock('@/features/storage/api', () => ({
 const mockStorage = storage as jest.Mocked<typeof storage>;
 
 describe('Documents API', () => {
-    const mockDocuments: Document[] = [
+    const mockDocuments: AppDocument[] = [
         {
             id: '1',
             requestId: 'req-1',
@@ -79,7 +79,7 @@ describe('Documents API', () => {
     });
 
     test('uploadDocument adds new document successfully', async () => {
-        const newDocument: Document = {
+        const newDocument: AppDocument = {
             id: '3',
             requestId: 'req-3',
             type: DOCUMENT_TYPES.BANK_STATEMENT,
@@ -108,7 +108,7 @@ describe('Documents API', () => {
             throw new Error('Storage error');
         });
 
-        await expect(uploadDocument({} as Document)).rejects.toThrow('Failed to upload document');
+        await expect(uploadDocument({} as AppDocument)).rejects.toThrow('Failed to upload document');
     });
 
     test('updateDocumentStatus updates status successfully', async () => {

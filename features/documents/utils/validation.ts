@@ -1,8 +1,8 @@
 import { DocumentValidationResult, ALLOWED_FILE_TYPES, DOCUMENT_VALIDATION_RULES } from '@/shared/constants/documents/types';
-import { Document } from '../types';
+import { AppDocument } from '@/shared/types';
 import { generateFileHash } from './encryption';
 
-export async function validateDocument(document: Document, file: File): Promise<DocumentValidationResult> {
+export async function validateDocument(document: AppDocument, file: File): Promise<DocumentValidationResult> {
     const errors: string[] = [];
     const rules = DOCUMENT_VALIDATION_RULES[document.type];
 

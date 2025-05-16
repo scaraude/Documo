@@ -1,10 +1,11 @@
 import { useCallback, useState } from 'react';
-import { Document, DocumentMetadata, DocumentUploadProgress, UploadDocumentParams } from '../types';
+import { DocumentUploadProgress, UploadDocumentParams } from '../types';
 import { DOCUMENT_TYPES, DocumentStatus } from '@/shared/constants/documents/types';
 import { encryptFile, generateEncryptionKey } from '../utils/encryption';
 import { uploadDocument as uploadDocumentToApi } from '../api/documentsApi';
 import { getRequestById } from '../../requests/api/requestApi';
 import { v4 as uuidv4 } from 'uuid';
+import { AppDocumentMetadata, AppDocument } from '@/shared/types';
 
 export function useDocumentUpload() {
     const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress | null>(null);
@@ -14,7 +15,7 @@ export function useDocumentUpload() {
         return documents?.requestedDocuments || [];
     }, []);
 
-    const extractMetadata = (file: File): DocumentMetadata => {
+    const extractMetadata = (file: File): AppDocumentMetadata => {
         return {
             name: file.name,
             type: file.type,
@@ -28,10 +29,10 @@ export function useDocumentUpload() {
         file,
         type,
         onProgress,
-    }: UploadDocumentParams): Promise<Document> => {
+    }: UploadDocumentParams): Promise<AppDocument> => {
         try {
             // Create document metadata
-            const document: Document = {
+            const document: AppDocument = {
                 id: uuidv4(),
                 requestId,
                 type,

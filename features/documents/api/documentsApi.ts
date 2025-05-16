@@ -1,4 +1,4 @@
-import { Document } from '../types';
+import { AppDocument } from '@/shared/types';
 import { DocumentStatus } from '@/shared/constants/documents/types';
 import * as storage from '@/features/storage/api';
 
@@ -7,9 +7,9 @@ const STORAGE_KEY = 'documents';
 /**
  * Get all documents
  */
-export async function getDocuments(): Promise<Document[]> {
+export async function getDocuments(): Promise<AppDocument[]> {
     try {
-        const documents = storage.getItem<Document[]>(STORAGE_KEY);
+        const documents = storage.getItem<AppDocument[]>(STORAGE_KEY);
         return documents || [];
     } catch (error) {
         console.error('Error fetching documents:', error);
@@ -20,7 +20,7 @@ export async function getDocuments(): Promise<Document[]> {
 /**
  * Upload a new document
  */
-export async function uploadDocument(document: Document): Promise<Document> {
+export async function uploadDocument(document: AppDocument): Promise<AppDocument> {
     try {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -39,7 +39,7 @@ export async function uploadDocument(document: Document): Promise<Document> {
 /**
  * Update document status
  */
-export async function updateDocumentStatus(id: string, status: DocumentStatus): Promise<Document> {
+export async function updateDocumentStatus(id: string, status: DocumentStatus): Promise<AppDocument> {
     try {
         const documents = await getDocuments();
         const existingDocument = documents.find(doc => doc.id === id);
@@ -100,7 +100,7 @@ export async function deleteDocument(id: string): Promise<void> {
     }
 }
 
-export async function getDocument(documentId: string): Promise<Document | null> {
+export async function getDocument(documentId: string): Promise<AppDocument | null> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -108,7 +108,7 @@ export async function getDocument(documentId: string): Promise<Document | null> 
     return documents.find(doc => doc.id === documentId) || null;
 }
 
-export async function getDocumentsByRequest(requestId: string): Promise<Document[]> {
+export async function getDocumentsByRequest(requestId: string): Promise<AppDocument[]> {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
 
