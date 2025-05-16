@@ -1,0 +1,101 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Configure the seeding script
+generator seeder {
+  provider     = "prisma-generator-seeder"
+  generatePath = "./seed.ts"
+}
+
+model DocumentRequest {
+  id                String               @id @default(uuid())
+  civilId           String
+  requestedDocuments DocumentType[]
+  status            RequestStatus
+  createdAt         DateTime             @default(now())
+  expiresAt         DateTime
+  UpdatedAt         DateTime             @updatedAt
+  documents         Document[]
+  notificationResponses NotificationResponse[]
+
+  @@map("document_requests")
+}
+
+model Document {
+  id         String         @id @default(uuid())
+  requestId  String
+  request    DocumentRequest @relation(fields: [requestId], references: [id])
+  type       DocumentType
+  status     DocumentStatus
+  metadata   Json
+  url        String?
+  hash       String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+  validationErrors String[]
+
+  @@map("documents")
+}
+
+model RequestTemplate {
+  id                 String        @id @default(uuid())
+  title              String
+  requestedDocuments DocumentType[]
+  createdAt          DateTime      @default(now())
+
+  @@map("request_templates")
+}
+
+model NotificationResponse {
+  id        String         @id @default(uuid())
+  requestId String
+  request   DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  response  ResponseType
+  timestamp DateTime       @default(now())
+
+  @@map("notification_responses")
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  COMPLETED
+}
+
+enum DocumentType {
+  IDENTITY_CARD
+  PASSPORT
+  DRIVERS_LICENSE
+  BANK_STATEMENT
+  UTILITY_BILL
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  UPLOADING
+  UPLOADED
+  VALIDATING
+  VALID
+  INVALID
+  ERROR
+}
+
+enum ResponseType {
+  ACCEPTED
+  REJECTED
+}
