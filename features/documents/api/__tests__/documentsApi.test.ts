@@ -46,7 +46,7 @@ describe('Documents API', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         // Suppress console.error output during tests
-        jest.spyOn(console, 'error').mockImplementation(() => {});
+        jest.spyOn(console, 'error').mockImplementation(() => { });
         // Default mock for getItem
         mockStorage.getItem.mockReturnValue(mockDocuments);
     });
@@ -57,16 +57,16 @@ describe('Documents API', () => {
 
     test('getDocuments returns all documents from storage', async () => {
         const documents = await getDocuments();
-        
+
         expect(documents).toEqual(mockDocuments);
         expect(mockStorage.getItem).toHaveBeenCalledWith('documents');
     });
 
     test('getDocuments returns empty array when no documents exist', async () => {
         mockStorage.getItem.mockReturnValueOnce(null);
-        
+
         const documents = await getDocuments();
-        
+
         expect(documents).toEqual([]);
     });
 
@@ -95,10 +95,10 @@ describe('Documents API', () => {
         };
 
         const result = await uploadDocument(newDocument);
-        
+
         expect(result).toEqual(newDocument);
         expect(mockStorage.setItem).toHaveBeenCalledWith(
-            'documents', 
+            'documents',
             [...mockDocuments, newDocument]
         );
     });
@@ -107,13 +107,13 @@ describe('Documents API', () => {
         mockStorage.setItem.mockImplementationOnce(() => {
             throw new Error('Storage error');
         });
-        
+
         await expect(uploadDocument({} as Document)).rejects.toThrow('Failed to upload document');
     });
 
     test('updateDocumentStatus updates status successfully', async () => {
         const result = await updateDocumentStatus('1', DocumentStatus.VALID);
-        
+
         expect(result.id).toBe('1');
         expect(result.status).toBe(DocumentStatus.VALID);
         expect(mockStorage.setItem).toHaveBeenCalled();
@@ -126,7 +126,7 @@ describe('Documents API', () => {
 
     test('deleteDocument removes document successfully', async () => {
         await deleteDocument('1');
-        
+
         expect(mockStorage.setItem).toHaveBeenCalledWith(
             'documents',
             mockDocuments.filter(doc => doc.id !== '1')
@@ -140,25 +140,25 @@ describe('Documents API', () => {
 
     test('getDocument returns document by ID', async () => {
         const document = await getDocument('1');
-        
+
         expect(document).toEqual(mockDocuments[0]);
     });
 
     test('getDocument returns null for non-existent document', async () => {
         const document = await getDocument('non-existent');
-        
+
         expect(document).toBeNull();
     });
 
     test('getDocumentsByRequest returns documents for request ID', async () => {
         const documents = await getDocumentsByRequest('req-1');
-        
+
         expect(documents).toEqual([mockDocuments[0]]);
     });
 
     test('getDocumentsByRequest returns empty array when no documents match', async () => {
         const documents = await getDocumentsByRequest('non-existent');
-        
+
         expect(documents).toEqual([]);
     });
 });
