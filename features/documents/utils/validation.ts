@@ -24,16 +24,16 @@ export async function validateDocument(document: AppDocument, file: File): Promi
 
     // Additional validation based on document type
     // switch (document.type) {
-    //     case DOCUMENT_TYPES.IDENTITY_CARD:
-    //     case DOCUMENT_TYPES.PASSPORT:
-    //     case DOCUMENT_TYPES.DRIVERS_LICENSE:
+    //     case APP_DOCUMENT_TYPES.IDENTITY_CARD:
+    //     case APP_DOCUMENT_TYPES.PASSPORT:
+    //     case APP_DOCUMENT_TYPES.DRIVERS_LICENSE:
     //         // Add specific validation for ID documents
     //         if (file.type.startsWith('image/')) {
     //             // TODO: Add image quality and content validation
     //         }
     //         break;
-    //     case DOCUMENT_TYPES.UTILITY_BILL:
-    //     case DOCUMENT_TYPES.BANK_STATEMENT:
+    //     case APP_DOCUMENT_TYPES.UTILITY_BILL:
+    //     case APP_DOCUMENT_TYPES.BANK_STATEMENT:
     //         // Add specific validation for bills and statements
     //         if (file.type === 'application/pdf') {
     //             // TODO: Add PDF content validation

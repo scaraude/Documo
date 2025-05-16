@@ -1,14 +1,14 @@
 'use client'
 import { useState } from "react";
-import { DOCUMENT_TYPES, DocumentType } from "@/shared/constants";
+import { APP_DOCUMENT_TYPES, AppDocumentType } from "@/shared/constants";
 
 interface RequestTemplateFormProps {
-    addTemplate: (title: string, requestedDocuments: DocumentType[]) => void;
+    addTemplate: (title: string, requestedDocuments: AppDocumentType[]) => void;
 }
 
 export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) => {
     const [templateTitle, setTemplateTitle] = useState('');
-    const [selectedDocuments, setSelectedDocuments] = useState<DocumentType[]>([]);
+    const [selectedDocuments, setSelectedDocuments] = useState<AppDocumentType[]>([]);
 
     const resetForm = () => {
         setTemplateTitle('');
@@ -47,7 +47,7 @@ export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) =
                         Documents requis
                     </label>
                     <div className="space-y-2">
-                        {Object.values(DOCUMENT_TYPES).map((doc) => (
+                        {Object.values(APP_DOCUMENT_TYPES).map((doc) => (
                             <label key={doc} className="flex items-center">
                                 <input
                                     id={`document-${doc}`}

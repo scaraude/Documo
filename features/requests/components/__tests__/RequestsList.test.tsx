@@ -4,7 +4,7 @@ import { RequestsList } from '../RequestsList';
 import '@testing-library/jest-dom';
 import { useRequest } from '../../hooks/useRequest';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
-import { DOCUMENT_TYPES, REQUEST_STATUS } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
 
 // Mock dependencies
@@ -19,8 +19,8 @@ describe('RequestsList Component', () => {
     {
       id: '1',
       civilId: '123456',
-      requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD],
-      status: REQUEST_STATUS.PENDING,
+      requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+      status: DOCUMENT_REQUEST_STATUS.PENDING,
       createdAt: new Date('2023-01-01'),
       expiresAt: new Date('2023-01-08'),
       updatedAt: new Date('2023-01-01')
@@ -28,8 +28,8 @@ describe('RequestsList Component', () => {
     {
       id: '2',
       civilId: '789012',
-      requestedDocuments: [DOCUMENT_TYPES.PASSPORT, DOCUMENT_TYPES.UTILITY_BILL],
-      status: REQUEST_STATUS.ACCEPTED,
+      requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT, APP_DOCUMENT_TYPES.UTILITY_BILL],
+      status: DOCUMENT_REQUEST_STATUS.ACCEPTED,
       createdAt: new Date('2023-01-02'),
       expiresAt: new Date('2023-01-09'),
       updatedAt: new Date('2023-01-03')
@@ -98,9 +98,9 @@ describe('RequestsList Component', () => {
     expect(screen.getAllByText('Accepté')).toHaveLength(2);
 
     // Check if document types are rendered
-    expect(screen.getAllByText(DOCUMENT_TYPES.IDENTITY_CARD)).toHaveLength(2);
-    expect(screen.getAllByText(DOCUMENT_TYPES.PASSPORT)).toHaveLength(2);
-    expect(screen.getAllByText(DOCUMENT_TYPES.UTILITY_BILL)).toHaveLength(2);
+    expect(screen.getAllByText(APP_DOCUMENT_TYPES.IDENTITY_CARD)).toHaveLength(2);
+    expect(screen.getAllByText(APP_DOCUMENT_TYPES.PASSPORT)).toHaveLength(2);
+    expect(screen.getAllByText(APP_DOCUMENT_TYPES.UTILITY_BILL)).toHaveLength(2);
   });
 
   test('handles delete request', () => {

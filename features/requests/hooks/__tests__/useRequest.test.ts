@@ -1,7 +1,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useRequest } from '../useRequest';
 import * as requestsApi from '../../api/requestApi';
-import { DOCUMENT_TYPES, REQUEST_STATUS } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
 
 // Mock the API module
@@ -14,8 +14,8 @@ describe('useRequest Hook', () => {
     {
       id: '1',
       civilId: '123456',
-      requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD],
-      status: REQUEST_STATUS.PENDING,
+      requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+      status: DOCUMENT_REQUEST_STATUS.PENDING,
       createdAt: new Date('2023-01-01'),
       expiresAt: new Date('2023-01-08'),
       updatedAt: new Date('2023-01-01')
@@ -23,8 +23,8 @@ describe('useRequest Hook', () => {
     {
       id: '2',
       civilId: '789012',
-      requestedDocuments: [DOCUMENT_TYPES.PASSPORT, DOCUMENT_TYPES.UTILITY_BILL],
-      status: REQUEST_STATUS.ACCEPTED,
+      requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT, APP_DOCUMENT_TYPES.UTILITY_BILL],
+      status: DOCUMENT_REQUEST_STATUS.ACCEPTED,
       createdAt: new Date('2023-01-02'),
       expiresAt: new Date('2023-01-09'),
       updatedAt: new Date('2023-01-03')
@@ -71,8 +71,8 @@ describe('useRequest Hook', () => {
     const newRequest: DocumentRequest = {
       id: '3',
       civilId: '555666',
-      requestedDocuments: [DOCUMENT_TYPES.BANK_STATEMENT],
-      status: REQUEST_STATUS.PENDING,
+      requestedDocuments: [APP_DOCUMENT_TYPES.BANK_STATEMENT],
+      status: DOCUMENT_REQUEST_STATUS.PENDING,
       createdAt: new Date(),
       expiresAt: new Date(),
       updatedAt: new Date()
@@ -90,14 +90,14 @@ describe('useRequest Hook', () => {
     await act(async () => {
       const returnedRequest = await result.current.createRequest(
         '555666',
-        [DOCUMENT_TYPES.BANK_STATEMENT]
+        [APP_DOCUMENT_TYPES.BANK_STATEMENT]
       );
       expect(returnedRequest).toEqual(newRequest);
     });
 
     expect(mockRequestsApi.createRequest).toHaveBeenCalledWith({
       civilId: '555666',
-      requestedDocuments: [DOCUMENT_TYPES.BANK_STATEMENT],
+      requestedDocuments: [APP_DOCUMENT_TYPES.BANK_STATEMENT],
       expirationDays: undefined
     });
 
@@ -117,7 +117,7 @@ describe('useRequest Hook', () => {
 
     await act(async () => {
       try {
-        await result.current.createRequest('555666', [DOCUMENT_TYPES.BANK_STATEMENT]);
+        await result.current.createRequest('555666', [APP_DOCUMENT_TYPES.BANK_STATEMENT]);
       } catch (e) {
         expect(e).toEqual(error);
       }
@@ -129,7 +129,7 @@ describe('useRequest Hook', () => {
   test('should update request status successfully', async () => {
     const updatedRequest = {
       ...mockRequests[0],
-      status: REQUEST_STATUS.ACCEPTED,
+      status: DOCUMENT_REQUEST_STATUS.ACCEPTED,
       updatedAt: new Date()
     };
 
@@ -143,10 +143,10 @@ describe('useRequest Hook', () => {
     });
 
     await act(async () => {
-      await result.current.updateRequestStatus('1', REQUEST_STATUS.ACCEPTED);
+      await result.current.updateRequestStatus('1', DOCUMENT_REQUEST_STATUS.ACCEPTED);
     });
 
-    expect(mockRequestsApi.updateRequestStatus).toHaveBeenCalledWith('1', REQUEST_STATUS.ACCEPTED);
+    expect(mockRequestsApi.updateRequestStatus).toHaveBeenCalledWith('1', DOCUMENT_REQUEST_STATUS.ACCEPTED);
 
     const expectedRequests = [updatedRequest, mockRequests[1]];
     expect(result.current.requests).toEqual(expectedRequests);

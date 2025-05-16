@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { RequestTemplatesList } from '../RequestTemplatesList';
-import { DOCUMENT_TYPES } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { RequestTemplate } from '../../types';
 import '@testing-library/jest-dom';
 
@@ -10,13 +10,13 @@ describe('RequestTemplatesList Component', () => {
         {
             id: '1',
             title: 'Identity Documents',
-            requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD],
+            requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
             createdAt: new Date('2023-01-01')
         },
         {
             id: '2',
             title: 'Financial Documents',
-            requestedDocuments: [DOCUMENT_TYPES.BANK_STATEMENT, DOCUMENT_TYPES.IDENTITY_CARD],
+            requestedDocuments: [APP_DOCUMENT_TYPES.BANK_STATEMENT, APP_DOCUMENT_TYPES.IDENTITY_CARD],
             createdAt: new Date('2023-01-02')
         }
     ];
@@ -39,9 +39,9 @@ describe('RequestTemplatesList Component', () => {
 
         expect(screen.getByText('Identity Documents')).toBeInTheDocument();
         expect(screen.getByText('Financial Documents')).toBeInTheDocument();
-        expect(screen.getAllByText(DOCUMENT_TYPES.IDENTITY_CARD)).toHaveLength(2);
-        expect(screen.getByText(DOCUMENT_TYPES.BANK_STATEMENT)).toBeInTheDocument();
-        // expect(screen.getByText(DOCUMENT_TYPES.PASSPORT)).toBeInTheDocument();
+        expect(screen.getAllByText(APP_DOCUMENT_TYPES.IDENTITY_CARD)).toHaveLength(2);
+        expect(screen.getByText(APP_DOCUMENT_TYPES.BANK_STATEMENT)).toBeInTheDocument();
+        // expect(screen.getByText(APP_DOCUMENT_TYPES.PASSPORT)).toBeInTheDocument();
     });
 
     test('handles delete template', () => {

@@ -63,7 +63,7 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
 /**
  * Update request status
  */
-export async function updateDocumentRequestStatus(id: string, status: DocumentRequestStatus): Promise<DocumentRequest> {
+export async function updateRequestStatus(id: string, status: DocumentRequestStatus): Promise<DocumentRequest> {
     try {
         const updatedRequest = await prisma.documentRequest.update({
             where: { id },

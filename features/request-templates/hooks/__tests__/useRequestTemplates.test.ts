@@ -1,7 +1,7 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
 import { useRequestTemplates } from '../useRequestTemplates';
 import * as templatesApi from '../../api/requestTemplatesApi';
-import { DOCUMENT_TYPES } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { RequestTemplate } from '../../types';
 
 // Mock the API module
@@ -14,13 +14,13 @@ describe('useRequestTemplates Hook', () => {
         {
             id: '1',
             title: 'Identity Documents',
-            requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD],
+            requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
             createdAt: new Date('2023-01-01')
         },
         {
             id: '2',
             title: 'Financial Documents',
-            requestedDocuments: [DOCUMENT_TYPES.BANK_STATEMENT, DOCUMENT_TYPES.IDENTITY_CARD],
+            requestedDocuments: [APP_DOCUMENT_TYPES.BANK_STATEMENT, APP_DOCUMENT_TYPES.IDENTITY_CARD],
             createdAt: new Date('2023-01-02')
         }
     ];
@@ -63,7 +63,7 @@ describe('useRequestTemplates Hook', () => {
         const newTemplate: RequestTemplate = {
             id: '3',
             title: 'New Template',
-            requestedDocuments: [DOCUMENT_TYPES.PASSPORT],
+            requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT],
             createdAt: new Date()
         };
 
@@ -77,12 +77,12 @@ describe('useRequestTemplates Hook', () => {
         });
 
         await act(async () => {
-            await result.current.addTemplate('New Template', [DOCUMENT_TYPES.PASSPORT]);
+            await result.current.addTemplate('New Template', [APP_DOCUMENT_TYPES.PASSPORT]);
         });
 
         expect(mockTemplatesApi.createTemplate).toHaveBeenCalledWith({
             title: 'New Template',
-            requestedDocuments: [DOCUMENT_TYPES.PASSPORT]
+            requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT]
         });
 
         expect(result.current.templates).toEqual([...mockTemplates, newTemplate]);
@@ -109,7 +109,7 @@ describe('useRequestTemplates Hook', () => {
         const updatedTemplate = {
             ...mockTemplates[0],
             title: 'Updated Template',
-            requestedDocuments: [DOCUMENT_TYPES.PASSPORT]
+            requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT]
         };
 
         mockTemplatesApi.updateTemplate.mockResolvedValue(updatedTemplate);
@@ -125,13 +125,13 @@ describe('useRequestTemplates Hook', () => {
             await result.current.updateTemplate(
                 '1',
                 'Updated Template',
-                [DOCUMENT_TYPES.PASSPORT]
+                [APP_DOCUMENT_TYPES.PASSPORT]
             );
         });
 
         expect(mockTemplatesApi.updateTemplate).toHaveBeenCalledWith('1', {
             title: 'Updated Template',
-            requestedDocuments: [DOCUMENT_TYPES.PASSPORT]
+            requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT]
         });
 
         const expectedTemplates = [updatedTemplate, mockTemplates[1]];

@@ -7,7 +7,7 @@ import {
     getTemplateById
 } from '../requestTemplatesRepository';
 import prisma from '@/lib/prisma';
-import { DOCUMENT_TYPES } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { CreateRequestTemplateParams } from '../../types';
 
 // Mock prisma avec des types plus précis
@@ -41,7 +41,7 @@ describe('Request Templates Repository', () => {
     const mockPrismaTemplate = {
         id: '1',
         title: 'Test Template',
-        requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD],
+        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
         createdAt: mockDate
     };
 
@@ -100,7 +100,7 @@ describe('Request Templates Repository', () => {
             // GIVEN
             const templateData: CreateRequestTemplateParams = {
                 title: 'New Template',
-                requestedDocuments: [DOCUMENT_TYPES.PASSPORT]
+                requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT]
             };
 
             const createdTemplate = {
@@ -125,7 +125,7 @@ describe('Request Templates Repository', () => {
             // GIVEN
             const templateData: CreateRequestTemplateParams = {
                 title: 'New Template',
-                requestedDocuments: [DOCUMENT_TYPES.PASSPORT]
+                requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT]
             };
 
             mockPrisma.requestTemplate.create.mockRejectedValue(new Error('Insertion error'));
@@ -178,7 +178,7 @@ describe('Request Templates Repository', () => {
             // GIVEN
             const updateData = {
                 title: 'Updated Title',
-                requestedDocuments: [DOCUMENT_TYPES.IDENTITY_CARD, DOCUMENT_TYPES.UTILITY_BILL]
+                requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD, APP_DOCUMENT_TYPES.UTILITY_BILL]
             };
 
             const updatedTemplate = {

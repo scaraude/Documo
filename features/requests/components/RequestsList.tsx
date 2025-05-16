@@ -1,6 +1,6 @@
 'use client'
 import { useEffect } from 'react';
-import { RequestStatus } from '@/shared/constants';
+import { DocumentRequestStatus, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { useRequest } from '../hooks/useRequest';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
 import { DocumentRequest } from '@/shared/types';
@@ -34,26 +34,26 @@ export const RequestsList = () => {
         }
     }
 
-    const getStatusBadgeClasses = (status: RequestStatus) => {
+    const getStatusBadgeClasses = (status: DocumentRequestStatus) => {
         switch (status) {
-            case 'accepted':
+            case DOCUMENT_REQUEST_STATUS.ACCEPTED:
                 return 'bg-green-100 text-green-800'
-            case 'rejected':
+            case DOCUMENT_REQUEST_STATUS.REJECTED:
                 return 'bg-red-100 text-red-800'
-            case 'completed':
+            case DOCUMENT_REQUEST_STATUS.COMPLETED:
                 return 'bg-blue-100 text-blue-800'
-            case 'pending':
+            case DOCUMENT_REQUEST_STATUS.PENDING:
             default:
                 return 'bg-yellow-100 text-yellow-800'
         }
     }
 
-    const getStatusText = (status: RequestStatus) => {
+    const getStatusText = (status: DocumentRequestStatus) => {
         switch (status) {
-            case 'pending': return 'En attente';
-            case 'accepted': return 'Accepté';
-            case 'rejected': return 'Refusé';
-            case 'completed': return 'Complété';
+            case DOCUMENT_REQUEST_STATUS.PENDING: return 'En attente';
+            case DOCUMENT_REQUEST_STATUS.ACCEPTED: return 'Accepté';
+            case DOCUMENT_REQUEST_STATUS.REJECTED: return 'Refusé';
+            case DOCUMENT_REQUEST_STATUS.COMPLETED: return 'Complété';
             default: return status;
         }
     }
