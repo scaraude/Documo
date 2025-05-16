@@ -43,7 +43,7 @@ describe('Request API', () => {
           status: REQUEST_STATUS.PENDING,
           createdAt: '2023-01-01T00:00:00Z',
           expiresAt: '2023-01-08T00:00:00Z',
-          lastUpdatedAt: '2023-01-01T00:00:00Z'
+          updatedAt: '2023-01-01T00:00:00Z'
         }
       ];
 
@@ -60,7 +60,7 @@ describe('Request API', () => {
           status: REQUEST_STATUS.PENDING,
           createdAt: new Date('2023-01-01T00:00:00Z'),
           expiresAt: new Date('2023-01-08T00:00:00Z'),
-          lastUpdatedAt: new Date('2023-01-01T00:00:00Z')
+          updatedAt: new Date('2023-01-01T00:00:00Z')
         }
       ]);
     });
@@ -103,7 +103,7 @@ describe('Request API', () => {
         status: REQUEST_STATUS.PENDING,
         createdAt: mockDate,
         expiresAt: expiryDate,
-        lastUpdatedAt: mockDate
+        updatedAt: mockDate
       });
 
       expect(mockStorage.setItem).toHaveBeenCalledWith('requests', [result]);
@@ -149,7 +149,7 @@ describe('Request API', () => {
           status: REQUEST_STATUS.PENDING,
           createdAt: new Date('2023-01-01'),
           expiresAt: new Date('2023-01-08'),
-          lastUpdatedAt: new Date('2023-01-01')
+          updatedAt: new Date('2023-01-01')
         }
       ];
 
@@ -164,7 +164,7 @@ describe('Request API', () => {
         status: REQUEST_STATUS.ACCEPTED,
         createdAt: new Date('2023-01-01'),
         expiresAt: new Date('2023-01-08'),
-        lastUpdatedAt: mockDate
+        updatedAt: mockDate
       });
 
       expect(mockStorage.setItem).toHaveBeenCalledWith('requests', [result]);
@@ -188,7 +188,7 @@ describe('Request API', () => {
           status: REQUEST_STATUS.PENDING,
           createdAt: new Date('2023-01-01'),
           expiresAt: new Date('2023-01-08'),
-          lastUpdatedAt: new Date('2023-01-01')
+          updatedAt: new Date('2023-01-01')
         },
         {
           id: '2',
@@ -197,7 +197,7 @@ describe('Request API', () => {
           status: REQUEST_STATUS.PENDING,
           createdAt: new Date('2023-01-02'),
           expiresAt: new Date('2023-01-09'),
-          lastUpdatedAt: new Date('2023-01-02')
+          updatedAt: new Date('2023-01-02')
         }
       ];
 
@@ -219,7 +219,7 @@ describe('Request API', () => {
           status: REQUEST_STATUS.PENDING,
           createdAt: new Date('2023-01-01'),
           expiresAt: new Date('2023-01-08'),
-          lastUpdatedAt: new Date('2023-01-01')
+          updatedAt: new Date('2023-01-01')
         }
       ];
 

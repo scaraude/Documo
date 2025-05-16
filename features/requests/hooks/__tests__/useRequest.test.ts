@@ -130,7 +130,7 @@ describe('useRequest Hook', () => {
     const updatedRequest = {
       ...mockRequests[0],
       status: REQUEST_STATUS.ACCEPTED,
-      lastUpdatedAt: new Date()
+      updatedAt: new Date()
     };
 
     mockRequestsApi.updateRequestStatus.mockResolvedValue(updatedRequest);

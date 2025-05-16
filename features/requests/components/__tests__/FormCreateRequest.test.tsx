@@ -68,7 +68,7 @@ describe('FormCreateRequest Component', () => {
     status: 'pending',
     createdAt: new Date(),
     expiresAt: new Date(),
-    lastUpdatedAt: new Date()
+    updatedAt: new Date()
   };
 
   beforeEach(() => {

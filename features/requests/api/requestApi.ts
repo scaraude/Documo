@@ -20,7 +20,7 @@ export async function getRequests(): Promise<DocumentRequest[]> {
             ...req,
             createdAt: new Date(req.createdAt),
             expiresAt: new Date(req.expiresAt),
-            lastUpdatedAt: new Date(req.updatedAt)
+            updatedAt: new Date(req.updatedAt)
         }));
     } catch (error) {
         console.error('Error fetching requests:', error);
