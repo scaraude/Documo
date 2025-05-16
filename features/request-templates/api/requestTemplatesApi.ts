@@ -1,60 +1,27 @@
-import * as storage from '@/features/storage/api';
+// features/request-templates/api/requestTemplatesApi.ts
 import { DocumentType } from '@/shared/constants';
 import { CreateRequestTemplateParams, RequestTemplate } from '../types';
-import { v4 as uuidv4 } from 'uuid';
-
-const STORAGE_KEY = 'document-request-templates';
+import * as repository from '../repository/requestTemplatesRepository';
 
 /**
  * Get all templates
  */
 export async function getTemplates(): Promise<RequestTemplate[]> {
-    try {
-        const templates = storage.getItem<RequestTemplate[]>(STORAGE_KEY);
-        return templates || [];
-    } catch (error) {
-        console.error('Error fetching templates:', error);
-        throw new Error('Failed to fetch templates');
-    }
+    return repository.getTemplates();
 }
 
 /**
  * Create a new template
  */
 export async function createTemplate(params: CreateRequestTemplateParams): Promise<RequestTemplate> {
-    try {
-        const { title, requestedDocuments } = params;
-
-        const newTemplate: RequestTemplate = {
-            id: uuidv4(),
-            title,
-            requestedDocuments,
-            createdAt: new Date(),
-        };
-
-        const templates = await getTemplates();
-        const updatedTemplates = [...templates, newTemplate];
-
-        storage.setItem(STORAGE_KEY, updatedTemplates);
-        return newTemplate;
-    } catch (error) {
-        console.error('Error creating template:', error);
-        throw new Error('Failed to create template');
-    }
+    return repository.createTemplate(params);
 }
 
 /**
  * Delete a template
  */
 export async function deleteTemplate(id: string): Promise<void> {
-    try {
-        const templates = await getTemplates();
-        const filteredTemplates = templates.filter(template => template.id !== id);
-        storage.setItem(STORAGE_KEY, filteredTemplates);
-    } catch (error) {
-        console.error('Error deleting template:', error);
-        throw new Error('Failed to delete template');
-    }
+    return repository.deleteTemplate(id);
 }
 
 /**
@@ -64,43 +31,13 @@ export async function updateTemplate(
     id: string,
     data: { title?: string; requestedDocuments?: DocumentType[] }
 ): Promise<RequestTemplate> {
-    try {
-        const templates = await getTemplates();
-        let updatedTemplate: RequestTemplate | undefined;
-
-        const updatedTemplates = templates.map(template => {
-            if (template.id === id) {
-                updatedTemplate = {
-                    ...template,
-                    ...(data.title && { title: data.title }),
-                    ...(data.requestedDocuments && { requestedDocuments: data.requestedDocuments }),
-                };
-                return updatedTemplate;
-            }
-            return template;
-        });
-
-        if (!updatedTemplate) {
-            throw new Error(`Template with ID ${id} not found`);
-        }
-
-        storage.setItem(STORAGE_KEY, updatedTemplates);
-        return updatedTemplate;
-    } catch (error) {
-        console.error('Error updating template:', error);
-        throw new Error('Failed to update template');
-    }
+    return repository.updateTemplate(id, data);
 }
 
 /**
  * Get a template by ID
  */
 export async function getTemplateById(id: string): Promise<RequestTemplate | undefined> {
-    try {
-        const templates = await getTemplates();
-        return templates.find(template => template.id === id);
-    } catch (error) {
-        console.error('Error fetching template:', error);
-        throw new Error('Failed to fetch template');
-    }
-}
+    const template = await repository.getTemplateById(id);
+    return template || undefined;
+}   
