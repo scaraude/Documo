@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  output   = "../lib/prisma/generated/client"
 }
 
 datasource db {
@@ -14,57 +14,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Configure the seeding script
-generator seeder {
-  provider     = "prisma-generator-seeder"
-  generatePath = "./seed.ts"
-}
-
 model DocumentRequest {
-  id                String               @id @default(uuid())
-  civilId           String
-  requestedDocuments DocumentType[]
-  status            RequestStatus
-  createdAt         DateTime             @default(now())
-  expiresAt         DateTime
-  UpdatedAt         DateTime             @updatedAt
-  documents         Document[]
+  id                    String                 @id @default(uuid())
+  civilId               String
+  requestedDocuments    DocumentType[]
+  status                RequestStatus
+  createdAt             DateTime               @default(now())
+  expiresAt             DateTime
+  updatedAt             DateTime               @updatedAt
+  documents             Document[]
   notificationResponses NotificationResponse[]
 
   @@map("document_requests")
 }
 
 model Document {
-  id         String         @id @default(uuid())
-  requestId  String
-  request    DocumentRequest @relation(fields: [requestId], references: [id])
-  type       DocumentType
-  status     DocumentStatus
-  metadata   Json
-  url        String?
-  hash       String?
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
+  id               String          @id @default(uuid())
+  requestId        String
+  request          DocumentRequest @relation(fields: [requestId], references: [id])
+  type             DocumentType
+  status           DocumentStatus
+  metadata         Json
+  url              String?
+  hash             String?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   validationErrors String[]
 
   @@map("documents")
 }
 
 model RequestTemplate {
-  id                 String        @id @default(uuid())
+  id                 String         @id @default(uuid())
   title              String
   requestedDocuments DocumentType[]
-  createdAt          DateTime      @default(now())
+  createdAt          DateTime       @default(now())
 
   @@map("request_templates")
 }
 
 model NotificationResponse {
-  id        String         @id @default(uuid())
+  id        String          @id @default(uuid())
   requestId String
   request   DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   response  ResponseType
-  timestamp DateTime       @default(now())
+  timestamp DateTime        @default(now())
 
   @@map("notification_responses")
 }

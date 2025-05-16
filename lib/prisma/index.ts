@@ -1,4 +1,7 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from './generated/client';
+
+// Exporter explicitement le namespace Prisma
+export { Prisma } from './generated/client'
 
 // PrismaClient is attached to the `global` object in development to prevent
 // exhausting your database connection limit.
