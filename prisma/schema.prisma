@@ -59,6 +59,7 @@ model NotificationResponse {
   request   DocumentRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
   response  ResponseType
   timestamp DateTime        @default(now())
+  processed Boolean         @default(false)
 
   @@map("notification_responses")
 }
