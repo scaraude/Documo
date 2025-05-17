@@ -1,5 +1,5 @@
 import prisma, { Prisma } from '@/lib/prisma';
-import { DocumentType } from '@/shared/constants';
+import { AppDocumentType } from '@/shared/constants';
 import { RequestTemplate, CreateRequestTemplateParams } from '../types';
 
 // Type mapper entre Prisma et App
@@ -12,7 +12,7 @@ function toAppModel(prismaModel: PrismaRequestTemplate): RequestTemplate {
     return {
         id: prismaModel.id,
         title: prismaModel.title,
-        requestedDocuments: prismaModel.requestedDocuments as DocumentType[],
+        requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
         createdAt: prismaModel.createdAt
     };
 }
@@ -74,7 +74,7 @@ export async function createTemplate(params: CreateRequestTemplateParams): Promi
  */
 export async function updateTemplate(
     id: string,
-    data: { title?: string; requestedDocuments?: DocumentType[] }
+    data: { title?: string; requestedDocuments?: AppDocumentType[] }
 ): Promise<RequestTemplate> {
     try {
         const updatedTemplate = await prisma.requestTemplate.update({

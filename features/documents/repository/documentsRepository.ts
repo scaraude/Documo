@@ -84,12 +84,12 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus): 
         });
 
         return toAppModel(updatedDocument);
-    } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
         // Gérer les erreurs spécifiques
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2025') {
-                throw new Error(`Document with ID ${id} not found`);
-            }
+
+        if (error?.code === 'P2025') {
+            throw new Error(`Document with ID ${id} not found`);
         }
 
         console.error('Error updating document status in database:', error);
@@ -105,12 +105,11 @@ export async function deleteDocument(id: string): Promise<void> {
         await prisma.document.delete({
             where: { id }
         });
-    } catch (error) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
         // Gérer les erreurs spécifiques
-        if (error instanceof Prisma.PrismaClientKnownRequestError) {
-            if (error.code === 'P2025') {
-                throw new Error(`Document with ID ${id} not found`);
-            }
+        if (error?.code === 'P2025') {
+            throw new Error(`Document with ID ${id} not found`);
         }
 
         console.error('Error deleting document from database:', error);
