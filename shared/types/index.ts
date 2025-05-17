@@ -1,19 +1,23 @@
-import { RequestStatus, DocumentType } from "../constants";
+import z from "zod";
+import { DocumentRequestStatus, AppDocumentType } from "../constants";
 import { DocumentStatus } from "../constants/documents/types";
 
-export interface AppDocumentMetadata {
-    name: string;
-    type: string;
-    size: number;
-    lastModified: number;
-    hash?: string;
-}
+// Définir un schéma de validation
+export const metadataSchema = z.object({
+    name: z.string(),
+    type: z.string(),
+    size: z.number(),
+    lastModified: z.number(),
+    hash: z.string().optional()
+});
+
+export type AppDocumentMetadata = z.infer<typeof metadataSchema>;
 
 //call AppDocument to avoid confusion with Document TS interface
 export interface AppDocument {
     id: string;
     requestId: string;
-    type: DocumentType;
+    type: AppDocumentType;
     status: DocumentStatus;
     metadata: AppDocumentMetadata;
     url?: string;
@@ -26,8 +30,8 @@ export interface AppDocument {
 export interface DocumentRequest {
     id: string;
     civilId: string;
-    requestedDocuments: DocumentType[];
-    status: RequestStatus;
+    requestedDocuments: AppDocumentType[];
+    status: DocumentRequestStatus;
     createdAt: Date;
     expiresAt: Date;
     updatedAt: Date;
