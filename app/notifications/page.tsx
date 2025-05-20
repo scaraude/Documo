@@ -39,7 +39,7 @@ export default function NotificationPage() {
     const handleAccept = async () => {
         if (notification) {
             try {
-                await saveNotificationResponse(notification.id, 'accepted')
+                await saveNotificationResponse(notification.id, 'ACCEPTED')
                 setShowNotification(false)
                 router.push(`${ROUTES.DOCUMENTS.UPLOAD}${notification.id}`)
             } catch (err) {
@@ -52,7 +52,7 @@ export default function NotificationPage() {
     const handleDeny = async () => {
         if (notification) {
             try {
-                await saveNotificationResponse(notification.id, 'rejected')
+                await saveNotificationResponse(notification.id, 'REJECTED')
                 setShowNotification(false)
                 window.close() // Close the notification tab
             } catch (err) {
