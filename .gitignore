@@ -42,3 +42,5 @@ lib/prisma/generated*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/postgres_data
