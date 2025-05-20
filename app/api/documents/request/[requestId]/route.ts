@@ -35,7 +35,8 @@ export async function GET(
     { params }: { params: { requestId: string } }
 ) {
     try {
-        const documents = await repository.getDocumentsByRequest(params.requestId);
+        const { requestId } = await params;
+        const documents = await repository.getDocumentsByRequest(requestId);
         return NextResponse.json(documents);
     } catch (error) {
         console.error(`Error fetching documents by request ${params.requestId}:`, error);
