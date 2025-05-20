@@ -21,12 +21,21 @@ export async function getDocuments(): Promise<AppDocument[]> {
  * Upload a new document
  */
 export async function uploadDocument(document: AppDocument): Promise<AppDocument> {
+    const formData = new FormData();
+
+    // If document has a url that's a blob, add it as file
+    if (document.url) {
+        const response = await fetch(document.url);
+        const blob = await response.blob();
+        formData.append('file', blob, 'encrypted-file');
+    }
+
+    // Add document metadata
+    formData.append('document', JSON.stringify(document));
+
     const response = await fetch(API_ROUTES.DOCUMENTS.UPLOAD, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(document),
+        body: formData, // FormData will set the correct Content-Type header automatically
     });
 
     if (!response.ok) {
