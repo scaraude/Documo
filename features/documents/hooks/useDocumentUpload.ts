@@ -1,3 +1,4 @@
+// features/documents/hooks/useDocumentUpload.ts
 import { useCallback, useState } from 'react';
 import { DocumentUploadProgress, UploadDocumentParams } from '../types';
 import { AppDocumentType, DocumentStatus } from '@/shared/constants/documents/types';
@@ -11,8 +12,13 @@ export function useDocumentUpload() {
     const [uploadProgress, setUploadProgress] = useState<DocumentUploadProgress | null>(null);
 
     const getDocumentToFetchFromRequestId = useCallback(async (requestId: string): Promise<AppDocumentType[]> => {
-        const documents = await getRequestById(requestId);
-        return documents?.requestedDocuments || [];
+        const documentRequest = await getRequestById(requestId);
+
+        if (!documentRequest) {
+            throw new Error('Request not found');
+        }
+
+        return documentRequest?.requestedDocuments || [];
     }, []);
 
     const extractMetadata = (file: File): AppDocumentMetadata => {
@@ -32,8 +38,9 @@ export function useDocumentUpload() {
     }: UploadDocumentParams): Promise<AppDocument> => {
         try {
             // Create document metadata
+            const documentId = uuidv4();
             const document: AppDocument = {
-                id: uuidv4(),
+                id: documentId,
                 requestId,
                 type,
                 status: DocumentStatus.UPLOADING,
@@ -49,17 +56,18 @@ export function useDocumentUpload() {
                 status: 'uploading'
             });
 
-            // Encrypt file
+            // Encrypt file client-side
             const encryptionKey = await generateEncryptionKey();
             const encryptedFile = await encryptFile(file, encryptionKey);
 
-            // Upload encrypted file to API
+
+            // Upload document metadata and file
             const uploadedDocument = await uploadDocumentToApi({
                 ...document,
                 url: URL.createObjectURL(encryptedFile)
             });
 
-            // Simulate upload progress (replace with actual upload logic)
+            // Simulate upload progress (in real app, use fetch with progress monitoring)
             for (let i = 0; i <= 100; i += 10) {
                 await new Promise(resolve => setTimeout(resolve, 200));
                 onProgress?.(i);
