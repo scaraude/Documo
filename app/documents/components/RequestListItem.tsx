@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import { DocumentRequest } from '@/shared/types';
 import { DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/shared/components';
 import { ChevronRight, FileText } from 'lucide-react';
 
 interface RequestListItemProps {

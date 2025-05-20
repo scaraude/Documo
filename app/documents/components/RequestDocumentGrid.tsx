@@ -10,10 +10,8 @@ import {
     CardContent,
     CardDescription,
     CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+    CardTitle, Skeleton, Alert, AlertDescription, AlertTitle
+} from '@/shared/components';
 import { AlertCircle, FileText } from 'lucide-react';
 
 interface RequestDocumentGridProps {

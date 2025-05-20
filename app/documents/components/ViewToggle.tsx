@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { LayoutGrid, List } from 'lucide-react';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import { ToggleGroup, ToggleGroupItem } from '@/shared/components';
 
 interface ViewToggleProps {
     currentView: 'grid' | 'list';

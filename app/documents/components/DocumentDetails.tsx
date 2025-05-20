@@ -1,14 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, Tabs, TabsContent, TabsList, TabsTrigger, Button, Card, ScrollArea } from '@/shared/components';
 import { Loader2, Download, FileImage, FileText, FileCog, Calendar } from 'lucide-react';
-import { DocumentRequest } from '@/shared/types';
-import { AppDocument } from '@/shared/types';
+import { DocumentRequest, AppDocument } from '@/shared/types';
 import { getDocumentsByRequest } from '@/features/documents/api/documentsApi';
 import { ALLOWED_FILE_TYPES } from '@/shared/constants/documents/types';
 import { formatDistanceToNow } from 'date-fns';

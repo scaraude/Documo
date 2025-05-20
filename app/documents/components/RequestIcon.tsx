@@ -3,7 +3,7 @@
 import { ReactNode } from 'react';
 import { DocumentRequest } from '@/shared/types';
 import { DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader } from '@/shared/components';
 import { Folder } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
