@@ -24,7 +24,7 @@ export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) =
     };
 
     return (
-        <div className="p-4 pb-0.5 mb-6 rounded-2xl bg-slate-200 md:shadow-lg">
+        <div className="p-8 pb-0.5 mb-6 rounded-2xl border border-gray-200 bg-white shadow-md">
             <h1 className="text-2xl font-bold mb-6">Créer un modèle de demande</h1>
 
             <form onSubmit={handleSubmit} className="space-y-6 mb-8">

@@ -4,6 +4,7 @@ import { DocumentRequestStatus, DOCUMENT_REQUEST_STATUS } from '@/shared/constan
 import { useRequest } from '../hooks/useRequest';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
 import { DocumentRequest } from '@/shared/types';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 
 export const RequestsList = () => {
     const { requests, isLoaded, deleteRequest, updateRequestStatus } = useRequest();
@@ -57,7 +58,9 @@ export const RequestsList = () => {
             case DOCUMENT_REQUEST_STATUS.ACCEPTED: return 'Accepté';
             case DOCUMENT_REQUEST_STATUS.REJECTED: return 'Refusé';
             case DOCUMENT_REQUEST_STATUS.COMPLETED: return 'Complété';
-            default: return status;
+            default:
+                const never: never = status;
+                return never;
         }
     }
 
@@ -162,7 +165,7 @@ export const RequestsList = () => {
                                     <td className="px-6 py-4">
                                         <ul className="list-disc list-inside">
                                             {request.requestedDocuments.map((doc, index) => (
-                                                <li key={index} className="text-sm text-gray-600">{doc}</li>
+                                                <li key={index} className="text-sm text-gray-600">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</li>
                                             ))}
                                         </ul>
                                     </td>
