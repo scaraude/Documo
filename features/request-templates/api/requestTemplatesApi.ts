@@ -1,43 +1,77 @@
-// features/request-templates/api/requestTemplatesApi.ts
-import { DocumentType } from '@/shared/constants';
+import { AppDocumentType } from '@/shared/constants';
 import { CreateRequestTemplateParams, RequestTemplate } from '../types';
-import * as repository from '../repository/requestTemplatesRepository';
 
-/**
- * Get all templates
- */
+// GET - Récupérer tous les templates
 export async function getTemplates(): Promise<RequestTemplate[]> {
-    return repository.getTemplates();
+    const response = await fetch('/api/templates');
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch templates');
+    }
+    return response.json();
 }
 
-/**
- * Create a new template
- */
+// POST - Créer un nouveau template
 export async function createTemplate(params: CreateRequestTemplateParams): Promise<RequestTemplate> {
-    return repository.createTemplate(params);
+    const response = await fetch('/api/templates', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create template');
+    }
+    return response.json();
 }
 
-/**
- * Delete a template
- */
+// DELETE - Supprimer un template
 export async function deleteTemplate(id: string): Promise<void> {
-    return repository.deleteTemplate(id);
+    const response = await fetch(`/api/templates/${id}`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete template');
+    }
 }
 
-/**
- * Update a template
- */
+// PUT - Mettre à jour un template
 export async function updateTemplate(
     id: string,
-    data: { title?: string; requestedDocuments?: DocumentType[] }
+    data: { title?: string; requestedDocuments?: AppDocumentType[] }
 ): Promise<RequestTemplate> {
-    return repository.updateTemplate(id, data);
+    const response = await fetch(`/api/templates/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update template');
+    }
+    return response.json();
 }
 
-/**
- * Get a template by ID
- */
+// GET - Récupérer un template par ID
 export async function getTemplateById(id: string): Promise<RequestTemplate | undefined> {
-    const template = await repository.getTemplateById(id);
-    return template || undefined;
-}   
+    const response = await fetch(`/api/templates/${id}`);
+
+    if (response.status === 404) {
+        return undefined;
+    }
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch template');
+    }
+
+    return response.json();
+}
