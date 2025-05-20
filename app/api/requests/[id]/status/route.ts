@@ -9,6 +9,7 @@ export async function PUT(
     { params }: { params: { id: string } }
 ) {
     try {
+        const { id } = params;
         const body = await request.json();
         const { status }: { status: NotificationResponse['response'] } = body;
 
@@ -18,7 +19,7 @@ export async function PUT(
                 { status: 400 }
             );
         }
-        const updatedRequest = await repository.updateRequestStatus(params.id, status);
+        const updatedRequest = await repository.updateRequestStatus(id, status);
         return NextResponse.json(updatedRequest);
     } catch (error) {
         console.error(`Error updating request status for ID ${params.id}:`, error);
