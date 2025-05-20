@@ -1,5 +1,6 @@
 import { ReactNode } from "react"
 import { RequestTemplate } from "../types";
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from "@/shared/mapper";
 
 interface RequestTemplatesListProps {
     templates: RequestTemplate[];
@@ -28,7 +29,7 @@ export const RequestTemplatesList = ({ templates, deleteTemplate }: RequestTempl
                         </div>
                         <ul className="list-disc list-inside text-sm text-gray-600">
                             {template.requestedDocuments.map((doc) => (
-                                <li key={doc}>{doc}</li>
+                                <li key={doc}>{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</li>
                             ))}
                         </ul>
                     </li>

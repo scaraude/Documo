@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react";
 import { APP_DOCUMENT_TYPES, AppDocumentType } from "@/shared/constants";
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from "@/shared/mapper";
 
 interface RequestTemplateFormProps {
     addTemplate: (title: string, requestedDocuments: AppDocumentType[]) => void;
@@ -62,7 +63,7 @@ export const RequestTemplateForm = ({ addTemplate }: RequestTemplateFormProps) =
                                     }}
                                     className="mr-2"
                                 />
-                                <span>{doc}</span>
+                                <span>{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</span>
                             </label>
                         ))}
                     </div>
