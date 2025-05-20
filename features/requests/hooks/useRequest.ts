@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import * as requestsApi from '../api/requestApi';
 import type { AppDocumentType, DocumentRequestStatus } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
@@ -49,7 +49,7 @@ export function useRequest() {
     };
 
     // Update request status
-    const updateRequestStatus = async (id: string, status: DocumentRequestStatus) => {
+    const updateRequestStatus = useCallback(async (id: string, status: DocumentRequestStatus) => {
         try {
             setIsLoading(true);
             const updatedRequest = await requestsApi.updateRequestStatus(id, status);
@@ -61,7 +61,7 @@ export function useRequest() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     // Delete request
     const deleteRequest = async (id: string) => {

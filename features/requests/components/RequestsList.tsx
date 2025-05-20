@@ -12,8 +12,12 @@ export const RequestsList = () => {
         const checkForResponses = async () => {
             const response = await checkNotificationResponse()
             if (response) {
-                console.log('Notification response received:', response)
-                updateRequestStatus(response.requestId, response.response === 'accepted' ? 'accepted' : 'rejected')
+                updateRequestStatus(
+                    response.requestId,
+                    response.response === 'accepted'
+                        ? DOCUMENT_REQUEST_STATUS.ACCEPTED
+                        : DOCUMENT_REQUEST_STATUS.REJECTED
+                )
             }
         }
 
@@ -21,7 +25,7 @@ export const RequestsList = () => {
         checkForResponses()
 
         // Also set up an interval to check periodically
-        const intervalId = setInterval(checkForResponses, 30000)
+        const intervalId = setInterval(checkForResponses, 10000)
 
         // Clean up the interval on unmount
         return () => clearInterval(intervalId)

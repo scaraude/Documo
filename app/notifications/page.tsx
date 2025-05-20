@@ -94,8 +94,6 @@ export default function NotificationPage() {
         )
     }
 
-    console.log('notification?.createdAt:', notification?.createdAt)
-
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-md w-full p-6 border-t-4 border-blue-500 animate-appear">
