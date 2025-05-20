@@ -96,6 +96,7 @@ export async function getDocumentsByRequest(requestId: string): Promise<AppDocum
     const response = await fetch(API_ROUTES.DOCUMENTS.GET_BY_REQUEST(requestId));
 
     if (!response.ok) {
+        console.log('Error fetching documents by request:', response.status, response.statusText);
         const error = await response.json();
         throw new Error(error.error || 'Failed to fetch documents by request');
     }

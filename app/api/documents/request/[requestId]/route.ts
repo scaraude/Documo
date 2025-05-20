@@ -29,3 +29,19 @@ export async function PUT(
         );
     }
 }
+
+export async function GET(
+    request: Request,
+    { params }: { params: { requestId: string } }
+) {
+    try {
+        const documents = await repository.getDocumentsByRequest(params.requestId);
+        return NextResponse.json(documents);
+    } catch (error) {
+        console.error(`Error fetching documents by request ${params.requestId}:`, error);
+        return NextResponse.json(
+            { error: 'Failed to fetch documents by request' },
+            { status: 500 }
+        );
+    }
+}
