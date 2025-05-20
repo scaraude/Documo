@@ -76,7 +76,7 @@ export async function getPendingNotification(): Promise<DocumentRequest | null> 
  */
 export async function saveNotificationResponse(
     requestId: string,
-    response: 'accepted' | 'rejected'
+    response: 'ACCEPTED' | 'REJECTED'
 ): Promise<void> {
     try {
         await prisma.notificationResponse.create({
@@ -84,7 +84,7 @@ export async function saveNotificationResponse(
                 request: {
                     connect: { id: requestId }
                 },
-                response: response === 'accepted' ? 'ACCEPTED' : 'REJECTED'
+                response,
             }
         });
     } catch (error) {

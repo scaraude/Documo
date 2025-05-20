@@ -151,7 +151,7 @@ describe('Notifications Repository', () => {
             mockPrisma.notificationResponse.create.mockResolvedValue(mockPrismaResponse);
 
             // WHEN
-            await saveNotificationResponse('req-1', 'accepted');
+            await saveNotificationResponse('req-1', 'ACCEPTED');
 
             // THEN
             expect(mockPrisma.notificationResponse.create).toHaveBeenCalledWith({
@@ -169,7 +169,7 @@ describe('Notifications Repository', () => {
             mockPrisma.notificationResponse.create.mockRejectedValue(new Error('DB error'));
 
             // WHEN/THEN
-            await expect(saveNotificationResponse('req-1', 'accepted')).rejects.toThrow('Failed to save response');
+            await expect(saveNotificationResponse('req-1', 'ACCEPTED')).rejects.toThrow('Failed to save response');
         });
     });
 
@@ -184,7 +184,7 @@ describe('Notifications Repository', () => {
             // THEN
             expect(result).not.toBeNull();
             expect(result?.requestId).toBe('req-1');
-            expect(result?.response).toBe('accepted');
+            expect(result?.response).toBe('ACCEPTED');
         });
 
         it('devrait retourner null si aucune réponse trouvée', async () => {

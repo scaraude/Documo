@@ -6,7 +6,7 @@ import { useRequestTemplates } from '@/features/request-templates';
 import { sendNotification } from '@/features/notifications/api/notificationsApi';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
-import { DocumentType } from '@/shared/constants';
+import { AppDocumentType } from '@/shared/constants';
 
 // Mock the hooks and component dependencies
 jest.mock('../../hooks/useRequest');
@@ -50,13 +50,13 @@ describe('FormCreateRequest Component', () => {
     {
       id: 'template1',
       title: 'Template 1',
-      requestedDocuments: ['IDENTITY_CARD' as DocumentType],
+      requestedDocuments: ['IDENTITY_CARD' as AppDocumentType],
       createdAt: '2023-01-01'
     },
     {
       id: 'template2',
       title: 'Template 2',
-      requestedDocuments: ['PASSPORT' as DocumentType, 'UTILITY_BILL' as DocumentType],
+      requestedDocuments: ['PASSPORT' as AppDocumentType, 'UTILITY_BILL' as AppDocumentType],
       createdAt: '2023-01-02'
     }
   ];
@@ -64,7 +64,7 @@ describe('FormCreateRequest Component', () => {
   const mockNewRequest = {
     id: 'request1',
     civilId: '123456',
-    requestedDocuments: ['IDENTITY_CARD' as DocumentType],
+    requestedDocuments: ['IDENTITY_CARD' as AppDocumentType],
     status: 'pending',
     createdAt: new Date(),
     expiresAt: new Date(),
@@ -142,7 +142,7 @@ describe('FormCreateRequest Component', () => {
     expect(sendNotification).toHaveBeenCalledWith(mockNewRequest);
 
     // Verify simulation window was opened
-    expect(window.open).toHaveBeenCalledWith('/notification', '_blank');
+    expect(window.open).toHaveBeenCalledWith('/notifications', '_blank');
 
     // Verify redirect to home
     expect(mockRouter.push).toHaveBeenCalledWith(ROUTES.HOME);
