@@ -1,12 +1,13 @@
 // features/notifications/api/notificationsApi.ts
 import { DocumentRequest } from '@/shared/types';
 import { NotificationResponse } from '../types';
+import { API_ROUTES } from '../../../shared/constants';
 
 /**
  * Send a notification
  */
 export async function sendNotification(request: DocumentRequest): Promise<void> {
-    const response = await fetch('/api/notifications', {
+    const response = await fetch(API_ROUTES.NOTIFICATIONS.SEND, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -24,7 +25,7 @@ export async function sendNotification(request: DocumentRequest): Promise<void> 
  * Get pending notification
  */
 export async function getPendingNotification(): Promise<DocumentRequest | null> {
-    const response = await fetch('/api/notifications/pending');
+    const response = await fetch(API_ROUTES.NOTIFICATIONS.GET_PENDING);
 
     if (!response.ok) {
         const error = await response.json();
@@ -41,7 +42,7 @@ export async function saveNotificationResponse(
     requestId: string,
     responseType: NotificationResponse['response']
 ): Promise<void> {
-    const response = await fetch('/api/notifications/response', {
+    const response = await fetch(API_ROUTES.NOTIFICATIONS.SAVE_RESPONSE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -59,7 +60,7 @@ export async function saveNotificationResponse(
  * Check for notification response
  */
 export async function checkNotificationResponse(): Promise<NotificationResponse | null> {
-    const response = await fetch('/api/notifications/response');
+    const response = await fetch(API_ROUTES.NOTIFICATIONS.CHECK_RESPONSE);
 
     if (!response.ok) {
         const error = await response.json();

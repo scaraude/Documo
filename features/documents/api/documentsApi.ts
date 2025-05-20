@@ -1,12 +1,13 @@
 // features/documents/api/documentsApi.ts
 import { AppDocument } from '@/shared/types';
 import { DocumentStatus } from '@/shared/constants/documents/types';
+import { API_ROUTES } from '../../../shared/constants';
 
 /**
  * Get all documents
  */
 export async function getDocuments(): Promise<AppDocument[]> {
-    const response = await fetch('/api/documents');
+    const response = await fetch(API_ROUTES.DOCUMENTS.GET_ALL);
 
     if (!response.ok) {
         const error = await response.json();
@@ -20,7 +21,7 @@ export async function getDocuments(): Promise<AppDocument[]> {
  * Upload a new document
  */
 export async function uploadDocument(document: AppDocument): Promise<AppDocument> {
-    const response = await fetch('/api/documents', {
+    const response = await fetch(API_ROUTES.DOCUMENTS.UPLOAD, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -40,7 +41,7 @@ export async function uploadDocument(document: AppDocument): Promise<AppDocument
  * Update document status
  */
 export async function updateDocumentStatus(id: string, status: DocumentStatus): Promise<AppDocument> {
-    const response = await fetch(`/api/documents/${id}/status`, {
+    const response = await fetch(API_ROUTES.DOCUMENTS.UPDATE_STATUS(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -60,7 +61,7 @@ export async function updateDocumentStatus(id: string, status: DocumentStatus): 
  * Delete a document
  */
 export async function deleteDocument(id: string): Promise<void> {
-    const response = await fetch(`/api/documents/${id}`, {
+    const response = await fetch(API_ROUTES.DOCUMENTS.DELETE(id), {
         method: 'DELETE',
     });
 
@@ -74,7 +75,7 @@ export async function deleteDocument(id: string): Promise<void> {
  * Get a document by ID
  */
 export async function getDocument(documentId: string): Promise<AppDocument | null> {
-    const response = await fetch(`/api/documents/${documentId}`);
+    const response = await fetch(API_ROUTES.DOCUMENTS.GET_BY_ID(documentId));
 
     if (response.status === 404) {
         return null;
@@ -92,7 +93,7 @@ export async function getDocument(documentId: string): Promise<AppDocument | nul
  * Get documents by request
  */
 export async function getDocumentsByRequest(requestId: string): Promise<AppDocument[]> {
-    const response = await fetch(`/api/documents/request/${requestId}`);
+    const response = await fetch(API_ROUTES.DOCUMENTS.GET_BY_REQUEST(requestId));
 
     if (!response.ok) {
         const error = await response.json();

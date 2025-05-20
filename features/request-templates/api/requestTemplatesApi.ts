@@ -1,9 +1,9 @@
-import { AppDocumentType } from '@/shared/constants';
+import { API_ROUTES, AppDocumentType } from '@/shared/constants';
 import { CreateRequestTemplateParams, RequestTemplate } from '../types';
 
 // GET - Récupérer tous les templates
 export async function getTemplates(): Promise<RequestTemplate[]> {
-    const response = await fetch('/api/templates');
+    const response = await fetch(API_ROUTES.TEMPLATES.GET_ALL);
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Failed to fetch templates');
@@ -13,7 +13,7 @@ export async function getTemplates(): Promise<RequestTemplate[]> {
 
 // POST - Créer un nouveau template
 export async function createTemplate(params: CreateRequestTemplateParams): Promise<RequestTemplate> {
-    const response = await fetch('/api/templates', {
+    const response = await fetch(API_ROUTES.TEMPLATES.CREATE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ export async function createTemplate(params: CreateRequestTemplateParams): Promi
 
 // DELETE - Supprimer un template
 export async function deleteTemplate(id: string): Promise<void> {
-    const response = await fetch(`/api/templates/${id}`, {
+    const response = await fetch(API_ROUTES.TEMPLATES.DELETE(id), {
         method: 'DELETE',
     });
 
@@ -45,7 +45,7 @@ export async function updateTemplate(
     id: string,
     data: { title?: string; requestedDocuments?: AppDocumentType[] }
 ): Promise<RequestTemplate> {
-    const response = await fetch(`/api/templates/${id}`, {
+    const response = await fetch(API_ROUTES.TEMPLATES.UPDATE(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ export async function updateTemplate(
 
 // GET - Récupérer un template par ID
 export async function getTemplateById(id: string): Promise<RequestTemplate | undefined> {
-    const response = await fetch(`/api/templates/${id}`);
+    const response = await fetch(API_ROUTES.TEMPLATES.GET_BY_ID(id));
 
     if (response.status === 404) {
         return undefined;

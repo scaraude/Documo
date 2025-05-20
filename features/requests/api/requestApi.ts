@@ -1,13 +1,13 @@
 // features/requests/api/requestApi.ts
 import { CreateRequestParams } from '../types';
 import { DocumentRequest } from '@/shared/types';
-import { DocumentRequestStatus } from '@/shared/constants';
+import { API_ROUTES, DocumentRequestStatus } from '@/shared/constants';
 
 /**
  * Get all document requests
  */
 export async function getRequests(): Promise<DocumentRequest[]> {
-    const response = await fetch('/api/requests');
+    const response = await fetch(API_ROUTES.REQUESTS.GET_ALL);
 
     if (!response.ok) {
         const error = await response.json();
@@ -21,7 +21,7 @@ export async function getRequests(): Promise<DocumentRequest[]> {
  * Create a new document request
  */
 export async function createRequest(params: CreateRequestParams): Promise<DocumentRequest> {
-    const response = await fetch('/api/requests', {
+    const response = await fetch(API_ROUTES.REQUESTS.CREATE, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -44,7 +44,7 @@ export async function updateRequestStatus(
     id: string,
     status: DocumentRequestStatus
 ): Promise<DocumentRequest> {
-    const response = await fetch(`/api/requests/${id}/status`, {
+    const response = await fetch(API_ROUTES.REQUESTS.UPDATE_STATUS(id), {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ export async function updateRequestStatus(
  * Delete a request
  */
 export async function deleteRequest(id: string): Promise<void> {
-    const response = await fetch(`/api/requests/${id}`, {
+    const response = await fetch(API_ROUTES.REQUESTS.DELETE(id), {
         method: 'DELETE',
     });
 
@@ -78,7 +78,7 @@ export async function deleteRequest(id: string): Promise<void> {
  * Get a single request by ID
  */
 export async function getRequestById(id: string): Promise<DocumentRequest | undefined> {
-    const response = await fetch(`/api/requests/${id}`);
+    const response = await fetch(API_ROUTES.REQUESTS.GET_BY_ID(id));
 
     if (response.status === 404) {
         return undefined;
