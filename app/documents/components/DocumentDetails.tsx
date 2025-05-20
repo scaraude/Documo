@@ -71,7 +71,7 @@ export function DocumentDetails({ request, isOpen, onClose }: DocumentDetailsPro
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="sm:max-w-[600px] p-0 gap-0">
+            <DialogContent className="sm:max-w-[600px] p-0 gap-0" aria-describedby={undefined}>
                 <DialogHeader className="px-6 pt-6 pb-2">
                     <DialogTitle className="text-xl flex items-center gap-2">
                         Demande - <span className="font-mono bg-secondary px-2 py-1 rounded text-secondary-foreground">{request.civilId}</span>
