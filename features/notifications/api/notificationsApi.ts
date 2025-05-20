@@ -1,4 +1,4 @@
-import * as repository from '../repository/notificationsRepository';
+// features/notifications/api/notificationsApi.ts
 import { DocumentRequest } from '@/shared/types';
 import { NotificationResponse } from '../types';
 
@@ -6,14 +6,32 @@ import { NotificationResponse } from '../types';
  * Send a notification
  */
 export async function sendNotification(request: DocumentRequest): Promise<void> {
-    return repository.sendNotification(request);
+    const response = await fetch('/api/notifications', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to send notification');
+    }
 }
 
 /**
  * Get pending notification
  */
 export async function getPendingNotification(): Promise<DocumentRequest | null> {
-    return repository.getPendingNotification();
+    const response = await fetch('/api/notifications/pending');
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to fetch pending notification');
+    }
+
+    return response.json();
 }
 
 /**
@@ -21,14 +39,46 @@ export async function getPendingNotification(): Promise<DocumentRequest | null> 
  */
 export async function saveNotificationResponse(
     requestId: string,
-    response: 'accepted' | 'rejected'
+    responseType: 'accepted' | 'rejected'
 ): Promise<void> {
-    return repository.saveNotificationResponse(requestId, response);
+    const response = await fetch('/api/notifications/response', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ requestId, response: responseType }),
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to save notification response');
+    }
 }
 
 /**
  * Check for notification response
  */
 export async function checkNotificationResponse(): Promise<NotificationResponse | null> {
-    return repository.checkNotificationResponse();
+    const response = await fetch('/api/notifications/response');
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to check notification response');
+    }
+
+    return response.json();
+}
+
+/**
+ * Clear pending notification
+ */
+export async function clearPendingNotification(): Promise<void> {
+    const response = await fetch('/api/notifications/pending', {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to clear pending notification');
+    }
 }
