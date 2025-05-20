@@ -29,7 +29,7 @@ export const API_ROUTES = {
         GET_PENDING: '/api/notifications/pending',
         CLEAR_PENDING: '/api/notifications/pending/clear',
         SAVE_RESPONSE: '/api/notifications/response',
-        CHECK_RESPONSE: '/api/notifications/response/check'
+        CHECK_RESPONSE: '/api/notifications/response'
     }
 } as const;
 

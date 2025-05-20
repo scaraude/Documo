@@ -12,11 +12,10 @@ export const RequestsList = () => {
         const checkForResponses = async () => {
             const response = await checkNotificationResponse()
             if (response) {
+                console.log('Notification response received:', response.response)
                 updateRequestStatus(
                     response.requestId,
-                    response.response === 'accepted'
-                        ? DOCUMENT_REQUEST_STATUS.ACCEPTED
-                        : DOCUMENT_REQUEST_STATUS.REJECTED
+                    response.response
                 )
             }
         }

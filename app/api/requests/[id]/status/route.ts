@@ -18,8 +18,7 @@ export async function PUT(
                 { status: 400 }
             );
         }
-        const validStatus = status === 'accepted' ? 'ACCEPTED' : 'REJECTED';
-        const updatedRequest = await repository.updateRequestStatus(params.id, validStatus);
+        const updatedRequest = await repository.updateRequestStatus(params.id, status);
         return NextResponse.json(updatedRequest);
     } catch (error) {
         console.error(`Error updating request status for ID ${params.id}:`, error);

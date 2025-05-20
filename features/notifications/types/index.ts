@@ -1,5 +1,5 @@
 export interface NotificationResponse {
     requestId: string;
-    response: 'accepted' | 'rejected';
+    response: 'ACCEPTED' | 'REJECTED';
     timestamp: string;
 }

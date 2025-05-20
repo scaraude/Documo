@@ -117,7 +117,7 @@ export async function checkNotificationResponse(): Promise<NotificationResponse 
         // Convertir en format d'application
         const response: NotificationResponse = {
             requestId: latestResponse.requestId,
-            response: latestResponse.response === 'ACCEPTED' ? 'accepted' : 'rejected',
+            response: latestResponse.response === 'ACCEPTED' ? 'ACCEPTED' : 'REJECTED',
             timestamp: latestResponse.timestamp.toISOString()
         };
 

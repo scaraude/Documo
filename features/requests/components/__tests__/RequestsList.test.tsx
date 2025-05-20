@@ -132,7 +132,7 @@ describe('RequestsList Component', () => {
   test('checks for notification responses on mount', async () => {
     const notificationResponse = {
       requestId: '1',
-      response: 'accepted',
+      response: 'ACCEPTED',
       timestamp: new Date().toISOString()
     };
 
@@ -144,13 +144,13 @@ describe('RequestsList Component', () => {
       expect(checkNotificationResponse).toHaveBeenCalled();
     });
 
-    expect(mockUpdateRequestStatus).toHaveBeenCalledWith('1', 'accepted');
+    expect(mockUpdateRequestStatus).toHaveBeenCalledWith('1', 'ACCEPTED');
   });
 
   test('handles rejected notification response', async () => {
     const notificationResponse = {
       requestId: '1',
-      response: 'rejected',
+      response: 'REJECTED',
       timestamp: new Date().toISOString()
     };
 
@@ -162,7 +162,7 @@ describe('RequestsList Component', () => {
       expect(checkNotificationResponse).toHaveBeenCalled();
     });
 
-    expect(mockUpdateRequestStatus).toHaveBeenCalledWith('1', 'rejected');
+    expect(mockUpdateRequestStatus).toHaveBeenCalledWith('1', 'REJECTED');
   });
 
   test('applies correct status badge classes', () => {
