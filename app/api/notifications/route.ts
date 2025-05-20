@@ -17,17 +17,3 @@ export async function POST(request: Request) {
         );
     }
 }
-
-// GET /api/notifications/pending - Récupérer les notifications en attente
-export async function GET() {
-    try {
-        const notification = await notificationsRepo.getPendingNotification();
-        return NextResponse.json(notification);
-    } catch (error) {
-        console.error('Error getting pending notification:', error);
-        return NextResponse.json(
-            { error: 'Failed to get notification' },
-            { status: 500 }
-        );
-    }
-}

@@ -1,6 +1,7 @@
 // app/api/requests/[id]/status/route.ts
 import { NextResponse } from 'next/server';
 import * as repository from '@/features/requests/repository/requestRepository';
+import { NotificationResponse } from '@/features/notifications/types';
 
 // PUT /api/requests/[id]/status - Mettre à jour le statut d'une demande
 export async function PUT(
@@ -9,7 +10,7 @@ export async function PUT(
 ) {
     try {
         const body = await request.json();
-        const { status } = body;
+        const { status }: { status: NotificationResponse['response'] } = body;
 
         if (!status) {
             return NextResponse.json(
@@ -17,8 +18,8 @@ export async function PUT(
                 { status: 400 }
             );
         }
-
-        const updatedRequest = await repository.updateRequestStatus(params.id, status);
+        const validStatus = status === 'accepted' ? 'ACCEPTED' : 'REJECTED';
+        const updatedRequest = await repository.updateRequestStatus(params.id, validStatus);
         return NextResponse.json(updatedRequest);
     } catch (error) {
         console.error(`Error updating request status for ID ${params.id}:`, error);

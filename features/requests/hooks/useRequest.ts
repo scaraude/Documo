@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import * as requestsApi from '../api/requestApi';
-import type { DocumentType, RequestStatus } from '@/shared/constants';
+import type { AppDocumentType, DocumentRequestStatus } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
 
 export function useRequest() {
@@ -29,7 +29,7 @@ export function useRequest() {
     }, []);
 
     // Create request wrapper
-    const createRequest = async (civilId: string, requestedDocuments: DocumentType[], expirationDays?: number) => {
+    const createRequest = async (civilId: string, requestedDocuments: AppDocumentType[], expirationDays?: number) => {
         try {
             setIsLoading(true);
             const newRequest = await requestsApi.createRequest({
@@ -49,7 +49,7 @@ export function useRequest() {
     };
 
     // Update request status
-    const updateRequestStatus = async (id: string, status: RequestStatus) => {
+    const updateRequestStatus = async (id: string, status: DocumentRequestStatus) => {
         try {
             setIsLoading(true);
             const updatedRequest = await requestsApi.updateRequestStatus(id, status);

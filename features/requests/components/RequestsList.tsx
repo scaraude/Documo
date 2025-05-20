@@ -21,7 +21,7 @@ export const RequestsList = () => {
         checkForResponses()
 
         // Also set up an interval to check periodically
-        const intervalId = setInterval(checkForResponses, 2000)
+        const intervalId = setInterval(checkForResponses, 30000)
 
         // Clean up the interval on unmount
         return () => clearInterval(intervalId)

@@ -12,7 +12,7 @@ export default function NotificationPage() {
     const [showNotification, setShowNotification] = useState(false)
     const [error, setError] = useState<Error | null>(null)
     const [isLoading, setIsLoading] = useState(true)
-    const { getPendingNotification, clearPendingNotification, saveNotificationResponse } = useNotifications();
+    const { getPendingNotification, saveNotificationResponse } = useNotifications();
 
     useEffect(() => {
         async function loadNotification() {
@@ -24,8 +24,6 @@ export default function NotificationPage() {
                     setNotification(pendingNotification)
                     setShowNotification(true)
 
-                    // Clear the notification from localStorage to prevent showing it multiple times
-                    await clearPendingNotification()
                 }
             } catch (err) {
                 setError(err instanceof Error ? err : new Error('Failed to load notification'))
@@ -36,7 +34,7 @@ export default function NotificationPage() {
         }
 
         loadNotification()
-    }, [clearPendingNotification, getPendingNotification])
+    }, [getPendingNotification])
 
     const handleAccept = async () => {
         if (notification) {
@@ -96,6 +94,8 @@ export default function NotificationPage() {
         )
     }
 
+    console.log('notification?.createdAt:', notification?.createdAt)
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden max-w-md w-full p-6 border-t-4 border-blue-500 animate-appear">
@@ -125,7 +125,7 @@ export default function NotificationPage() {
                 <div className="mb-6">
                     <div className="text-sm text-gray-500 mb-1">Date de la demande</div>
                     <div className="font-medium">
-                        {notification?.createdAt.toLocaleDateString('fr-FR', {
+                        {notification && new Date(notification.createdAt).toLocaleDateString('fr-FR', {
                             day: 'numeric',
                             month: 'long',
                             year: 'numeric',

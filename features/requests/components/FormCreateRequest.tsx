@@ -30,7 +30,7 @@ export const FormCreateRequest = () => {
 
         if (showSimulation) {
             sendNotification(newRequest)
-            window.open('/notification', '_blank');
+            window.open(ROUTES.NOTIFICATIONS.HOME, '_blank');
         }
 
         router.push(ROUTES.HOME)

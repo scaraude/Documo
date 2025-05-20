@@ -9,6 +9,9 @@ export const ROUTES = {
         HOME: '/documents',
         UPLOAD: '/documents/upload/',
     },
+    NOTIFICATIONS: {
+        HOME: '/notifications',
+    },
 
 } as const;
 

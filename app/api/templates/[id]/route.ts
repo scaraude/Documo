@@ -41,20 +41,3 @@ export async function PUT(
         );
     }
 }
-
-// DELETE /api/templates/[id] - Supprimer un template
-export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string } }
-) {
-    try {
-        await repository.deleteTemplate(params.id);
-        return NextResponse.json({}, { status: 204 });
-    } catch (error) {
-        console.error(`Error deleting template with ID ${params.id}:`, error);
-        return NextResponse.json(
-            { error: 'Failed to delete template' },
-            { status: 500 }
-        );
-    }
-}

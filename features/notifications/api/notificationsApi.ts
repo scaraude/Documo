@@ -39,7 +39,7 @@ export async function getPendingNotification(): Promise<DocumentRequest | null> 
  */
 export async function saveNotificationResponse(
     requestId: string,
-    responseType: 'accepted' | 'rejected'
+    responseType: NotificationResponse['response']
 ): Promise<void> {
     const response = await fetch('/api/notifications/response', {
         method: 'POST',
@@ -67,18 +67,4 @@ export async function checkNotificationResponse(): Promise<NotificationResponse 
     }
 
     return response.json();
-}
-
-/**
- * Clear pending notification
- */
-export async function clearPendingNotification(): Promise<void> {
-    const response = await fetch('/api/notifications/pending', {
-        method: 'DELETE',
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to clear pending notification');
-    }
 }

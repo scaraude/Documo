@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import * as templatesApi from '../api/requestTemplatesApi';
-import { DocumentType } from '@/shared/constants';
+import { AppDocumentType } from '@/shared/constants';
 import { RequestTemplate } from '../types';
 
 export function useRequestTemplates() {
@@ -29,7 +29,7 @@ export function useRequestTemplates() {
     }, []);
 
     // Add template wrapper
-    const addTemplate = async (title: string, requestedDocuments: DocumentType[]) => {
+    const addTemplate = async (title: string, requestedDocuments: AppDocumentType[]) => {
         try {
             setIsLoading(true);
             const newTemplate = await templatesApi.createTemplate({
@@ -65,7 +65,7 @@ export function useRequestTemplates() {
     const updateTemplate = async (
         id: string,
         title: string,
-        requestedDocuments: DocumentType[]
+        requestedDocuments: AppDocumentType[]
     ) => {
         try {
             setIsLoading(true);

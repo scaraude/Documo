@@ -39,26 +39,11 @@ export function useNotifications() {
     }, []);
 
     /**
-     * Clear pending notification
-     */
-    const clearPendingNotification = useCallback(async () => {
-        try {
-            setIsLoading(true);
-            await notificationsApi.clearPendingNotification();
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to clear notification'));
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    /**
      * Save notification response
      */
     const saveNotificationResponse = useCallback(async (
         requestId: string,
-        response: 'accepted' | 'rejected'
+        response: NotificationResponse['response']
     ) => {
         try {
             setIsLoading(true);
@@ -115,7 +100,6 @@ export function useNotifications() {
         error,
         sendNotification,
         getPendingNotification,
-        clearPendingNotification,
         saveNotificationResponse,
         checkNotificationResponse,
         setupNotificationListener
@@ -124,7 +108,6 @@ export function useNotifications() {
             error,
             sendNotification,
             getPendingNotification,
-            clearPendingNotification,
             saveNotificationResponse,
             checkNotificationResponse,
             setupNotificationListener]);
