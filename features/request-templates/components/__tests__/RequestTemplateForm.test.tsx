@@ -3,6 +3,7 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { RequestTemplateForm } from '../RequestTemplateForm';
 import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import '@testing-library/jest-dom';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../../shared/mapper';
 
 describe('RequestTemplateForm Component', () => {
     const mockAddTemplate = jest.fn();
@@ -20,7 +21,7 @@ describe('RequestTemplateForm Component', () => {
 
         // Check if all document types are rendered
         Object.values(APP_DOCUMENT_TYPES).forEach(docType => {
-            expect(screen.getByLabelText(docType)).toBeInTheDocument();
+            expect(screen.getByLabelText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[docType])).toBeInTheDocument();
         });
     });
 
@@ -32,8 +33,8 @@ describe('RequestTemplateForm Component', () => {
         fireEvent.change(titleInput, { target: { value: 'Test Template' } });
 
         // Select some documents
-        const identityCardCheckbox = screen.getByLabelText(APP_DOCUMENT_TYPES.IDENTITY_CARD);
-        const passportCheckbox = screen.getByLabelText(APP_DOCUMENT_TYPES.PASSPORT);
+        const identityCardCheckbox = screen.getByLabelText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.IDENTITY_CARD]);
+        const passportCheckbox = screen.getByLabelText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.PASSPORT]);
 
         fireEvent.click(identityCardCheckbox);
         fireEvent.click(passportCheckbox);
@@ -55,7 +56,7 @@ describe('RequestTemplateForm Component', () => {
         const titleInput = screen.getByPlaceholderText('Ex: Dossier locatif');
         fireEvent.change(titleInput, { target: { value: 'Test Template' } });
 
-        const checkbox = screen.getByLabelText(APP_DOCUMENT_TYPES.IDENTITY_CARD);
+        const checkbox = screen.getByLabelText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.IDENTITY_CARD]);
         fireEvent.click(checkbox);
 
         // Submit form
@@ -79,7 +80,7 @@ describe('RequestTemplateForm Component', () => {
     test('handles document selection and deselection', () => {
         render(<RequestTemplateForm addTemplate={mockAddTemplate} />);
 
-        const checkbox = screen.getByLabelText(APP_DOCUMENT_TYPES.IDENTITY_CARD);
+        const checkbox = screen.getByLabelText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.IDENTITY_CARD]);
 
         // Select document
         fireEvent.click(checkbox);

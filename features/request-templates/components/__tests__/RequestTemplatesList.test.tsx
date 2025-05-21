@@ -4,6 +4,7 @@ import { RequestTemplatesList } from '../RequestTemplatesList';
 import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { RequestTemplate } from '../../types';
 import '@testing-library/jest-dom';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 
 describe('RequestTemplatesList Component', () => {
     const mockTemplates: RequestTemplate[] = [
@@ -39,8 +40,8 @@ describe('RequestTemplatesList Component', () => {
 
         expect(screen.getByText('Identity Documents')).toBeInTheDocument();
         expect(screen.getByText('Financial Documents')).toBeInTheDocument();
-        expect(screen.getAllByText(APP_DOCUMENT_TYPES.IDENTITY_CARD)).toHaveLength(2);
-        expect(screen.getByText(APP_DOCUMENT_TYPES.BANK_STATEMENT)).toBeInTheDocument();
+        expect(screen.getAllByText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.IDENTITY_CARD])).toHaveLength(2);
+        expect(screen.getByText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.BANK_STATEMENT])).toBeInTheDocument();
         // expect(screen.getByText(APP_DOCUMENT_TYPES.PASSPORT)).toBeInTheDocument();
     });
 

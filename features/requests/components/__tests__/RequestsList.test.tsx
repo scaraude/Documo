@@ -6,6 +6,7 @@ import { useRequest } from '../../hooks/useRequest';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
 import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 
 // Mock dependencies
 jest.mock('../../hooks/useRequest');
@@ -98,9 +99,9 @@ describe('RequestsList Component', () => {
     expect(screen.getAllByText('Accepté')).toHaveLength(2);
 
     // Check if document types are rendered
-    expect(screen.getAllByText(APP_DOCUMENT_TYPES.IDENTITY_CARD)).toHaveLength(2);
-    expect(screen.getAllByText(APP_DOCUMENT_TYPES.PASSPORT)).toHaveLength(2);
-    expect(screen.getAllByText(APP_DOCUMENT_TYPES.UTILITY_BILL)).toHaveLength(2);
+    expect(screen.getAllByText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.IDENTITY_CARD])).toHaveLength(1);
+    expect(screen.getAllByText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.PASSPORT])).toHaveLength(1);
+    expect(screen.getAllByText(APP_DOCUMENT_TYPE_TO_LABEL_MAP[APP_DOCUMENT_TYPES.UTILITY_BILL])).toHaveLength(1);
   });
 
   test('handles delete request', () => {
