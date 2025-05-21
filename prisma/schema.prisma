@@ -14,6 +14,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Folder {
+  id                 String            @id @default(uuid())
+  name               String
+  description        String?
+  status             FolderStatus
+  requestedDocuments DocumentType[]
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+  expiresAt          DateTime?
+  createdById        String?
+  sharedWith         String[]
+  requests           DocumentRequest[]
+  documents          Document[] // Direct access to all documents in the folder
+
+  @@map("folders")
+}
+
+enum FolderStatus {
+  ACTIVE
+  ARCHIVED
+  COMPLETED
+  PENDING
+}
+
 model DocumentRequest {
   id                    String                 @id @default(uuid())
   civilId               String
@@ -24,6 +48,8 @@ model DocumentRequest {
   updatedAt             DateTime               @updatedAt
   documents             Document[]
   notificationResponses NotificationResponse[]
+  Folder                Folder?                @relation(fields: [folderId], references: [id])
+  folderId              String?
 
   @@map("document_requests")
 }
@@ -40,6 +66,8 @@ model Document {
   createdAt        DateTime        @default(now())
   updatedAt        DateTime        @updatedAt
   validationErrors String[]
+  Folder           Folder?         @relation(fields: [folderId], references: [id])
+  folderId         String?
 
   @@map("documents")
 }
