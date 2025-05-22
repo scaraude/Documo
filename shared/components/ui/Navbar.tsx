@@ -1,3 +1,4 @@
+// shared/components/ui/Navbar.tsx (update)
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -5,7 +6,7 @@ import { ROUTES } from '@/shared/constants'
 
 const navLinks = [
     { href: ROUTES.HOME, label: 'Demandes' },
-    { href: ROUTES.REQUESTS.HOME, label: 'Modèles' },
+    { href: ROUTES.FOLDERS.HOME, label: 'Dossiers' }, // Add Folders link
     { href: ROUTES.DOCUMENTS.HOME, label: 'Documents' }
 ]
 

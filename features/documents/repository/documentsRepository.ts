@@ -9,7 +9,7 @@ type PrismaDocument = Prisma.DocumentGetPayload<null>;
 /**
  * Convertir un document Prisma en document d'application
  */
-function toAppModel(prismaModel: PrismaDocument): AppDocument {
+export function toAppModel(prismaModel: PrismaDocument): AppDocument {
     const metadata = metadataSchema.parse(prismaModel.metadata);
 
     return {

@@ -9,3 +9,7 @@ export { APP_DOCUMENT_TYPES } from './documents/types'
 
 export type { DocumentRequestStatus } from './requests/types'
 export { DOCUMENT_REQUEST_STATUS } from './requests/types'
+
+// shared/constants/index.ts (add to existing exports)
+export type { FolderStatus } from './folders/types'
+export { FOLDER_STATUS } from './folders/types'

@@ -1,30 +1,38 @@
+// features/requests/components/FormCreateRequest.tsx
+// Update the existing file to include folder selection
 'use client'
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import Link from "next/link"
 import { ROUTES } from "@/shared/constants"
 import { useRequest } from "../hooks/useRequest"
-import { useRequestTemplates } from "@/features/request-templates"
+import { useFolder } from "@/features/folders/hooks/useFolder"
 import { ButtonCreateModel, IDInput } from "@/shared/components/"
 import { SelectTemplate } from "./SelectTemplate"
 import { sendNotification } from "../../notifications/api/notificationsApi"
+import { FolderSelector } from "@/features/folders/components/FolderSelector"
 
 export const FormCreateRequest = () => {
     const [id, setId] = useState('')
-    const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null)
+    const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
     const [showSimulation, setShowSimulation] = useState(true)
     const router = useRouter()
-    const { templates, hasTemplates } = useRequestTemplates()
+    const { folders, isLoaded: foldersLoaded } = useFolder()
     const { createRequest } = useRequest()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!selectedTemplateId) return
+        if (!selectedFolderId) return
 
-        const selectedTemplate = templates.find(t => t.id === selectedTemplateId)
-        if (!selectedTemplate) return
+        const selectedFolder = folders.find(f => f.id === selectedFolderId)
+        if (!selectedFolder) return
 
-        const newRequest = await createRequest(id, selectedTemplate.requestedDocuments)
+        const newRequest = await createRequest(
+            id,
+            selectedFolder.requestedDocuments,
+            undefined,
+            selectedFolderId
+        )
 
         console.log('New request created:', newRequest)
 
@@ -44,27 +52,34 @@ export const FormCreateRequest = () => {
                 </h2>
             </div>
             <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-                {/* Template Selection */}
+                {/* Folder Selection */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Sélectionnez un modèle
+                        Sélectionnez un dossier
                     </label>
                     <div className="space-y-2">
-                        {!hasTemplates ?
-                            <ButtonCreateModel /> :
-                            <SelectTemplate
-                                templates={templates}
-                                selectedTemplateId={selectedTemplateId}
-                                setSelectedTemplateId={setSelectedTemplateId}
+                        {!foldersLoaded ? (
+                            <p className="text-sm text-gray-500">Chargement des dossiers...</p>
+                        ) : folders.length === 0 ? (
+                            <Link href={ROUTES.FOLDERS.NEW}>
+                                <button className="w-full py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                                    Créer un dossier
+                                </button>
+                            </Link>
+                        ) : (
+                            <FolderSelector
+                                folders={folders}
+                                selectedFolderId={selectedFolderId}
+                                setSelectedFolderId={setSelectedFolderId}
                             />
-                        }
+                        )}
                     </div>
                 </div>
 
-                {selectedTemplateId &&
+                {selectedFolderId &&
                     <IDInput id={id} setId={setId} />}
 
-                {selectedTemplateId && (
+                {selectedFolderId && (
                     <div className="flex items-center">
                         <input
                             id="simulate"
@@ -91,9 +106,9 @@ export const FormCreateRequest = () => {
                     </Link>
                     <button
                         type="submit"
-                        disabled={!selectedTemplateId || !id}
+                        disabled={!selectedFolderId || !id}
                         className={`px-4 py-2 text-sm font-medium text-white rounded-md
-                                ${selectedTemplateId && id
+                                ${selectedFolderId && id
                                 ? 'bg-blue-600 hover:bg-blue-700'
                                 : 'bg-gray-400 cursor-not-allowed'}`}
                     >

@@ -9,7 +9,7 @@ type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<null>;
 /**
  * Convertir un modèle Prisma en modèle d'application
  */
-function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest {
+export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest {
     return {
         id: prismaModel.id,
         civilId: prismaModel.civilId,
@@ -39,7 +39,7 @@ export async function getRequests(): Promise<DocumentRequest[]> {
  */
 export async function createRequest(params: CreateRequestParams): Promise<DocumentRequest> {
     try {
-        const { civilId, requestedDocuments, expirationDays = 7 } = params;
+        const { civilId, requestedDocuments, expirationDays = 7, folderId } = params;
         const now = new Date();
 
         const expiresAt = new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000);
@@ -49,7 +49,8 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
                 civilId,
                 requestedDocuments,
                 status: DOCUMENT_REQUEST_STATUS.PENDING,
-                expiresAt
+                expiresAt,
+                folderId // Add folder ID
             }
         });
 

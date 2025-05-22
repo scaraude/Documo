@@ -30,6 +30,18 @@ export const API_ROUTES = {
         CLEAR_PENDING: '/api/notifications/pending/clear',
         SAVE_RESPONSE: '/api/notifications/response',
         CHECK_RESPONSE: '/api/notifications/response'
+    },
+    FOLDERS: {
+        BASE: '/api/folders',
+        GET_ALL: '/api/folders',
+        GET_BY_ID: (id: string) => `/api/folders/${id}`,
+        CREATE: '/api/folders',
+        UPDATE: (id: string) => `/api/folders/${id}`,
+        DELETE: (id: string) => `/api/folders/${id}`,
+        GET_REQUESTS: (folderId: string) => `/api/folders/${folderId}/requests`,
+        ADD_REQUEST: (folderId: string) => `/api/folders/${folderId}/requests`,
+        REMOVE_REQUEST: (folderId: string, requestId: string) =>
+            `/api/folders/${folderId}/requests/${requestId}`
     }
 } as const;
 

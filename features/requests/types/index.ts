@@ -4,4 +4,5 @@ export interface CreateRequestParams {
     civilId: string;
     requestedDocuments: DocumentType[];
     expirationDays?: number;
+    folderId?: string; // Add folder ID
 }

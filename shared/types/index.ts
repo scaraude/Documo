@@ -35,4 +35,5 @@ export interface DocumentRequest {
     createdAt: Date;
     expiresAt: Date;
     updatedAt: Date;
+    folderId?: string; // Optional folder ID
 }
