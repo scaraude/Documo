@@ -2,7 +2,7 @@
 // Update the existing file to include folder selection
 'use client'
 import { useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { ROUTES } from "@/shared/constants"
 import { useRequest } from "../hooks/useRequest"
@@ -21,6 +21,11 @@ export const FormCreateRequest = () => {
     const { createRequest } = useRequest()
     const folderId = searchParams && searchParams.get("folderId");
 
+    useEffect(() => {
+        if (folderId) {
+            setSelectedFolderId(folderId)
+        }
+    }, [folderId])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -32,7 +37,7 @@ export const FormCreateRequest = () => {
         const newRequest = await createRequest(
             id,
             selectedFolder.requestedDocuments,
-            folderId || selectedFolderId,
+            selectedFolderId,
             undefined,
         )
 
