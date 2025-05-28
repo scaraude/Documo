@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
-import NewRequest from '../page';
 import { useRequestTemplates } from '@/features/request-templates';
+import NewRequest from '../page';
 
 // Mock the imported hooks and components
 jest.mock('@/features/request-templates', () => ({

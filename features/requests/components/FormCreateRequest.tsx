@@ -1,14 +1,13 @@
 // features/requests/components/FormCreateRequest.tsx
 // Update the existing file to include folder selection
 'use client'
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import Link from "next/link"
 import { ROUTES } from "@/shared/constants"
 import { useRequest } from "../hooks/useRequest"
 import { useFolder } from "@/features/folders/hooks/useFolder"
-import { ButtonCreateModel, IDInput } from "@/shared/components/"
-import { SelectTemplate } from "./SelectTemplate"
+import { IDInput } from "@/shared/components/"
 import { sendNotification } from "../../notifications/api/notificationsApi"
 import { FolderSelector } from "@/features/folders/components/FolderSelector"
 
@@ -17,8 +16,11 @@ export const FormCreateRequest = () => {
     const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
     const [showSimulation, setShowSimulation] = useState(true)
     const router = useRouter()
+    const searchParams = useSearchParams();
     const { folders, isLoaded: foldersLoaded } = useFolder()
     const { createRequest } = useRequest()
+    const folderId = searchParams && searchParams.get("folderId");
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -30,8 +32,8 @@ export const FormCreateRequest = () => {
         const newRequest = await createRequest(
             id,
             selectedFolder.requestedDocuments,
+            folderId || selectedFolderId,
             undefined,
-            selectedFolderId
         )
 
         console.log('New request created:', newRequest)

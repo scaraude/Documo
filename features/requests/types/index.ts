@@ -1,8 +1,8 @@
-import { DocumentType } from "@/shared/constants";
+import { AppDocumentType } from "@/shared/constants";
 
 export interface CreateRequestParams {
     civilId: string;
-    requestedDocuments: DocumentType[];
+    requestedDocuments: AppDocumentType[];
     expirationDays?: number;
-    folderId?: string; // Add folder ID
+    folderId: string; // Add folder ID
 }

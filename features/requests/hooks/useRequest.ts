@@ -29,13 +29,14 @@ export function useRequest() {
     }, []);
 
     // Create request wrapper
-    const createRequest = async (civilId: string, requestedDocuments: AppDocumentType[], expirationDays?: number) => {
+    const createRequest = async (civilId: string, requestedDocuments: AppDocumentType[], folderId: string, expirationDays?: number) => {
         try {
             setIsLoading(true);
             const newRequest = await requestsApi.createRequest({
                 civilId,
                 requestedDocuments,
-                expirationDays
+                expirationDays,
+                folderId,
             });
 
             setRequests(prev => [...prev, newRequest]);
