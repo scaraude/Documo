@@ -1,13 +1,3 @@
-export enum DocumentStatus {
-    PENDING = 'PENDING',
-    UPLOADING = 'UPLOADING',
-    UPLOADED = 'UPLOADED',
-    VALIDATING = 'VALIDATING',
-    VALID = 'VALID',
-    INVALID = 'INVALID',
-    ERROR = 'ERROR'
-}
-
 export enum APP_DOCUMENT_TYPES {
     IDENTITY_CARD = 'IDENTITY_CARD',
     PASSPORT = 'PASSPORT',

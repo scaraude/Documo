@@ -15,58 +15,95 @@ datasource db {
 }
 
 model Folder {
-  id                 String            @id @default(uuid())
-  name               String
-  description        String?
-  status             FolderStatus
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+
   requestedDocuments DocumentType[]
-  createdAt          DateTime          @default(now())
-  updatedAt          DateTime          @updatedAt
-  expiresAt          DateTime?
-  createdById        String?
-  sharedWith         String[]
-  requests           DocumentRequest[]
-  documents          Document[] // Direct access to all documents in the folder
+  customFieldsData   Json? // Données des champs personnalisés
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+
+  // Nouveaux champs pour calculer le status
+  archivedAt            DateTime?
+  completedAt           DateTime?
+  firstRequestCreatedAt DateTime?
+  lastActivityAt        DateTime  @default(now())
+
+  expiresAt   DateTime?
+  createdById String?
+  sharedWith  String[]
+
+  // Relations
+  folderTypeId String?
+  folderType   FolderType?       @relation(fields: [folderTypeId], references: [id])
+  requests     DocumentRequest[]
+  documents    Document[]
 
   @@map("folders")
 }
 
-enum FolderStatus {
-  ACTIVE
-  ARCHIVED
-  COMPLETED
-  PENDING
+model FolderType {
+  id                String         @id @default(uuid())
+  name              String
+  description       String?
+  requiredDocuments DocumentType[]
+  customFields      Json           @default("[]") // Array of CustomField objects
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+  deletedAt         DateTime? // Soft delete
+  createdById       String?
+
+  folders Folder[] // Relation to folders
+
+  @@map("folder_types")
 }
 
 model DocumentRequest {
-  id                    String                 @id @default(uuid())
-  civilId               String
-  requestedDocuments    DocumentType[]
-  status                RequestStatus
-  createdAt             DateTime               @default(now())
-  expiresAt             DateTime
-  updatedAt             DateTime               @updatedAt
+  id                 String         @id @default(uuid())
+  civilId            String
+  requestedDocuments DocumentType[]
+  // SUPPRIMER: status     RequestStatus
+  createdAt          DateTime       @default(now())
+  expiresAt          DateTime
+  updatedAt          DateTime       @updatedAt
+
+  // Nouveaux champs pour calculer le status
+  acceptedAt              DateTime?
+  rejectedAt              DateTime?
+  completedAt             DateTime?
+  firstDocumentUploadedAt DateTime?
+
+  // Relations
   documents             Document[]
   notificationResponses NotificationResponse[]
-  Folder                Folder?                @relation(fields: [folderId], references: [id])
+  folder                Folder?                @relation(fields: [folderId], references: [id])
   folderId              String?
 
   @@map("document_requests")
 }
 
 model Document {
-  id               String          @id @default(uuid())
-  requestId        String
-  request          DocumentRequest @relation(fields: [requestId], references: [id])
-  type             DocumentType
-  status           DocumentStatus
-  metadata         Json
-  url              String?
-  hash             String?
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  id        String          @id @default(uuid())
+  requestId String
+  request   DocumentRequest @relation(fields: [requestId], references: [id])
+  type      DocumentType
+  // SUPPRIMER: status DocumentStatus
+  metadata  Json
+  url       String?
+  hash      String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  // Nouveaux champs pour calculer le status
+  uploadedAt    DateTime?
+  validatedAt   DateTime?
+  invalidatedAt DateTime?
+  errorAt       DateTime?
+  errorMessage  String?
+
   validationErrors String[]
-  Folder           Folder?         @relation(fields: [folderId], references: [id])
+  folder           Folder?  @relation(fields: [folderId], references: [id])
   folderId         String?
 
   @@map("documents")
@@ -92,13 +129,6 @@ model NotificationResponse {
   @@map("notification_responses")
 }
 
-enum RequestStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  COMPLETED
-}
-
 enum DocumentType {
   IDENTITY_CARD
   PASSPORT
@@ -106,16 +136,6 @@ enum DocumentType {
   BANK_STATEMENT
   UTILITY_BILL
   OTHER
-}
-
-enum DocumentStatus {
-  PENDING
-  UPLOADING
-  UPLOADED
-  VALIDATING
-  VALID
-  INVALID
-  ERROR
 }
 
 enum ResponseType {

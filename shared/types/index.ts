@@ -1,6 +1,5 @@
 import z from "zod";
-import { DocumentRequestStatus, AppDocumentType } from "../constants";
-import { DocumentStatus } from "../constants/documents/types";
+import { AppDocumentType } from "../constants";
 
 // Définir un schéma de validation
 export const metadataSchema = z.object({
@@ -13,27 +12,44 @@ export const metadataSchema = z.object({
 
 export type AppDocumentMetadata = z.infer<typeof metadataSchema>;
 
-//call AppDocument to avoid confusion with Document TS interface
-export interface AppDocument {
-    id: string;
-    requestId: string;
-    type: AppDocumentType;
-    status: DocumentStatus;
-    metadata: AppDocumentMetadata;
-    url?: string;
-    encryptionKey?: CryptoKey;
-    createdAt: Date;
-    updatedAt: Date;
-    validationErrors?: string[];
-}
-
 export interface DocumentRequest {
     id: string;
     civilId: string;
     requestedDocuments: AppDocumentType[];
-    status: DocumentRequestStatus;
     createdAt: Date;
     expiresAt: Date;
     updatedAt: Date;
-    folderId?: string; // Optional folder ID
+
+    // Propriétés pour calculer le status
+    acceptedAt?: Date;
+    rejectedAt?: Date;
+    completedAt?: Date;
+    firstDocumentUploadedAt?: Date;
+
+    folderId?: string;
 }
+
+// Computed status type
+export type ComputedRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'COMPLETED';
+
+export interface AppDocument {
+    id: string;
+    requestId: string;
+    type: AppDocumentType;
+    metadata: AppDocumentMetadata;
+    url?: string;
+    createdAt: Date;
+    updatedAt: Date;
+
+    // Propriétés pour calculer le status
+    uploadedAt?: Date;
+    validatedAt?: Date;
+    invalidatedAt?: Date;
+    errorAt?: Date;
+    errorMessage?: string;
+
+    validationErrors?: string[];
+}
+
+// Computed status type
+export type ComputedDocumentStatus = 'PENDING' | 'UPLOADING' | 'UPLOADED' | 'VALIDATING' | 'VALID' | 'INVALID' | 'ERROR';
