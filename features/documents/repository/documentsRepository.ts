@@ -1,7 +1,7 @@
 // features/documents/repository/documentsRepository.ts
 import prisma, { Prisma } from '@/lib/prisma';
 import { AppDocument, metadataSchema } from '@/shared/types';
-import { DocumentStatus, AppDocumentType } from '@/shared/constants/documents/types';
+import { AppDocumentType } from '@/shared/constants/documents/types';
 
 // Type du modèle Document de Prisma
 type PrismaDocument = Prisma.DocumentGetPayload<null>;
@@ -16,7 +16,6 @@ export function toAppModel(prismaModel: PrismaDocument): AppDocument {
         id: prismaModel.id,
         requestId: prismaModel.requestId,
         type: prismaModel.type as AppDocumentType,
-        status: prismaModel.status as DocumentStatus,
         metadata,
         url: prismaModel.url || undefined,
         createdAt: prismaModel.createdAt,
@@ -35,10 +34,9 @@ function toPrismaCreateInput(appDocument: AppDocument): Prisma.DocumentCreateInp
             connect: { id: appDocument.requestId }
         },
         type: appDocument.type,
-        status: appDocument.status,
-        metadata: appDocument.metadata,
         url: appDocument.url,
         hash: appDocument.metadata.hash,
+        metadata: appDocument.metadata, // Add the required metadata property
         validationErrors: appDocument.validationErrors || [],
     };
 }
@@ -70,30 +68,6 @@ export async function uploadDocument(document: AppDocument): Promise<AppDocument
     } catch (error) {
         console.error('Error uploading document to database:', error);
         throw new Error('Failed to upload document');
-    }
-}
-
-/**
- * Update document status
- */
-export async function updateDocumentStatus(id: string, status: DocumentStatus): Promise<AppDocument> {
-    try {
-        const updatedDocument = await prisma.document.update({
-            where: { id },
-            data: { status }
-        });
-
-        return toAppModel(updatedDocument);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        // Gérer les erreurs spécifiques
-
-        if (error?.code === 'P2025') {
-            throw new Error(`Document with ID ${id} not found`);
-        }
-
-        console.error('Error updating document status in database:', error);
-        throw new Error('Failed to update document status');
     }
 }
 

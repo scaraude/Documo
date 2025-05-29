@@ -1,8 +1,7 @@
 // features/folders/repository/folderRepository.ts
 import prisma, { Prisma } from '@/lib/prisma';
 import { Folder, FolderWithRelations } from '../types';
-import type { FolderStatus } from '@/shared/constants';
-import { FOLDER_STATUS, AppDocumentType } from '@/shared/constants';
+import { AppDocumentType } from '@/shared/constants';
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import { toAppModel as documentToAppModel } from '@/features/documents/repository/documentsRepository';
 
@@ -15,13 +14,13 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
         id: prismaModel.id,
         name: prismaModel.name,
         description: prismaModel.description || '',
-        status: prismaModel.status as FolderStatus,
         requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
         createdAt: prismaModel.createdAt,
         updatedAt: prismaModel.updatedAt,
         expiresAt: prismaModel.expiresAt || undefined,
         createdById: prismaModel.createdById || undefined,
-        sharedWith: prismaModel.sharedWith || []
+        sharedWith: prismaModel.sharedWith || [],
+        lastActivityAt: prismaModel.lastActivityAt || prismaModel.updatedAt // fallback if lastActivityAt is missing
     };
 }
 
@@ -85,19 +84,13 @@ export async function createFolder(data: {
     name: string;
     description?: string;
     requestedDocuments: AppDocumentType[];
-    status?: FolderStatus;
     expiresAt?: Date;
     createdById?: string;
     sharedWith?: string[];
 }): Promise<Folder> {
     try {
-        const { status = FOLDER_STATUS.ACTIVE, ...folderData } = data;
-
         const newFolder = await prisma.folder.create({
-            data: {
-                ...folderData,
-                status,
-            }
+            data,
         });
 
         return toAppModel(newFolder);
@@ -113,7 +106,6 @@ export async function updateFolder(
     data: Partial<{
         name: string;
         description: string;
-        status: FolderStatus;
         requestedDocuments: AppDocumentType[];
         expiresAt: Date | null;
         sharedWith: string[];

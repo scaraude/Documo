@@ -1,7 +1,7 @@
 import prisma, { Prisma } from '@/lib/prisma';
 import { CreateRequestParams } from '../types';
 import { DocumentRequest } from '@/shared/types';
-import { DOCUMENT_REQUEST_STATUS, DocumentRequestStatus, AppDocumentType } from '@/shared/constants';
+import { AppDocumentType } from '@/shared/constants';
 
 // Mapper entre le type Prisma et le type App
 type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<null>;
@@ -14,7 +14,6 @@ export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest 
         id: prismaModel.id,
         civilId: prismaModel.civilId,
         requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
-        status: prismaModel.status as DocumentRequestStatus,
         createdAt: prismaModel.createdAt,
         expiresAt: prismaModel.expiresAt,
         updatedAt: prismaModel.updatedAt
@@ -48,9 +47,8 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
             data: {
                 civilId,
                 requestedDocuments,
-                status: DOCUMENT_REQUEST_STATUS.PENDING,
                 expiresAt,
-                folderId // Add folder ID
+                folderId
             }
         });
 
@@ -58,23 +56,6 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
     } catch (error) {
         console.error('Error creating request in database:', error);
         throw new Error('Failed to create request');
-    }
-}
-
-/**
- * Update request status
- */
-export async function updateRequestStatus(id: string, status: DocumentRequestStatus): Promise<DocumentRequest> {
-    try {
-        const updatedRequest = await prisma.documentRequest.update({
-            where: { id },
-            data: { status }
-        });
-
-        return toAppModel(updatedRequest);
-    } catch (error) {
-        console.error('Error updating request status in database:', error);
-        throw new Error('Failed to update request status');
     }
 }
 

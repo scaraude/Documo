@@ -2,7 +2,7 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react';
 import * as folderApi from '../api/folderApi';
-import { CreateFolderParams, Folder, FolderWithRelations, UpdateFolderParams } from '../types';
+import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 
 export function useFolder() {
     const [folders, setFolders] = useState<Array<Folder & { requestsCount?: number }>>([]);

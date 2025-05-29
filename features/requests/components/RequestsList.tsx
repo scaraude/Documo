@@ -1,10 +1,10 @@
 'use client'
 import { useEffect } from 'react';
-import { DocumentRequestStatus, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { useRequest } from '../hooks/useRequest';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
-import { DocumentRequest } from '@/shared/types';
+import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import { useRequestStatus } from '@/shared/hooks/useComputedStatus';
 
 export const RequestsList = () => {
     const { requests, isLoaded, deleteRequest, updateRequestStatus } = useRequest();
@@ -38,26 +38,28 @@ export const RequestsList = () => {
         }
     }
 
-    const getStatusBadgeClasses = (status: DocumentRequestStatus) => {
+    const getStatusBadgeClasses = (status: ComputedRequestStatus) => {
         switch (status) {
-            case DOCUMENT_REQUEST_STATUS.ACCEPTED:
+            case 'ACCEPTED':
                 return 'bg-green-100 text-green-800'
-            case DOCUMENT_REQUEST_STATUS.REJECTED:
+            case "REJECTED":
                 return 'bg-red-100 text-red-800'
-            case DOCUMENT_REQUEST_STATUS.COMPLETED:
+            case "COMPLETED":
                 return 'bg-blue-100 text-blue-800'
-            case DOCUMENT_REQUEST_STATUS.PENDING:
-            default:
+            case "PENDING":
                 return 'bg-yellow-100 text-yellow-800'
+            default:
+                const never: never = status;
+                return never;
         }
     }
 
-    const getStatusText = (status: DocumentRequestStatus) => {
+    const getStatusText = (status: ComputedRequestStatus) => {
         switch (status) {
-            case DOCUMENT_REQUEST_STATUS.PENDING: return 'En attente';
-            case DOCUMENT_REQUEST_STATUS.ACCEPTED: return 'Accepté';
-            case DOCUMENT_REQUEST_STATUS.REJECTED: return 'Refusé';
-            case DOCUMENT_REQUEST_STATUS.COMPLETED: return 'Complété';
+            case "PENDING": return 'En attente';
+            case "ACCEPTED": return 'Accepté';
+            case "REJECTED": return 'Refusé';
+            case "COMPLETED": return 'Complété';
             default:
                 const never: never = status;
                 return never;
@@ -78,37 +80,75 @@ export const RequestsList = () => {
         return <div className="flex-1 p-6 py-20">Chargement...</div>
     }
 
-    // Card view for mobile
-    const RequestCard = ({ request }: { request: DocumentRequest }) => (
-        <div className="bg-white rounded-lg shadow-md p-4 mb-4">
-            <div className="flex justify-between items-center mb-2">
-                <h3 className="font-medium">ID: {request.civilId}</h3>
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClasses(request.status)}`}>
-                    {getStatusText(request.status)}
-                </span>
-            </div>
-            <div className="mb-2">
-                <h4 className="text-sm font-medium text-gray-500">Documents demandés:</h4>
+    const RequestRow = ({ request }: { request: DocumentRequest }) => {
+        const requestStatus = useRequestStatus(request);
+
+        return (<tr className="hover:bg-gray-50">
+            <td className="px-6 py-4 whitespace-nowrap">{request.civilId}</td>
+            <td className="px-6 py-4">
                 <ul className="list-disc list-inside">
                     {request.requestedDocuments.map((doc, index) => (
-                        <li key={index} className="text-sm text-gray-600">{doc}</li>
+                        <li key={index} className="text-sm text-gray-600">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</li>
                     ))}
                 </ul>
-            </div>
-            <div className="text-xs text-gray-500 mb-2">
-                <div>Créé le: {formatDate(request.createdAt)}</div>
-                <div>Expire le: {formatDate(request.expiresAt)}</div>
-            </div>
-            <div className="flex justify-end">
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClasses(requestStatus)}`}>
+                    {getStatusText(requestStatus)}
+                </span>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                {formatDate(request.createdAt)}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+                {formatDate(request.expiresAt)}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <button
                     onClick={() => handleDelete(request.id)}
-                    className="text-red-700 hover:text-red-950 text-sm"
+                    className="text-red-700 hover:text-red-950 mx-2"
                 >
                     Supprimer
                 </button>
+            </td>
+        </tr>)
+    }
+
+    // Card view for mobile
+    const RequestCard = ({ request }: { request: DocumentRequest }) => {
+        const requestStatus = useRequestStatus(request);
+
+        return (
+            <div className="bg-white rounded-lg shadow-md p-4 mb-4">
+                <div className="flex justify-between items-center mb-2">
+                    <h3 className="font-medium">ID: {request.civilId}</h3>
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClasses(requestStatus)}`}>
+                        {getStatusText(requestStatus)}
+                    </span>
+                </div>
+                <div className="mb-2">
+                    <h4 className="text-sm font-medium text-gray-500">Documents demandés:</h4>
+                    <ul className="list-disc list-inside">
+                        {request.requestedDocuments.map((doc, index) => (
+                            <li key={index} className="text-sm text-gray-600">{doc}</li>
+                        ))}
+                    </ul>
+                </div>
+                <div className="text-xs text-gray-500 mb-2">
+                    <div>Créé le: {formatDate(request.createdAt)}</div>
+                    <div>Expire le: {formatDate(request.expiresAt)}</div>
+                </div>
+                <div className="flex justify-end">
+                    <button
+                        onClick={() => handleDelete(request.id)}
+                        className="text-red-700 hover:text-red-950 text-sm"
+                    >
+                        Supprimer
+                    </button>
+                </div>
             </div>
-        </div>
-    );
+        )
+    };
 
     return (
         <div className="flex-1 p-4 md:p-6 py-10 md:py-20">
@@ -160,35 +200,10 @@ export const RequestsList = () => {
                             </tr>
                         ) : (
                             requests.map((request) => (
-                                <tr key={request.id} className="hover:bg-gray-50">
-                                    <td className="px-6 py-4 whitespace-nowrap">{request.civilId}</td>
-                                    <td className="px-6 py-4">
-                                        <ul className="list-disc list-inside">
-                                            {request.requestedDocuments.map((doc, index) => (
-                                                <li key={index} className="text-sm text-gray-600">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</li>
-                                            ))}
-                                        </ul>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClasses(request.status)}`}>
-                                            {getStatusText(request.status)}
-                                        </span>
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {formatDate(request.createdAt)}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        {formatDate(request.expiresAt)}
-                                    </td>
-                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button
-                                            onClick={() => handleDelete(request.id)}
-                                            className="text-red-700 hover:text-red-950 mx-2"
-                                        >
-                                            Supprimer
-                                        </button>
-                                    </td>
-                                </tr>
+                                <RequestRow
+                                    key={request.id}
+                                    request={request}
+                                />
                             ))
                         )}
                     </tbody>
