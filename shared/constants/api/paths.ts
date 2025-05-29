@@ -31,6 +31,15 @@ export const API_ROUTES = {
         SAVE_RESPONSE: '/api/notifications/response',
         CHECK_RESPONSE: '/api/notifications/response'
     },
+    FOLDER_TYPES: {
+        BASE: '/api/folder-types',
+        GET_ALL: '/api/folder-types',
+        GET_BY_ID: (id: string) => `/api/folder-types/${id}`,
+        CREATE: '/api/folder-types',
+        UPDATE: (id: string) => `/api/folder-types/${id}`,
+        DELETE: (id: string) => `/api/folder-types/${id}`,
+        CHECK_USAGE: (id: string) => `/api/folder-types/${id}/check-usage`
+    },
     FOLDERS: {
         BASE: '/api/folders',
         GET_ALL: '/api/folders',

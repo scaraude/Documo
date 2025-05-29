@@ -37,7 +37,7 @@ export interface CreateFolderParams {
     description?: string;
     folderTypeId: string; // Maintenant obligatoire
     customFieldsData?: Record<string, string>;
-    expiresAt?: Date;
+    expiresAt: Date | null;
     createdById?: string;
     sharedWith?: string[];
 }

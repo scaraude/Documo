@@ -1,11 +1,11 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { DocumentRequest } from '@/shared/types';
-import { DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
+import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
 import { Card, CardContent, CardFooter, CardHeader } from '@/shared/components';
 import { Folder } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useRequestStatus } from '@/shared/hooks/useComputedStatus';
 
 interface RequestIconProps {
     request: DocumentRequest;
@@ -14,6 +14,7 @@ interface RequestIconProps {
 
 export function RequestIcon({ request, onClick }: RequestIconProps): ReactNode {
     const { civilId, requestedDocuments, createdAt } = request;
+    const requestStatus = useRequestStatus(request);
 
     const formatDate = (date: Date): string => {
         return new Date(date).toLocaleDateString('fr-FR', {
@@ -24,14 +25,18 @@ export function RequestIcon({ request, onClick }: RequestIconProps): ReactNode {
     };
 
     // Determine icon color based on status
-    const getStatusColor = () => {
-        switch (request.status) {
-            case DOCUMENT_REQUEST_STATUS.ACCEPTED:
+    const getStatusColor = (requestStatus: ComputedRequestStatus) => {
+        switch (requestStatus) {
+            case "ACCEPTED":
                 return 'text-green-500 bg-green-50';
-            case DOCUMENT_REQUEST_STATUS.COMPLETED:
+            case "COMPLETED":
                 return 'text-blue-500 bg-blue-50';
-            default:
+            case "PENDING":
+            case "REJECTED":
                 return 'text-gray-500 bg-gray-50';
+            default:
+                const never: never = requestStatus;
+                return never;
         }
     };
 
@@ -41,7 +46,7 @@ export function RequestIcon({ request, onClick }: RequestIconProps): ReactNode {
             className="cursor-pointer transition-all duration-200 hover:shadow-md"
         >
             <CardHeader className="pb-2">
-                <div className={cn("p-4 rounded-lg mb-2 flex justify-center", getStatusColor())}>
+                <div className={cn("p-4 rounded-lg mb-2 flex justify-center", getStatusColor(requestStatus))}>
                     <Folder size={48} />
                 </div>
             </CardHeader>

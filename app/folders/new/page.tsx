@@ -29,7 +29,7 @@ export default function NewFolderPage() {
             )}
 
             <div className="bg-white shadow-md rounded-lg p-6">
-                <FolderForm<CreateFolderParams>
+                <FolderForm
                     onSubmit={handleSubmit}
                     isLoading={isLoading}
                 />

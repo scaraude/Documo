@@ -1,30 +1,189 @@
-import { AppDocumentType } from "@/shared/constants";
-import { CustomField, FolderType } from "../types";
 import prisma, { Prisma } from '@/lib/prisma';
+import { FolderType, CreateFolderTypeParams, UpdateFolderTypeParams } from '../types';
+import { AppDocumentType } from '@/shared/constants';
+import { CustomField } from '../types';
 
+// Type mapper entre Prisma et App
 type PrismaFolderType = Prisma.FolderTypeGetPayload<null>;
 
-const toAppModel = (prismaModel: PrismaFolderType): FolderType => {
+/**
+ * Convertir un modèle Prisma en modèle d'application
+ */
+function toAppModel(prismaModel: PrismaFolderType): FolderType {
     return {
         id: prismaModel.id,
         name: prismaModel.name,
         description: prismaModel.description || '',
-        createdAt: prismaModel.createdAt,
-        updatedAt: prismaModel.updatedAt,
         requiredDocuments: prismaModel.requiredDocuments as AppDocumentType[],
         customFields: prismaModel.customFields as unknown as CustomField[],
+        createdAt: prismaModel.createdAt,
+        updatedAt: prismaModel.updatedAt,
+        deletedAt: prismaModel.deletedAt || undefined,
+        createdById: prismaModel.createdById || undefined,
     };
 }
 
 /**
- * Get all folder types
+ * Get all active folder types
  */
-export async function getFolderType(): Promise<FolderType[]> {
+export async function getFolderTypes(): Promise<FolderType[]> {
     try {
-        const folderType = await prisma.folderType.findMany();
-        return folderType.map(toAppModel);
+        const folderTypes = await prisma.folderType.findMany({
+            where: {
+                deletedAt: null // Soft delete
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return folderTypes.map(toAppModel);
     } catch (error) {
-        console.error('Error fetching folderType from database:', error);
-        throw new Error('Failed to fetch folderType');
+        console.error('Error fetching folder types from database:', error);
+        throw new Error('Failed to fetch folder types');
+    }
+}
+
+/**
+ * Get folder type by ID
+ */
+export async function getFolderTypeById(id: string): Promise<FolderType | null> {
+    try {
+        const folderType = await prisma.folderType.findFirst({
+            where: {
+                id,
+                deletedAt: null
+            }
+        });
+
+        return folderType ? toAppModel(folderType) : null;
+    } catch (error) {
+        console.error(`Error fetching folder type with ID ${id}:`, error);
+        throw new Error('Failed to fetch folder type');
+    }
+}
+
+/**
+ * Create a new folder type
+ */
+export async function createFolderType(params: CreateFolderTypeParams): Promise<FolderType> {
+    try {
+        const { name, description, requiredDocuments, customFields, createdById } = params;
+
+        const newFolderType = await prisma.folderType.create({
+            data: {
+                name,
+                description,
+                requiredDocuments,
+                customFields: customFields as unknown as Prisma.JsonArray,
+                createdById
+            }
+        });
+
+        return toAppModel(newFolderType);
+    } catch (error) {
+        console.error('Error creating folder type in database:', error);
+        throw new Error('Failed to create folder type');
+    }
+}
+
+/**
+ * Update a folder type
+ */
+export async function updateFolderType(
+    id: string,
+    params: UpdateFolderTypeParams
+): Promise<FolderType> {
+    try {
+        const { name, description, requiredDocuments, customFields } = params;
+
+        const updatedFolderType = await prisma.folderType.update({
+            where: { id },
+            data: {
+                ...(name !== undefined && { name }),
+                ...(description !== undefined && { description }),
+                ...(requiredDocuments !== undefined && { requiredDocuments }),
+                ...(customFields !== undefined && { customFields: customFields as unknown as Prisma.JsonArray }),
+            }
+        });
+
+        return toAppModel(updatedFolderType);
+    } catch (error) {
+        console.error(`Error updating folder type with ID ${id}:`, error);
+        throw new Error('Failed to update folder type');
+    }
+}
+
+/**
+ * Soft delete a folder type
+ */
+export async function deleteFolderType(id: string): Promise<void> {
+    try {
+        await prisma.folderType.update({
+            where: { id },
+            data: {
+                deletedAt: new Date()
+            }
+        });
+    } catch (error) {
+        console.error(`Error deleting folder type with ID ${id}:`, error);
+        throw new Error('Failed to delete folder type');
+    }
+}
+
+/**
+ * Get folder types with usage statistics
+ */
+export async function getFolderTypesWithStats(): Promise<Array<FolderType & {
+    foldersCount: number;
+    activeFoldersCount: number;
+}>> {
+    try {
+        const folderTypes = await prisma.folderType.findMany({
+            where: {
+                deletedAt: null
+            },
+            include: {
+                _count: {
+                    select: { folders: true }
+                },
+                folders: {
+                    select: {
+                        archivedAt: true
+                    }
+                }
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
+
+        return folderTypes.map(ft => ({
+            ...toAppModel(ft),
+            foldersCount: ft._count.folders,
+            activeFoldersCount: ft.folders.filter(f => !f.archivedAt).length
+        }));
+    } catch (error) {
+        console.error('Error fetching folder types with stats:', error);
+        throw new Error('Failed to fetch folder types with stats');
+    }
+}
+
+/**
+ * Check if folder type is used
+ */
+export async function isFolderTypeInUse(id: string): Promise<boolean> {
+    try {
+        const count = await prisma.folder.count({
+            where: {
+                folderTypeId: id,
+                archivedAt: null
+            }
+        });
+
+        return count > 0;
+    } catch (error) {
+        console.error(`Error checking if folder type ${id} is in use:`, error);
+        throw new Error('Failed to check folder type usage');
     }
 }

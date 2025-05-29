@@ -1,10 +1,10 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { DocumentRequest } from '@/shared/types';
-import { DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
+import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
 import { Badge } from '@/shared/components';
 import { ChevronRight, FileText } from 'lucide-react';
+import { useRequestStatus } from '../../../shared/hooks/useComputedStatus';
 
 interface RequestListItemProps {
     request: DocumentRequest;
@@ -12,7 +12,8 @@ interface RequestListItemProps {
 }
 
 export function RequestListItem({ request, onClick }: RequestListItemProps): ReactNode {
-    const { civilId, requestedDocuments, createdAt, status } = request;
+    const { civilId, requestedDocuments, createdAt } = request;
+    const requestStatus = useRequestStatus(request);
 
     const formatDate = (date: Date): string => {
         return new Date(date).toLocaleDateString('fr-FR', {
@@ -22,25 +23,33 @@ export function RequestListItem({ request, onClick }: RequestListItemProps): Rea
         });
     };
 
-    const getStatusBadgeVariant = () => {
-        switch (status) {
-            case DOCUMENT_REQUEST_STATUS.ACCEPTED:
+    const getStatusBadgeVariant = (requestStatus: ComputedRequestStatus) => {
+        switch (requestStatus) {
+            case "ACCEPTED":
                 return 'default';
-            case DOCUMENT_REQUEST_STATUS.COMPLETED:
+            case "COMPLETED":
                 return 'outline';
-            default:
+            case "PENDING":
+            case "REJECTED":
                 return 'secondary';
+            default:
+                const never: never = requestStatus;
+                return never;
         }
     };
 
-    const getStatusText = () => {
-        switch (status) {
-            case DOCUMENT_REQUEST_STATUS.ACCEPTED:
+    const getStatusText = (requestStatus: ComputedRequestStatus) => {
+        switch (requestStatus) {
+            case "ACCEPTED":
                 return 'Accepté';
-            case DOCUMENT_REQUEST_STATUS.COMPLETED:
+            case "COMPLETED":
                 return 'Complété';
+            case "PENDING":
+            case "REJECTED":
+                return requestStatus;
             default:
-                return status;
+                const never: never = requestStatus;
+                return never;
         }
     };
 
@@ -62,7 +71,7 @@ export function RequestListItem({ request, onClick }: RequestListItemProps): Rea
                     </div>
                 </div>
                 <div className="flex items-center space-x-4">
-                    <Badge variant={getStatusBadgeVariant()}>{getStatusText()}</Badge>
+                    <Badge variant={getStatusBadgeVariant(requestStatus)}>{getStatusText(requestStatus)}</Badge>
                     <span className="text-sm text-muted-foreground">{formatDate(createdAt)}</span>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />
                 </div>

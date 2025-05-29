@@ -2,37 +2,25 @@
 'use client'
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ROUTES, APP_DOCUMENT_TYPES, AppDocumentType, FOLDER_STATUS } from '@/shared/constants';
-import { BaseFolder, CreateFolderParams, UpdateFolderParams } from '../types/folder';
+import { ROUTES, APP_DOCUMENT_TYPES, AppDocumentType } from '@/shared/constants';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
+import { CreateFolderParams } from '../types';
 
-interface FolderFormProps<T extends CreateFolderParams | UpdateFolderParams> {
-    initialData?: BaseFolder;
-    onSubmit: (data: T) => Promise<void>;
+interface FolderFormProps {
+    onSubmit: (data: CreateFolderParams) => Promise<void>
     isLoading: boolean;
 }
 
-export const FolderForm = <T extends CreateFolderParams | UpdateFolderParams>({
-    initialData,
+export const FolderForm = ({
     onSubmit,
     isLoading
-}: FolderFormProps<T>) => {
+}: FolderFormProps) => {
     const router = useRouter();
-    const isEditMode = !!initialData;
 
-    const [name, setName] = useState(initialData?.name || '');
-    const [description, setDescription] = useState(initialData?.description || '');
-    const [status, setStatus] = useState<FOLDER_STATUS>(
-        initialData?.status || FOLDER_STATUS.ACTIVE
-    );
-    const [selectedDocuments, setSelectedDocuments] = useState<AppDocumentType[]>(
-        initialData?.requestedDocuments || []
-    );
-    const [expirationDate, setExpirationDate] = useState<string>(
-        initialData?.expiresAt
-            ? new Date(initialData.expiresAt).toISOString().split('T')[0]
-            : ''
-    );
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [selectedDocuments, setSelectedDocuments] = useState<AppDocumentType[]>([]);
+    const [expirationDate, setExpirationDate] = useState<string>('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,11 +28,11 @@ export const FolderForm = <T extends CreateFolderParams | UpdateFolderParams>({
         try {
             const formData = {
                 name,
+                folderTypeId: '',
                 description,
-                status,
                 requestedDocuments: selectedDocuments,
                 expiresAt: expirationDate ? new Date(expirationDate) : null
-            } as T;
+            };
 
             await onSubmit(formData);
             router.push(ROUTES.FOLDERS.HOME);
@@ -92,25 +80,6 @@ export const FolderForm = <T extends CreateFolderParams | UpdateFolderParams>({
                     placeholder="Description du dossier (optionnel)"
                 />
             </div>
-
-            {isEditMode && (
-                <div>
-                    <label htmlFor="status" className="block text-sm font-medium text-gray-700">
-                        Statut
-                    </label>
-                    <select
-                        id="status"
-                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value as FOLDER_STATUS)}
-                    >
-                        <option value={FOLDER_STATUS.ACTIVE}>Actif</option>
-                        <option value={FOLDER_STATUS.PENDING}>En attente</option>
-                        <option value={FOLDER_STATUS.COMPLETED}>Complété</option>
-                        <option value={FOLDER_STATUS.ARCHIVED}>Archivé</option>
-                    </select>
-                </div>
-            )}
 
             <div>
                 <label htmlFor="expirationDate" className="block text-sm font-medium text-gray-700">
@@ -165,7 +134,7 @@ export const FolderForm = <T extends CreateFolderParams | UpdateFolderParams>({
                         : 'bg-blue-600 hover:bg-blue-700'
                         }`}
                 >
-                    {isLoading ? 'Chargement...' : isEditMode ? 'Mettre à jour' : 'Créer'}
+                    {isLoading ? 'Chargement...' : 'Créer'}
                 </button>
             </div>
         </form>
