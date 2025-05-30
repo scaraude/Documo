@@ -1,6 +1,11 @@
-// shared/constants/routes/paths.ts (update)
 export const ROUTES = {
     HOME: '/',
+    FOLDER_TYPES: {
+        HOME: '/folder-types',
+        NEW: '/folder-types/new',
+        DETAIL: (id: string) => `/folder-types/${id}`,
+        EDIT: (id: string) => `/folder-types/${id}/edit`,
+    },
     FOLDERS: {
         HOME: '/folders',
         NEW: '/folders/new',
@@ -11,6 +16,7 @@ export const ROUTES = {
         HOME: '/requests',
         NEW: '/requests/new',
         DETAIL: (id: string) => `/requests/${id}`,
+        TEMPLATES: '/templates',
     },
     DOCUMENTS: {
         HOME: '/documents',

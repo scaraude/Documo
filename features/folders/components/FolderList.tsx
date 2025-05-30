@@ -10,6 +10,7 @@ import { useFolderStatus } from '../../../shared/hooks/useComputedStatus';
 interface FolderListProps {
     folders: Array<Folder & { requestsCount?: number }>;
     onDelete: (id: string) => Promise<void>;
+    viewMode?: 'grid' | 'list';
 }
 
 export const FolderList: React.FC<FolderListProps> = ({ folders, onDelete }) => {
