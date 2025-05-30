@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { FolderType } from '../types'
 import { ROUTES } from '@/shared/constants'
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components'
-import { FolderOpen, FileText, Plus, TrendingUp } from 'lucide-react'
+import { FileText, Plus, TrendingUp } from 'lucide-react'
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper'
+import { useRouter } from 'next/navigation'
 
 interface FolderTypeCarouselProps {
     folderTypes: Array<FolderType & {
@@ -14,15 +15,18 @@ interface FolderTypeCarouselProps {
 }
 
 export const FolderTypeCarousel = ({ folderTypes }: FolderTypeCarouselProps) => {
+    const router = useRouter();
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {folderTypes.map((folderType) => (
-                <Card key={folderType.id} className="hover:shadow-lg transition-shadow cursor-pointer group">
+                <Card
+                    key={folderType.id}
+                    className="hover:shadow-lg transition-shadow cursor-pointer group relative"
+                    onClick={() => router.push(ROUTES.FOLDER_TYPES.DETAIL(folderType.id))}
+                >
                     <CardHeader className="pb-3">
                         <div className="flex items-center justify-between">
-                            <div className="p-2 bg-blue-100 rounded-lg">
-                                <FolderOpen className="h-6 w-6 text-blue-600" />
-                            </div>
                             {folderType.foldersCount !== undefined && (
                                 <Badge variant="secondary" className="text-xs">
                                     {folderType.foldersCount} dossier{folderType.foldersCount > 1 ? 's' : ''}
@@ -39,7 +43,7 @@ export const FolderTypeCarousel = ({ folderTypes }: FolderTypeCarouselProps) => 
                         )}
                     </CardHeader>
 
-                    <CardContent className="pt-0">
+                    <CardContent className="pt-0 pb-12">
                         <div className="space-y-3">
                             {/* Documents Required */}
                             <div>
@@ -74,26 +78,29 @@ export const FolderTypeCarousel = ({ folderTypes }: FolderTypeCarouselProps) => 
                                     )}
                                 </div>
                             )}
-
-                            {/* Actions */}
-                            <div className="flex gap-2 pt-2">
-                                <Link
-                                    href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
-                                    className="flex-1"
-                                >
-                                    <button className="w-full px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
-                                        <Plus className="h-4 w-4" />
-                                        Créer dossier
-                                    </button>
-                                </Link>
-                                <Link href={`/folder-types/${folderType.id}`}>
-                                    <button className="px-3 py-2 text-sm border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
-                                        Voir
-                                    </button>
-                                </Link>
-                            </div>
                         </div>
                     </CardContent>
+
+                    {/* Plus Button - Bottom Right Corner */}
+                    <div className="absolute bottom-4 right-4 group/button">
+                        <Link
+                            href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
+                            onClick={(e) => e.stopPropagation()} // Empêche la propagation du clic vers la card
+                        >
+                            <div className="relative">
+                                {/* Tooltip */}
+                                <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover/button:opacity-100 transform scale-95 group-hover/button:scale-100 transition-all duration-200 pointer-events-none whitespace-nowrap">
+                                    Nouveau dossier
+                                    <div className="absolute top-full right-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                                </div>
+
+                                {/* Button */}
+                                <button className="w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl">
+                                    <Plus className="h-5 w-5" />
+                                </button>
+                            </div>
+                        </Link>
+                    </div>
                 </Card>
             ))}
         </div>
