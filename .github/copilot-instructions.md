@@ -74,3 +74,23 @@ When adding a new feature:
 ## Dependencies
 - **Installation**: Use Yarn to install dependencies.
 - **Updates**: Regularly update dependencies to their latest stable versions.
+
+## User Stories
+- When the user arrives on the homepage for the first time, they see the "Create a new file type" CTA, and the "Create a new file" CTA is greyed out with an overlay saying "Create a new file type first".
+- When the user creates a new file type, they are asked for a name, a description, and the required documents. They can also add new fields (e.g., [Address: text, required: true]). Once confirmed, the new file type is added.
+- When the user creates a new file, they first select the file type, add a reference and the required fields, then add one or more IDs for the people from whom documents will be requested.
+They can also arrive via a direct link, for example from the detail page of a file type. In this case, the file type selection step is skipped, and they only see the details of the pre-selected file type.
+- In the request details, there is a way to redirect an external user to the document upload page.
+- When an external user arrives via the link they received, they are prompted to log in with FranceConnect, and as little as possible via the traditional email + code method. After authentication, they see a list of missing documents for their account, with drop zones to upload them. Once the documents are uploaded, they receive confirmation that the documents have been submitted and that they will never have to upload them again.
+
+## Organization of the app
+- Three tabs: Home, Files, Requests
+- Home:
+A homepage with a brief introduction to the product and two call-to-action buttons:
+"Create a new file type" and "Open a new file."
+- Files:
+The top third of the page features a carousel-style (or more minimal) presentation of the file types, with some stats for each and a CTA on the right to create a new file type.
+Below that: a grid or icon-based display of individual files, with a search bar at the top right and icons to switch between organization modes (e.g., list, grid).
+- Requests:
+A series of expandable drawer-style rows, showing a brief summary in collapsed mode and more details when expanded.
+There is a search bar at the top, filters on the left, and sorting options on the right.
