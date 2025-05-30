@@ -14,7 +14,6 @@ export const ROUTES = {
     },
     REQUESTS: {
         HOME: '/requests',
-        NEW: '/requests/new',
         DETAIL: (id: string) => `/requests/${id}`,
         TEMPLATES: '/templates',
     },

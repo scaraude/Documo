@@ -4,6 +4,7 @@ import { FolderType } from '../types'
 import { ROUTES } from '@/shared/constants'
 import { Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components'
 import { FolderOpen, FileText, Plus, TrendingUp } from 'lucide-react'
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper'
 
 interface FolderTypeCarouselProps {
     folderTypes: Array<FolderType & {
@@ -51,7 +52,7 @@ export const FolderTypeCarousel = ({ folderTypes }: FolderTypeCarouselProps) => 
                                 <div className="flex flex-wrap gap-1">
                                     {folderType.requiredDocuments.slice(0, 3).map((doc, index) => (
                                         <Badge key={index} variant="outline" className="text-xs">
-                                            {doc}
+                                            {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
                                         </Badge>
                                     ))}
                                     {folderType.requiredDocuments.length > 3 && (

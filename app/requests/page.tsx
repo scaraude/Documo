@@ -1,15 +1,13 @@
 // app/requests/page.tsx
 'use client'
-import { useState, useMemo } from 'react'
-import { useRequest } from '@/features/requests/hooks/useRequest'
 import { RequestAccordion } from '@/features/requests/components/RequestAccordion'
 import { RequestFilters } from '@/features/requests/components/RequestFilters'
 import { RequestSearchAndSort } from '@/features/requests/components/RequestSearchAndSort'
-import { Card, CardContent, Button } from '@/shared/components'
-import { DocumentRequest, ComputedRequestStatus } from '@/shared/types'
-import { Plus, FileX } from 'lucide-react'
-import { ROUTES } from '@/shared/constants'
-import Link from 'next/link'
+import { useRequest } from '@/features/requests/hooks/useRequest'
+import { Card, CardContent } from '@/shared/components'
+import { ComputedRequestStatus, DocumentRequest } from '@/shared/types'
+import { FileX } from 'lucide-react'
+import { useMemo, useState } from 'react'
 
 export default function RequestsPage() {
     const { requests, isLoaded, isLoading, error } = useRequest()
@@ -17,6 +15,13 @@ export default function RequestsPage() {
     const [statusFilter, setStatusFilter] = useState<ComputedRequestStatus | 'ALL'>('ALL')
     const [sortBy, setSortBy] = useState<'date' | 'status' | 'civilId'>('date')
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+
+    const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
+        if (request.completedAt) return 'COMPLETED'
+        if (request.rejectedAt) return 'REJECTED'
+        if (request.acceptedAt) return 'ACCEPTED'
+        return 'PENDING'
+    }
 
     const filteredAndSortedRequests = useMemo(() => {
         const filtered = requests.filter(request => {
@@ -47,13 +52,6 @@ export default function RequestsPage() {
         return filtered
     }, [requests, searchTerm, statusFilter, sortBy, sortOrder])
 
-    const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
-        if (request.completedAt) return 'COMPLETED'
-        if (request.rejectedAt) return 'REJECTED'
-        if (request.acceptedAt) return 'ACCEPTED'
-        return 'PENDING'
-    }
-
     if (isLoading && !isLoaded) {
         return (
             <div className="min-h-screen flex items-center justify-center">
@@ -82,12 +80,6 @@ export default function RequestsPage() {
                                 {requests.length} demande{requests.length > 1 ? 's' : ''} au total
                             </p>
                         </div>
-                        <Button asChild>
-                            <Link href={ROUTES.REQUESTS.NEW}>
-                                <Plus className="h-4 w-4 mr-2" />
-                                Nouvelle demande
-                            </Link>
-                        </Button>
                     </div>
                 </div>
             </div>
@@ -143,14 +135,6 @@ export default function RequestsPage() {
                                             : 'Aucune demande ne correspond à vos critères'
                                         }
                                     </p>
-                                    {requests.length === 0 && (
-                                        <Button asChild>
-                                            <Link href={ROUTES.REQUESTS.NEW}>
-                                                <Plus className="h-4 w-4 mr-2" />
-                                                Nouvelle demande
-                                            </Link>
-                                        </Button>
-                                    )}
                                 </CardContent>
                             </Card>
                         ) : (
