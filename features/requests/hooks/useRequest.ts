@@ -1,7 +1,7 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import * as requestsApi from '../api/requestApi';
-import type { AppDocumentType, DocumentRequestStatus } from '@/shared/constants';
+import type { AppDocumentType } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
 
 export function useRequest() {
@@ -49,21 +49,6 @@ export function useRequest() {
         }
     };
 
-    // Update request status
-    const updateRequestStatus = useCallback(async (id: string, status: DocumentRequestStatus) => {
-        try {
-            setIsLoading(true);
-            const updatedRequest = await requestsApi.updateRequestStatus(id, status);
-            setRequests(prev =>
-                prev.map(req => req.id === id ? updatedRequest : req)
-            );
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to update request'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
     // Delete request
     const deleteRequest = async (id: string) => {
         try {
@@ -83,7 +68,6 @@ export function useRequest() {
         isLoading,
         error,
         createRequest,
-        updateRequestStatus,
         deleteRequest
     };
 }

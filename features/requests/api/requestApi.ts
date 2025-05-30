@@ -1,7 +1,7 @@
 // features/requests/api/requestApi.ts
 import { CreateRequestParams } from '../types';
 import { DocumentRequest } from '@/shared/types';
-import { API_ROUTES, DocumentRequestStatus } from '@/shared/constants';
+import { API_ROUTES } from '@/shared/constants';
 
 /**
  * Get all document requests
@@ -32,29 +32,6 @@ export async function createRequest(params: CreateRequestParams): Promise<Docume
     if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Failed to create request');
-    }
-
-    return response.json();
-}
-
-/**
- * Update request status
- */
-export async function updateRequestStatus(
-    id: string,
-    status: DocumentRequestStatus
-): Promise<DocumentRequest> {
-    const response = await fetch(API_ROUTES.REQUESTS.UPDATE_STATUS(id), {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status }),
-    });
-
-    if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to update request status');
     }
 
     return response.json();

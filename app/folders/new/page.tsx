@@ -12,7 +12,8 @@ export default function NewFolderPage() {
     const handleSubmit = async (data: CreateFolderParams) => {
         try {
             setError(null);
-            await createFolder(data);
+            const createdFolder = await createFolder(data);
+            return createdFolder;
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Une erreur est survenue');
         }

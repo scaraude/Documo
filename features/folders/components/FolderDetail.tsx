@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
 import { ComputedFolderStatus, FolderWithRelations } from '../types';
 import { useFolderStatus } from '@/shared/hooks/useComputedStatus';
-import { FolderRequestDetail } from './FolderRequestDetail';
+import { FolderRequestManager } from './FolderRequestManager';
 import { FolderDocumentList } from './FolderDocumentList';
 
 interface FolderDetailProps {
@@ -70,12 +70,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                     </p>
                 </div>
                 <div className="flex space-x-2">
-                    <Link
-                        href={`${ROUTES.REQUESTS.NEW}?folderId=${folder.id}`}
-                        className="inline-flex items-center px-3 py-1.5 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                        Nouvelle demande
-                    </Link>
                     <Link href={ROUTES.FOLDERS.EDIT(folder.id)}>
                         <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Modifier
@@ -192,57 +186,11 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                 )}
 
                 {activeTab === 'requests' && (
-                    <div className="overflow-x-auto">
-                        {!folder.requests || folder.requests.length === 0 ? (
-                            <div className="text-center py-6">
-                                <p className="text-sm text-gray-500">Aucune demande pour ce dossier</p>
-                                <Link
-                                    href={`${ROUTES.REQUESTS.NEW}?folderId=${folder.id}`}
-                                    className="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700"
-                                >
-                                    Créer une demande
-                                </Link>
-                            </div>
-                        ) : (
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            ID
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Statut
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Date de création
-                                        </th>
-                                        <th
-                                            scope="col"
-                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                                        >
-                                            Expiration
-                                        </th>
-                                        <th scope="col" className="relative px-6 py-3">
-                                            <span className="sr-only">Actions</span>
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {folder.requests.map((request) =>
-                                        <FolderRequestDetail key={request.id} folderId={folder.id} request={request} formatDate={formatDate} onRemoveRequest={onRemoveRequest} />
-                                    )}
-                                </tbody>
-                            </table>
-                        )}
+                    <div className="p-6">
+                        <FolderRequestManager
+                            folder={folder}
+                            onRemoveRequest={onRemoveRequest}
+                        />
                     </div>
                 )}
 
@@ -269,4 +217,4 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
             </div>
         </div>
     );
-}
+};

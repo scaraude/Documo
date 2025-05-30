@@ -3,16 +3,18 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
-import { CreateFolderParams } from '../types';
+import { CreateFolderParams, Folder } from '../types';
 import { useFolderTypes } from '@/features/folder-types';
 import { useCustomFieldValidation } from '@/features/folder-types/hooks/useCustomFieldValidation';
+import { useRequest } from '@/features/requests/hooks/useRequest';
 import { FolderType } from '@/features/folder-types/types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
-import { ChevronLeft, ChevronRight, FolderOpen, FileText, Settings } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FolderOpen, FileText, Settings, Users, Send, Plus, Trash2 } from 'lucide-react';
+import { sendNotification } from '@/features/notifications/api/notificationsApi';
 import Link from 'next/link';
 
 interface FolderFormProps {
-    onSubmit: (data: CreateFolderParams) => Promise<void>;
+    onSubmit: (data: CreateFolderParams) => Promise<Folder | undefined>;
     isLoading: boolean;
 }
 
@@ -23,14 +25,22 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
 
     const { folderTypes, isLoaded } = useFolderTypes();
     const { validateAllFields, getFieldInputType } = useCustomFieldValidation();
+    const { createRequest } = useRequest();
 
-    const [step, setStep] = useState<'selectType' | 'fillForm'>('selectType');
+    const [step, setStep] = useState<'selectType' | 'fillForm' | 'sendRequests'>('selectType');
     const [selectedType, setSelectedType] = useState<FolderType | null>(null);
+    const [createdFolder, setCreatedFolder] = useState<Folder | null>(null);
+
+    // Form data
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [expirationDate, setExpirationDate] = useState<string>('');
     const [customFieldsData, setCustomFieldsData] = useState<Record<string, string>>({});
     const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+    // Requests data
+    const [civilIds, setCivilIds] = useState<string[]>(['']);
+    const [sendNotifications, setSendNotifications] = useState(true);
 
     // Si un typeId est fourni en query param, sélectionner automatiquement le type
     useEffect(() => {
@@ -69,7 +79,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleFolderSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
         if (!selectedType) return;
@@ -87,13 +97,68 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                 description,
                 folderTypeId: selectedType.id,
                 customFieldsData,
+                requestedDocuments: selectedType.requiredDocuments,
                 expiresAt: expirationDate ? new Date(expirationDate) : null
             };
 
-            await onSubmit(formData);
-            router.push(ROUTES.FOLDERS.HOME);
+            const newFolder = await onSubmit(formData);
+            setCreatedFolder(newFolder || null);
+            setStep('sendRequests');
         } catch (error) {
             console.error('Error submitting folder:', error);
+        }
+    };
+
+    const addCivilId = () => {
+        setCivilIds(prev => [...prev, '']);
+    };
+
+    const removeCivilId = (index: number) => {
+        setCivilIds(prev => prev.filter((_, i) => i !== index));
+    };
+
+    const updateCivilId = (index: number, value: string) => {
+        setCivilIds(prev => prev.map((id, i) => i === index ? value : id));
+    };
+
+    const handleSendRequests = async () => {
+        if (!createdFolder || !selectedType) return;
+
+        const validCivilIds = civilIds.filter(id => id.trim() !== '');
+
+        if (validCivilIds.length === 0) {
+            // Pas de demandes, aller directement au dossier
+            router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
+            return;
+        }
+
+        try {
+            const requests = await Promise.all(
+                validCivilIds.map(civilId =>
+                    createRequest(
+                        civilId.trim(),
+                        selectedType.requiredDocuments,
+                        createdFolder.id
+                    )
+                )
+            );
+
+            // Envoyer des notifications si demandé
+            if (sendNotifications) {
+                await Promise.all(
+                    requests.map(request => sendNotification(request))
+                );
+            }
+
+            router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
+        } catch (error) {
+            console.error('Error sending requests:', error);
+        }
+    };
+
+    const skipRequests = () => {
+        if (createdFolder) {
+            router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
         }
     };
 
@@ -117,7 +182,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                         Vous devez d&apos;abord créer un type de dossier avant de pouvoir créer un dossier
                     </p>
                     <Button asChild>
-                        <Link href={ROUTES.FOLDER_TYPES.NEW}>
+                        <Link href="/folder-types/new">
                             Créer un type de dossier
                         </Link>
                     </Button>
@@ -139,12 +204,23 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                         Sélectionner le type
                     </span>
                     <ChevronRight className="h-4 w-4 text-gray-400" />
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step === 'fillForm' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-500'
+                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step === 'fillForm' ? 'bg-blue-600 text-white' :
+                        step === 'sendRequests' ? 'bg-green-600 text-white' : 'bg-gray-300 text-gray-500'
                         }`}>
-                        2
+                        {step === 'sendRequests' ? '✓' : '2'}
                     </div>
-                    <span className={`font-medium ${step === 'fillForm' ? 'text-blue-600' : 'text-gray-500'}`}>
-                        Remplir les informations
+                    <span className={`font-medium ${step === 'fillForm' ? 'text-blue-600' :
+                        step === 'sendRequests' ? 'text-green-600' : 'text-gray-500'
+                        }`}>
+                        Créer le dossier
+                    </span>
+                    <ChevronRight className="h-4 w-4 text-gray-400" />
+                    <div className={`flex items-center justify-center w-8 h-8 rounded-full ${step === 'sendRequests' ? 'bg-blue-600 text-white' : 'bg-gray-300 text-gray-500'
+                        }`}>
+                        3
+                    </div>
+                    <span className={`font-medium ${step === 'sendRequests' ? 'text-blue-600' : 'text-gray-500'}`}>
+                        Envoyer des demandes
                     </span>
                 </div>
                 {step === 'fillForm' && !preSelectedTypeId && (
@@ -205,7 +281,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
 
             {/* Step 2: Fill Form */}
             {step === 'fillForm' && selectedType && (
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleFolderSubmit} className="space-y-6">
                     {/* Type Selected Info */}
                     <Card>
                         <CardHeader>
@@ -324,6 +400,104 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                         </Button>
                     </div>
                 </form>
+            )}
+
+            {/* Step 3: Send Requests */}
+            {step === 'sendRequests' && createdFolder && selectedType && (
+                <div className="space-y-6">
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center">
+                                <Users className="h-5 w-5 mr-2 text-green-600" />
+                                Dossier créé avec succès !
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-gray-600 mb-4">
+                                Votre dossier <strong>{createdFolder.name}</strong> a été créé.
+                                Vous pouvez maintenant envoyer des demandes de documents aux personnes concernées.
+                            </p>
+                            <div className="bg-blue-50 p-4 rounded-md">
+                                <h4 className="font-medium text-blue-900 mb-2">Documents qui seront demandés :</h4>
+                                <div className="flex flex-wrap gap-2">
+                                    {selectedType.requiredDocuments.map((doc, index) => (
+                                        <Badge key={index} variant="outline" className="text-blue-700 border-blue-300">
+                                            {doc}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center justify-between">
+                                <span className="flex items-center">
+                                    <Send className="h-5 w-5 mr-2" />
+                                    Envoyer des demandes
+                                </span>
+                                <Button variant="outline" size="sm" onClick={addCivilId}>
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Ajouter une personne
+                                </Button>
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <p className="text-sm text-gray-600">
+                                Ajoutez les ID civils des personnes à qui vous voulez envoyer une demande de documents.
+                            </p>
+
+                            <div className="space-y-3">
+                                {civilIds.map((civilId, index) => (
+                                    <div key={index} className="flex gap-3">
+                                        <input
+                                            type="text"
+                                            value={civilId}
+                                            onChange={(e) => updateCivilId(index, e.target.value)}
+                                            placeholder="ID civil (ex: 123456789)"
+                                            className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                                        />
+                                        {civilIds.length > 1 && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => removeCivilId(index)}
+                                                className="text-red-600 hover:text-red-700"
+                                            >
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex items-center pt-4">
+                                <input
+                                    type="checkbox"
+                                    id="sendNotifications"
+                                    checked={sendNotifications}
+                                    onChange={(e) => setSendNotifications(e.target.checked)}
+                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                />
+                                <label htmlFor="sendNotifications" className="ml-2 text-sm text-gray-700">
+                                    Envoyer des notifications aux personnes concernées
+                                </label>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Actions */}
+                    <div className="flex justify-between pt-4">
+                        <Button variant="outline" onClick={skipRequests}>
+                            Passer cette étape
+                        </Button>
+                        <Button onClick={handleSendRequests}>
+                            <Send className="h-4 w-4 mr-2" />
+                            Envoyer les demandes
+                        </Button>
+                    </div>
+                </div>
             )}
         </div>
     );

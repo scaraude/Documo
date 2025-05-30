@@ -38,6 +38,7 @@ export interface CreateFolderParams {
     folderTypeId: string; // Maintenant obligatoire
     customFieldsData?: Record<string, string>;
     expiresAt: Date | null;
+    requestedDocuments: AppDocumentType[];
     createdById?: string;
     sharedWith?: string[];
 }
