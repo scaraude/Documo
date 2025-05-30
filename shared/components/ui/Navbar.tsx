@@ -5,9 +5,9 @@ import { useState } from 'react'
 import { ROUTES } from '@/shared/constants'
 
 const navLinks = [
-    { href: ROUTES.HOME, label: 'Demandes' },
-    { href: ROUTES.FOLDERS.HOME, label: 'Dossiers' }, // Add Folders link
-    { href: ROUTES.DOCUMENTS.HOME, label: 'Documents' }
+    { href: ROUTES.HOME, label: 'Accueil' },
+    { href: ROUTES.FOLDERS.HOME, label: 'Dossiers' },
+    { href: ROUTES.REQUESTS.HOME, label: 'Demandes' }
 ]
 
 export const Navbar = () => {
