@@ -2,6 +2,8 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { cn } from '@/lib/utils'
 import { ROUTES } from '@/shared/constants'
 
 const navLinks = [
@@ -12,6 +14,7 @@ const navLinks = [
 
 export const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const pathname = usePathname()
 
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
@@ -30,7 +33,12 @@ export const Navbar = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
+                                className={cn(
+                                    "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                                    pathname === link.href
+                                        ? "bg-blue-50 text-blue-600"
+                                        : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                                )}
                             >
                                 {link.label}
                             </Link>
@@ -66,7 +74,12 @@ export const Navbar = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className="block text-gray-600 hover:text-blue-600 hover:bg-gray-50 px-3 py-2 rounded-md text-base font-medium"
+                                className={cn(
+                                    "block px-3 py-2 rounded-md text-base font-medium transition-colors",
+                                    pathname === link.href
+                                        ? "bg-blue-50 text-blue-600"
+                                        : "text-gray-600 hover:text-blue-600 hover:bg-gray-50"
+                                )}
                                 onClick={toggleMenu}
                             >
                                 {link.label}
