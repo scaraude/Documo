@@ -28,6 +28,7 @@ export const ROUTES = {
     EXTERNAL: {
         REQUEST: (id: string) => `/external/requests/${id}`,
         UPLOAD: (requestId: string) => `/external/upload/${requestId}`,
+        UPLOAD_SUCCESS: (requestId: string) => `/external/upload/${requestId}/success`,
     },
     API: {
         REQUESTS: '/api/requests',

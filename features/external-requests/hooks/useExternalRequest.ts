@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { DocumentRequest } from '@/shared/types'
+import { API_ROUTES } from '../../../shared/constants'
 
-export const useExternalRequest = (requestId: string) => {
+export const useExternalRequest = (token: string) => {
     const [request, setRequest] = useState<DocumentRequest | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<Error | null>(null)
@@ -11,7 +12,7 @@ export const useExternalRequest = (requestId: string) => {
     useEffect(() => {
         const fetchRequest = async () => {
             try {
-                const response = await fetch(`/api/external/requests/${requestId}`)
+                const response = await fetch(API_ROUTES.EXTERNAL.REQUEST(token))
                 if (!response.ok) {
                     throw new Error('Request not found')
                 }
@@ -26,7 +27,7 @@ export const useExternalRequest = (requestId: string) => {
         }
 
         fetchRequest()
-    }, [requestId])
+    }, [token])
 
     return {
         request,

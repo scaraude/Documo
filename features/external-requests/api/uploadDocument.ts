@@ -4,7 +4,7 @@ import { generateEncryptionKey, encryptFile } from '../utils/encryption'
 interface UploadDocumentOptions {
     file: File
     documentType: string
-    requestId: string
+    token: string
     onProgress?: (progress: number) => void
 }
 
@@ -25,7 +25,7 @@ const extractMetadata = (file: File): AppDocumentMetadata => ({
 export const uploadDocument = async ({
     file,
     documentType,
-    requestId,
+    token,
     onProgress
 }: UploadDocumentOptions): Promise<void> => {
     try {
@@ -33,7 +33,7 @@ export const uploadDocument = async ({
         const documentId = uuidv4()
         const document = {
             id: documentId,
-            requestId,
+            token,
             type: documentType,
             status: 'UPLOADING',
             metadata: extractMetadata(file),
@@ -49,8 +49,8 @@ export const uploadDocument = async ({
         const formData = new FormData()
         formData.append('file', encryptedFile, file.name)
         formData.append('document', JSON.stringify(document))
-        
-        // Export encryption key for storage - in a real app, this would be securely stored
+
+        // Export encryption key for storage
         const exportedKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
         const keyBase64 = btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
         formData.append('encryptionKey', keyBase64)
@@ -65,7 +65,6 @@ export const uploadDocument = async ({
         }
 
         // Simulate upload progress for now
-        // This will be replaced with actual upload progress tracking
         if (onProgress) {
             let progress = 0
             const interval = setInterval(() => {

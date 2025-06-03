@@ -6,8 +6,8 @@ import { useExternalRequest } from '../../../../features/external-requests/hooks
 import { DocumentUploader } from '../../../../features/external-requests/components/DocumentUploader'
 import { Loader } from 'lucide-react'
 
-export default function ExternalUploadPage({ params }: { params: { requestId: string } }) {
-    const { request, isLoading, error } = useExternalRequest(params.requestId)
+export default function ExternalUploadPage({ params }: { params: { token: string } }) {
+    const { request, isLoading, error } = useExternalRequest(params.token)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
@@ -79,7 +79,7 @@ export default function ExternalUploadPage({ params }: { params: { requestId: st
                         </ul>
                     </div>
                     <DocumentUploader
-                        requestId={params.requestId}
+                        token={params.token}
                         requiredDocuments={request.requestedDocuments}
                     />
                 </CardContent>

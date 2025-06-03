@@ -41,7 +41,7 @@ export function ShareLinkButton({ requestId, variant = 'default', size = 'defaul
             }, 2000);
         } catch (error) {
             console.error('Error sharing link:', error);
-            // You might want to show a toast notification here
+            // Here you might want to show an error toast or message
         } finally {
             setIsLoading(false);
         }
@@ -58,7 +58,7 @@ export function ShareLinkButton({ requestId, variant = 'default', size = 'defaul
             {isCopied ? (
                 <>
                     <Check className="h-4 w-4" />
-                    Copied!
+                    Copié !
                 </>
             ) : (
                 <>
@@ -67,7 +67,7 @@ export function ShareLinkButton({ requestId, variant = 'default', size = 'defaul
                     ) : (
                         <LinkIcon className="h-4 w-4" />
                     )}
-                    Share Link
+                    Partager le lien
                 </>
             )}
         </Button>

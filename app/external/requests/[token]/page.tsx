@@ -12,7 +12,7 @@ import { API_ROUTES } from '../../../../shared/constants'
 
 export default function ExternalRequestPage() {
     const params = useParams()
-    const requestId = params.token as string
+    const token = params.token as string
     const [request, setRequest] = useState<DocumentRequest | null>(null)
     const [error, setError] = useState<Error | null>(null)
     const [isLoading, setIsLoading] = useState(true)
@@ -21,7 +21,7 @@ export default function ExternalRequestPage() {
         async function loadRequest() {
             try {
                 setIsLoading(true)
-                const response = await fetch(API_ROUTES.EXTERNAL.REQUEST(requestId))
+                const response = await fetch(API_ROUTES.EXTERNAL.REQUEST(token))
                 if (!response.ok) {
                     throw new Error('Demande non trouvée')
                 }
@@ -34,10 +34,10 @@ export default function ExternalRequestPage() {
             }
         }
 
-        if (requestId) {
+        if (token) {
             loadRequest()
         }
-    }, [requestId])
+    }, [token])
 
     if (isLoading) {
         return (

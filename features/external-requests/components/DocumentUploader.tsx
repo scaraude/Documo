@@ -1,168 +1,130 @@
 'use client'
 
-import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { Button } from '@/shared/components/ui/button'
 import { Card } from '@/shared/components/ui/card'
-import { Upload, CheckCircle, AlertCircle } from 'lucide-react'
-import { useDropzone } from 'react-dropzone'
+import { ROUTES } from '@/shared/constants'
 import { uploadDocument } from '../api/uploadDocument'
-import { toast } from "sonner"
-import { Progress } from './Progress'
 
 interface DocumentUploaderProps {
-    requestId: string
-    requiredDocuments: string[]
+    token: string;
+    requiredDocuments: string[];
 }
 
 interface UploadStatus {
     [key: string]: {
-        progress: number
-        status: 'idle' | 'uploading' | 'completed' | 'error'
-        error?: string
-        file?: File
+        progress: number;
+        status: 'idle' | 'uploading' | 'completed' | 'error';
+        error?: string;
+        file?: File;
     }
 }
 
-export const DocumentUploader = ({ requestId, requiredDocuments }: DocumentUploaderProps) => {
-    const router = useRouter()
+export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderProps) => {
+    const router = useRouter();
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>(
         requiredDocuments.reduce((acc, doc) => ({
             ...acc,
             [doc]: { progress: 0, status: 'idle' }
         }), {})
-    )
+    );
 
-    const { getRootProps, getInputProps } = useDropzone({
-        accept: {
-            'application/pdf': ['.pdf'],
-            'image/*': ['.png', '.jpg', '.jpeg']
-        },
-        maxSize: 10485760, // 10MB
-    })
-
-    const handleDrop = async (files: File[], documentType: string) => {
-        if (files.length === 0) return
-
-        const file = files[0]
-        setUploadStatus(prev => ({
-            ...prev,
-            [documentType]: { progress: 0, status: 'uploading', file }
-        }))
-
+    const handleFileUpload = async (file: File, documentType: string) => {
         try {
+            setUploadStatus(prev => ({
+                ...prev,
+                [documentType]: { progress: 0, status: 'uploading', file }
+            }));
+
             await uploadDocument({
                 file,
                 documentType,
-                requestId,
+                token,
                 onProgress: (progress) => {
                     setUploadStatus(prev => ({
                         ...prev,
                         [documentType]: { ...prev[documentType], progress }
-                    }))
+                    }));
                 }
-            })
+            });
 
             setUploadStatus(prev => ({
                 ...prev,
-                [documentType]: { ...prev[documentType], status: 'completed', progress: 100 }
-            }))
-
-            toast("Document téléchargé", {
-                description: "Votre document a été téléchargé et chiffré avec succès.",
-            })
+                [documentType]: { progress: 100, status: 'completed', file }
+            }));
 
             // Check if all documents are uploaded
             const allCompleted = Object.values(uploadStatus).every(
                 status => status.status === 'completed'
-            )
+            );
+
             if (allCompleted) {
-                router.push(`/external/upload/${requestId}/success`)
+                router.push(ROUTES.EXTERNAL.UPLOAD_SUCCESS(token));
             }
         } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : "Une erreur s'est produite lors du téléchargement"
             setUploadStatus(prev => ({
                 ...prev,
                 [documentType]: {
-                    ...prev[documentType],
+                    progress: 0,
                     status: 'error',
-                    error: errorMessage
+                    error: error instanceof Error ? error.message : 'Upload failed',
+                    file
                 }
-            }))
-
-            toast.error("Erreur de téléchargement", {
-                description: errorMessage,
-            })
+            }));
         }
-    }
+    };
 
     return (
         <div className="space-y-6">
-            {requiredDocuments.map((docType) => (
-                <Card key={docType} className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-lg font-medium">{docType}</h3>
-                        {uploadStatus[docType].status === 'completed' && (
-                            <CheckCircle className="h-5 w-5 text-green-500" />
-                        )}
-                        {uploadStatus[docType].status === 'error' && (
-                            <AlertCircle className="h-5 w-5 text-red-500" />
-                        )}
-                    </div>
-
-                    {uploadStatus[docType].status === 'idle' ? (
-                        <div
-                            {...getRootProps()}
-                            onClick={(e) => e.stopPropagation()}
-                            className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer"
-                        >
-                            <input {...getInputProps()} accept="image/*,.pdf" onChange={(e) => {
-                                if (e.target.files?.length) {
-                                    handleDrop([e.target.files[0]], docType)
-                                }
-                            }} />
-                            <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
-                            <p className="text-sm text-gray-600">
-                                Glissez un fichier ici ou cliquez pour sélectionner
-                            </p>
-                            <p className="text-xs text-gray-500 mt-1">
-                                PDF, PNG ou JPG jusqu&apos;à 10MB
-                            </p>
-                        </div>
-                    ) : (
-                        <div className="space-y-2">
-                            {uploadStatus[docType].file && (
-                                <p className="text-sm text-gray-600">
-                                    {uploadStatus[docType].file.name}
+            {requiredDocuments.map((documentType) => {
+                const status = uploadStatus[documentType];
+                return (
+                    <Card key={documentType} className="p-6">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <h3 className="text-lg font-medium">{documentType}</h3>
+                                <p className="text-sm text-gray-500">
+                                    {status.status === 'idle' && 'En attente du document'}
+                                    {status.status === 'uploading' && `Upload en cours ${status.progress}%`}
+                                    {status.status === 'completed' && 'Document téléversé'}
+                                    {status.status === 'error' && status.error}
                                 </p>
-                            )}
-                            <Progress
-                                value={uploadStatus[docType].progress}
-                                className="w-full"
-                            />
-                            {uploadStatus[docType].error && (
-                                <p className="text-sm text-red-500">
-                                    {uploadStatus[docType].error}
-                                </p>
-                            )}
-                            {uploadStatus[docType].status === 'error' && (
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                        setUploadStatus(prev => ({
-                                            ...prev,
-                                            [docType]: { progress: 0, status: 'idle' }
-                                        }))
-                                    }}
-                                >
-                                    Réessayer
-                                </Button>
-                            )}
+                            </div>
+                            <div>
+                                {status.status !== 'completed' && (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => {
+                                            const input = document.createElement('input');
+                                            input.type = 'file';
+                                            input.accept = '.pdf,.jpg,.jpeg,.png';
+                                            input.onchange = (e) => {
+                                                const file = (e.target as HTMLInputElement).files?.[0];
+                                                if (file) {
+                                                    handleFileUpload(file, documentType);
+                                                }
+                                            };
+                                            input.click();
+                                        }}
+                                        disabled={status.status === 'uploading'}
+                                    >
+                                        {status.status === 'uploading' ? 'En cours...' : 'Choisir un fichier'}
+                                    </Button>
+                                )}
+                            </div>
                         </div>
-                    )}
-                </Card>
-            ))}
+                        {status.status === 'uploading' && (
+                            <div className="mt-4 w-full bg-gray-200 rounded-full h-2.5">
+                                <div
+                                    className="bg-blue-600 h-2.5 rounded-full"
+                                    style={{ width: `${status.progress}%` }}
+                                ></div>
+                            </div>
+                        )}
+                    </Card>
+                );
+            })}
         </div>
-    )
-}
+    );
+};

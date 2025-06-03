@@ -1,13 +1,15 @@
 import { NextResponse } from 'next/server'
-import * as requestsRepo from '@/features/requests/repository/requestRepository'
+import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository'
 
-// GET /api/external/requests/[id] - Get a request by ID for external users
+// GET /api/external/requests/[id] - Get a request by token for external users
 export async function GET(
     _request: Request,
     { params }: { params: { token: string } }
 ) {
     try {
-        const request = await requestsRepo.getRequestById(params.token)
+        const shareLink = await externalRequestsRepository.getShareLinkByToken(params.token);
+        const request = shareLink?.request;
+
         if (!request) {
             return NextResponse.json(
                 { error: 'Request not found' },
