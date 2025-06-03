@@ -28,6 +28,7 @@
 - **Documentation**: Update relevant documentation for new features.
 - **Git Practices**: Commit changes with clear and descriptive messages.
 - **Dependencies**: Ensure all dependencies are properly installed and updated.
+- **API types**: Ensure all API types are properly defined and used (ex: "/types/api.ts").
 
 ## Example Usage
 When adding a new feature:

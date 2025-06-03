@@ -78,9 +78,12 @@ export async function deleteRequest(id: string): Promise<void> {
  */
 export async function getRequestById(id: string): Promise<DocumentRequest | null> {
     try {
+        console.log('Fetching request with ID:', id);
         const request = await prisma.documentRequest.findUnique({
             where: { id }
         });
+
+        console.log('Fetched request:', request ? request.id : 'not found', 'for ID:', id);
 
         return request ? toAppModel(request) : null;
     } catch (error) {
