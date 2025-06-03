@@ -1,21 +1,22 @@
 'use client'
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Search, Plus } from 'lucide-react';
-import { useFolderTypes } from '../../features/folder-types';
+import { Search, Plus, FileText } from 'lucide-react';
+import { FolderType, useFolderTypes } from '../../features/folder-types';
 import { useFolder } from '../../features/folders/hooks/useFolder';
-import { FolderTypeCarousel } from '../../features/folder-types/components/FolderTypeCarousel';
 import { Button, Card, CardContent, Badge } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
 import { useFolderStatus } from '../../shared/hooks/useComputedStatus';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Folder } from '../../features/folders/types';
+import { useRouter } from 'next/navigation';
 
 export default function FoldersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const { folderTypes, isLoaded: folderTypesLoaded } = useFolderTypes();
     const { folders, isLoaded: foldersLoaded } = useFolder();
+    const router = useRouter();
 
     const filteredFolders = folders.filter(folder =>
         folder.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -33,6 +34,48 @@ export default function FoldersPage() {
                 return <Badge className="bg-blue-100 text-blue-800">📂 Actif</Badge>;
         }
     };
+
+    const FolderGridItem = ({ folderType }: {
+        folderType: FolderType & {
+            foldersCount?: number;
+            activeFoldersCount?: number;
+        };
+    }) => {
+        return <div className="group cursor-pointer" onClick={() => router.push(ROUTES.FOLDER_TYPES.DETAIL(folderType.id))}>
+            {/* Folder Representation */}
+            <div className="relative">
+                {/* Folder Tab */}
+                <div className="absolute -top-3 left-0 bg-stone-100 w-17 h-3 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
+
+                {/* Folder Body */}
+                <div className="bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none h-40 p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
+                    {/* Date in top right */}
+                    <div className="absolute top-2 right-2">
+                        <p className="text-xs text-gray-600">
+                            {formatDistanceToNow(new Date(folderType.updatedAt), { locale: fr })}
+                        </p>
+                    </div>
+
+                    {/* Folder Content */}
+                    <div className="h-full flex flex-col justify-between">
+                        <div>
+                            <h3 className="font-semibold text-gray-800 text-lg mb-1 truncate">
+                                {folderType.name}
+                            </h3>
+                            <h4 className="text-sm text-gray-600 mb-2">
+                                {folderType.description || 'Aucune description'}
+                            </h4>
+                            <div className="mt-3 flex items-center gap-2">
+                                <Badge variant="outline" className="text-xs">
+                                    <FileText className="h-3 w-3" />{folderType.requiredDocuments.length} document{folderType.requiredDocuments.length > 1 ? 's' : ''}
+                                </Badge>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 
     const FolderCard = ({ folder }: { folder: Folder }) => {
         const folderStatus = useFolderStatus(folder);
@@ -91,10 +134,14 @@ export default function FoldersPage() {
                             </CardContent>
                         </Card>
                     ) : (
-                        <FolderTypeCarousel folderTypes={folderTypes} />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {folderTypes.map((folderType) => (
+                                <FolderGridItem key={folderType.id} folderType={folderType} />
+                            ))}
+                        </div>
                     )}
                 </div>
-
+                <div className="border-t border-gray-200 my-12"></div>
                 {/* Dossiers en cours Section */}
                 <div>
                     <div className="flex justify-between items-center mb-6">
@@ -169,6 +216,6 @@ export default function FoldersPage() {
                     )}
                 </div>
             </div>
-        </div>
+        </div >
     );
 }

@@ -11,7 +11,7 @@ interface FolderTypeCarouselProps {
     folderTypes: Array<FolderType & {
         foldersCount?: number;
         activeFoldersCount?: number;
-    }>
+    }>;
 }
 
 export const FolderTypeCarousel = ({ folderTypes }: FolderTypeCarouselProps) => {
