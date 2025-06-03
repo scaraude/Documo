@@ -52,17 +52,17 @@ export default function FoldersPage() {
                         href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <button className="w-10 h-10 border border-stone-400 text-stone-400 rounded-full hover:text-white hover:bg-stone-700 hover:scale-120 transition-all duration-200 flex items-center justify-center group-hover:-translate-y-2">
+                        <button className="w-9 h-9 border border-stone-400 text-stone-400 rounded-full hover:text-white hover:bg-stone-700 hover:scale-120 transition-all duration-200 flex items-center justify-center group-hover:-translate-y-2">
                             <Plus className="h-5 w-5" />
                         </button>
                     </Link>
                 </div>
 
                 {/* Folder Tab */}
-                <div className="absolute -top-3 left-0 bg-stone-100 w-17 h-3 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
+                <div className="absolute -top-3.5 left-0 bg-stone-100 w-20 h-6 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
 
                 {/* Folder Body */}
-                <div className="bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none h-40 p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
+                <div className="bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none h-36 p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
                     {/* Date in top right */}
                     <div className="absolute top-2 right-2">
                         <p className="text-xs text-gray-600">
