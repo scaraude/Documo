@@ -10,6 +10,8 @@ import { Plus, Send, Users, Clock, CheckCircle, XCircle, FileCheck, Hash, Calend
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
+import Link from 'next/link';
+import { ROUTES } from '../../../shared/constants';
 
 interface FolderRequestManagerProps {
     folder: FolderWithRelations;
@@ -290,10 +292,12 @@ const RequestCard = ({
                     </div>
 
                     <div className="flex items-center space-x-2">
-                        <Button variant="outline" size="sm">
-                            <Eye className="h-4 w-4 mr-2" />
-                            Voir
-                        </Button>
+                        <Link href={ROUTES.REQUESTS.DETAIL(request.id)}>
+                            <Button variant="outline" size="sm">
+                                <Eye className="h-4 w-4 mr-2" />
+                                Voir
+                            </Button>
+                        </Link>
                         <Button
                             variant="outline"
                             size="sm"

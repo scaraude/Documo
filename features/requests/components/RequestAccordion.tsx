@@ -6,6 +6,8 @@ import { Badge, Button } from '@/shared/components'
 import { ChevronDown, ChevronRight, Calendar, Hash, FileText, Clock, User, ExternalLink } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
+import Link from 'next/link'
+import { ROUTES } from '../../../shared/constants'
 
 interface RequestAccordionProps {
     request: DocumentRequest
@@ -203,10 +205,12 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                             <div>
                                 <h4 className="text-sm font-medium text-gray-900 mb-3">Actions</h4>
                                 <div className="space-y-2">
-                                    <Button variant="outline" size="sm" className="w-full justify-start">
-                                        <ExternalLink className="h-4 w-4 mr-2" />
-                                        Voir les détails
-                                    </Button>
+                                    <Link href={ROUTES.REQUESTS.DETAIL(request.id)} className="w-full">
+                                        <Button variant="outline" size="sm" className="w-full justify-start">
+                                            <ExternalLink className="h-4 w-4 mr-2" />
+                                            Voir les détails
+                                        </Button>
+                                    </Link>
                                     {status === 'ACCEPTED' && (
                                         <Button variant="outline" size="sm" className="w-full justify-start">
                                             <FileText className="h-4 w-4 mr-2" />
