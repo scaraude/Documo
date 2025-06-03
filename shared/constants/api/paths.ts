@@ -51,7 +51,12 @@ export const API_ROUTES = {
         ADD_REQUEST: (folderId: string) => `/api/folders/${folderId}/requests`,
         REMOVE_REQUEST: (folderId: string, requestId: string) =>
             `/api/folders/${folderId}/requests/${requestId}`
-    }
+    },
+    EXTERNAL: {
+        REQUEST: (id: string) => `/api/external/requests/${id}`,
+        UPLOAD: '/api/external/upload',
+        SHARE_LINK: (id: string) => `/api/external/share-link/${id}`,
+    },
 } as const;
 
 // Type utilities for API routes

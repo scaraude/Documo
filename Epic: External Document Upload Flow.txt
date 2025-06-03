@@ -1,5 +1,7 @@
 **Epic: External Document Upload Flow**
 
+this epic will mainly extract/re-use code in notification feature
+
 Frontend Tickets:
 
 1. **Request Detail Enhancement**

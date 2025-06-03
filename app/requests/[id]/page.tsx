@@ -12,6 +12,7 @@ import { fr } from 'date-fns/locale'
 import { CheckCircle, Clock, FileCheck, FileText, History, XCircle } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton'
 
 export default function RequestDetailPage() {
     const params = useParams()
@@ -96,6 +97,9 @@ export default function RequestDetailPage() {
                             <p className="mt-1 text-sm text-gray-600">
                                 Créée {formatRelativeTime(request.createdAt)}
                             </p>
+                        </div>
+                        <div>
+                            <ShareLinkButton requestId={request.id} />
                         </div>
                     </div>
                 </div>

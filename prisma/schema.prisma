@@ -79,6 +79,7 @@ model DocumentRequest {
   notificationResponses NotificationResponse[]
   folder                Folder?                @relation(fields: [folderId], references: [id])
   folderId              String?
+  shareLinks            RequestShareLink[]     @relation
 
   @@map("document_requests")
 }
@@ -127,6 +128,18 @@ model NotificationResponse {
   processed Boolean         @default(false)
 
   @@map("notification_responses")
+}
+
+model RequestShareLink {
+  id         String          @id @default(uuid())
+  requestId  String
+  token      String          @unique
+  request    DocumentRequest @relation(fields: [requestId], references: [id])
+  createdAt  DateTime        @default(now())
+  expiresAt  DateTime
+  accessedAt DateTime?
+
+  @@map("request_share_links")
 }
 
 enum DocumentType {

@@ -25,6 +25,10 @@ export const ROUTES = {
     NOTIFICATIONS: {
         HOME: '/notifications',
     },
+    EXTERNAL: {
+        REQUEST: (id: string) => `/external/requests/${id}`,
+        UPLOAD: (requestId: string) => `/external/upload/${requestId}`,
+    },
     API: {
         REQUESTS: '/api/requests',
         DOCUMENTS: '/api/documents',

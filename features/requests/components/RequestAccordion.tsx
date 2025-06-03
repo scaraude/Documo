@@ -8,6 +8,7 @@ import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import Link from 'next/link'
 import { ROUTES } from '../../../shared/constants'
+import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton'
 
 interface RequestAccordionProps {
     request: DocumentRequest
@@ -211,6 +212,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                             Voir les détails
                                         </Button>
                                     </Link>
+                                    <ShareLinkButton requestId={request.id} variant="outline" size="sm" />
                                     {status === 'ACCEPTED' && (
                                         <Button variant="outline" size="sm" className="w-full justify-start">
                                             <FileText className="h-4 w-4 mr-2" />
