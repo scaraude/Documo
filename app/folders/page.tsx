@@ -1,150 +1,174 @@
 'use client'
 import React, { useState } from 'react';
-import { Search, Plus, ChevronLeft, ChevronRight, FileText } from 'lucide-react';
+import Link from 'next/link';
+import { Search, Plus } from 'lucide-react';
 import { useFolderTypes } from '../../features/folder-types';
 import { useFolder } from '../../features/folders/hooks/useFolder';
-import { Folder } from '../../features/folders/types';
+import { FolderTypeCarousel } from '../../features/folder-types/components/FolderTypeCarousel';
+import { Button, Card, CardContent, Badge } from '@/shared/components';
+import { ROUTES } from '@/shared/constants';
 import { useFolderStatus } from '../../shared/hooks/useComputedStatus';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { Folder } from '../../features/folders/types';
 
-const FoldersPageUI = () => {
+export default function FoldersPage() {
     const [searchTerm, setSearchTerm] = useState('');
-    const { folderTypes } = useFolderTypes();
-    const { folders } = useFolder();
+    const { folderTypes, isLoaded: folderTypesLoaded } = useFolderTypes();
+    const { folders, isLoaded: foldersLoaded } = useFolder();
 
-    const FolderGridItem = ({ folder }: { folder: Folder }) => {
+    const filteredFolders = folders.filter(folder =>
+        folder.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case 'PENDING':
+                return <Badge className="bg-yellow-100 text-yellow-800">🕐 En attente</Badge>;
+            case 'COMPLETED':
+                return <Badge className="bg-green-100 text-green-800">✅ Terminé</Badge>;
+            case 'REJECTED':
+                return <Badge className="bg-red-100 text-red-800">❌ Refusé</Badge>;
+            default:
+                return <Badge className="bg-blue-100 text-blue-800">📂 Actif</Badge>;
+        }
+    };
+
+    const FolderCard = ({ folder }: { folder: Folder }) => {
         const folderStatus = useFolderStatus(folder);
 
-        return (<div className="group cursor-pointer">
-            {/* Folder Representation */}
-            <div className="relative">
-                {/* Folder Tab */}
-                <div className="absolute -top-2 left-4 bg-stone-200 w-11 h-6 rounded-t-lg border-2 border-stone-300 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-300"></div>
-
-                {/* Folder Body */}
-                <div className="bg-stone-200 border-2 border-stone-300 rounded-lg h-32 p-4 shadow-lg transition-all duration-200 group-hover:shadow-xl group-hover:-translate-y-2 group-hover:bg-stone-300 relative overflow-hidden">
-                    {/* Date in top right */}
-                    <div className="absolute top-2 right-2">
-                        <p className="text-xs text-gray-600">
-                            {formatDistanceToNow(new Date(folder.lastActivityAt), { locale: fr })}
+        return (
+            <Link href={ROUTES.FOLDERS.DETAIL(folder.id)}>
+                <Card className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardContent className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-medium text-gray-900 truncate">{folder.name}</h3>
+                            {getStatusBadge(folderStatus)}
+                        </div>
+                        <p className="text-sm text-gray-500">
+                            Envoyé {formatDistanceToNow(new Date(folder.createdAt), { addSuffix: true, locale: fr })} • {folder.requestedDocuments.length} document{folder.requestedDocuments.length > 1 ? 's' : ''}
                         </p>
-                    </div>
-
-                    {/* Folder Content */}
-                    <div className="h-full flex flex-col justify-between">
-                        <div>
-                            <h3 className="font-semibold text-gray-800 text-sm mb-1 truncate">
-                                {folder.name}
-                            </h3>
-                            <div className="flex text-gray-500 text-xs my-4">
-                                <FileText className="h-3 w-3" />
-                                <span className="ml-1">{folder.requestedDocuments.length} document(s)</span>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <div className={`px-2 py-1 rounded-full text-xs font-medium ${folderStatus === 'COMPLETED' ? 'bg-green-200 text-green-800' :
-                                folderStatus === 'PENDING' ? 'bg-orange-200 text-orange-800' :
-                                    'bg-blue-200 text-blue-800'
-                                }`}>
-                                {folderStatus === 'COMPLETED' ? 'Terminé' :
-                                    folderStatus === 'PENDING' ? 'En attente' : 'Actif'}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>)
-    }
+                    </CardContent>
+                </Card>
+            </Link>
+        );
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 p-6">
-            <div className="max-w-7xl mx-auto">
-
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Types de dossier Section */}
                 <div className="mb-12">
-                    <div className="flex justify-end items-center mb-8">
-
-                        <div className="h-full w-full flex flex-col items-center gap-3">
-                            <h1 className="text-3xl font-bold text-gray-900">Types de dossier :</h1>
-                            <button className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-lg">
-                                <Plus className="h-5 w-5" />
+                    <div className="flex justify-between items-center mb-6">
+                        <h1 className="text-2xl font-semibold text-gray-900">Types de dossier</h1>
+                        <Button asChild>
+                            <Link href={ROUTES.FOLDER_TYPES.NEW}>
+                                <Plus className="h-4 w-4 mr-2" />
                                 Nouveau type de dossier
-                            </button>
-                        </div>
-
-
-                        {/* Carousel */}
-                        <div className="relative">
-                            <button className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-50 p-3 rounded-full shadow-lg transition-all">
-                                <ChevronLeft className="h-6 w-6 text-gray-600" />
-                            </button>
-
-                            <div className="flex gap-6 overflow-hidden px-12">
-                                {folderTypes.map((type) => (
-                                    <div key={type.id} className="flex-shrink-0 group cursor-pointer">
-                                        {/* Folder Tab */}
-                                        <div className="relative">
-
-                                            {/* Folder Body */}
-                                            <div className="bg-white border-4 border-teal-500 rounded-xl p-6 w-42 h-52 flex flex-col justify-center items-center shadow-lg transition-all group-hover:shadow-xl group-hover:-translate-y-1">
-                                                <h3 className="font-bold text-gray-900 text-center text-sm leading-tight mb-2">
-                                                    {type.name}
-                                                </h3>
-                                                <div className="flex text-gray-500 text-xs my-4">
-                                                    <FileText className="h-3 w-3" />
-                                                    <span className="ml-1">{type.requiredDocuments.length} document(s)</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-
-                            <button className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white hover:bg-gray-50 p-3 rounded-full shadow-lg transition-all">
-                                <ChevronRight className="h-6 w-6 text-gray-600" />
-                            </button>
-                        </div>
+                            </Link>
+                        </Button>
                     </div>
+
+                    {!folderTypesLoaded ? (
+                        <div className="flex justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : folderTypes.length === 0 ? (
+                        <Card className="text-center py-12">
+                            <CardContent>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                    Aucun type de dossier
+                                </h3>
+                                <p className="text-gray-500 mb-6">
+                                    Créez votre premier type de dossier pour commencer
+                                </p>
+                                <Button asChild>
+                                    <Link href={ROUTES.FOLDER_TYPES.NEW}>
+                                        <Plus className="h-4 w-4 mr-2" />
+                                        Créer un type de dossier
+                                    </Link>
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <FolderTypeCarousel folderTypes={folderTypes} />
+                    )}
                 </div>
 
                 {/* Dossiers en cours Section */}
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Dossiers en cours:</h2>
+                    <div className="flex justify-between items-center mb-6">
+                        <h2 className="text-2xl font-semibold text-gray-900">Dossiers en cours</h2>
+                        <Button asChild>
+                            <Link href={ROUTES.FOLDERS.NEW}>
+                                <Plus className="h-4 w-4 mr-2" />
+                                Nouveau dossier
+                            </Link>
+                        </Button>
+                    </div>
 
-                    {/* Search Bar */}
-                    <div className="flex justify-center mb-12">
-                        <div className="relative w-full max-w-lg">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+                    {/* Search Bar et Filtres */}
+                    <div className="flex flex-col sm:flex-row gap-4 mb-6">
+                        <div className="relative flex-1 max-w-md">
+                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Recherche"
+                                placeholder="Rechercher un dossier ou un type..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full pl-12 pr-6 py-4 bg-white border-2 border-gray-200 rounded-full text-lg focus:outline-none focus:border-blue-400 shadow-lg"
+                                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
+                        </div>
+
+                        <div className="flex gap-2">
+                            <Badge variant="outline" className="cursor-pointer hover:bg-yellow-50">
+                                🕐 En attente
+                            </Badge>
+                            <Badge variant="outline" className="cursor-pointer hover:bg-green-50">
+                                ✅ Terminé
+                            </Badge>
+                            <Badge variant="outline" className="cursor-pointer hover:bg-red-50">
+                                ❌ Refusé
+                            </Badge>
                         </div>
                     </div>
 
-                    {/* Folders Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
-                        {folders.map((folder) => (
-                            <FolderGridItem key={folder.id} folder={folder} />
-                        ))}
-                    </div>
-
-                    {/* Add New Folder Button */}
-                    <div className="flex justify-center mt-8">
-                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl">
-                            <Plus className="h-5 w-5" />
-                            Nouveau dossier
-                        </button>
-                    </div>
+                    {/* Dossiers Grid */}
+                    {!foldersLoaded ? (
+                        <div className="flex justify-center py-8">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                        </div>
+                    ) : filteredFolders.length === 0 ? (
+                        <Card className="text-center py-12">
+                            <CardContent>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                    {folders.length === 0 ? 'Aucun dossier' : 'Aucun résultat'}
+                                </h3>
+                                <p className="text-gray-500 mb-6">
+                                    {folders.length === 0
+                                        ? 'Créez votre premier dossier pour commencer'
+                                        : 'Aucun dossier ne correspond à votre recherche'
+                                    }
+                                </p>
+                                {folders.length === 0 && (
+                                    <Button asChild>
+                                        <Link href={ROUTES.FOLDERS.NEW}>
+                                            <Plus className="h-4 w-4 mr-2" />
+                                            Nouveau dossier
+                                        </Link>
+                                    </Button>
+                                )}
+                            </CardContent>
+                        </Card>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            {filteredFolders.map((folder) => (
+                                <FolderCard key={folder.id} folder={folder} />
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
     );
-};
-
-export default FoldersPageUI;
+}
