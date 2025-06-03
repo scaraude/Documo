@@ -35,6 +35,7 @@ export default function FoldersPage() {
         }
     };
 
+
     const FolderGridItem = ({ folderType }: {
         folderType: FolderType & {
             foldersCount?: number;
@@ -42,8 +43,21 @@ export default function FoldersPage() {
         };
     }) => {
         return <div className="group cursor-pointer" onClick={() => router.push(ROUTES.FOLDER_TYPES.DETAIL(folderType.id))}>
+
             {/* Folder Representation */}
             <div className="relative">
+
+                <div className="absolute bottom-4 right-4 z-50">
+                    <Link
+                        href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button className="w-10 h-10 border border-stone-400 text-stone-400 rounded-full hover:text-white hover:bg-stone-700 hover:scale-120 transition-all duration-200 flex items-center justify-center group-hover:-translate-y-2">
+                            <Plus className="h-5 w-5" />
+                        </button>
+                    </Link>
+                </div>
+
                 {/* Folder Tab */}
                 <div className="absolute -top-3 left-0 bg-stone-100 w-17 h-3 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
 
