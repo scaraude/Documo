@@ -155,7 +155,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                                         {folder.folderType.customFields.map((field) => {
                                             const value = folder.customFieldsData?.[field.id];
                                             if (!value) return null;
-                                            
+
                                             // Format the value based on field type
                                             let displayValue = value;
                                             if (field.type === 'date') {

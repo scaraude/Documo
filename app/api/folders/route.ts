@@ -28,8 +28,8 @@ export async function GET(request: Request) {
 // POST /api/folders - Create a new folder
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const folder = await repository.createFolder(body as CreateFolderParams);
+        const body: CreateFolderParams = await request.json();
+        const folder = await repository.createFolder(body);
         return NextResponse.json(folder, { status: 201 });
     } catch (error) {
         console.error('Error creating folder:', error);

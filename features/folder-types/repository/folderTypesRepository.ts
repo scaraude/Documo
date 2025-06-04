@@ -9,7 +9,7 @@ type PrismaFolderType = Prisma.FolderTypeGetPayload<null>;
 /**
  * Convertir un modèle Prisma en modèle d'application
  */
-function toAppModel(prismaModel: PrismaFolderType): FolderType {
+export function toAppModel(prismaModel: PrismaFolderType): FolderType {
     return {
         id: prismaModel.id,
         name: prismaModel.name,

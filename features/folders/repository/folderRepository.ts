@@ -1,9 +1,10 @@
 // features/folders/repository/folderRepository.ts
 import prisma, { Prisma } from '@/lib/prisma';
-import { Folder, FolderWithRelations } from '../types';
+import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 import { AppDocumentType } from '@/shared/constants';
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import { toAppModel as documentToAppModel } from '@/features/documents/repository/documentsRepository';
+import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
 
 // Type mapper between Prisma and App
 type PrismaFolder = Prisma.FolderGetPayload<null>;
@@ -62,7 +63,8 @@ export async function getFolderByIdWithRelations(
             where: { id },
             include: {
                 requests: true,
-                documents: true
+                documents: true,
+                folderType: true
             }
         })
 
@@ -71,7 +73,8 @@ export async function getFolderByIdWithRelations(
         return {
             ...toAppModel(folder),
             requests: folder.requests.map(resquestToAppModel),
-            documents: folder.documents.map(documentToAppModel)
+            documents: folder.documents.map(documentToAppModel),
+            folderType: folderTypeToAppModel(folder.folderType)
         };
     } catch (error) {
         console.error(`Error fetching folder with ID ${id}:`, error);
@@ -80,14 +83,7 @@ export async function getFolderByIdWithRelations(
 }
 
 // Create a new folder
-export async function createFolder(data: {
-    name: string;
-    description?: string;
-    requestedDocuments: AppDocumentType[];
-    expiresAt?: Date;
-    createdById?: string;
-    sharedWith?: string[];
-}): Promise<Folder> {
+export async function createFolder(data: CreateFolderParams): Promise<Folder> {
     try {
         const newFolder = await prisma.folder.create({
             data,

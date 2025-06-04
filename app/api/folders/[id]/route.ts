@@ -1,7 +1,7 @@
 // app/api/folders/[id]/route.ts
 import { NextResponse } from 'next/server';
 import * as repository from '@/features/folders/repository/folderRepository';
-import { UpdateFolderParams } from '@/features/folders/types';
+import { CreateFolderParams } from '@/features/folders/types';
 
 // GET /api/folders/[id] - Get a folder by ID
 export async function GET(
@@ -40,7 +40,7 @@ export async function PUT(
         const body = await request.json();
         const updatedFolder = await repository.updateFolder(
             params.id,
-            body as UpdateFolderParams
+            body as CreateFolderParams
         );
 
         return NextResponse.json(updatedFolder);
