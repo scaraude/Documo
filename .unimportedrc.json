@@ -1,0 +1,63 @@
+{
+  "entry": [
+    "app/**/*.{ts,tsx}",
+    "features/**/*.{ts,tsx}",
+    "shared/**/*.{ts,tsx}",
+    "lib/**/*.{ts,tsx}"
+  ],
+  "extensions": [".ts", ".tsx", ".js", ".jsx"],
+  "ignorePatterns": [
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.{ts,tsx}",
+    "**/__tests__/**",
+    "**/*.stories.{ts,tsx}",
+    "**/node_modules/**",
+    "**/.next/**",
+    "**/dist/**",
+    "**/build/**",
+    "lib/prisma/generated/**",
+    "prisma/migrations/**"
+  ],
+  "ignoreUnimported": [
+    "next.config.ts",
+    "tailwind.config.js",
+    "postcss.config.mjs",
+    "eslint.config.mjs",
+    "jest.config.js",
+    "jest.setup.js",
+    "tsconfig.json",
+    "package.json",
+    "prisma/schema.prisma",
+    "prisma/seed.ts",
+    "app/layout.tsx",
+    "app/page.tsx",
+    "app/globals.css",
+    "components.json",
+    "shared/schemas/**",
+    "shared/types/index.ts",
+    "shared/constants/index.ts"
+  ],
+  "ignoreUnresolved": [
+    "react",
+    "react-dom",
+    "next",
+    "next/*",
+    "@prisma/client",
+    "@radix-ui/*",
+    "lucide-react",
+    "tailwindcss",
+    "class-variance-authority",
+    "clsx",
+    "tailwind-merge"
+  ],
+  "includeEntryFile": true,
+  "respectGitignore": true,
+  "showPreset": "files",
+  "alias": {
+    "@": ".",
+    "@/features": "./features",
+    "@/shared": "./shared",
+    "@/lib": "./lib",
+    "@/app": "./app"
+  }
+}

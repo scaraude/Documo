@@ -14,7 +14,13 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "unused": "unimported",
+    "unused:files": "unimported --show-preset files",
+    "unused:exports": "unimported --show-preset exports",
+    "unused:summary": "unimported --show-preset summary",
+    "unused:fix": "unimported --update",
+    "clean": "yarn unused:fix && yarn lint --fix"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
@@ -59,6 +65,7 @@
     "tailwindcss": "^4",
     "ts-jest": "^29.3.2",
     "tw-animate-css": "^1.3.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "unimported": "^1.31.1"
   }
 }
