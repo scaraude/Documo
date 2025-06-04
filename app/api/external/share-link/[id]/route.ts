@@ -13,7 +13,6 @@ export async function POST(
         // Generate a secure token that will be used to identify this shared request
         const token = await generateSecureToken();
 
-        console.log(`Generated token: ${token} for request ID: ${requestId}`);
         // Store the share token with expiration
         await externalRequestsRepository.createShareLink({
             requestId,

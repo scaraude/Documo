@@ -21,7 +21,6 @@ export function SecureDocumentUpload({
     const { secureUploadDocument, uploadProgress } = useDocumentUpload();
 
     const onDrop = useCallback(async (acceptedFiles: File[]) => {
-        console.log('Files dropped:', acceptedFiles);
         const file = acceptedFiles[0];
         if (!file) return;
 

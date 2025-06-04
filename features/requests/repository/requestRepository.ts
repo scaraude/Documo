@@ -26,7 +26,6 @@ export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest 
 export async function getRequests(): Promise<DocumentRequest[]> {
     try {
         const requests = await prisma.documentRequest.findMany();
-        console.log('Fetched requests from database:', requests);
         return requests.map(toAppModel);
     } catch (error) {
         console.error('Error fetching requests from database:', error);
@@ -79,12 +78,9 @@ export async function deleteRequest(id: string): Promise<void> {
  */
 export async function getRequestById(id: string): Promise<DocumentRequest | null> {
     try {
-        console.log('Fetching request with ID:', id);
         const request = await prisma.documentRequest.findUnique({
             where: { id }
         });
-
-        console.log('Fetched request:', request ? request.id : 'not found', 'for ID:', id);
 
         return request ? toAppModel(request) : null;
     } catch (error) {
