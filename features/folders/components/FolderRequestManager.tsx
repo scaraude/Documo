@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { FolderWithRelations } from '../types';
 import { useRequest } from '@/features/requests/hooks/useRequest';
 import { useRequestStatus } from '@/shared/hooks/useComputedStatus';
-import { sendNotification } from '@/features/notifications/api/notificationsApi';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
 import { Plus, Send, Users, Clock, CheckCircle, XCircle, FileCheck, Hash, Calendar, Trash2, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -23,7 +22,6 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
     const { createRequest } = useRequest();
     const [isCreatingRequest, setIsCreatingRequest] = useState(false);
     const [newCivilIds, setNewCivilIds] = useState<string[]>(['']);
-    const [sendNotifications, setSendNotifications] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
 
     const addCivilId = () => {
@@ -46,7 +44,7 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
         try {
             setIsLoading(true);
 
-            const requests = await Promise.all(
+            await Promise.all(
                 validCivilIds.map(civilId =>
                     createRequest(
                         civilId.trim(),
@@ -55,13 +53,6 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
                     )
                 )
             );
-
-            // Envoyer des notifications si demandé
-            if (sendNotifications) {
-                await Promise.all(
-                    requests.map(request => sendNotification(request))
-                );
-            }
 
             // Reset form
             setNewCivilIds(['']);
@@ -180,19 +171,6 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
                                 <Plus className="h-4 w-4 mr-2" />
                                 Ajouter une personne
                             </Button>
-                        </div>
-
-                        <div className="flex items-center">
-                            <input
-                                type="checkbox"
-                                id="sendNotifications"
-                                checked={sendNotifications}
-                                onChange={(e) => setSendNotifications(e.target.checked)}
-                                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
-                            <label htmlFor="sendNotifications" className="ml-2 text-sm text-gray-700">
-                                Envoyer des notifications aux personnes concernées
-                            </label>
                         </div>
 
                         <div className="flex justify-end gap-3 pt-4 border-t">
