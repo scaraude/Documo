@@ -1,7 +1,7 @@
 // app/folders/new/page.tsx
 'use client'
 import { useState } from 'react';
-import { useFolder } from '@/features/folders/hooks/useFolder';
+import { useFolder } from '@/features/folders/';
 import { FolderForm } from '@/features/folders/components/FolderForm';
 import { CreateFolderParams } from '@/features/folders/types';
 

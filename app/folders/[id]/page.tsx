@@ -2,9 +2,9 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useFolder } from '@/features/folders/hooks/useFolder';
 import { FolderDetail } from '@/features/folders/components/FolderDetail';
 import { ROUTES } from '@/shared/constants';
+import { useFolder } from '@/features/folders';
 
 export default function FolderDetailPage() {
     const params = useParams();

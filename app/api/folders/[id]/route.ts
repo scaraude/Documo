@@ -1,6 +1,6 @@
 // app/api/folders/[id]/route.ts
 import { NextResponse } from 'next/server';
-import * as repository from '@/features/folders/repository/folderRepository';
+import * as repository from '@/features/folders/repository/foldersRepository';
 import { CreateFolderParams } from '@/features/folders/types';
 
 // GET /api/folders/[id] - Get a folder by ID

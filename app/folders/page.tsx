@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, Plus, FileText } from 'lucide-react';
 import { FolderType, useFolderTypes } from '../../features/folder-types';
-import { useFolder } from '../../features/folders/hooks/useFolder';
+import { useFolders } from '../../features/folders/hooks/useFolders';
 import { Button, Card, CardContent, Badge } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
 import { useFolderStatus } from '../../shared/hooks/useComputedStatus';
@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation';
 export default function FoldersPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const { folderTypes, isLoaded: folderTypesLoaded } = useFolderTypes();
-    const { folders, isLoaded: foldersLoaded } = useFolder();
+    const { folders, isLoading } = useFolders();
     const router = useRouter();
 
     const filteredFolders = folders.filter(folder =>
@@ -189,7 +189,7 @@ export default function FoldersPage() {
                     </div>
 
                     {/* Dossiers Grid */}
-                    {!foldersLoaded ? (
+                    {isLoading ? (
                         <div className="flex justify-center py-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         </div>

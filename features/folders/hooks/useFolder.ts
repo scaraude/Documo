@@ -1,29 +1,13 @@
 // features/folders/hooks/useFolder.ts
 'use client'
-import { useCallback, useEffect, useState } from 'react';
-import * as folderApi from '../api/folderApi';
-import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
+import { useCallback, useState } from 'react';
+import * as folderApi from '../api/foldersApi';
+import { CreateFolderParams, FolderWithRelations } from '../types';
 
 export function useFolder() {
-    const [folders, setFolders] = useState<Array<Folder & { requestsCount?: number }>>([]);
     const [currentFolder, setCurrentFolder] = useState<FolderWithRelations | null>(null);
-    const [isLoaded, setIsLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-
-    // Load all folders
-    const loadFolders = useCallback(async (withStats: boolean = false) => {
-        try {
-            setIsLoading(true);
-            const data = await folderApi.getFolders(withStats);
-            setFolders(data);
-            setIsLoaded(true);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Unknown error'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
 
     // Load a specific folder
     const loadFolder = useCallback(async (id: string, includeRelations: boolean = false) => {
@@ -43,7 +27,6 @@ export function useFolder() {
         try {
             setIsLoading(true);
             const newFolder = await folderApi.createFolder(params);
-            setFolders(prev => [...prev, newFolder]);
             return newFolder;
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to create folder'));
@@ -54,14 +37,10 @@ export function useFolder() {
     };
 
     // Update a folder
-    const updateFolder = async (id: string, params: UpdateFolderParams) => {
+    const updateFolder = async (id: string, params: CreateFolderParams) => {
         try {
             setIsLoading(true);
             const updatedFolder = await folderApi.updateFolder(id, params);
-
-            setFolders(prev =>
-                prev.map(folder => folder.id === id ? updatedFolder : folder)
-            );
 
             if (currentFolder && currentFolder.id === id) {
                 setCurrentFolder({
@@ -84,7 +63,6 @@ export function useFolder() {
         try {
             setIsLoading(true);
             await folderApi.deleteFolder(id);
-            setFolders(prev => prev.filter(folder => folder.id !== id));
 
             if (currentFolder && currentFolder.id === id) {
                 setCurrentFolder(null);
@@ -138,18 +116,10 @@ export function useFolder() {
         }
     };
 
-    // Load folders on component mount
-    useEffect(() => {
-        loadFolders();
-    }, [loadFolders]);
-
     return {
-        folders,
         currentFolder,
-        isLoaded,
         isLoading,
         error,
-        loadFolders,
         loadFolder,
         createFolder,
         updateFolder,

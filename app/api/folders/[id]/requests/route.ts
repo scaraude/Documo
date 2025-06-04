@@ -1,6 +1,6 @@
 // app/api/folders/[id]/requests/route.ts
 import { NextResponse } from 'next/server';
-import * as folderRepository from '@/features/folders/repository/folderRepository';
+import * as folderRepository from '@/features/folders/repository/foldersRepository';
 import * as requestRepository from '@/features/requests/repository/requestRepository';
 
 // GET /api/folders/[id]/requests - Get all requests in a folder

@@ -1,6 +1,6 @@
 // features/folders/api/folderApi.ts
 import { API_ROUTES } from '@/shared/constants';
-import { Folder, CreateFolderParams, UpdateFolderParams, FolderWithRelations } from '../types';
+import { Folder, CreateFolderParams, FolderWithRelations } from '../types';
 
 // Get all folders
 export async function getFolders(withStats: boolean = false): Promise<Array<Folder & { requestsCount?: number }>> {
@@ -57,7 +57,7 @@ export async function createFolder(params: CreateFolderParams): Promise<Folder> 
 }
 
 // Update a folder
-export async function updateFolder(id: string, params: UpdateFolderParams): Promise<Folder> {
+export async function updateFolder(id: string, params: CreateFolderParams): Promise<Folder> {
     const response = await fetch(API_ROUTES.FOLDERS.UPDATE(id), {
         method: 'PUT',
         headers: {

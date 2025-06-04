@@ -8,7 +8,6 @@ import { ComputedFolderStatus, FolderWithRelations } from '../types';
 import { useFolderStatus } from '@/shared/hooks/useComputedStatus';
 import { FolderRequestManager } from './FolderRequestManager';
 import { FolderDocumentList } from './FolderDocumentList';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface FolderDetailProps {
     folder: FolderWithRelations;
@@ -61,6 +60,9 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
         });
     };
 
+    console.log('folder.folderType', folder.folderType);
+    console.log('folder.customFieldsData', folder.customFieldsData);
+    console.log('folder.folderType.customFields?.length', folder.folderType?.customFields?.length);
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -168,7 +170,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                                                         clipRule="evenodd"
                                                     />
                                                 </svg>
-                                                <span className="ml-2 flex-1 w-0 truncate">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</span>
+                                                <span className="ml-2 flex-1 w-0 truncate">{doc}</span>
                                             </div>
                                         </li>
                                     ))}

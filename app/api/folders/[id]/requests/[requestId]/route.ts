@@ -1,6 +1,6 @@
 // app/api/folders/[folderId]/requests/[requestId]/route.ts
 import { NextResponse } from 'next/server';
-import * as folderRepository from '@/features/folders/repository/folderRepository';
+import * as folderRepository from '@/features/folders/repository/foldersRepository';
 import * as requestRepository from '@/features/requests/repository/requestRepository';
 
 // DELETE /api/folders/[folderId]/requests/[requestId] - Remove a request from a folder
