@@ -7,14 +7,6 @@ export const API_ROUTES = {
         UPDATE_STATUS: (id: string) => `/api/requests/${id}/status`,
         DELETE: (id: string) => `/api/requests/${id}`
     },
-    TEMPLATES: {
-        BASE: '/api/templates',
-        GET_ALL: '/api/templates',
-        GET_BY_ID: (id: string) => `/api/templates/${id}`,
-        CREATE: '/api/templates',
-        UPDATE: (id: string) => `/api/templates/${id}`,
-        DELETE: (id: string) => `/api/templates/${id}`
-    },
     DOCUMENTS: {
         BASE: '/api/documents',
         GET_ALL: '/api/documents',
@@ -23,13 +15,6 @@ export const API_ROUTES = {
         UPLOAD: '/api/documents/upload',
         UPDATE_STATUS: (id: string) => `/api/documents/${id}/status`,
         DELETE: (id: string) => `/api/documents/${id}`
-    },
-    NOTIFICATIONS: {
-        SEND: '/api/notifications/send',
-        GET_PENDING: '/api/notifications/pending',
-        CLEAR_PENDING: '/api/notifications/pending/clear',
-        SAVE_RESPONSE: '/api/notifications/response',
-        CHECK_RESPONSE: '/api/notifications/response'
     },
     FOLDER_TYPES: {
         BASE: '/api/folder-types',

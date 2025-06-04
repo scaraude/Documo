@@ -10,7 +10,6 @@ import { useRequest } from '@/features/requests/hooks/useRequest';
 import { FolderType } from '@/features/folder-types/types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
 import { ChevronLeft, ChevronRight, FolderOpen, FileText, Settings, Users, Send, Plus, Trash2 } from 'lucide-react';
-import { sendNotification } from '@/features/notifications/api/notificationsApi';
 import Link from 'next/link';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
@@ -134,7 +133,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
         }
 
         try {
-            const requests = await Promise.all(
+            await Promise.all(
                 validCivilIds.map(civilId =>
                     createRequest(
                         civilId.trim(),
@@ -143,13 +142,6 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                     )
                 )
             );
-
-            // Envoyer des notifications si demandé
-            if (sendNotifications) {
-                await Promise.all(
-                    requests.map(request => sendNotification(request))
-                );
-            }
 
             router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
         } catch (error) {

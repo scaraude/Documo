@@ -15,27 +15,11 @@ export const ROUTES = {
     REQUESTS: {
         HOME: '/requests',
         DETAIL: (id: string) => `/requests/${id}`,
-        TEMPLATES: '/templates',
-    },
-    DOCUMENTS: {
-        HOME: '/documents',
-        UPLOAD: '/documents/upload/',
-        DETAIL: (id: string) => `/documents/${id}`,
-    },
-    NOTIFICATIONS: {
-        HOME: '/notifications',
     },
     EXTERNAL: {
         REQUEST: (id: string) => `/external/requests/${id}`,
         UPLOAD: (requestId: string) => `/external/upload/${requestId}`,
         UPLOAD_SUCCESS: (requestId: string) => `/external/upload/${requestId}/success`,
-    },
-    API: {
-        REQUESTS: '/api/requests',
-        DOCUMENTS: '/api/documents',
-        NOTIFICATIONS: '/api/notifications',
-        UPLOAD: '/api/documents/upload',
-        UPLOAD_STATUS: '/api/documents/upload/status',
     }
 } as const;
 

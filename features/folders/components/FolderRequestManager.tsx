@@ -1,4 +1,3 @@
-// features/folders/components/FolderRequestManager.tsx
 'use client'
 import { useState } from 'react';
 import { FolderWithRelations } from '../types';
