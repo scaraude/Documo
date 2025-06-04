@@ -14,7 +14,6 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
     "prisma:deploy": "prisma migrate deploy",
-    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
     "unused": "unimported",
     "unused:files": "unimported --show-preset files",
     "unused:exports": "unimported --show-preset exports",
