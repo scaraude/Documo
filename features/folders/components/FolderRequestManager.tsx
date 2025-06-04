@@ -12,6 +12,7 @@ import { fr } from 'date-fns/locale';
 import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
 import Link from 'next/link';
 import { ROUTES } from '../../../shared/constants';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface FolderRequestManagerProps {
     folder: FolderWithRelations;
@@ -142,7 +143,7 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
                             <div className="flex flex-wrap gap-2">
                                 {folder.requestedDocuments.map((doc, index) => (
                                     <Badge key={index} variant="outline" className="text-blue-700 border-blue-300">
-                                        {doc}
+                                        {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
                                     </Badge>
                                 ))}
                             </div>

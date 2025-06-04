@@ -1,7 +1,5 @@
-import crypto from 'crypto'
-
 export const generateEncryptionKey = async (): Promise<CryptoKey> => {
-    return await crypto.subtle.generateKey(
+    return await window.crypto.subtle.generateKey(
         {
             name: 'AES-GCM',
             length: 256
@@ -12,7 +10,7 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
 }
 
 export const encryptFile = async (file: File, key: CryptoKey): Promise<Blob> => {
-    const iv = crypto.getRandomValues(new Uint8Array(12))
+    const iv = window.crypto.getRandomValues(new Uint8Array(12))
     const fileBuffer = await file.arrayBuffer()
 
     const encryptedData = await window.crypto.subtle.encrypt(

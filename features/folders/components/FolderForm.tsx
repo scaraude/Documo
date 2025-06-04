@@ -12,6 +12,7 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/share
 import { ChevronLeft, ChevronRight, FolderOpen, FileText, Settings, Users, Send, Plus, Trash2 } from 'lucide-react';
 import { sendNotification } from '@/features/notifications/api/notificationsApi';
 import Link from 'next/link';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface FolderFormProps {
     onSubmit: (data: CreateFolderParams) => Promise<Folder | undefined>;
@@ -295,7 +296,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                             <div className="flex flex-wrap gap-2">
                                 {selectedType.requiredDocuments.map((doc, index) => (
                                     <Badge key={index} variant="outline">
-                                        {doc}
+                                        {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
                                     </Badge>
                                 ))}
                             </div>
@@ -422,7 +423,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                                 <div className="flex flex-wrap gap-2">
                                     {selectedType.requiredDocuments.map((doc, index) => (
                                         <Badge key={index} variant="outline" className="text-blue-700 border-blue-300">
-                                            {doc}
+                                            {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
                                         </Badge>
                                     ))}
                                 </div>

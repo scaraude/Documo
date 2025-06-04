@@ -4,12 +4,13 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Button } from '@/shared/components/ui/button'
 import { Card } from '@/shared/components/ui/card'
-import { ROUTES } from '@/shared/constants'
+import { AppDocumentType, ROUTES } from '@/shared/constants'
 import { uploadDocument } from '../api/uploadDocument'
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper'
 
 interface DocumentUploaderProps {
     token: string;
-    requiredDocuments: string[];
+    requiredDocuments: AppDocumentType[];
 }
 
 interface UploadStatus {
@@ -30,7 +31,7 @@ export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderP
         }), {})
     );
 
-    const handleFileUpload = async (file: File, documentType: string) => {
+    const handleFileUpload = async (file: File, documentType: AppDocumentType) => {
         try {
             setUploadStatus(prev => ({
                 ...prev,
@@ -83,7 +84,7 @@ export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderP
                     <Card key={documentType} className="p-6">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h3 className="text-lg font-medium">{documentType}</h3>
+                                <h3 className="text-lg font-medium">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[documentType]}</h3>
                                 <p className="text-sm text-gray-500">
                                     {status.status === 'idle' && 'En attente du document'}
                                     {status.status === 'uploading' && `Upload en cours ${status.progress}%`}

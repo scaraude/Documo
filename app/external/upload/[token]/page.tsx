@@ -5,9 +5,14 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/shared/components/ui
 import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest'
 import { DocumentUploader } from '../../../../features/external-requests/components/DocumentUploader'
 import { Loader } from 'lucide-react'
+import * as React from 'react'
+import { useParams } from 'next/navigation';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../../shared/mapper'
 
-export default function ExternalUploadPage({ params }: { params: { token: string } }) {
-    const { request, isLoading, error } = useExternalRequest(params.token)
+export default function ExternalUploadPage() {
+    const params = useParams();
+    const token = params.token as string;
+    const { request, isLoading, error } = useExternalRequest(token)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
@@ -71,15 +76,15 @@ export default function ExternalUploadPage({ params }: { params: { token: string
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold mb-2">Documents demandés :</h2>
                         <ul className="list-disc list-inside space-y-2">
-                            {request.requestedDocuments.map((doc, index) => (
+                            {request.requestedDocuments.map((requestedDocument, index) => (
                                 <li key={index} className="text-gray-700">
-                                    {doc}
+                                    {APP_DOCUMENT_TYPE_TO_LABEL_MAP[requestedDocument]}
                                 </li>
                             ))}
                         </ul>
                     </div>
                     <DocumentUploader
-                        token={params.token}
+                        token={token}
                         requiredDocuments={request.requestedDocuments}
                     />
                 </CardContent>

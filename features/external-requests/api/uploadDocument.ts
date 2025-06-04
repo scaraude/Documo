@@ -1,9 +1,11 @@
 import { v4 as uuidv4 } from 'uuid'
 import { generateEncryptionKey, encryptFile } from '../utils/encryption'
+import { AppDocumentType } from '../../../shared/constants'
+import { AppDocumentWithoutRequestId } from '../types'
 
 interface UploadDocumentOptions {
     file: File
-    documentType: string
+    documentType: AppDocumentType
     token: string
     onProgress?: (progress: number) => void
 }
@@ -31,11 +33,9 @@ export const uploadDocument = async ({
     try {
         // Create document metadata
         const documentId = uuidv4()
-        const document = {
+        const document: AppDocumentWithoutRequestId = {
             id: documentId,
-            token,
             type: documentType,
-            status: 'UPLOADING',
             metadata: extractMetadata(file),
             createdAt: new Date(),
             updatedAt: new Date()
@@ -49,6 +49,7 @@ export const uploadDocument = async ({
         const formData = new FormData()
         formData.append('file', encryptedFile, file.name)
         formData.append('document', JSON.stringify(document))
+        formData.append('token', JSON.stringify(token))
 
         // Export encryption key for storage
         const exportedKey = await window.crypto.subtle.exportKey('raw', encryptionKey)

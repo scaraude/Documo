@@ -8,6 +8,7 @@ import { getDocumentsByRequest } from '@/features/documents/api/documentsApi';
 import { ALLOWED_FILE_TYPES } from '@/shared/constants/documents/types';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface DocumentDetailsProps {
     request: DocumentRequest | null;
@@ -133,7 +134,7 @@ export function DocumentDetails({ request, isOpen, onClose }: DocumentDetailsPro
                                         <ul className="list-disc list-inside space-y-1">
                                             {request.requestedDocuments.map((doc, index) => (
                                                 <li key={index} className="text-sm">
-                                                    {doc}
+                                                    {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
                                                 </li>
                                             ))}
                                         </ul>
