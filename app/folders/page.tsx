@@ -62,13 +62,7 @@ export default function FoldersPage() {
                 <div className="absolute -top-3.5 left-0 bg-stone-100 w-20 h-6 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
 
                 {/* Folder Body */}
-                <div className="bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none h-36 p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
-                    {/* Date in top right */}
-                    <div className="absolute top-2 right-2">
-                        <p className="text-xs text-gray-600">
-                            {formatDistanceToNow(new Date(folderType.updatedAt), { locale: fr })}
-                        </p>
-                    </div>
+                <div className=" h-46 bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
 
                     {/* Folder Content */}
                     <div className="h-full flex flex-col justify-between">
