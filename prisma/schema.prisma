@@ -89,7 +89,6 @@ model Document {
   requestId String
   request   DocumentRequest @relation(fields: [requestId], references: [id])
   type      DocumentType
-  // SUPPRIMER: status DocumentStatus
   metadata  Json
   url       String?
   hash      String?

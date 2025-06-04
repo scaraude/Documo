@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { generateEncryptionKey, encryptFile } from '../utils/encryption'
-import { AppDocumentType } from '../../../shared/constants'
+import { API_ROUTES, AppDocumentType } from '../../../shared/constants'
 import { AppDocumentWithoutRequestId } from '../types'
 
 interface UploadDocumentOptions {
@@ -56,7 +56,7 @@ export const uploadDocument = async ({
         const keyBase64 = btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
         formData.append('encryptionKey', keyBase64)
 
-        const response = await fetch('/api/external/upload', {
+        const response = await fetch(API_ROUTES.EXTERNAL.UPLOAD, {
             method: 'POST',
             body: formData
         })

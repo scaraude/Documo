@@ -7,6 +7,11 @@ const nextConfig: NextConfig = {
     // This makes development mode fail if there are TypeScript errors
     tsconfigPath: "./tsconfig.json",
   },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '5mb',
+    },
+  },
 };
 
 export default nextConfig;

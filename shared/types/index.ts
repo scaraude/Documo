@@ -35,6 +35,7 @@ export type ComputedRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'COMPL
 export interface AppDocument {
     id: string;
     requestId: string;
+    folderId?: string;
     type: AppDocumentType;
     metadata: AppDocumentMetadata;
     url?: string;

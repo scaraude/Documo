@@ -19,7 +19,7 @@ export async function createShareLink(params: CreateShareLinkParams) {
  * Get a share link by token
  */
 export async function getShareLinkByToken(token: string) {
-    return await prisma.requestShareLink.findFirst({
+    const retour = await prisma.requestShareLink.findFirst({
         where: {
             token,
             expiresAt: {
@@ -30,6 +30,8 @@ export async function getShareLinkByToken(token: string) {
             request: true
         }
     });
+    console.log('getShareLinkByToken', { token, retour });
+    return retour;
 }
 
 /**

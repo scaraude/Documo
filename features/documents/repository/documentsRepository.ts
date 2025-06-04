@@ -38,6 +38,9 @@ function toPrismaCreateInput(appDocument: AppDocument): Prisma.DocumentCreateInp
         hash: appDocument.metadata.hash,
         metadata: appDocument.metadata, // Add the required metadata property
         validationErrors: appDocument.validationErrors || [],
+        folder: {
+            connect: { id: appDocument.folderId }
+        }
     };
 }
 

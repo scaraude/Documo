@@ -7,7 +7,8 @@ export async function GET(
     { params }: { params: { token: string } }
 ) {
     try {
-        const shareLink = await externalRequestsRepository.getShareLinkByToken(params.token);
+        const { token } = params;
+        const shareLink = await externalRequestsRepository.getShareLinkByToken(token);
         const request = shareLink?.request;
 
         if (!request) {
