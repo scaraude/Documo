@@ -9,14 +9,14 @@ export async function POST(
     { params }: ShareLinkParams
 ): Promise<NextResponse<ShareLinkResponse | ErrorResponse>> {
     try {
-        console.log(`Generating share link for request ID: ${params.id}`);
+        const { id: requestId } = params;
         // Generate a secure token that will be used to identify this shared request
         const token = await generateSecureToken();
 
-        console.log(`Generated token: ${token} for request ID: ${params.id}`);
+        console.log(`Generated token: ${token} for request ID: ${requestId}`);
         // Store the share token with expiration
         await externalRequestsRepository.createShareLink({
-            requestId: params.id,
+            requestId,
             token,
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days expiry by default
         });

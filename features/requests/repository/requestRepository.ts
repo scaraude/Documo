@@ -26,6 +26,7 @@ export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest 
 export async function getRequests(): Promise<DocumentRequest[]> {
     try {
         const requests = await prisma.documentRequest.findMany();
+        console.log('Fetched requests from database:', requests);
         return requests.map(toAppModel);
     } catch (error) {
         console.error('Error fetching requests from database:', error);

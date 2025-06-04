@@ -52,6 +52,7 @@ export default function RequestsPage() {
         return filtered
     }, [requests, searchTerm, statusFilter, sortBy, sortOrder])
 
+    console.log('Filtered and sorted requests:', filteredAndSortedRequests)
     if (isLoading && !isLoaded) {
         return (
             <div className="min-h-screen flex items-center justify-center">
