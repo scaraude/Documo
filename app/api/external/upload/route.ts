@@ -13,9 +13,7 @@ export async function POST(request: Request) {
         const token = formData.get('token')?.slice(1, -1) as string;
         const documentData = JSON.parse(formData.get('document') as string) as AppDocumentWithoutRequestId;
 
-        console.log('Received token:', token);
         const shareLink = await externalRequestsRepository.getShareLinkByToken(token);
-        console.log('Share link:', shareLink);
 
         if (!shareLink) {
             return NextResponse.json(
