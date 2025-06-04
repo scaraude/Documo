@@ -1,10 +1,13 @@
 'use client'
-import Link from 'next/link'
 import { useFolderTypes } from '@/features/folder-types'
 import { ROUTES } from '@/shared/constants'
 import { Plus, FileText, FolderOpen } from 'lucide-react'
+import { Button } from "@/components/ui/button"
+import { useRouter } from 'next/navigation'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../components/ui/hover-card'
 
 export default function HomePage() {
+  const router = useRouter();
   const { folderTypes, isLoaded } = useFolderTypes()
   const hasFolderTypes = isLoaded && folderTypes.length > 0
 
@@ -27,6 +30,29 @@ export default function HomePage() {
         </div>
       </div>
 
+      <div className='flex justify-evenly mb-10'>
+        <Button size={'xl'} variant={'outline'} onClick={() => router.push(ROUTES.FOLDER_TYPES.NEW)}>
+          <FolderOpen className="size-6" />
+          <span className='text-lg'>Créer un type de dossier</span>
+        </Button>
+        {!hasFolderTypes ? <HoverCard>
+          <HoverCardTrigger>
+            <Button size={'xl'} disabled={!hasFolderTypes} className='bg-blue-600 hover:bg-blue-700' onClick={() => router.push(ROUTES.FOLDERS.NEW)} >
+              <Plus className="size-6" strokeWidth={2.25} />
+              <span className='text-lg font-bold'>Créer un dossier</span>
+            </Button>
+          </HoverCardTrigger>
+          <HoverCardContent className="w-80">
+            <p className="text-sm text-gray-500">
+              Commencez par créer un dossier 📂
+            </p>
+          </HoverCardContent>
+        </HoverCard> :
+          <Button size={'xl'} disabled={!hasFolderTypes} className='bg-blue-600 hover:bg-blue-700' onClick={() => router.push(ROUTES.FOLDERS.NEW)} >
+            <Plus className="size-6" strokeWidth={2.25} />
+            <span className='text-lg font-bold'>Créer un dossier</span>
+          </Button>}
+      </div>
       {/* Features Section */}
       <div className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -71,45 +97,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-          </div>
-        </div>
-        <div className="py-20 flex flex-col sm:flex-row gap-6 justify-evenly items-center">
-          {/* Create Folder Type CTA */}
-          <Link href={ROUTES.FOLDER_TYPES.NEW}>
-            <button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 px-8 text-lg rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center gap-3">
-              <FolderOpen className="h-6 w-6" />
-              Créer un type de dossier
-            </button>
-          </Link>
-
-          {/* Create Folder CTA */}
-          <div className="relative">
-            <Link
-              href={hasFolderTypes ? ROUTES.FOLDERS.NEW : '#'}
-              className={hasFolderTypes ? '' : 'pointer-events-none'}
-            >
-              <button
-                className={`w-full sm:w-auto font-bold py-4 px-8 text-lg rounded-lg shadow-lg transition duration-300 ease-in-out flex items-center gap-3 ${hasFolderTypes
-                  ? 'bg-green-600 hover:bg-green-700 text-white transform hover:scale-105'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                  }`}
-                disabled={!hasFolderTypes}
-              >
-                <Plus className="h-6 w-6" />
-                Créer un dossier
-              </button>
-            </Link>
-
-            {/* Overlay for disabled state */}
-            {!hasFolderTypes && isLoaded && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                <div className="bg-white p-3 rounded-lg shadow-lg text-center max-w-xs">
-                  <p className="text-sm font-medium text-gray-900">
-                    Créez un type de dossier d&apos;abord
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
         </div>
         {!isLoaded && (
