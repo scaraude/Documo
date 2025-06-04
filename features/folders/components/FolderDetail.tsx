@@ -8,6 +8,7 @@ import { ComputedFolderStatus, FolderWithRelations } from '../types';
 import { useFolderStatus } from '@/shared/hooks/useComputedStatus';
 import { FolderRequestManager } from './FolderRequestManager';
 import { FolderDocumentList } from './FolderDocumentList';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface FolderDetailProps {
     folder: FolderWithRelations;
@@ -147,34 +148,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                                 </dd>
                             </div>
                         )}
-                        {folder.folderType && folder.customFieldsData && folder.folderType.customFields?.length > 0 && (
-                            <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt className="text-sm font-medium text-gray-500">Champs spécifiques</dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    <div className="space-y-3">
-                                        {folder.folderType.customFields.map((field) => {
-                                            const value = folder.customFieldsData?.[field.id];
-                                            if (!value) return null;
-
-                                            // Format the value based on field type
-                                            let displayValue = value;
-                                            if (field.type === 'date') {
-                                                displayValue = formatDate(new Date(value));
-                                            } else if (field.type === 'number') {
-                                                displayValue = Number(value).toLocaleString('fr-FR');
-                                            }
-
-                                            return (
-                                                <div key={field.id} className="bg-gray-50 px-3 py-2 rounded-md">
-                                                    <span className="font-medium text-gray-600">{field.name}:</span>
-                                                    <span className="ml-2">{displayValue}</span>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </dd>
-                            </div>
-                        )}
                         <div className="px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
                             <dt className="text-sm font-medium text-gray-500">Documents requis</dt>
                             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
@@ -195,7 +168,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                                                         clipRule="evenodd"
                                                     />
                                                 </svg>
-                                                <span className="ml-2 flex-1 w-0 truncate">{doc}</span>
+                                                <span className="ml-2 flex-1 w-0 truncate">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}</span>
                                             </div>
                                         </li>
                                     ))}
