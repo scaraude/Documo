@@ -35,8 +35,8 @@ model Folder {
   sharedWith  String[]
 
   // Relations
-  folderTypeId String?
-  folderType   FolderType?       @relation(fields: [folderTypeId], references: [id])
+  folderTypeId String
+  folderType   FolderType        @relation(fields: [folderTypeId], references: [id])
   requests     DocumentRequest[]
   documents    Document[]
 
