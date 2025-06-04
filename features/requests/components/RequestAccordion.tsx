@@ -205,9 +205,9 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                             {/* Actions */}
                             <div>
                                 <h4 className="text-sm font-medium text-gray-900 mb-3">Actions</h4>
-                                <div className="space-y-2">
-                                    <Link href={ROUTES.REQUESTS.DETAIL(request.id)} className="w-full">
-                                        <Button variant="outline" size="sm" className="w-full justify-start">
+                                <div className="space-y-2 flex justify-evenly">
+                                    <Link href={ROUTES.REQUESTS.DETAIL(request.id)} >
+                                        <Button variant="outline" size="sm" className=" justify-start">
                                             <ExternalLink className="h-4 w-4 mr-2" />
                                             Voir les détails
                                         </Button>
