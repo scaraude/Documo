@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Check, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { API_ROUTES, ROUTES } from '@/shared/constants';
+import { toast } from 'sonner';
 
 interface ShareLinkButtonProps {
     requestId: string;
@@ -34,6 +35,7 @@ export function ShareLinkButton({ requestId, variant = 'default', size = 'defaul
             // Copy to clipboard
             await navigator.clipboard.writeText(shareUrl);
             setIsCopied(true);
+            toast.success('Lien copié dans le presse-papiers');
 
             // Reset copy status after 2 seconds
             setTimeout(() => {
@@ -41,7 +43,7 @@ export function ShareLinkButton({ requestId, variant = 'default', size = 'defaul
             }, 2000);
         } catch (error) {
             console.error('Error sharing link:', error);
-            // Here you might want to show an error toast or message
+            toast.error('Erreur lors de la génération du lien de partage');
         } finally {
             setIsLoading(false);
         }
