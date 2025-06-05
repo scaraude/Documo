@@ -9,7 +9,7 @@ import { useCustomFieldValidation } from '@/features/folder-types/hooks/useCusto
 import { useRequest } from '@/features/requests/hooks/useRequest';
 import { FolderType } from '@/features/folder-types/types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
-import { ChevronLeft, ChevronRight, FolderOpen, FileText, Settings, Users, Send, Plus, Trash2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, FolderOpen, FileText, Users, Send, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
@@ -257,13 +257,6 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                                     <div className="flex items-center gap-2 text-sm text-gray-500">
                                         <FileText className="h-4 w-4" />
                                         <span>{folderType.requiredDocuments.length} document{folderType.requiredDocuments.length > 1 ? 's' : ''} requis</span>
-                                        {folderType.customFields.length > 0 && (
-                                            <>
-                                                <span>•</span>
-                                                <Settings className="h-4 w-4" />
-                                                <span>{folderType.customFields.length} champ{folderType.customFields.length > 1 ? 's' : ''}</span>
-                                            </>
-                                        )}
                                     </div>
                                 </CardContent>
                             </Card>
