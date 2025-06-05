@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { FolderType } from '../types';
 import { ROUTES } from '@/shared/constants';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
-import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
+import { Button, Card, CardContent, CardHeader, CardTitle } from '@/shared/components';
 import { FolderOpen, FileText, Plus, Trash2, Settings, Calendar } from 'lucide-react';
 
 interface FolderTypeDetailProps {
@@ -13,7 +13,7 @@ interface FolderTypeDetailProps {
 }
 
 export const FolderTypeDetail = ({ folderType, onDelete }: FolderTypeDetailProps) => {
-    const [activeTab, setActiveTab] = useState<'info' | 'fields' | 'usage'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'usage'>('info');
 
     const handleDelete = async () => {
         if (window.confirm(`Êtes-vous sûr de vouloir supprimer le type de dossier "${folderType.name}" ? Cette action est irréversible.`)) {
@@ -74,21 +74,6 @@ export const FolderTypeDetail = ({ folderType, onDelete }: FolderTypeDetailProps
                             <Settings className="h-4 w-4 inline mr-2" />
                             Informations
                         </button>
-                        {folderType.customFields.length > 0 && (
-                            <button
-                                className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${activeTab === 'fields'
-                                    ? 'bg-white shadow text-gray-900'
-                                    : 'text-gray-500 hover:text-gray-700'
-                                    }`}
-                                onClick={() => setActiveTab('fields')}
-                            >
-                                <FileText className="h-4 w-4 inline mr-2" />
-                                Champs personnalisés
-                                <Badge variant="secondary" className="ml-2">
-                                    {folderType.customFields.length}
-                                </Badge>
-                            </button>
-                        )}
                         <button
                             className={`px-4 py-2 font-medium text-sm rounded-md ${activeTab === 'usage'
                                 ? 'bg-white shadow text-gray-900'
@@ -143,58 +128,6 @@ export const FolderTypeDetail = ({ folderType, onDelete }: FolderTypeDetailProps
                             </CardContent>
                         </Card>
                     </>
-                )}
-
-                {activeTab === 'fields' && folderType.customFields.length > 0 && (
-                    <div className="lg:col-span-3">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Champs personnalisés</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {folderType.customFields.map((field) => (
-                                        <div key={field.id} className="border border-gray-200 rounded-lg p-4">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h4 className="font-medium text-gray-900">{field.name}</h4>
-                                                <div className="flex gap-2">
-                                                    <Badge variant="outline" className="text-xs">
-                                                        {field.type}
-                                                    </Badge>
-                                                    {field.required && (
-                                                        <Badge variant="destructive" className="text-xs">
-                                                            Requis
-                                                        </Badge>
-                                                    )}
-                                                </div>
-                                            </div>
-                                            {field.placeholder && (
-                                                <p className="text-sm text-gray-500 mb-2">
-                                                    Placeholder: &quot;{field.placeholder}&quot;
-                                                </p>
-                                            )}
-                                            {field.validation && (
-                                                <div className="text-xs text-gray-400">
-                                                    {field.validation.minLength && (
-                                                        <span>Min: {field.validation.minLength} • </span>
-                                                    )}
-                                                    {field.validation.maxLength && (
-                                                        <span>Max: {field.validation.maxLength} • </span>
-                                                    )}
-                                                    {field.validation.min && (
-                                                        <span>Min: {field.validation.min} • </span>
-                                                    )}
-                                                    {field.validation.max && (
-                                                        <span>Max: {field.validation.max}</span>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
-                    </div>
                 )}
 
                 {activeTab === 'usage' && (

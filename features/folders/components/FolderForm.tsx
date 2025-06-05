@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
 import { CreateFolderParams, Folder } from '../types';
 import { useFolderTypes } from '@/features/folder-types';
-import { useCustomFieldValidation } from '@/features/folder-types/hooks/useCustomFieldValidation';
 import { useRequest } from '@/features/requests/hooks/useRequest';
 import { FolderType } from '@/features/folder-types/types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
@@ -24,7 +23,6 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
     const preSelectedTypeId = searchParams?.get('typeId');
 
     const { folderTypes, isLoaded } = useFolderTypes();
-    const { validateAllFields, getFieldInputType } = useCustomFieldValidation();
     const { createRequest } = useRequest();
 
     const [step, setStep] = useState<'selectType' | 'fillForm' | 'sendRequests'>('selectType');
@@ -35,8 +33,6 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [expirationDate, setExpirationDate] = useState<string>('');
-    const [customFieldsData, setCustomFieldsData] = useState<Record<string, string>>({});
-    const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
     // Requests data
     const [civilIds, setCivilIds] = useState<string[]>(['']);
@@ -56,27 +52,6 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
     const handleTypeSelect = (folderType: FolderType) => {
         setSelectedType(folderType);
         setStep('fillForm');
-        // Initialiser les champs personnalisés
-        const initialFields: Record<string, string> = {};
-        folderType.customFields.forEach(field => {
-            initialFields[field.id] = '';
-        });
-        setCustomFieldsData(initialFields);
-    };
-
-    const handleCustomFieldChange = (fieldId: string, value: string) => {
-        setCustomFieldsData(prev => ({
-            ...prev,
-            [fieldId]: value
-        }));
-        // Supprimer l'erreur de validation si elle existe
-        if (validationErrors[fieldId]) {
-            setValidationErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[fieldId];
-                return newErrors;
-            });
-        }
     };
 
     const handleFolderSubmit = async (e: React.FormEvent) => {
@@ -84,19 +59,11 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
 
         if (!selectedType) return;
 
-        // Valider les champs personnalisés
-        const errors = validateAllFields(selectedType.customFields, customFieldsData);
-        if (Object.keys(errors).length > 0) {
-            setValidationErrors(errors);
-            return;
-        }
-
         try {
             const formData: CreateFolderParams = {
                 name,
                 description,
                 folderTypeId: selectedType.id,
-                customFieldsData,
                 requestedDocuments: selectedType.requiredDocuments,
                 expiresAt: expirationDate ? new Date(expirationDate) : null
             };
@@ -337,37 +304,6 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                             </div>
                         </CardContent>
                     </Card>
-
-                    {/* Custom Fields */}
-                    {selectedType.customFields.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Champs spécifiques</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                {selectedType.customFields.map((field) => (
-                                    <div key={field.id}>
-                                        <label className="block text-sm font-medium text-gray-700">
-                                            {field.name}
-                                            {field.required && <span className="text-red-500 ml-1">*</span>}
-                                        </label>
-                                        <input
-                                            type={getFieldInputType(field.type)}
-                                            required={field.required}
-                                            className={`mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 ${validationErrors[field.id] ? 'border-red-300' : 'border-gray-300'
-                                                }`}
-                                            value={customFieldsData[field.id] || ''}
-                                            onChange={(e) => handleCustomFieldChange(field.id, e.target.value)}
-                                            placeholder={field.placeholder}
-                                        />
-                                        {validationErrors[field.id] && (
-                                            <p className="mt-1 text-sm text-red-600">{validationErrors[field.id]}</p>
-                                        )}
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
-                    )}
 
                     {/* Submit */}
                     <div className="flex justify-between pt-4">

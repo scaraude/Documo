@@ -20,7 +20,6 @@ model Folder {
   description String?
 
   requestedDocuments DocumentType[]
-  customFieldsData   Json? // Données des champs personnalisés
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
@@ -48,7 +47,6 @@ model FolderType {
   name              String
   description       String?
   requiredDocuments DocumentType[]
-  customFields      Json           @default("[]") // Array of CustomField objects
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
   deletedAt         DateTime? // Soft delete

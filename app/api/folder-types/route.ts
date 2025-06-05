@@ -1,8 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as repository from '@/features/folder-types/repository/folderTypesRepository';
-import { CreateFolderTypeParams } from '@/features/folder-types/types';
-import { customFieldSchema } from '@/shared/schemas/customField';
-// import { z } from 'zod';
+import { createFolderTypeSchema } from '@/shared/types';
 
 // GET /api/folder-types - Get all folder types
 export async function GET(request: Request) {
@@ -31,22 +29,21 @@ export async function POST(request: Request) {
     try {
         const body = await request.json();
 
-        // Valider les custom fields
-        if (body.customFields) {
-            try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                body.customFields.forEach((field: any) =>
-                    customFieldSchema.parse(field)
-                );
-            } catch {
-                return NextResponse.json(
-                    { error: 'Invalid custom fields format' },
-                    { status: 400 }
-                );
-            }
+        // Validate the request body
+        const validationResult = createFolderTypeSchema.safeParse(body);
+        
+        if (!validationResult.success) {
+            return NextResponse.json(
+                { 
+                    error: 'Invalid request data',
+                    details: validationResult.error.flatten()
+                },
+                { status: 400 }
+            );
         }
 
-        const folderType = await repository.createFolderType(body as CreateFolderTypeParams);
+        const folderType = await repository.createFolderType(validationResult.data);
+
         return NextResponse.json(folderType, { status: 201 });
     } catch (error) {
         console.error('Error creating folder type:', error);

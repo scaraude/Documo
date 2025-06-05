@@ -1,5 +1,5 @@
 import z from "zod";
-import { AppDocumentType } from "../constants";
+import { APP_DOCUMENT_TYPES, AppDocumentType } from "../constants";
 
 // Définir un schéma de validation
 export const metadataSchema = z.object({
@@ -11,6 +11,15 @@ export const metadataSchema = z.object({
 });
 
 export type AppDocumentMetadata = z.infer<typeof metadataSchema>;
+
+
+// Create folder type validation schema
+export const createFolderTypeSchema = z.object({
+    name: z.string().min(1).max(255),
+    description: z.string().min(1),
+    requiredDocuments: z.array(z.nativeEnum(APP_DOCUMENT_TYPES)),
+    createdById: z.string().optional()
+});
 
 export interface DocumentRequest {
     id: string;

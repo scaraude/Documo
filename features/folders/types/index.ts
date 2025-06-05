@@ -7,7 +7,6 @@ export interface Folder {
     name: string;
     description: string;
     requestedDocuments: AppDocumentType[];
-    customFieldsData?: Record<string, string>; // Données des champs personnalisés
     createdAt: Date;
     updatedAt: Date;
 
@@ -36,7 +35,6 @@ export interface CreateFolderParams {
     name: string;
     description?: string;
     folderTypeId: string; // Maintenant obligatoire
-    customFieldsData?: Record<string, string>;
     expiresAt: Date | null;
     requestedDocuments: AppDocumentType[];
     createdById?: string;

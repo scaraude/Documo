@@ -16,9 +16,6 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
         name: prismaModel.name,
         description: prismaModel.description || '',
         requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
-        customFieldsData: typeof prismaModel.customFieldsData === 'string'
-            ? JSON.parse(prismaModel.customFieldsData)
-            : prismaModel.customFieldsData ?? {},
         createdAt: prismaModel.createdAt,
         updatedAt: prismaModel.updatedAt,
         expiresAt: prismaModel.expiresAt || undefined,

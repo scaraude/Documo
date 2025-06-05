@@ -1,7 +1,6 @@
 import prisma, { Prisma } from '@/lib/prisma';
 import { FolderType, CreateFolderTypeParams, UpdateFolderTypeParams } from '../types';
 import { AppDocumentType } from '@/shared/constants';
-import { CustomField } from '../types';
 
 // Type mapper entre Prisma et App
 type PrismaFolderType = Prisma.FolderTypeGetPayload<null>;
@@ -15,7 +14,6 @@ export function toAppModel(prismaModel: PrismaFolderType): FolderType {
         name: prismaModel.name,
         description: prismaModel.description || '',
         requiredDocuments: prismaModel.requiredDocuments as AppDocumentType[],
-        customFields: prismaModel.customFields as unknown as CustomField[],
         createdAt: prismaModel.createdAt,
         updatedAt: prismaModel.updatedAt,
         deletedAt: prismaModel.deletedAt || undefined,
@@ -68,14 +66,13 @@ export async function getFolderTypeById(id: string): Promise<FolderType | null> 
  */
 export async function createFolderType(params: CreateFolderTypeParams): Promise<FolderType> {
     try {
-        const { name, description, requiredDocuments, customFields, createdById } = params;
+        const { name, description, requiredDocuments, createdById } = params;
 
         const newFolderType = await prisma.folderType.create({
             data: {
                 name,
                 description,
                 requiredDocuments,
-                customFields: customFields as unknown as Prisma.JsonArray,
                 createdById
             }
         });
@@ -95,7 +92,7 @@ export async function updateFolderType(
     params: UpdateFolderTypeParams
 ): Promise<FolderType> {
     try {
-        const { name, description, requiredDocuments, customFields } = params;
+        const { name, description, requiredDocuments } = params;
 
         const updatedFolderType = await prisma.folderType.update({
             where: { id },
@@ -103,7 +100,6 @@ export async function updateFolderType(
                 ...(name !== undefined && { name }),
                 ...(description !== undefined && { description }),
                 ...(requiredDocuments !== undefined && { requiredDocuments }),
-                ...(customFields !== undefined && { customFields: customFields as unknown as Prisma.JsonArray }),
             }
         });
 

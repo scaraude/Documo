@@ -60,9 +60,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
         });
     };
 
-    console.log('folder.folderType', folder.folderType);
-    console.log('folder.customFieldsData', folder.customFieldsData);
-    console.log('folder.folderType.customFields?.length', folder.folderType?.customFields?.length);
     return (
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
             <div className="px-4 py-5 sm:px-6 flex justify-between items-center">

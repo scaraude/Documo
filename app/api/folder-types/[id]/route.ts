@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import * as repository from '@/features/folder-types/repository/folderTypesRepository';
 import { UpdateFolderTypeParams } from '@/features/folder-types/types';
-import { customFieldSchema } from '@/shared/schemas/customField';
 
 // GET /api/folder-types/[id] - Get a folder type by ID
 export async function GET(
@@ -37,26 +36,11 @@ export async function PUT(
         const body = await request.json();
 
         // Vérifier si le type est utilisé avant de modifier les documents requis
-        if (body.requiredDocuments || body.customFields) {
+        if (body.requiredDocuments) {
             const isInUse = await repository.isFolderTypeInUse(params.id);
             if (isInUse) {
                 return NextResponse.json(
-                    { error: 'Cannot modify required documents or fields for a folder type in use' },
-                    { status: 400 }
-                );
-            }
-        }
-
-        // Valider les custom fields si présents
-        if (body.customFields) {
-            try {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                body.customFields.forEach((field: any) =>
-                    customFieldSchema.parse(field)
-                );
-            } catch {
-                return NextResponse.json(
-                    { error: 'Invalid custom fields format' },
+                    { error: 'Cannot modify required documents for a folder type in use' },
                     { status: 400 }
                 );
             }
