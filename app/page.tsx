@@ -2,9 +2,9 @@
 import { useFolderTypes } from '@/features/folder-types'
 import { ROUTES } from '@/shared/constants'
 import { Plus, FileText, FolderOpen } from 'lucide-react'
-import { Button } from "@/components/ui/button"
 import { useRouter } from 'next/navigation'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '../components/ui/hover-card'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '../shared/components/ui/hover-card'
+import { Button } from '@/shared/components'
 
 export default function HomePage() {
   const router = useRouter();
