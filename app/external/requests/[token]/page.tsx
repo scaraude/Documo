@@ -1,43 +1,15 @@
 'use client'
 
-import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Card, CardContent } from '@/shared/components/ui/card'
-import { DocumentRequest } from '@/shared/types'
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper'
 import { Badge } from '@/shared/components/ui/badge'
-import { FileText, FileCheck } from 'lucide-react'
-import { Button } from '@/shared/components/ui/button'
-import { API_ROUTES } from '../../../../shared/constants'
+import { FileText } from 'lucide-react'
+import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest'
 
 export default function ExternalRequestPage() {
-    const params = useParams()
-    const token = params.token as string
-    const [request, setRequest] = useState<DocumentRequest | null>(null)
-    const [error, setError] = useState<Error | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-
-    useEffect(() => {
-        async function loadRequest() {
-            try {
-                setIsLoading(true)
-                const response = await fetch(API_ROUTES.EXTERNAL.REQUEST(token))
-                if (!response.ok) {
-                    throw new Error('Demande non trouvée')
-                }
-                const data = await response.json()
-                setRequest(data)
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error('Erreur lors du chargement de la demande'))
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        if (token) {
-            loadRequest()
-        }
-    }, [token])
+    const { token }: { token: string } = useParams()
+    const { request, isLoading, error } = useExternalRequest(token);
 
     if (isLoading) {
         return (
@@ -104,28 +76,6 @@ export default function ExternalRequestPage() {
                                     </div>
                                 ))}
                             </div>
-                        </div>
-
-                        <div className="flex flex-col space-y-3">
-                            <Button
-                                onClick={() => {
-                                    // Will handle FranceConnect authentication in TICKET-1
-                                    window.location.href = `/api/auth/france-connect?requestId=${request.id}`
-                                }}
-                                className="bg-blue-600 hover:bg-blue-700"
-                            >
-                                <FileCheck className="h-5 w-5 mr-2" />
-                                Continuer avec FranceConnect
-                            </Button>
-                            <Button
-                                variant="outline"
-                                onClick={() => {
-                                    // Will handle email authentication in TICKET-1
-                                    window.location.href = `/api/auth/email?requestId=${request.id}`
-                                }}
-                            >
-                                Continuer avec un email
-                            </Button>
                         </div>
 
                         <p className="text-xs text-gray-500 text-center mt-4">

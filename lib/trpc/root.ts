@@ -1,8 +1,10 @@
 import { requestsRouter } from '@/features/requests/routers/requestsRouter';
 import { router } from './trpc';
+import { externalRouter } from '../../features/external-requests/routers/externalRequestsRouter';
 
 export const appRouter = router({
     requests: requestsRouter,
+    external: externalRouter,
 });
 
 export type AppRouter = typeof appRouter;

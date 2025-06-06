@@ -3,8 +3,8 @@ import prisma, { Prisma } from '@/lib/prisma';
 import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 import { AppDocumentType } from '@/shared/constants';
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
-import { toAppModel as documentToAppModel } from '@/features/documents/repository/documentsRepository';
 import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
+import { prismaDocumentToAppDocument } from '../../documents/mappers';
 
 // Type mapper between Prisma and App
 type PrismaFolder = Prisma.FolderGetPayload<null>;
@@ -73,7 +73,7 @@ export async function getFolderByIdWithRelations(
         return {
             ...toAppModel(folder),
             requests: folder.requests.map(resquestToAppModel),
-            documents: folder.documents.map(documentToAppModel),
+            documents: folder.documents.map(prismaDocumentToAppDocument),
             folderType: folderTypeToAppModel(folder.folderType)
         };
     } catch (error) {
