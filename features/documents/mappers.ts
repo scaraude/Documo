@@ -22,3 +22,23 @@ export function prismaDocumentToAppDocument(prismaModel: PrismaDocument): AppDoc
         validationErrors: prismaModel.validationErrors || []
     };
 }
+
+/**
+ * Convertir un document d'application en objet de création Prisma
+ */
+export function inputToPrismaCreateInput(appDocument: AppDocument): Prisma.DocumentCreateInput {
+    return {
+        id: appDocument.id,
+        request: {
+            connect: { id: appDocument.requestId }
+        },
+        type: appDocument.type,
+        url: appDocument.url,
+        hash: appDocument.metadata.hash,
+        metadata: appDocument.metadata, // Add the required metadata property
+        validationErrors: appDocument.validationErrors || [],
+        folder: {
+            connect: { id: appDocument.folderId }
+        }
+    };
+}
