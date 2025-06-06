@@ -1,12 +1,4 @@
 export const API_ROUTES = {
-    REQUESTS: {
-        BASE: '/api/requests',
-        GET_ALL: '/api/requests',
-        GET_BY_ID: (id: string) => `/api/requests/${id}`,
-        CREATE: '/api/requests',
-        UPDATE_STATUS: (id: string) => `/api/requests/${id}/status`,
-        DELETE: (id: string) => `/api/requests/${id}`
-    },
     DOCUMENTS: {
         BASE: '/api/documents',
         GET_ALL: '/api/documents',
