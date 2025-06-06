@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useRequest } from '../useRequest';
+import { useRequests } from '../useRequests';
 import * as requestsApi from '../../api/requestApi';
 import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
@@ -39,7 +39,7 @@ describe('useRequest Hook', () => {
   test('should load requests on mount', async () => {
     mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
-    const { result } = renderHook(() => useRequest());
+    const { result } = renderHook(() => useRequests());
 
     expect(result.current.isLoading).toBe(true);
     expect(result.current.isLoaded).toBe(false);
@@ -57,7 +57,7 @@ describe('useRequest Hook', () => {
     const error = new Error('Failed to fetch');
     mockRequestsApi.getAllRequests.mockRejectedValue(error);
 
-    const { result } = renderHook(() => useRequest());
+    const { result } = renderHook(() => useRequests());
 
     await waitFor(() => {
       expect(result.current.error).toEqual(error);
@@ -81,7 +81,7 @@ describe('useRequest Hook', () => {
     mockRequestsApi.createRequest.mockResolvedValue(newRequest);
     mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
-    const { result } = renderHook(() => useRequest());
+    const { result } = renderHook(() => useRequests());
 
     await waitFor(() => {
       expect(result.current.isLoaded).toBe(true);
@@ -109,7 +109,7 @@ describe('useRequest Hook', () => {
     mockRequestsApi.createRequest.mockRejectedValue(error);
     mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
-    const { result } = renderHook(() => useRequest());
+    const { result } = renderHook(() => useRequests());
 
     await waitFor(() => {
       expect(result.current.isLoaded).toBe(true);
@@ -136,7 +136,7 @@ describe('useRequest Hook', () => {
     mockRequestsApi.updateRequestStatus.mockResolvedValue(updatedRequest);
     mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
-    const { result } = renderHook(() => useRequest());
+    const { result } = renderHook(() => useRequests());
 
     await waitFor(() => {
       expect(result.current.isLoaded).toBe(true);
@@ -156,7 +156,7 @@ describe('useRequest Hook', () => {
     mockRequestsApi.deleteRequest.mockResolvedValue();
     mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
-    const { result } = renderHook(() => useRequest());
+    const { result } = renderHook(() => useRequests());
 
     await waitFor(() => {
       expect(result.current.isLoaded).toBe(true);

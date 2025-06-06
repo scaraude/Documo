@@ -3,14 +3,14 @@
 import { RequestAccordion } from '@/features/requests/components/RequestAccordion'
 import { RequestFilters } from '@/features/requests/components/RequestFilters'
 import { RequestSearchAndSort } from '@/features/requests/components/RequestSearchAndSort'
-import { useRequest } from '@/features/requests/hooks/useRequest'
+import { useRequests } from '@/features/requests/hooks/useRequests'
 import { Card, CardContent } from '@/shared/components'
 import { ComputedRequestStatus, DocumentRequest } from '@/shared/types'
 import { FileX } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 export default function RequestsPage() {
-    const { requests, isLoaded, isLoading, error } = useRequest()
+    const { requests, isLoaded, isLoading, error } = useRequests()
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState<ComputedRequestStatus | 'ALL'>('ALL')
     const [sortBy, setSortBy] = useState<'date' | 'status' | 'civilId'>('date')

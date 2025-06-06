@@ -5,20 +5,20 @@ import type { DocumentRequest } from '@/shared/types';
 import { CreateRequestParams } from '../types';
 import { trpc } from '@/lib/trpc/client';
 
-export function useRequest() {
+export function useRequests() {
     // Get all requests with React Query caching
     const {
         data: requests = [],
         isLoading,
         error,
         isSuccess: isLoaded
-    } = trpc.requests.list.useQuery();
+    } = trpc.requests.getAll.useQuery();
 
     // Create request mutation
     const createRequestMutation = trpc.requests.create.useMutation({
         onSuccess: () => {
             // Invalidate and refetch requests
-            trpc.useUtils().requests.list.invalidate();
+            trpc.useUtils().requests.getAll.invalidate();
         }
     });
 

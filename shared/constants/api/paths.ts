@@ -1,4 +1,21 @@
 export const API_ROUTES = {
+    REQUESTS: {
+        BASE: '/api/requests',
+        GET_ALL: '/api/requests',
+        GET_BY_ID: (id: string) => `/api/requests/${id}`,
+        CREATE: '/api/requests',
+        UPDATE_STATUS: (id: string) => `/api/requests/${id}/status`,
+        DELETE: (id: string) => `/api/requests/${id}`
+    },
+    DOCUMENTS: {
+        BASE: '/api/documents',
+        GET_ALL: '/api/documents',
+        GET_BY_ID: (id: string) => `/api/documents/${id}`,
+        GET_BY_REQUEST: (requestId: string) => `/api/documents/request/${requestId}`,
+        UPLOAD: '/api/documents/upload',
+        UPDATE_STATUS: (id: string) => `/api/documents/${id}/status`,
+        DELETE: (id: string) => `/api/documents/${id}`
+    },
     FOLDER_TYPES: {
         BASE: '/api/folder-types',
         GET_ALL: '/api/folder-types',

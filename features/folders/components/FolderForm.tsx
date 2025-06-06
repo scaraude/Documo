@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
 import { CreateFolderParams, Folder } from '../types';
 import { useFolderTypes } from '@/features/folder-types';
-import { useRequest } from '@/features/requests/hooks/useRequest';
+import { useRequests } from '@/features/requests/hooks/useRequests';
 import { FolderType } from '@/features/folder-types/types';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
 import { ChevronLeft, ChevronRight, FolderOpen, FileText, Users, Send, Plus, Trash2 } from 'lucide-react';
@@ -23,7 +23,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
     const preSelectedTypeId = searchParams?.get('typeId');
 
     const { folderTypes, isLoaded } = useFolderTypes();
-    const { createRequest } = useRequest();
+    const { createRequest } = useRequests();
 
     const [step, setStep] = useState<'selectType' | 'fillForm' | 'sendRequests'>('selectType');
     const [selectedType, setSelectedType] = useState<FolderType | null>(null);

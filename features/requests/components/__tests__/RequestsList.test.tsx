@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RequestsList } from '../RequestsList';
 import '@testing-library/jest-dom';
-import { useRequest } from '../../hooks/useRequest';
+import { useRequests } from '../../hooks/useRequests';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
 import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
@@ -43,7 +43,7 @@ describe('RequestsList Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useRequest as jest.Mock).mockReturnValue({
+    (useRequests as jest.Mock).mockReturnValue({
       requests: mockRequests,
       isLoaded: true,
       deleteRequest: mockDeleteRequest,
@@ -55,7 +55,7 @@ describe('RequestsList Component', () => {
   });
 
   test('renders loading state when not loaded', () => {
-    (useRequest as jest.Mock).mockReturnValue({
+    (useRequests as jest.Mock).mockReturnValue({
       requests: [],
       isLoaded: false,
       deleteRequest: mockDeleteRequest,
@@ -68,7 +68,7 @@ describe('RequestsList Component', () => {
   });
 
   test('renders empty state when no requests', () => {
-    (useRequest as jest.Mock).mockReturnValue({
+    (useRequests as jest.Mock).mockReturnValue({
       requests: [],
       isLoaded: true,
       deleteRequest: mockDeleteRequest,

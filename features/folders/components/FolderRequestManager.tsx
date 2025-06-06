@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { FolderWithRelations } from '../types';
-import { useRequest } from '@/features/requests/hooks/useRequest';
+import { useRequests } from '@/features/requests/hooks/useRequests';
 import { useRequestStatus } from '@/shared/hooks/useComputedStatus';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
 import { Plus, Send, Users, Clock, CheckCircle, XCircle, FileCheck, Hash, Calendar, Trash2, Eye } from 'lucide-react';
@@ -18,7 +18,7 @@ interface FolderRequestManagerProps {
 }
 
 export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestManagerProps) => {
-    const { createRequest } = useRequest();
+    const { createRequest } = useRequests();
     const [isCreatingRequest, setIsCreatingRequest] = useState(false);
     const [newCivilIds, setNewCivilIds] = useState<string[]>(['']);
     const [isLoading, setIsLoading] = useState(false);

@@ -1,6 +1,6 @@
 'use client'
 
-import { useRequest } from '@/features/requests'
+import { useRequests } from '@/features/requests'
 import { Badge } from '@/shared/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs'
@@ -16,7 +16,7 @@ import { ShareLinkButton } from '@/features/external-requests/components/ShareLi
 
 export default function RequestDetailPage() {
     const params = useParams()
-    const { requests, isLoaded, error } = useRequest()
+    const { requests, isLoaded, error } = useRequests()
     const [request, setRequest] = useState<DocumentRequest | null>(null)
 
     useEffect(() => {
