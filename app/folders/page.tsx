@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Search, Plus, FileText } from 'lucide-react';
 import { FolderType, useFolderTypes } from '../../features/folder-types';
 import { useFolders } from '../../features/folders/hooks/useFolders';
-import { Button, Card, CardContent, Badge } from '@/shared/components';
+import { Button, Card, CardContent, Badge, ScrollArea, ScrollBar } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
 import { useFolderStatus } from '../../shared/hooks/useComputedStatus';
 import { formatDistanceToNow } from 'date-fns';
@@ -62,7 +62,7 @@ export default function FoldersPage() {
                 <div className="absolute -top-3.5 left-0 bg-stone-100 w-20 h-6 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
 
                 {/* Folder Body */}
-                <div className=" h-46 bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
+                <div className=" h-46 w-72 bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
 
                     {/* Folder Content */}
                     <div className="h-full flex flex-col justify-between">
@@ -73,9 +73,9 @@ export default function FoldersPage() {
                             <h4 className="text-sm text-gray-600 mb-2">
                                 {folderType.description || 'Aucune description'}
                             </h4>
-                            <div className="mt-3 flex items-center gap-2">
+                            <div className="mt-5 flex items-center gap-2">
                                 <Badge variant="outline" className="text-xs">
-                                    <FileText className="h-3 w-3" />{folderType.requiredDocuments.length} document{folderType.requiredDocuments.length > 1 ? 's' : ''}
+                                    <FileText className="h-3 w-3" />{folderType.requiredDocuments.length} document{folderType.requiredDocuments.length > 1 ? 's' : ''} requis
                                 </Badge>
                             </div>
                         </div>
@@ -142,11 +142,14 @@ export default function FoldersPage() {
                             </CardContent>
                         </Card>
                     ) : (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                            {folderTypes.map((folderType) => (
-                                <FolderGridItem key={folderType.id} folderType={folderType} />
-                            ))}
-                        </div>
+                        <ScrollArea className="w-full rounded-md whitespace-nowrap">
+                            <div className="flex w-max space-x-4 p-4 pt-6">
+                                {folderTypes.map((folderType) => (
+                                    <FolderGridItem key={folderType.id} folderType={folderType} />
+                                ))}
+                            </div>
+                            <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
                     )}
                 </div>
                 <div className="border-t border-gray-200 my-12"></div>
