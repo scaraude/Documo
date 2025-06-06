@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { Navbar } from '@/shared/components'
 import { Toaster } from 'sonner'
+import TRPCProvider from './providers/trpc-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,9 +20,11 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={inter.className}>
-        <Navbar />
-        {children}
-        <Toaster richColors />
+        <TRPCProvider>
+          <Navbar />
+          {children}
+          <Toaster richColors />
+        </TRPCProvider>
       </body>
     </html>
   )
