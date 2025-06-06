@@ -33,11 +33,11 @@ describe('useRequest Hook', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockRequestsApi.getRequests.mockResolvedValue(mockRequests);
+    mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
   });
 
   test('should load requests on mount', async () => {
-    mockRequestsApi.getRequests.mockResolvedValue(mockRequests);
+    mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
     const { result } = renderHook(() => useRequest());
 
@@ -50,12 +50,12 @@ describe('useRequest Hook', () => {
 
     expect(result.current.requests).toEqual(mockRequests);
     expect(result.current.isLoading).toBe(false);
-    expect(mockRequestsApi.getRequests).toHaveBeenCalledTimes(1);
+    expect(mockRequestsApi.getAllRequests).toHaveBeenCalledTimes(1);
   });
 
   test('should handle error when loading requests', async () => {
     const error = new Error('Failed to fetch');
-    mockRequestsApi.getRequests.mockRejectedValue(error);
+    mockRequestsApi.getAllRequests.mockRejectedValue(error);
 
     const { result } = renderHook(() => useRequest());
 
@@ -79,7 +79,7 @@ describe('useRequest Hook', () => {
     };
 
     mockRequestsApi.createRequest.mockResolvedValue(newRequest);
-    mockRequestsApi.getRequests.mockResolvedValue(mockRequests);
+    mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
     const { result } = renderHook(() => useRequest());
 
@@ -107,7 +107,7 @@ describe('useRequest Hook', () => {
   test('should handle error when creating request', async () => {
     const error = new Error('Failed to create request');
     mockRequestsApi.createRequest.mockRejectedValue(error);
-    mockRequestsApi.getRequests.mockResolvedValue(mockRequests);
+    mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
     const { result } = renderHook(() => useRequest());
 
@@ -134,7 +134,7 @@ describe('useRequest Hook', () => {
     };
 
     mockRequestsApi.updateRequestStatus.mockResolvedValue(updatedRequest);
-    mockRequestsApi.getRequests.mockResolvedValue(mockRequests);
+    mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
     const { result } = renderHook(() => useRequest());
 
@@ -154,7 +154,7 @@ describe('useRequest Hook', () => {
 
   test('should delete request successfully', async () => {
     mockRequestsApi.deleteRequest.mockResolvedValue();
-    mockRequestsApi.getRequests.mockResolvedValue(mockRequests);
+    mockRequestsApi.getAllRequests.mockResolvedValue(mockRequests);
 
     const { result } = renderHook(() => useRequest());
 

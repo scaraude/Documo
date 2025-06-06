@@ -1,73 +1,53 @@
+//features/requests/hooks/useRequest.ts
 'use client'
-import { useState, useEffect } from 'react';
-import * as requestsApi from '../api/requestApi';
 import type { AppDocumentType } from '@/shared/constants';
-import { DocumentRequest } from '@/shared/types';
+import type { DocumentRequest } from '@/shared/types';
+import { CreateRequestParams } from '../types';
+import { trpc } from '@/lib/trpc/client';
 
 export function useRequest() {
-    const [requests, setRequests] = useState<DocumentRequest[]>([]);
-    const [isLoaded, setIsLoaded] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
+    // Get all requests with React Query caching
+    const {
+        data: requests = [],
+        isLoading,
+        error,
+        isSuccess: isLoaded
+    } = trpc.requests.list.useQuery();
 
-    // Load all requests on component mount
-    useEffect(() => {
-        async function loadRequests() {
-            try {
-                setIsLoading(true);
-                const data = await requestsApi.getRequests();
-                setRequests(data);
-                setIsLoaded(true);
-            } catch (err) {
-                setError(err instanceof Error ? err : new Error('Unknown error'));
-            } finally {
-                setIsLoading(false);
-            }
+    // Create request mutation
+    const createRequestMutation = trpc.requests.create.useMutation({
+        onSuccess: () => {
+            // Invalidate and refetch requests
+            trpc.useUtils().requests.list.invalidate();
         }
-
-        loadRequests();
-    }, []);
+    });
 
     // Create request wrapper
-    const createRequest = async (civilId: string, requestedDocuments: AppDocumentType[], folderId: string, expirationDays?: number) => {
-        try {
-            setIsLoading(true);
-            const newRequest = await requestsApi.createRequest({
-                civilId,
-                requestedDocuments,
-                expirationDays,
-                folderId,
-            });
+    const createRequest = async (
+        civilId: string,
+        requestedDocuments: AppDocumentType[],
+        folderId: string,
+        expirationDays?: number
+    ): Promise<DocumentRequest> => {
+        const params: CreateRequestParams = {
+            civilId,
+            requestedDocuments,
+            folderId,
+            expirationDays
+        };
 
-            setRequests(prev => [...prev, newRequest]);
-            return newRequest;
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to create request'));
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
+        return createRequestMutation.mutateAsync(params);
     };
 
-    // Delete request
-    const deleteRequest = async (id: string) => {
-        try {
-            setIsLoading(true);
-            await requestsApi.deleteRequest(id);
-            setRequests(prev => prev.filter(req => req.id !== id));
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to delete request'));
-        } finally {
-            setIsLoading(false);
-        }
-    };
+    // Combined loading state
+    const isMutating = createRequestMutation.isPending;
+    const combinedError = error || createRequestMutation.error;
 
     return {
         requests,
         isLoaded,
-        isLoading,
-        error,
+        isLoading: isLoading || isMutating,
+        error: combinedError,
         createRequest,
-        deleteRequest
     };
 }
