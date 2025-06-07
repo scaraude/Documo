@@ -8,7 +8,8 @@ export function useRequests() {
 
     const getAllRequests = () => trpc.requests.getAll.useQuery();
 
-    // Create request wrapper
+    const getById = (id: string) => trpc.requests.getById.useQuery({ id });
+
     const createRequest = async (params: CreateRequestParams): Promise<DocumentRequest> => {
         return trpc.requests.create.useMutation({
             onSuccess: () => {
@@ -18,8 +19,8 @@ export function useRequests() {
         }).mutateAsync(params);
     };
 
-
     return {
+        getById,
         getAllRequests,
         createRequest
     };

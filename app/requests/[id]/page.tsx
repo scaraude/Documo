@@ -11,21 +11,13 @@ import { format, formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import { CheckCircle, Clock, FileCheck, FileText, History, XCircle } from 'lucide-react'
 import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
 import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton'
 
 export default function RequestDetailPage() {
-    const params = useParams()
-    const { getAllRequests } = useRequests()
-    const { data: requests, isLoading, error } = getAllRequests()
-    const [request, setRequest] = useState<DocumentRequest | null>(null)
+    const params: { id: string } = useParams()
+    const { getById } = useRequests()
+    const { data: request, isLoading, error } = getById(params.id)
 
-    useEffect(() => {
-        if (requests) {
-            const foundRequest = requests.find(r => r.id === params.id)
-            setRequest(foundRequest || null)
-        }
-    }, [params.id, requests])
 
     const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
         if (request.completedAt) return 'COMPLETED'
@@ -62,7 +54,7 @@ export default function RequestDetailPage() {
         return format(new Date(date), "d MMMM yyyy 'à' HH:mm", { locale: fr })
     }
 
-    if (!isLoading) {
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
