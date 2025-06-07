@@ -1,6 +1,5 @@
 export const API_ROUTES = {
     FOLDER_TYPES: {
-        BASE: '/api/folder-types',
         GET_ALL: '/api/folder-types',
         GET_BY_ID: (id: string) => `/api/folder-types/${id}`,
         CREATE: '/api/folder-types',
@@ -9,7 +8,6 @@ export const API_ROUTES = {
         CHECK_USAGE: (id: string) => `/api/folder-types/${id}/check-usage`
     },
     FOLDERS: {
-        BASE: '/api/folders',
         GET_ALL: '/api/folders',
         GET_BY_ID: (id: string) => `/api/folders/${id}`,
         CREATE: '/api/folders',
@@ -19,11 +17,6 @@ export const API_ROUTES = {
         ADD_REQUEST: (folderId: string) => `/api/folders/${folderId}/requests`,
         REMOVE_REQUEST: (folderId: string, requestId: string) =>
             `/api/folders/${folderId}/requests/${requestId}`
-    },
-    EXTERNAL: {
-        REQUEST: (id: string) => `/api/external/requests/${id}`,
-        UPLOAD: '/api/external/upload',
-        SHARE_LINK: (id: string) => `/api/external/share-link/${id}`,
     },
 } as const;
 
