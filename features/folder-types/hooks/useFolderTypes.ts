@@ -1,49 +1,17 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import * as folderTypeApi from '../api/folderTypeApi';
 import { FolderType, CreateFolderTypeParams, UpdateFolderTypeParams } from '../types';
 import { trpc } from '../../../lib/trpc/client';
 
 export function useFolderTypes() {
-    const [folderTypes, setFolderTypes] = useState<Array<FolderType & {
-        foldersCount?: number;
-        activeFoldersCount?: number;
-    }>>([]);
     const [currentFolderType, setCurrentFolderType] = useState<FolderType | null>(null);
-    const [isLoaded, setIsLoaded] = useState(false);
+    const [isLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-    const getAllFolderTypes = () => trpc.folderTypes.getAll.useQuery()
-    // Load all folder types
-    const loadFolderTypes = useCallback(async (withStats: boolean = false) => {
-        try {
-            setIsLoading(true);
-            setError(null);
-            const data = await folderTypeApi.getFolderTypes(withStats);
-            setFolderTypes(data);
-            setIsLoaded(true);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Unknown error'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    const getAllFolderTypes = () => trpc.folderTypes.getAll.useQuery();
 
-    // Load a specific folder type
-    const loadFolderType = useCallback(async (id: string) => {
-        try {
-            setIsLoading(true);
-            setError(null);
-            const folderType = await folderTypeApi.getFolderTypeById(id);
-            setCurrentFolderType(folderType);
-            return folderType;
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to load folder type'));
-            throw err;
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
+    const getFolderTypeById = (id: string) => trpc.folderTypes.getById.useQuery({ id });
 
     // Create a new folder type
     const createFolderType = async (params: CreateFolderTypeParams) => {
@@ -51,7 +19,7 @@ export function useFolderTypes() {
             setIsLoading(true);
             setError(null);
             const newFolderType = await folderTypeApi.createFolderType(params);
-            setFolderTypes(prev => [...prev, newFolderType]);
+            // setFolderTypes(prev => [...prev, newFolderType]);
             return newFolderType;
         } catch (err) {
             setError(err instanceof Error ? err : new Error('Failed to create folder type'));
@@ -68,9 +36,9 @@ export function useFolderTypes() {
             setError(null);
             const updatedFolderType = await folderTypeApi.updateFolderType(id, params);
 
-            setFolderTypes(prev =>
-                prev.map(ft => ft.id === id ? { ...ft, ...updatedFolderType } : ft)
-            );
+            // setFolderTypes(prev =>
+            //     prev.map(ft => ft.id === id ? { ...ft, ...updatedFolderType } : ft)
+            // );
 
             if (currentFolderType && currentFolderType.id === id) {
                 setCurrentFolderType(updatedFolderType);
@@ -98,7 +66,7 @@ export function useFolderTypes() {
             }
 
             await folderTypeApi.deleteFolderType(id);
-            setFolderTypes(prev => prev.filter(ft => ft.id !== id));
+            // setFolderTypes(prev => prev.filter(ft => ft.id !== id));
 
             if (currentFolderType && currentFolderType.id === id) {
                 setCurrentFolderType(null);
@@ -122,25 +90,16 @@ export function useFolderTypes() {
         }
     };
 
-    // Load folder types on mount
-    useEffect(() => {
-        loadFolderTypes();
-    }, [loadFolderTypes]);
-
     return {
         getAllFolderTypes,
         currentFolderType,
         isLoaded,
         isLoading,
         error,
-        loadFolderTypes,
-        loadFolderType,
+        getFolderTypeById,
         createFolderType,
         updateFolderType,
         deleteFolderType,
         checkUsage,
-        // Computed values
-        hasFolderTypes: folderTypes.length > 0,
-        activeFolderTypesCount: folderTypes.filter(ft => !ft.deletedAt).length
     };
 }
