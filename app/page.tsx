@@ -8,8 +8,9 @@ import { Button } from '@/shared/components'
 
 export default function HomePage() {
   const router = useRouter();
-  const { folderTypes, isLoaded } = useFolderTypes()
-  const hasFolderTypes = isLoaded && folderTypes.length > 0
+  const { getAllFolderTypes } = useFolderTypes()
+  const { data: folderTypes, isLoading } = getAllFolderTypes()
+  const hasFolderTypes = !isLoading && folderTypes && folderTypes.length > 0
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
@@ -99,7 +100,7 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-        {!isLoaded && (
+        {isLoading && (
           <div className="flex justify-center mt-4">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>

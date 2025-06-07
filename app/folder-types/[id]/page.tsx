@@ -7,9 +7,8 @@ import { FolderTypeDetail } from '@/features/folder-types/components/FolderTypeD
 import { ROUTES } from '@/shared/constants';
 
 export default function FolderTypeDetailPage() {
-    const params = useParams();
+    const { id: folderTypeId }: { id: string } = useParams();
     const router = useRouter();
-    const folderTypeId = params.id as string;
     const { loadFolderType, currentFolderType, deleteFolderType, isLoading } = useFolderTypes();
     const [error, setError] = useState<string | null>(null);
 

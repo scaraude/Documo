@@ -22,7 +22,8 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
     const searchParams = useSearchParams();
     const preSelectedTypeId = searchParams?.get('typeId');
 
-    const { folderTypes, isLoaded } = useFolderTypes();
+    const { getAllFolderTypes } = useFolderTypes();
+    const { data: folderTypes, isLoading: isFolderTypesLoading } = getAllFolderTypes();
     const { createRequest } = useRequests();
 
     const [step, setStep] = useState<'selectType' | 'fillForm' | 'sendRequests'>('selectType');
@@ -40,7 +41,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
 
     // Si un typeId est fourni en query param, sélectionner automatiquement le type
     useEffect(() => {
-        if (preSelectedTypeId && folderTypes.length > 0) {
+        if (preSelectedTypeId && folderTypes && folderTypes.length > 0) {
             const foundType = folderTypes.find(type => type.id === preSelectedTypeId);
             if (foundType) {
                 setSelectedType(foundType);
@@ -124,7 +125,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
         }
     };
 
-    if (!isLoaded) {
+    if (isLoading || isFolderTypesLoading) {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -132,7 +133,7 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
         );
     }
 
-    if (folderTypes.length === 0) {
+    if (!folderTypes || folderTypes.length === 0) {
         return (
             <Card className="text-center py-12">
                 <CardContent>

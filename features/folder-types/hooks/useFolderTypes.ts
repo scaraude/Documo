@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import * as folderTypeApi from '../api/folderTypeApi';
 import { FolderType, CreateFolderTypeParams, UpdateFolderTypeParams } from '../types';
+import { trpc } from '../../../lib/trpc/client';
 
 export function useFolderTypes() {
     const [folderTypes, setFolderTypes] = useState<Array<FolderType & {
@@ -12,7 +13,7 @@ export function useFolderTypes() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<Error | null>(null);
-
+    const getAllFolderTypes = () => trpc.folderTypes.getAll.useQuery()
     // Load all folder types
     const loadFolderTypes = useCallback(async (withStats: boolean = false) => {
         try {
@@ -127,7 +128,7 @@ export function useFolderTypes() {
     }, [loadFolderTypes]);
 
     return {
-        folderTypes,
+        getAllFolderTypes,
         currentFolderType,
         isLoaded,
         isLoading,
