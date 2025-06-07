@@ -103,9 +103,11 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
             await Promise.all(
                 validCivilIds.map(civilId =>
                     createRequest(
-                        civilId.trim(),
-                        selectedType.requiredDocuments,
-                        createdFolder.id
+                        {
+                            civilId: civilId.trim(),
+                            requestedDocuments: selectedType.requiredDocuments,
+                            folderId: createdFolder.id,
+                        }
                     )
                 )
             );

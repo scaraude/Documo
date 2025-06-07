@@ -10,7 +10,8 @@ import { FileX } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 export default function RequestsPage() {
-    const { requests, isLoaded, isLoading, error } = useRequests()
+    const { getAllRequests } = useRequests()
+    const { data: requests, isLoading, error } = getAllRequests()
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState<ComputedRequestStatus | 'ALL'>('ALL')
     const [sortBy, setSortBy] = useState<'date' | 'status' | 'civilId'>('date')
@@ -24,6 +25,8 @@ export default function RequestsPage() {
     }
 
     const filteredAndSortedRequests = useMemo(() => {
+        if (!requests) return [];
+
         const filtered = requests.filter(request => {
             const matchesSearch = request.civilId.toLowerCase().includes(searchTerm.toLowerCase())
             const matchesStatus = statusFilter === 'ALL' || getRequestStatus(request) === statusFilter
@@ -52,7 +55,7 @@ export default function RequestsPage() {
         return filtered
     }, [requests, searchTerm, statusFilter, sortBy, sortOrder])
 
-    if (isLoading && !isLoaded) {
+    if (isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
@@ -64,6 +67,14 @@ export default function RequestsPage() {
         return (
             <div className="min-h-screen flex items-center justify-center text-red-500">
                 <p>Erreur: {error.message}</p>
+            </div>
+        )
+    }
+
+    if (!requests) {
+        return (
+            <div className="min-h-screen flex items-center justify-center text-red-500">
+                <p>Erreur: Aucune demande trouvée</p>
             </div>
         )
     }

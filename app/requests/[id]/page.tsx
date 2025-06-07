@@ -16,15 +16,16 @@ import { ShareLinkButton } from '@/features/external-requests/components/ShareLi
 
 export default function RequestDetailPage() {
     const params = useParams()
-    const { requests, isLoaded, error } = useRequests()
+    const { getAllRequests } = useRequests()
+    const { data: requests, isLoading, error } = getAllRequests()
     const [request, setRequest] = useState<DocumentRequest | null>(null)
 
     useEffect(() => {
-        if (isLoaded && params.id) {
+        if (requests) {
             const foundRequest = requests.find(r => r.id === params.id)
             setRequest(foundRequest || null)
         }
-    }, [isLoaded, params.id, requests])
+    }, [params.id, requests])
 
     const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
         if (request.completedAt) return 'COMPLETED'
@@ -61,7 +62,7 @@ export default function RequestDetailPage() {
         return format(new Date(date), "d MMMM yyyy 'à' HH:mm", { locale: fr })
     }
 
-    if (!isLoaded) {
+    if (!isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>

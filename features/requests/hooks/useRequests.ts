@@ -1,53 +1,26 @@
 //features/requests/hooks/useRequest.ts
 'use client'
-import type { AppDocumentType } from '@/shared/constants';
 import type { DocumentRequest } from '@/shared/types';
 import { CreateRequestParams } from '../types';
 import { trpc } from '@/lib/trpc/client';
 
 export function useRequests() {
-    // Get all requests with React Query caching
-    const {
-        data: requests = [],
-        isLoading,
-        error,
-        isSuccess: isLoaded
-    } = trpc.requests.getAll.useQuery();
 
-    // Create request mutation
-    const createRequestMutation = trpc.requests.create.useMutation({
-        onSuccess: () => {
-            // Invalidate and refetch requests
-            trpc.useUtils().requests.getAll.invalidate();
-        }
-    });
+    const getAllRequests = () => trpc.requests.getAll.useQuery();
 
     // Create request wrapper
-    const createRequest = async (
-        civilId: string,
-        requestedDocuments: AppDocumentType[],
-        folderId: string,
-        expirationDays?: number
-    ): Promise<DocumentRequest> => {
-        const params: CreateRequestParams = {
-            civilId,
-            requestedDocuments,
-            folderId,
-            expirationDays
-        };
-
-        return createRequestMutation.mutateAsync(params);
+    const createRequest = async (params: CreateRequestParams): Promise<DocumentRequest> => {
+        return trpc.requests.create.useMutation({
+            onSuccess: () => {
+                // Invalidate and refetch requests
+                trpc.useUtils().requests.getAll.invalidate();
+            }
+        }).mutateAsync(params);
     };
 
-    // Combined loading state
-    const isMutating = createRequestMutation.isPending;
-    const combinedError = error || createRequestMutation.error;
 
     return {
-        requests,
-        isLoaded,
-        isLoading: isLoading || isMutating,
-        error: combinedError,
-        createRequest,
+        getAllRequests,
+        createRequest
     };
 }

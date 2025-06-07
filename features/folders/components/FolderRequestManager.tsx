@@ -46,9 +46,11 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
             await Promise.all(
                 validCivilIds.map(civilId =>
                     createRequest(
-                        civilId.trim(),
-                        folder.requestedDocuments,
-                        folder.id
+                        {
+                            civilId: civilId.trim(),
+                            requestedDocuments: folder.requestedDocuments,
+                            folderId: folder.id,
+                        }
                     )
                 )
             );
