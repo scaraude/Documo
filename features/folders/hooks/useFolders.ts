@@ -1,12 +1,20 @@
-// features/folders/hooks/useFolder.ts
 'use client'
-import { tr } from 'date-fns/locale';
+
 import { trpc } from '../../../lib/trpc/client';
+import { computeDocumentStatus, computeFolderStatus, computeRequestStatus } from '../../../shared/hooks';
 
 export function useFolders() {
-    const getAllFolders = () => trpc.folder.getAll.useQuery();
+    const getAllFolders = () => trpc.folder.getAll.useQuery(undefined, {
+        select(data) {
+            return data.map((folder) => { return { ...folder, status: computeFolderStatus(folder) } })
+        }
+    });
 
-    const getFolderById = (id: string) => trpc.folder.getById.useQuery({ id });
+    const getFolderById = (id: string) => trpc.folder.getByIdWithRelations.useQuery({ id }, {
+        select(folder) {
+            return folder === null ? null : { ...folder, status: computeFolderStatus(folder), requests: folder.requests?.map(request => ({ ...request, status: computeRequestStatus(request) })), documents: folder.documents?.map(document => ({ ...document, status: computeDocumentStatus(document) })) }
+        },
+    });
 
     const createFolderMutation = trpc.folder.create.useMutation();
 

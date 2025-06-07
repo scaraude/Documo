@@ -38,6 +38,10 @@ export interface DocumentRequest {
     folderId?: string;
 }
 
+export interface DocumentRequestWithStatue extends DocumentRequest {
+    status: ComputedRequestStatus
+}
+
 // Computed status type
 export type ComputedRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'COMPLETED';
 
@@ -59,6 +63,10 @@ export interface AppDocument {
     errorMessage?: string;
 
     validationErrors?: string[];
+}
+
+export interface AppDocumentWithStatus extends AppDocument {
+    status: ComputedDocumentStatus
 }
 
 export const AppDocumentSchema = z.object({

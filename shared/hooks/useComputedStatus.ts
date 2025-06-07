@@ -1,21 +1,21 @@
 import { DocumentRequest, AppDocument, ComputedRequestStatus, ComputedDocumentStatus } from '@/shared/types';
 import { ComputedFolderStatus, Folder } from '@/features/folders/types';
 
-export const useFolderStatus = (folder: Folder): ComputedFolderStatus => {
+export const computeFolderStatus = (folder: Folder): ComputedFolderStatus => {
     if (folder.archivedAt) return 'ARCHIVED';
     if (folder.completedAt) return 'COMPLETED';
     if (folder.firstRequestCreatedAt) return 'ACTIVE';
     return 'PENDING';
 };
 
-export const useRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
+export const computeRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
     if (request.completedAt) return 'COMPLETED';
     if (request.rejectedAt) return 'REJECTED';
     if (request.acceptedAt) return 'ACCEPTED';
     return 'PENDING';
 };
 
-export const useDocumentStatus = (document: AppDocument): ComputedDocumentStatus => {
+export const computeDocumentStatus = (document: AppDocument): ComputedDocumentStatus => {
     if (document.errorAt) return 'ERROR';
     if (document.invalidatedAt) return 'INVALID';
     if (document.validatedAt) return 'VALID';

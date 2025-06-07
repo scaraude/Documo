@@ -1,19 +1,18 @@
 'use client'
 import { useState } from 'react';
-import { FolderWithRelations } from '../types';
+import { FolderWithRelationsAndStatus } from '../types';
 import { useRequests } from '@/features/requests/hooks/useRequests';
-import { useRequestStatus } from '@/shared/hooks/useComputedStatus';
 import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/shared/components';
 import { Plus, Send, Users, Clock, CheckCircle, XCircle, FileCheck, Hash, Calendar, Trash2, Eye } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
+import { ComputedRequestStatus, DocumentRequestWithStatue } from '@/shared/types';
 import Link from 'next/link';
 import { ROUTES } from '../../../shared/constants';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface FolderRequestManagerProps {
-    folder: FolderWithRelations;
+    folder: FolderWithRelationsAndStatus;
     onRemoveRequest: (folderId: string, requestId: string) => Promise<void>;
 }
 
@@ -226,7 +225,7 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
 };
 
 interface RequestCardProps {
-    request: DocumentRequest;
+    request: DocumentRequestWithStatue;
     folderId: string;
     onRemoveRequest: (folderId: string, requestId: string) => Promise<void>;
     getStatusColor: (status: ComputedRequestStatus) => string;
@@ -244,7 +243,6 @@ const RequestCard = ({
     getStatusLabel,
     formatRelativeTime
 }: RequestCardProps) => {
-    const requestStatus = useRequestStatus(request);
 
     return (
         <Card className="hover:shadow-md transition-shadow">
@@ -258,10 +256,10 @@ const RequestCard = ({
                             </span>
                         </div>
 
-                        <Badge className={`px-3 py-1 text-xs font-medium border ${getStatusColor(requestStatus)}`}>
+                        <Badge className={`px-3 py-1 text-xs font-medium border ${getStatusColor(request.status)}`}>
                             <span className="flex items-center gap-1">
-                                {getStatusIcon(requestStatus)}
-                                {getStatusLabel(requestStatus)}
+                                {getStatusIcon(request.status)}
+                                {getStatusLabel(request.status)}
                             </span>
                         </Badge>
 

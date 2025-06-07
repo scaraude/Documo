@@ -5,6 +5,7 @@ import { AppDocumentType } from '@/shared/constants';
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
 import { prismaDocumentToAppDocument } from '../../documents/mappers';
+import { prismaDocumentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
 
 // Type mapper between Prisma and App
 type PrismaFolder = Prisma.FolderGetPayload<null>;
@@ -15,12 +16,11 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
         id: prismaModel.id,
         name: prismaModel.name,
         description: prismaModel.description || '',
-        requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
+        requestedDocuments: prismaModel.requestedDocuments.map(prismaDocumentTypeToAppDocumentType),
         createdAt: prismaModel.createdAt,
         updatedAt: prismaModel.updatedAt,
         expiresAt: prismaModel.expiresAt || undefined,
         createdById: prismaModel.createdById || undefined,
-        sharedWith: prismaModel.sharedWith || [],
         lastActivityAt: prismaModel.lastActivityAt || prismaModel.updatedAt // fallback if lastActivityAt is missing
     };
 }

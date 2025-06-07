@@ -12,10 +12,10 @@ export const folderRouter = router({
             throw new Error('Failed to fetch folders');
         }
     }),
-    getById: publicProcedure.input(z.object({ id: z.string().uuid() }))
+    getByIdWithRelations: publicProcedure.input(z.object({ id: z.string().uuid() }))
         .query(async ({ input }) => {
             try {
-                return await folderRepository.getFolderById(input.id);
+                return await folderRepository.getFolderByIdWithRelations(input.id);
             } catch (error) {
                 console.error('Error fetching folder:', error);
                 throw new Error('Failed to fetch folder');

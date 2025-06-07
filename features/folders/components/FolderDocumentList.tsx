@@ -1,14 +1,11 @@
 import Link from "next/link"
-import { AppDocument } from "@/shared/types"
-import { useDocumentStatus } from "../../../shared/hooks/useComputedStatus";
+import { AppDocumentWithStatus } from "@/shared/types"
 
 interface FolderDocumentListProps {
-    document: AppDocument
+    document: AppDocumentWithStatus
 }
 export const FolderDocumentList = (props: FolderDocumentListProps) => {
     const { document } = props;
-
-    const documentStatus = useDocumentStatus(document);
 
     return <li key={document.id} className="px-4 py-4 flex items-center hover:bg-gray-50">
         <div className="min-w-0 flex-1 flex items-center">
@@ -36,7 +33,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                     <p className="mt-1 flex items-center text-sm text-gray-500">
                         <span className="truncate">{document.type}</span>
                         <span className="ml-1.5 flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
-                            {documentStatus}
+                            {document.status}
                         </span>
                     </p>
                 </div>

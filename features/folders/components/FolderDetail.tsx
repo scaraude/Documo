@@ -4,13 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
-import { ComputedFolderStatus, FolderWithRelations } from '../types';
-import { useFolderStatus } from '@/shared/hooks/useComputedStatus';
+import { ComputedFolderStatus, FolderWithRelationsAndStatus } from '../types';
 import { FolderRequestManager } from './FolderRequestManager';
 import { FolderDocumentList } from './FolderDocumentList';
 
 interface FolderDetailProps {
-    folder: FolderWithRelations;
+    folder: FolderWithRelationsAndStatus;
     onDelete: (id: string) => Promise<void>;
     onRemoveRequest: (folderId: string, requestId: string) => Promise<void>;
 }
@@ -23,7 +22,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
     const router = useRouter();
     const [activeTab, setActiveTab] = useState<'info' | 'requests' | 'documents'>('info');
 
-    const folderStatus = useFolderStatus(folder);
 
     const handleDelete = async () => {
         if (window.confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')) {
@@ -132,10 +130,10 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                             <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                                 <span
                                     className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getFolderStatusClass(
-                                        folderStatus
+                                        folder.status
                                     )}`}
                                 >
-                                    {getFolderStatusText(folderStatus)}
+                                    {getFolderStatusText(folder.status)}
                                 </span>
                             </dd>
                         </div>

@@ -6,10 +6,9 @@ import { FolderType, useFolderTypes } from '../../features/folder-types';
 import { useFolders } from '../../features/folders/hooks/useFolders';
 import { Button, Card, CardContent, Badge, ScrollArea, ScrollBar } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
-import { useFolderStatus } from '../../shared/hooks/useComputedStatus';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Folder } from '../../features/folders/types';
+import { ComputedFolderStatus, FolderWithStatus } from '../../features/folders/types';
 import { useRouter } from 'next/navigation';
 
 export default function FoldersPage() {
@@ -26,16 +25,18 @@ export default function FoldersPage() {
         folder.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    const getStatusBadge = (status: string) => {
+    const getStatusBadge = (status: ComputedFolderStatus) => {
         switch (status) {
             case 'PENDING':
+            case 'ACTIVE':
                 return <Badge className="bg-yellow-100 text-yellow-800">🕐 En attente</Badge>;
             case 'COMPLETED':
                 return <Badge className="bg-green-100 text-green-800">✅ Terminé</Badge>;
-            case 'REJECTED':
+            case 'ARCHIVED':
                 return <Badge className="bg-red-100 text-red-800">❌ Refusé</Badge>;
             default:
-                return <Badge className="bg-blue-100 text-blue-800">📂 Actif</Badge>;
+                const never: never = status;
+                return never;
         }
     };
 
@@ -89,16 +90,14 @@ export default function FoldersPage() {
         </div>
     }
 
-    const FolderCard = ({ folder }: { folder: Folder }) => {
-        const folderStatus = useFolderStatus(folder);
-
+    const FolderCard = ({ folder }: { folder: FolderWithStatus }) => {
         return (
             <Link href={ROUTES.FOLDERS.DETAIL(folder.id)}>
                 <Card className="hover:shadow-md transition-shadow cursor-pointer">
                     <CardContent className="p-4">
                         <div className="flex justify-between items-start mb-2">
                             <h3 className="font-medium text-gray-900 truncate">{folder.name}</h3>
-                            {getStatusBadge(folderStatus)}
+                            {getStatusBadge(folder.status)}
                         </div>
                         <p className="text-sm text-gray-500">
                             Envoyé {formatDistanceToNow(new Date(folder.createdAt), { addSuffix: true, locale: fr })} • {folder.requestedDocuments.length} document{folder.requestedDocuments.length > 1 ? 's' : ''}

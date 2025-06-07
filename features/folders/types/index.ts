@@ -1,5 +1,5 @@
 import { AppDocumentType } from '@/shared/constants';
-import { DocumentRequest, AppDocument } from '@/shared/types';
+import { DocumentRequest, AppDocument, DocumentRequestWithStatue, AppDocumentWithStatus } from '@/shared/types';
 import { FolderType } from '@/features/folder-types/types';
 
 export interface Folder {
@@ -18,16 +18,25 @@ export interface Folder {
 
     expiresAt?: Date;
     createdById?: string;
-    sharedWith: string[];
 
     // Relations
     folderTypeId?: string;
     folderType?: FolderType;
 }
 
+export interface FolderWithStatus extends Folder {
+    status: ComputedFolderStatus;
+}
+
 export interface FolderWithRelations extends Folder {
     requests?: DocumentRequest[];
     documents?: AppDocument[];
+    folderType?: FolderType;
+}
+
+export interface FolderWithRelationsAndStatus extends FolderWithStatus {
+    requests?: DocumentRequestWithStatue[];
+    documents?: AppDocumentWithStatus[];
     folderType?: FolderType;
 }
 
