@@ -13,13 +13,16 @@ import { Folder } from '../../features/folders/types';
 import { useRouter } from 'next/navigation';
 
 export default function FoldersPage() {
-    const [searchTerm, setSearchTerm] = useState('');
     const { getAllFolderTypes } = useFolderTypes();
     const { data: folderTypes, isLoading: isfolderTypesLoading } = getAllFolderTypes();
-    const { folders, isLoading } = useFolders();
+    const { getAllFolders } = useFolders();
+    const { data: folders, isLoading } = getAllFolders();
+
     const router = useRouter();
 
-    const filteredFolders = folders.filter(folder =>
+    const [searchTerm, setSearchTerm] = useState('');
+
+    const filteredFolders = folders?.filter(folder =>
         folder.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -197,19 +200,19 @@ export default function FoldersPage() {
                         <div className="flex justify-center py-8">
                             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                         </div>
-                    ) : filteredFolders.length === 0 ? (
+                    ) : !filteredFolders || filteredFolders.length === 0 ? (
                         <Card className="text-center py-12">
                             <CardContent>
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    {folders.length === 0 ? 'Aucun dossier' : 'Aucun résultat'}
+                                    {folders?.length === 0 ? 'Aucun dossier' : 'Aucun résultat'}
                                 </h3>
                                 <p className="text-gray-500 mb-6">
-                                    {folders.length === 0
+                                    {folders?.length === 0
                                         ? 'Créez votre premier dossier pour commencer'
                                         : 'Aucun dossier ne correspond à votre recherche'
                                     }
                                 </p>
-                                {folders.length === 0 && (
+                                {folders?.length === 0 && (
                                     <Button asChild>
                                         <Link href={ROUTES.FOLDERS.NEW}>
                                             <Plus className="h-4 w-4 mr-2" />

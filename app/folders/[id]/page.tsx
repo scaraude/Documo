@@ -1,36 +1,22 @@
 // app/folders/[id]/page.tsx
 'use client'
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { FolderDetail } from '@/features/folders/components/FolderDetail';
 import { ROUTES } from '@/shared/constants';
-import { useFolder } from '@/features/folders';
+import { useFolders } from '@/features/folders';
 
 export default function FolderDetailPage() {
-    const params = useParams();
+    const { id: folderId }: { id: string } = useParams();
     const router = useRouter();
-    const folderId = params.id as string;
-    const { currentFolder, loadFolder, deleteFolder, removeRequestFromFolder, isLoading } = useFolder();
+    const { getFolderById, deleteFolderMutation, removeRequestFromFolderMutation } = useFolders();
+    const { data: folder, isLoading } = getFolderById(folderId);
     const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        async function fetchFolder() {
-            try {
-                setError(null);
-                await loadFolder(folderId, true); // Include relations
-            } catch {
-                setError('Impossible de charger le dossier');
-            }
-        }
-
-        if (folderId) {
-            fetchFolder();
-        }
-    }, [folderId, loadFolder]);
 
     const handleDelete = async (id: string) => {
         try {
-            await deleteFolder(id);
+            deleteFolderMutation.mutate({ id });
             router.push(ROUTES.FOLDERS.HOME);
         } catch {
             setError('Impossible de supprimer le dossier');
@@ -39,13 +25,13 @@ export default function FolderDetailPage() {
 
     const handleRemoveRequest = async (folderId: string, requestId: string) => {
         try {
-            await removeRequestFromFolder(folderId, requestId);
+            removeRequestFromFolderMutation.mutate({ requestId });
         } catch {
             setError('Impossible de retirer la demande du dossier');
         }
     };
 
-    if (isLoading && !currentFolder) {
+    if (isLoading && !folder) {
         return (
             <div className="min-h-screen flex items-center justify-center">
                 <p>Chargement...</p>
@@ -53,7 +39,7 @@ export default function FolderDetailPage() {
         );
     }
 
-    if (!currentFolder && !isLoading) {
+    if (!folder && !isLoading) {
         return (
             <div className="min-h-screen flex items-center justify-center text-red-500">
                 <p>Dossier introuvable</p>
@@ -69,9 +55,9 @@ export default function FolderDetailPage() {
                 </div>
             )}
 
-            {currentFolder && (
+            {folder && (
                 <FolderDetail
-                    folder={currentFolder}
+                    folder={folder}
                     onDelete={handleDelete}
                     onRemoveRequest={handleRemoveRequest}
                 />

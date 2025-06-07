@@ -13,7 +13,7 @@ import Link from 'next/link';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 
 interface FolderFormProps {
-    onSubmit: (data: CreateFolderParams) => Promise<Folder | undefined>;
+    onSubmit: (data: CreateFolderParams) => void
     isLoading: boolean;
 }
 

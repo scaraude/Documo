@@ -34,7 +34,7 @@ export interface FolderWithRelations extends Folder {
 export interface CreateFolderParams {
     name: string;
     description?: string;
-    folderTypeId: string; // Maintenant obligatoire
+    folderTypeId: string;
     expiresAt: Date | null;
     requestedDocuments: AppDocumentType[];
     createdById?: string;

@@ -1,35 +1,24 @@
 // features/folders/hooks/useFolder.ts
 'use client'
-import { useCallback, useEffect, useState } from 'react';
-import * as folderApi from '../api/foldersApi';
-import { Folder } from '../types';
+import { tr } from 'date-fns/locale';
+import { trpc } from '../../../lib/trpc/client';
 
 export function useFolders() {
-    const [folders, setFolders] = useState<Array<Folder & { requestsCount?: number }>>([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<Error | null>(null);
+    const getAllFolders = () => trpc.folder.getAll.useQuery();
 
-    // Load all folders
-    const loadFolders = useCallback(async (withStats: boolean = false) => {
-        try {
-            setIsLoading(true);
-            const data = await folderApi.getFolders(withStats);
-            setFolders(data);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Unknown error'));
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-    // Load folders on component mount
-    useEffect(() => {
-        loadFolders();
-    }, [loadFolders]);
+    const getFolderById = (id: string) => trpc.folder.getById.useQuery({ id });
+
+    const createFolderMutation = trpc.folder.create.useMutation();
+
+    const deleteFolderMutation = trpc.folder.delete.useMutation();
+
+    const removeRequestFromFolderMutation = trpc.folder.removeRequestFromFolder.useMutation();
 
     return {
-        folders,
-        isLoading,
-        error,
-        loadFolders,
+        getAllFolders,
+        getFolderById,
+        createFolderMutation,
+        deleteFolderMutation,
+        removeRequestFromFolderMutation
     };
 }

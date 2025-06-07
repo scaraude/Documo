@@ -28,7 +28,9 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
 // Get all folders
 export async function getFolders(): Promise<Folder[]> {
     try {
-        const folders = await prisma.folder.findMany();
+        const folders = await prisma.folder.findMany({
+            where: { archivedAt: null },
+        });
         return folders.map(toAppModel);
     } catch (error) {
         console.error('Error fetching folders from database:', error);
@@ -42,7 +44,7 @@ export async function getFolderById(
 ): Promise<Folder | null> {
     try {
         const folder = await prisma.folder.findUnique({
-            where: { id },
+            where: { id, archivedAt: null },
         })
 
         if (!folder) return null;
@@ -60,12 +62,12 @@ export async function getFolderByIdWithRelations(
 ): Promise<FolderWithRelations | null> {
     try {
         const folder = await prisma.folder.findUnique({
-            where: { id },
+            where: { id, archivedAt: null },
             include: {
                 requests: true,
                 documents: true,
                 folderType: true
-            }
+            },
         })
 
         if (!folder) return null;
@@ -123,8 +125,11 @@ export async function updateFolder(
 // Delete a folder
 export async function deleteFolder(id: string): Promise<void> {
     try {
-        await prisma.folder.delete({
-            where: { id }
+        await prisma.folder.update({
+            where: { id },
+            data: {
+                archivedAt: new Date()
+            }
         });
     } catch (error) {
         console.error(`Error deleting folder with ID ${id}:`, error);
@@ -162,6 +167,9 @@ export async function removeRequestFromFolder(requestId: string): Promise<void> 
 export async function getFoldersWithStats(): Promise<Array<Folder & { requestsCount: number }>> {
     try {
         const folders = await prisma.folder.findMany({
+            where: {
+                archivedAt: null
+            },
             include: {
                 _count: {
                     select: { requests: true }

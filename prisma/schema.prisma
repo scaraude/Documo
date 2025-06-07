@@ -24,14 +24,12 @@ model Folder {
   updatedAt          DateTime       @updatedAt
 
   // Nouveaux champs pour calculer le status
-  archivedAt            DateTime?
-  completedAt           DateTime?
-  firstRequestCreatedAt DateTime?
-  lastActivityAt        DateTime  @default(now())
+  archivedAt     DateTime?
+  completedAt    DateTime?
+  lastActivityAt DateTime  @default(now())
 
   expiresAt   DateTime?
   createdById String?
-  sharedWith  String[]
 
   // Relations
   folderTypeId String
