@@ -5,6 +5,7 @@ import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../../../lib/trpc/trpc'
 import { externalCreateDocumentSchema, externalRequestSchema } from '../types/zod'
 import { prismaShareLinkToExternalRequest } from '../mapper/mapper'
+import { generateSecureToken } from '../../../lib/utils'
 
 
 export const externalRouter = router({
@@ -79,6 +80,27 @@ export const externalRouter = router({
                     message: 'Failed to upload document'
                 })
             }
+        }),
+
+    generateShareLink: publicProcedure
+        .input(z.object({
+            requestId: z.string().min(1, 'Request ID is required')
+        }))
+        .output(z.object({
+            token: z.string()
+        }))
+        .mutation(async ({ input }) => {
+            const { requestId } = input
+
+            // Generate a secure token that will be used to identify this shared request
+            const token = await generateSecureToken();
+
+            // Store the share token with expiration
+            return await externalRequestsRepository.createShareLink({
+                requestId,
+                token,
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days expiry by default
+            });
         })
 })
 

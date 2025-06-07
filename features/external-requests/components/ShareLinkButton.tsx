@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { Check, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
-import { API_ROUTES, ROUTES } from '@/shared/constants';
+import { ROUTES } from '@/shared/constants';
 import { toast } from 'sonner';
+import { useExternalRequest } from '../hooks/useExternalRequest';
 
 interface ShareLinkButtonProps {
     requestId: string;
@@ -13,34 +14,26 @@ interface ShareLinkButtonProps {
 export function ShareLinkButton({ requestId, variant = 'default', size = 'default' }: ShareLinkButtonProps) {
     const [isCopied, setIsCopied] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const { generateShareLink } = useExternalRequest();
 
     const handleShare = async () => {
         try {
-            setIsLoading(true);
+            generateShareLink.mutate({ requestId }, {
+                onSuccess: async ({ token }) => {
+                    const shareUrl = `${window.location.origin}${ROUTES.EXTERNAL.REQUEST(token)}`;
+                    await navigator.clipboard.writeText(shareUrl);
+                    toast.success('Lien copié dans le presse-papiers');
+                    setIsCopied(true);
+                    // Reset copy status after 2 seconds
+                    setTimeout(() => {
+                        setIsCopied(false);
+                    }, 2000);
+                },
+                onError: () => {
+                    toast.error('Erreur lors de la génération du lien de partage');
+                },
+            })
 
-            // Generate share link
-            const response = await fetch(API_ROUTES.EXTERNAL.SHARE_LINK(requestId), {
-                method: 'POST',
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to generate share link');
-            }
-
-            const { token } = await response.json();
-
-            // Construct the full URL
-            const shareUrl = `${window.location.origin}${ROUTES.EXTERNAL.REQUEST(token)}`;
-
-            // Copy to clipboard
-            await navigator.clipboard.writeText(shareUrl);
-            setIsCopied(true);
-            toast.success('Lien copié dans le presse-papiers');
-
-            // Reset copy status after 2 seconds
-            setTimeout(() => {
-                setIsCopied(false);
-            }, 2000);
         } catch (error) {
             console.error('Error sharing link:', error);
             toast.error('Erreur lors de la génération du lien de partage');
