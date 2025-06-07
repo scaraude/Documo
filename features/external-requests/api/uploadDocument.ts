@@ -1,7 +1,10 @@
+'use client'
+
 import { v4 as uuidv4 } from 'uuid'
 import { generateEncryptionKey, encryptFile } from '../utils/encryption'
-import { API_ROUTES, AppDocumentType } from '../../../shared/constants'
+import { AppDocumentType } from '@/shared/constants'
 import { AppDocumentWithoutRequestId } from '../types'
+import { trpcVanilla } from '@/lib/trpc/client'
 
 interface UploadDocumentOptions {
     file: File
@@ -31,6 +34,7 @@ export const uploadDocument = async ({
     onProgress
 }: UploadDocumentOptions): Promise<void> => {
     try {
+
         // Create document metadata
         const documentId = uuidv4()
         const document: AppDocumentWithoutRequestId = {
@@ -41,29 +45,26 @@ export const uploadDocument = async ({
             updatedAt: new Date()
         }
 
+
         // Encrypt file client-side
         const encryptionKey = await generateEncryptionKey()
         const encryptedFile = await encryptFile(file, encryptionKey)
 
         // Create form data with encrypted file and metadata
-        const formData = new FormData()
-        formData.append('file', encryptedFile, file.name)
-        formData.append('document', JSON.stringify(document))
-        formData.append('token', JSON.stringify(token))
+
 
         // Export encryption key for storage
         const exportedKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
         const keyBase64 = btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
-        formData.append('encryptionKey', keyBase64)
+        console.log('Exported key:', keyBase64)
 
-        const response = await fetch(API_ROUTES.EXTERNAL.UPLOAD, {
-            method: 'POST',
-            body: formData
+        trpcVanilla.external.createDocument.mutate({
+            document,
+            encryptedFile,
+            token,
         })
 
-        if (!response.ok) {
-            throw new Error('Upload failed')
-        }
+
 
         // Simulate upload progress for now
         if (onProgress) {

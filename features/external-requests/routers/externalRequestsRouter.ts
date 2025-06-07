@@ -44,10 +44,10 @@ export const externalRouter = router({
 
     createDocument: publicProcedure
         .input(externalCreateDocumentSchema)
-        .query(async ({ input }) => {
+        .mutation(async ({ input }) => {
             try {
                 // Utiliser formData pour gérer les fichiers
-                const file = input.file
+                const file = input.encryptedFile
                 const token = input.token.slice(1, -1)
                 const documentData = input.document
 

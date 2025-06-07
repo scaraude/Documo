@@ -12,7 +12,7 @@ export const externalRequestSchema = z.object({
 })
 
 export const externalCreateDocumentSchema = z.object({
-    file: z.instanceof(File),
+    encryptedFile: z.instanceof(Blob),
     token: z.string().min(1, 'Token is required'),
-    document: AppDocumentSchema.omit({ requestId: true })
+    document: AppDocumentSchema.omit({ requestId: true }),
 })
