@@ -12,7 +12,6 @@ const createRequestSchema = z.object({
 })
 
 export const requestsRouter = router({
-    // GET /api/requests
     getAll: publicProcedure
         .query(async () => {
             try {
@@ -20,18 +19,6 @@ export const requestsRouter = router({
             } catch (error) {
                 console.error('Error fetching requests:', error);
                 throw new Error('Failed to fetch requests');
-            }
-        }),
-
-    // POST /api/requests  
-    create: publicProcedure
-        .input(createRequestSchema)
-        .mutation(async ({ input }) => {
-            try {
-                return await requestRepository.createRequest(input);
-            } catch (error) {
-                console.error('Error creating request:', error);
-                throw new Error('Failed to create request');
             }
         }),
 
@@ -45,5 +32,17 @@ export const requestsRouter = router({
                 throw new Error('Failed to fetch request');
             }
         }),
+
+    create: publicProcedure
+        .input(createRequestSchema)
+        .mutation(async ({ input }) => {
+            try {
+                return await requestRepository.createRequest(input);
+            } catch (error) {
+                console.error('Error creating request:', error);
+                throw new Error('Failed to create request');
+            }
+        }),
+
 
 });

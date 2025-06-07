@@ -1,36 +1,11 @@
 import { z } from 'zod'
 import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository'
+import * as documentRepository from '@/features/documents/repository/documentsRepository'
 import { TRPCError } from '@trpc/server'
 import { publicProcedure, router } from '../../../lib/trpc/trpc'
-import { APP_DOCUMENT_TYPES } from '@/shared/constants'
-import { Prisma } from '@/lib/prisma';
-import { prismaDocumentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper'
+import { externalCreateDocumentSchema, externalRequestSchema } from '../types/zod'
+import { prismaShareLinkToExternalRequest } from '../mapper/mapper'
 
-// Schema for external request response
-const externalRequestSchema = z.object({
-    id: z.string(),
-    civilId: z.string(),
-    requestedDocuments: z.nativeEnum(APP_DOCUMENT_TYPES).array(),
-    createdAt: z.date(),
-    expiresAt: z.date(),
-})
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const shareLinkWithRequest = Prisma.validator<Prisma.RequestShareLinkDefaultArgs>()({
-    include: { request: true },
-})
-
-
-const prismaSchemaToAppSchema = (shareLink: Prisma.RequestShareLinkGetPayload<typeof shareLinkWithRequest>): z.infer<typeof externalRequestSchema> => {
-    const request = shareLink.request
-    return {
-        id: request.id,
-        civilId: request.civilId,
-        requestedDocuments: request.requestedDocuments.map(prismaDocumentTypeToAppDocumentType),
-        createdAt: request.createdAt,
-        expiresAt: request.expiresAt,
-    }
-}
 
 export const externalRouter = router({
     getRequestByToken: publicProcedure
@@ -53,7 +28,7 @@ export const externalRouter = router({
                 }
 
                 // Only return necessary information for external users
-                return prismaSchemaToAppSchema(shareLink)
+                return prismaShareLinkToExternalRequest(shareLink)
             } catch (error) {
                 if (error instanceof TRPCError) {
                     throw error
@@ -66,6 +41,46 @@ export const externalRouter = router({
                 })
             }
         }),
+
+    createDocument: publicProcedure
+        .input(externalCreateDocumentSchema)
+        .query(async ({ input }) => {
+            try {
+                // Utiliser formData pour gérer les fichiers
+                const file = input.file
+                const token = input.token.slice(1, -1)
+                const documentData = input.document
+
+                const shareLink = await externalRequestsRepository.getShareLinkByToken(token);
+
+                if (!shareLink) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'Request not found'
+                    })
+                }
+
+                const requestId = shareLink.request.id;
+                const folderId = shareLink.request.folderId || undefined;
+
+                if (!file || !documentData) {
+                    throw new TRPCError({
+                        code: 'FORBIDDEN',
+                        message: 'File and document data are missing'
+                    })
+                }
+
+                // Sauvegarder le document dans la base de données
+                return await documentRepository.uploadDocument({ ...documentData, requestId, folderId });
+            } catch (error) {
+                console.error('Error uploading document:', error);
+                throw new TRPCError({
+                    code: 'INTERNAL_SERVER_ERROR',
+                    message: 'Failed to upload document'
+                })
+            }
+        })
 })
+
 
 export type ExternalRouter = typeof externalRouter

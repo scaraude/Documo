@@ -61,5 +61,24 @@ export interface AppDocument {
     validationErrors?: string[];
 }
 
+export const AppDocumentSchema = z.object({
+    id: z.string(),
+    requestId: z.string(),
+    folderId: z.string().optional(),
+    type: z.nativeEnum(APP_DOCUMENT_TYPES),
+    metadata: metadataSchema,
+    url: z.string().optional(),
+    createdAt: z.date(),
+    updatedAt: z.date(),
+
+    // Propriétés pour calculer le status
+    uploadedAt: z.date().optional(),
+    validatedAt: z.date().optional(),
+    invalidatedAt: z.date().optional(),
+    errorAt: z.date().optional(),
+    errorMessage: z.string().optional(),
+
+    validationErrors: z.array(z.string()).optional(),
+});
 // Computed status type
 export type ComputedDocumentStatus = 'PENDING' | 'UPLOADING' | 'UPLOADED' | 'VALIDATING' | 'VALID' | 'INVALID' | 'ERROR';

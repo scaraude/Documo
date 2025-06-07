@@ -9,7 +9,8 @@ import { useExternalRequest } from '../../../../features/external-requests/hooks
 
 export default function ExternalRequestPage() {
     const { token }: { token: string } = useParams()
-    const { request, isLoading, error } = useExternalRequest(token);
+    const { getRequestByToken } = useExternalRequest();
+    const { data: request, isLoading, error } = getRequestByToken(token);
 
     if (isLoading) {
         return (
