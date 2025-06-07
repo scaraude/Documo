@@ -5,13 +5,13 @@ import { FolderTypeForm } from '@/features/folder-types/components/FolderTypeFor
 import { CreateFolderTypeParams } from '@/features/folder-types/types';
 
 export default function NewFolderTypePage() {
-    const { createFolderType, isLoading } = useFolderTypes();
+    const { createFolderTypeMutation } = useFolderTypes();
     const [error, setError] = useState<string | null>(null);
 
     const handleSubmit = async (data: CreateFolderTypeParams) => {
         try {
             setError(null);
-            await createFolderType(data);
+            createFolderTypeMutation.mutate(data);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Une erreur est survenue');
         }
@@ -39,7 +39,7 @@ export default function NewFolderTypePage() {
             <div className="bg-white shadow-md rounded-lg p-6">
                 <FolderTypeForm
                     onSubmit={handleSubmit}
-                    isLoading={isLoading}
+                    isLoading={false}
                 />
             </div>
         </div>

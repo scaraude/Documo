@@ -9,12 +9,12 @@ import { toast } from 'sonner';
 export default function FolderTypeDetailPage() {
     const { id: folderTypeId }: { id: string } = useParams();
     const router = useRouter();
-    const { getFolderTypeById, deleteFolderType } = useFolderTypes();
+    const { getFolderTypeById, deleteFolderTypeMutation } = useFolderTypes();
     const { data: folderType, isLoading } = getFolderTypeById(folderTypeId);
 
     const handleDelete = async (id: string) => {
         try {
-            await deleteFolderType(id);
+            deleteFolderTypeMutation.mutate({ id });
             router.push(ROUTES.FOLDERS.HOME);
         } catch {
             toast.error("Impossible de supprimer le type de dossier");
