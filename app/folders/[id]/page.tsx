@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { FolderDetail } from '@/features/folders/components/FolderDetail';
 import { ROUTES } from '@/shared/constants';
 import { useFolders } from '@/features/folders';
+import { toast } from 'sonner';
 
 export default function FolderDetailPage() {
     const { id: folderId }: { id: string } = useParams();
@@ -19,6 +20,7 @@ export default function FolderDetailPage() {
             deleteFolderMutation.mutate({ id });
             router.push(ROUTES.FOLDERS.HOME);
         } catch {
+            toast.error('Impossible de supprimer le dossier');
             setError('Impossible de supprimer le dossier');
         }
     };
@@ -27,6 +29,7 @@ export default function FolderDetailPage() {
         try {
             removeRequestFromFolderMutation.mutate({ requestId });
         } catch {
+            toast.error('Impossible de retirer la demande du dossier');
             setError('Impossible de retirer la demande du dossier');
         }
     };
