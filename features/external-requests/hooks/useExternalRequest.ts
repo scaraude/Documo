@@ -2,15 +2,11 @@
 
 import { trpc } from '../../../lib/trpc/client'
 
-export const useExternalRequest = (token: string) => {
+export const useExternalRequest = () => {
 
-    const { data: request, isLoading, error } = trpc.external.getRequestByToken.useQuery({
-        token
-    })
+    const getRequestByToken = (token: string) => trpc.external.getRequestByToken.useQuery({ token });
 
     return {
-        request,
-        isLoading,
-        error
+        getRequestByToken
     }
 }

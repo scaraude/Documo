@@ -12,7 +12,8 @@ import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../../shared/mapper'
 export default function ExternalUploadPage() {
     const params = useParams();
     const token = params.token as string;
-    const { request, isLoading, error } = useExternalRequest(token)
+    const { getRequestByToken } = useExternalRequest();
+    const { data: request, isLoading, error } = getRequestByToken(token)
     const [isAuthenticated, setIsAuthenticated] = useState(false)
 
     useEffect(() => {
