@@ -15,14 +15,14 @@ interface UploadDocumentOptions {
 
 interface AppDocumentMetadata {
     name: string
-    type: string
+    mimeType: string
     size: number
     lastModified: number
 }
 
 const extractMetadata = (file: File): AppDocumentMetadata => ({
     name: file.name,
-    type: file.type,
+    mimeType: file.type,
     size: file.size,
     lastModified: file.lastModified
 })

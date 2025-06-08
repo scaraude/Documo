@@ -4,7 +4,7 @@ import { APP_DOCUMENT_TYPES, AppDocumentType } from "../constants";
 // Définir un schéma de validation
 export const metadataSchema = z.object({
     name: z.string(),
-    type: z.string(),
+    mimeType: z.string(),
     size: z.number(),
     lastModified: z.number(),
     hash: z.string().optional()
