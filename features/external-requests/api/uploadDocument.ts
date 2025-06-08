@@ -64,8 +64,6 @@ export const uploadDocument = async ({
             token,
         })
 
-
-
         // Simulate upload progress for now
         if (onProgress) {
             let progress = 0
