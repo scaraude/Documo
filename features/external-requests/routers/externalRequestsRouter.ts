@@ -74,6 +74,7 @@ export const externalRouter = router({
 
                 const { url } = await put(documentData.metadata.name, blob, {
                     access: 'public',
+                    addRandomSuffix: true
                 });
                 console.log('File uploaded:', url)
                 // Sauvegarder le document dans la base de données

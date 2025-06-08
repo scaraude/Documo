@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect, Dispatch, SetStateAction } from 'react'
 import { Button } from '@/shared/components/ui/button'
 import { Card } from '@/shared/components/ui/card'
 import { AppDocumentType, ROUTES } from '@/shared/constants'
@@ -10,7 +10,8 @@ import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper'
 
 interface DocumentUploaderProps {
     token: string;
-    requiredDocuments: AppDocumentType[];
+    documentTypesMissing: AppDocumentType[];
+    setDocumentTypeMissing: Dispatch<SetStateAction<AppDocumentType[]>>;
 }
 
 interface UploadStatus {
@@ -22,14 +23,20 @@ interface UploadStatus {
     }
 }
 
-export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderProps) => {
+export const DocumentUploader = ({ token, documentTypesMissing: documentTypeMissing, setDocumentTypeMissing }: DocumentUploaderProps) => {
     const router = useRouter();
-    const [uploadStatus, setUploadStatus] = useState<UploadStatus>(
-        requiredDocuments.reduce((acc, doc) => ({
+    const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
+
+    // Update uploadStatus when requiredDocuments changes
+    useEffect(() => {
+        const newUploadStatus = documentTypeMissing.reduce((acc, doc) => ({
             ...acc,
-            [doc]: { progress: 0, status: 'idle' }
-        }), {})
-    );
+            [doc]: uploadStatus[doc] || { progress: 0, status: 'idle' as const }
+        }), {});
+
+        setUploadStatus(newUploadStatus);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [documentTypeMissing]); // Remove uploadStatus from dependencies to avoid infinite loop
 
     const handleFileUpload = async (file: File, documentType: AppDocumentType) => {
         try {
@@ -50,19 +57,25 @@ export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderP
                 }
             });
 
+            setDocumentTypeMissing((documentTypes) => documentTypes.filter(dt => dt !== documentType));
             setUploadStatus(prev => ({
                 ...prev,
                 [documentType]: { progress: 100, status: 'completed', file }
             }));
 
-            // Check if all documents are uploaded
-            const allCompleted = Object.values(uploadStatus).every(
-                status => status.status === 'completed'
-            );
+            // Check if all documents are uploaded - use current state
+            setUploadStatus(currentStatus => {
+                const allCompleted = Object.values(currentStatus).every(
+                    status => status.status === 'completed'
+                );
 
-            if (allCompleted) {
-                router.push(ROUTES.EXTERNAL.UPLOAD_SUCCESS(token));
-            }
+                if (allCompleted) {
+                    router.push(ROUTES.EXTERNAL.UPLOAD_SUCCESS(token));
+                }
+
+                return currentStatus;
+            });
+
         } catch (error) {
             setUploadStatus(prev => ({
                 ...prev,
@@ -77,14 +90,20 @@ export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderP
     };
 
     // Don't render if requiredDocuments is empty or uploadStatus is not ready
-    if (requiredDocuments.length === 0 || Object.keys(uploadStatus).length === 0) {
+    if (documentTypeMissing.length === 0 || Object.keys(uploadStatus).length === 0) {
         return null;
     }
 
     return (
         <div className="space-y-6">
-            {requiredDocuments.map((documentType) => {
+            {documentTypeMissing.map((documentType) => {
                 const status = uploadStatus[documentType];
+
+                // Safety check - skip if status doesn't exist
+                if (!status) {
+                    return null;
+                }
+
                 return (
                     <Card key={documentType} className="p-6">
                         <div className="flex items-center justify-between">

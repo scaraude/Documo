@@ -16,7 +16,7 @@ export default function ExternalUploadPage() {
     const { getRequestByToken } = useExternalRequest();
     const { getDocumentsByRequestId } = useDocument();
     const [isAuthenticated, setIsAuthenticated] = useState(false)
-    const [documentTypesMissing, setDocumentTypeMissing] = useState<AppDocumentType[]>([]);
+    const [documentTypesMissing, setDocumentTypesMissing] = useState<AppDocumentType[]>([]);
     const { data: request, isLoading, error } = getRequestByToken(token)
     const { data: documents } = getDocumentsByRequestId(request?.id);
 
@@ -26,7 +26,7 @@ export default function ExternalUploadPage() {
             const documentTypeMissing = documents ? request.requestedDocuments.filter(
                 (doc) => !documents.some((d) => d.type === doc)
             ) : request.requestedDocuments;
-            setDocumentTypeMissing(documentTypeMissing);
+            setDocumentTypesMissing(documentTypeMissing);
         }
     }, [request, documents]);
 
@@ -100,6 +100,7 @@ export default function ExternalUploadPage() {
         )
     }
 
+    console.log('documentTypesMissing', documentTypesMissing);
     return (
         <div className="container mx-auto p-6">
             <Card>
@@ -112,6 +113,7 @@ export default function ExternalUploadPage() {
                         <ul className="list-disc list-inside space-y-2">
                             {request.requestedDocuments.map((requestedDocument, index) => (
                                 <li key={index} className="text-gray-700">
+                                    {documentTypesMissing.includes(requestedDocument) ? '⏳  ' : '✅  '}
                                     {APP_DOCUMENT_TYPE_TO_LABEL_MAP[requestedDocument]}
                                 </li>
                             ))}
@@ -119,7 +121,8 @@ export default function ExternalUploadPage() {
                     </div>
                     <DocumentUploader
                         token={token}
-                        requiredDocuments={documentTypesMissing}
+                        documentTypesMissing={documentTypesMissing}
+                        setDocumentTypeMissing={setDocumentTypesMissing}
                     />
                 </CardContent>
             </Card>
