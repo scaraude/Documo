@@ -9,7 +9,7 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
     )
 }
 
-export const encryptFile = async (file: File, key: CryptoKey): Promise<Blob> => {
+export const encryptFile = async (file: File, key: CryptoKey): Promise<Uint8Array> => {
     const iv = window.crypto.getRandomValues(new Uint8Array(12))
     const fileBuffer = await file.arrayBuffer()
 
@@ -26,5 +26,5 @@ export const encryptFile = async (file: File, key: CryptoKey): Promise<Blob> => 
     encryptedArray.set(iv, 0)
     encryptedArray.set(new Uint8Array(encryptedData), iv.length)
 
-    return new Blob([encryptedArray], { type: 'application/octet-stream' })
+    return encryptedArray
 }

@@ -6,6 +6,7 @@ import { publicProcedure, router } from '../../../lib/trpc/trpc'
 import { externalCreateDocumentSchema, externalRequestSchema } from '../types/zod'
 import { prismaShareLinkToExternalRequest } from '../mapper/mapper'
 import { generateSecureToken } from '../../../lib/utils'
+import { put } from '@vercel/blob';
 
 
 export const externalRouter = router({
@@ -48,9 +49,7 @@ export const externalRouter = router({
         .mutation(async ({ input }) => {
             try {
                 // Utiliser formData pour gérer les fichiers
-                const file = input.encryptedFile
-                const token = input.token.slice(1, -1)
-                const documentData = input.document
+                const { encryptedFile: file, token, document: documentData } = input
 
                 const shareLink = await externalRequestsRepository.getShareLinkByToken(token);
 
@@ -71,8 +70,14 @@ export const externalRouter = router({
                     })
                 }
 
+                const blob = new Blob([file], { type: 'application/octet-stream' });
+
+                const { url } = await put(documentData.metadata.name, blob, {
+                    access: 'public',
+                });
+                console.log('File uploaded:', url)
                 // Sauvegarder le document dans la base de données
-                return await documentRepository.uploadDocument({ ...documentData, requestId, folderId });
+                return await documentRepository.uploadDocument({ ...documentData, requestId, folderId, url });
             } catch (error) {
                 console.error('Error uploading document:', error);
                 throw new TRPCError({
