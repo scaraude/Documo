@@ -17,9 +17,9 @@ export const ROUTES = {
         DETAIL: (id: string) => `/requests/${id}`,
     },
     EXTERNAL: {
-        REQUEST: (id: string) => `/external/requests/${id}`,
-        UPLOAD: (requestId: string) => `/external/upload/${requestId}`,
-        UPLOAD_SUCCESS: (requestId: string) => `/external/upload/${requestId}/success`,
+        REQUEST: (token: string) => `/external/requests/${token}`,
+        UPLOAD: (token: string) => `/external/upload/${token}`,
+        UPLOAD_SUCCESS: (token: string) => `/external/upload/${token}/success`,
     }
 } as const;
 
