@@ -49,7 +49,7 @@ export const externalRouter = router({
         .mutation(async ({ input }) => {
             try {
                 // Utiliser formData pour gérer les fichiers
-                const { encryptedFile: file, token, document: documentData } = input
+                const { encryptedFile: file, token, document: documentData, dek } = input
 
                 const shareLink = await externalRequestsRepository.getShareLinkByToken(token);
 
@@ -78,7 +78,7 @@ export const externalRouter = router({
                 });
                 console.log('File uploaded:', url)
                 // Sauvegarder le document dans la base de données
-                return await documentRepository.uploadDocument({ ...documentData, requestId, folderId, url });
+                return await documentRepository.uploadDocument({ ...documentData, requestId, folderId, url, dek });
             } catch (error) {
                 console.error('Error uploading document:', error);
                 throw new TRPCError({

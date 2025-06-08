@@ -15,4 +15,5 @@ export const externalCreateDocumentSchema = z.object({
     encryptedFile: z.instanceof(Uint8Array<ArrayBufferLike>),
     token: z.string().min(1, 'Token is required'),
     document: AppDocumentSchema.omit({ requestId: true }),
+    dek: z.string().base64().min(1, 'Data Encryption Key is required'),
 })

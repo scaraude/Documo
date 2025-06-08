@@ -19,7 +19,8 @@ export function prismaDocumentToAppDocument(prismaModel: PrismaDocument): AppDoc
         url: prismaModel.url || undefined,
         createdAt: prismaModel.createdAt,
         updatedAt: prismaModel.updatedAt,
-        validationErrors: prismaModel.validationErrors || []
+        validationErrors: prismaModel.validationErrors || [],
+        dek: prismaModel.DEK,
     };
 }
 
@@ -39,6 +40,7 @@ export function inputToPrismaCreateInput(appDocument: AppDocument): Prisma.Docum
         validationErrors: appDocument.validationErrors || [],
         folder: {
             connect: { id: appDocument.folderId }
-        }
+        },
+        DEK: appDocument.dek
     };
 }

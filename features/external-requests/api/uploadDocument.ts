@@ -3,7 +3,7 @@
 import { v4 as uuidv4 } from 'uuid'
 import { generateEncryptionKey, encryptFile } from '../utils/encryption'
 import { AppDocumentType } from '@/shared/constants'
-import { AppDocumentWithoutRequestId } from '../types'
+import { AppDocumentToUpload } from '../types'
 import { trpcVanilla } from '@/lib/trpc/client'
 
 interface UploadDocumentOptions {
@@ -37,7 +37,7 @@ export const uploadDocument = async ({
 
         // Create document metadata
         const documentId = uuidv4()
-        const document: AppDocumentWithoutRequestId = {
+        const document: AppDocumentToUpload = {
             id: documentId,
             type: documentType,
             metadata: extractMetadata(file),
@@ -56,12 +56,12 @@ export const uploadDocument = async ({
         // Export encryption key for storage
         const exportedKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
         const keyBase64 = btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
-        console.log('Exported key:', keyBase64)
 
         trpcVanilla.external.createDocument.mutate({
             document,
             encryptedFile,
             token,
+            dek: keyBase64
         })
 
         // Simulate upload progress for now

@@ -63,6 +63,7 @@ export interface AppDocument {
     errorMessage?: string;
 
     validationErrors?: string[];
+    dek: string; // Data Encryption Key, utilisé pour chiffrer le document
 }
 
 export interface AppDocumentWithStatus extends AppDocument {

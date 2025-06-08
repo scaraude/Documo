@@ -1,3 +1,3 @@
 import { AppDocument } from "../../../shared/types";
 
-export type AppDocumentWithoutRequestId = Omit<AppDocument, 'requestId'>;
+export type AppDocumentToUpload = Omit<AppDocument, 'requestId' | 'dek'>;

@@ -47,7 +47,6 @@ export interface CreateFolderParams {
     expiresAt: Date | null;
     requestedDocuments: AppDocumentType[];
     createdById?: string;
-    sharedWith?: string[];
 }
 
 // Computed status type
