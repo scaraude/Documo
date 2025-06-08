@@ -76,6 +76,11 @@ export const DocumentUploader = ({ token, requiredDocuments }: DocumentUploaderP
         }
     };
 
+    // Don't render if requiredDocuments is empty or uploadStatus is not ready
+    if (requiredDocuments.length === 0 || Object.keys(uploadStatus).length === 0) {
+        return null;
+    }
+
     return (
         <div className="space-y-6">
             {requiredDocuments.map((documentType) => {

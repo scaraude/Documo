@@ -37,8 +37,9 @@ export async function uploadDocument(document: AppDocument): Promise<AppDocument
  */
 export async function deleteDocument(id: string): Promise<void> {
     try {
-        await prisma.document.delete({
-            where: { id }
+        await prisma.document.update({
+            where: { id },
+            data: { deletedAt: new Date() }
         });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -58,7 +59,7 @@ export async function deleteDocument(id: string): Promise<void> {
 export async function getDocument(documentId: string): Promise<AppDocument | null> {
     try {
         const document = await prisma.document.findUnique({
-            where: { id: documentId }
+            where: { id: documentId, deletedAt: null },
         });
 
         return document ? prismaDocumentToAppDocument(document) : null;
@@ -71,10 +72,10 @@ export async function getDocument(documentId: string): Promise<AppDocument | nul
 /**
  * Get documents by request ID
  */
-export async function getDocumentsByRequest(requestId: string): Promise<AppDocument[]> {
+export async function getValidDocumentsByRequestId(requestId: string): Promise<AppDocument[]> {
     try {
         const documents = await prisma.document.findMany({
-            where: { requestId }
+            where: { requestId, deletedAt: null, invalidatedAt: null },
         });
 
         return documents.map(prismaDocumentToAppDocument);

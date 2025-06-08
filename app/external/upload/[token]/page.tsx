@@ -8,13 +8,28 @@ import { Loader } from 'lucide-react'
 import * as React from 'react'
 import { useParams } from 'next/navigation';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../../shared/mapper'
+import { useDocument } from '@/features/documents/hooks/useDocument'
+import { AppDocumentType } from '../../../../shared/constants'
 
 export default function ExternalUploadPage() {
-    const params = useParams();
-    const token = params.token as string;
+    const { token }: { token: string } = useParams();
     const { getRequestByToken } = useExternalRequest();
-    const { data: request, isLoading, error } = getRequestByToken(token)
+    const { getDocumentsByRequestId } = useDocument();
     const [isAuthenticated, setIsAuthenticated] = useState(false)
+    const [documentTypesMissing, setDocumentTypeMissing] = useState<AppDocumentType[]>([]);
+    const { data: request, isLoading, error } = getRequestByToken(token)
+    const { data: documents } = getDocumentsByRequestId(request?.id);
+
+
+    useEffect(() => {
+        if (request) {
+            const documentTypeMissing = documents ? request.requestedDocuments.filter(
+                (doc) => !documents.some((d) => d.type === doc)
+            ) : request.requestedDocuments;
+            setDocumentTypeMissing(documentTypeMissing);
+        }
+    }, [request, documents]);
+
 
     useEffect(() => {
         // Check if user is authenticated via FranceConnect or email
@@ -26,10 +41,28 @@ export default function ExternalUploadPage() {
         checkAuth()
     }, [])
 
+
     if (isLoading) {
         return (
             <div className="container mx-auto p-6 flex items-center justify-center min-h-screen">
                 <Loader />
+            </div>
+        )
+    }
+
+    if (!request) {
+        return (
+            <div className="container mx-auto p-6">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Demande non trouvée</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-red-600">
+                            Aucune demande trouvée pour ce token. Veuillez vérifier le lien ou contacter le support.
+                        </p>
+                    </CardContent>
+                </Card>
             </div>
         )
     }
@@ -86,7 +119,7 @@ export default function ExternalUploadPage() {
                     </div>
                     <DocumentUploader
                         token={token}
-                        requiredDocuments={request.requestedDocuments}
+                        requiredDocuments={documentTypesMissing}
                     />
                 </CardContent>
             </Card>
