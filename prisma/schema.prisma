@@ -102,6 +102,8 @@ model Document {
   folder           Folder?  @relation(fields: [folderId], references: [id])
   folderId         String?
 
+  DEK String // Data Encryption Key for encrypted documents
+
   @@map("documents")
 }
 
