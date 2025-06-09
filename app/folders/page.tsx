@@ -17,8 +17,6 @@ export default function FoldersPage() {
     const { getAllFolders } = useFolders();
     const { data: folders, isLoading } = getAllFolders();
 
-    console.log('FoldersPage', { folderTypes, folders });
-
     const router = useRouter();
 
     const [searchTerm, setSearchTerm] = useState('');
@@ -199,7 +197,7 @@ export default function FoldersPage() {
 
                             <Badge
                                 variant={selectedFilters.includes('PENDING') ? "default" : "outline"}
-                                className={`cursor-pointer transition-colors ${selectedFilters.includes('PENDING')
+                                className={`h-8 cursor-pointer transition-colors ${selectedFilters.includes('PENDING')
                                     ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
                                     : 'hover:bg-yellow-50'
                                     }`}
@@ -209,7 +207,7 @@ export default function FoldersPage() {
                             </Badge>
                             <Badge
                                 variant={selectedFilters.includes('COMPLETED') ? "default" : "outline"}
-                                className={`cursor-pointer transition-colors ${selectedFilters.includes('COMPLETED')
+                                className={`h-8 cursor-pointer transition-colors ${selectedFilters.includes('COMPLETED')
                                     ? 'bg-green-500 hover:bg-green-600 text-white'
                                     : 'hover:bg-green-50'
                                     }`}
@@ -219,7 +217,7 @@ export default function FoldersPage() {
                             </Badge>
                             <Badge
                                 variant={selectedFilters.includes('ARCHIVED') ? "default" : "outline"}
-                                className={`cursor-pointer transition-colors ${selectedFilters.includes('ARCHIVED')
+                                className={`h-8 cursor-pointer transition-colors ${selectedFilters.includes('ARCHIVED')
                                     ? 'bg-red-500 hover:bg-red-600 text-white'
                                     : 'hover:bg-red-50'
                                     }`}

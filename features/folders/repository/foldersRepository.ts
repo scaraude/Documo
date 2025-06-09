@@ -21,7 +21,8 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
         updatedAt: prismaModel.updatedAt,
         expiresAt: prismaModel.expiresAt || undefined,
         createdById: prismaModel.createdById || undefined,
-        lastActivityAt: prismaModel.lastActivityAt || prismaModel.updatedAt // fallback if lastActivityAt is missing
+        lastActivityAt: prismaModel.lastActivityAt || prismaModel.updatedAt,
+        completedAt: prismaModel.completedAt || undefined,
     };
 }
 
@@ -155,7 +156,7 @@ export async function removeRequestFromFolder(requestId: string): Promise<void> 
     try {
         await prisma.documentRequest.update({
             where: { id: requestId },
-            data: { folderId: null }
+            data: { folderId: undefined }
         });
     } catch (error) {
         console.error(`Error removing request ${requestId} from folder:`, error);

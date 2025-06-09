@@ -16,7 +16,12 @@ export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest 
         requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
         createdAt: prismaModel.createdAt,
         expiresAt: prismaModel.expiresAt,
-        updatedAt: prismaModel.updatedAt
+        updatedAt: prismaModel.updatedAt,
+        acceptedAt: prismaModel.acceptedAt || undefined,
+        rejectedAt: prismaModel.rejectedAt || undefined,
+        completedAt: prismaModel.completedAt || undefined,
+        firstDocumentUploadedAt: prismaModel.firstDocumentUploadedAt || undefined,
+        folderId: prismaModel.folderId,
     };
 }
 
