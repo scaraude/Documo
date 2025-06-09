@@ -1,7 +1,7 @@
 'use client'
 
 import { v4 as uuidv4 } from 'uuid'
-import { generateEncryptionKey, encryptFile } from '../utils/encryption'
+import { encryptFile, getExportedKeyBase64 } from '@/features/documents/utils/encryption'
 import { AppDocumentType } from '@/shared/constants'
 import { AppDocumentToUpload } from '../types'
 import { trpcVanilla } from '@/lib/trpc/client'
@@ -46,16 +46,9 @@ export const uploadDocument = async ({
         }
 
 
-        // Encrypt file client-side
-        const encryptionKey = await generateEncryptionKey()
-        const encryptedFile = await encryptFile(file, encryptionKey)
+        const { encryptedFile, encryptionKey } = await encryptFile(file)
 
-        // Create form data with encrypted file and metadata
-
-
-        // Export encryption key for storage
-        const exportedKey = await window.crypto.subtle.exportKey('raw', encryptionKey)
-        const keyBase64 = btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
+        const keyBase64 = await getExportedKeyBase64(encryptionKey)
 
         trpcVanilla.external.createDocument.mutate({
             document,

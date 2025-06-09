@@ -1,4 +1,4 @@
-export const generateEncryptionKey = async (): Promise<CryptoKey> => {
+const generateEncryptionKey = async (): Promise<CryptoKey> => {
     return await window.crypto.subtle.generateKey(
         {
             name: 'AES-GCM',
@@ -9,7 +9,9 @@ export const generateEncryptionKey = async (): Promise<CryptoKey> => {
     )
 }
 
-export const encryptFile = async (file: File, key: CryptoKey): Promise<Uint8Array> => {
+export const encryptFile = async (file: File): Promise<{ encryptedFile: Uint8Array, encryptionKey: CryptoKey }> => {
+    const key = await generateEncryptionKey()
+
     const iv = window.crypto.getRandomValues(new Uint8Array(12))
     const fileBuffer = await file.arrayBuffer()
 
@@ -26,5 +28,10 @@ export const encryptFile = async (file: File, key: CryptoKey): Promise<Uint8Arra
     encryptedArray.set(iv, 0)
     encryptedArray.set(new Uint8Array(encryptedData), iv.length)
 
-    return encryptedArray
+    return { encryptedFile: encryptedArray, encryptionKey: key }
+}
+
+export const getExportedKeyBase64 = async (key: CryptoKey): Promise<string> => {
+    const exportedKey = await window.crypto.subtle.exportKey('raw', key)
+    return btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
 }
