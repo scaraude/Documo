@@ -72,8 +72,8 @@ model DocumentRequest {
 
   // Relations
   documents  Document[]
-  folder     Folder?            @relation(fields: [folderId], references: [id])
-  folderId   String?
+  folder     Folder             @relation(fields: [folderId], references: [id])
+  folderId   String
   shareLinks RequestShareLink[] @relation
 
   @@map("document_requests")
