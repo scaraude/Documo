@@ -1,7 +1,7 @@
 'use client'
 
 import { v4 as uuidv4 } from 'uuid'
-import { encryptFile, getExportedKeyBase64 } from '@/features/documents/utils/encryption'
+import { encryptFile, exportedKeyBase64 } from '@/features/documents/utils/encryption'
 import { AppDocumentType } from '@/shared/constants'
 import { AppDocumentToUpload } from '../types'
 import { trpcVanilla } from '@/lib/trpc/client'
@@ -48,7 +48,7 @@ export const uploadDocument = async ({
 
         const { encryptedFile, encryptionKey } = await encryptFile(file)
 
-        const keyBase64 = await getExportedKeyBase64(encryptionKey)
+        const keyBase64 = await exportedKeyBase64(encryptionKey)
 
         trpcVanilla.external.createDocument.mutate({
             document,

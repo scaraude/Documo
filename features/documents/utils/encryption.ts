@@ -31,7 +31,7 @@ export const encryptFile = async (file: File): Promise<{ encryptedFile: Uint8Arr
     return { encryptedFile: encryptedArray, encryptionKey: key }
 }
 
-export const getExportedKeyBase64 = async (key: CryptoKey): Promise<string> => {
+export const exportedKeyBase64 = async (key: CryptoKey): Promise<string> => {
     const exportedKey = await window.crypto.subtle.exportKey('raw', key)
     return btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
 }

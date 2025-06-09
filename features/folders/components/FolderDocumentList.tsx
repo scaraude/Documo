@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { AppDocumentWithStatus } from "@/shared/types"
 import { DocumentViewer } from "@/features/documents/components/DocumentViewer";
+import { DownloadButton } from "../../documents/components/DownloadButton";
+import { Eye } from "lucide-react";
 
 interface FolderDocumentListProps {
     document: AppDocumentWithStatus
@@ -49,8 +51,10 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                         onClick={() => setIsViewerOpen(true)}
                         className="inline-flex items-center shadow-sm px-2.5 py-0.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
                     >
+                        <Eye className="h-4 w-4 mr-1" />
                         Voir
                     </button>
+                    <DownloadButton document={document} />
                 </div>
             </li>
 

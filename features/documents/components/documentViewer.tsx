@@ -1,11 +1,11 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect } from 'react'
 import { AppDocument } from '@/shared/types'
 import { Dialog, DialogContent, DialogTitle } from '../../../shared/components/ui/dialog'
 import { ScrollArea } from '../../../shared/components/ui/scroll-area'
 import { Button } from '../../../shared/components/ui/button'
 import { Loader2, Download } from 'lucide-react'
 import Image from 'next/image'
-import { decryptBlob, importEncryptionKey } from '../utils/encryption'
+import { useDecryptedDocument } from '../hooks/useDecryptedDocument'
 
 interface DocumentViewerProps {
     document: AppDocument
@@ -14,48 +14,14 @@ interface DocumentViewerProps {
 }
 
 export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerProps) {
-    const [objectUrl, setObjectUrl] = useState<string | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const { objectUrl, isLoading, error, decryptDocument } = useDecryptedDocument(document)
 
-    useEffect(() => {
-        // Cleanup object URL on unmount or when document changes
-        return () => {
-            if (objectUrl) {
-                URL.revokeObjectURL(objectUrl)
-            }
-        }
-    }, [objectUrl])
-
-    const decryptAndViewDocument = useCallback(async () => {
-        try {
-            setIsLoading(true)
-            setError(null)
-
-            // Fetch the encrypted file
-            const response = await fetch(document.url!)
-            const encryptedBlob = await response.blob()
-
-            // Import the DEK (Document Encryption Key)
-            const key = await importEncryptionKey(document.dek)
-
-            // Create a new blob with the decrypted data
-            const decryptedBlob = await decryptBlob(encryptedBlob, key, document.metadata.mimeType)
-            const url = URL.createObjectURL(decryptedBlob)
-            setObjectUrl(url)
-        } catch (err) {
-            console.error('Failed to decrypt document:', err)
-            setError('Failed to decrypt document. Please try again.')
-        } finally {
-            setIsLoading(false)
-        }
-    }, [document.url, document.dek, document.metadata.mimeType])
-
+    // Only decrypt when dialog is open
     useEffect(() => {
         if (open && document.url && !objectUrl && !isLoading) {
-            decryptAndViewDocument()
+            decryptDocument()
         }
-    }, [open, document.url, objectUrl, isLoading, decryptAndViewDocument])
+    }, [open, document.url, objectUrl, isLoading, decryptDocument])
 
     function renderContent() {
         if (isLoading) {
@@ -71,7 +37,7 @@ export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerP
             return (
                 <div className="flex flex-col items-center justify-center min-h-[300px]">
                     <p className="text-red-500">{error}</p>
-                    <Button onClick={decryptAndViewDocument} className="mt-4">
+                    <Button onClick={decryptDocument} className="mt-4">
                         Retry
                     </Button>
                 </div>
