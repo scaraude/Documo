@@ -6,7 +6,7 @@ console.log('🗑️ Tearing down test database...')
 
 try {
   // Stop and remove test database container
-  execSync('docker-compose -f docker-compose.test.yaml down -v', {
+  execSync('docker compose -f docker-compose.test.yaml down -v', {
     stdio: 'inherit'
   })
   

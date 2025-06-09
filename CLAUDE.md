@@ -14,7 +14,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn test:setup-db`: Setup test database with Docker
 - `yarn test:teardown-db`: Teardown test database Docker container
 - `yarn test:seed`: Manually seed test database with test data
-- 'yarn test:workflow: run the all test workflow with database setuyp
+- `yarn test:workflow`: Run the complete test workflow with database setup
+- `yarn test:e2e`: Run end-to-end tests with Playwright
+- `yarn test:e2e:ui`: Run E2E tests with Playwright UI mode
+- `yarn test:e2e:headed`: Run E2E tests with visible browser
+- `yarn test:e2e:workflow`: Run complete E2E workflow with setup and teardown
 - `yarn test path/to/test`: Run a specific test file
 - `yarn test:watch`: Run tests in watch mode
 - `yarn prisma:generate`: Generate Prisma client

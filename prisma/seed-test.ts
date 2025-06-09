@@ -4,12 +4,15 @@ import { addDays } from 'date-fns';
 const prisma = new PrismaClient();
 
 export async function seedTestData() {
-    // Clean existing test data
+    // Clean existing test data in correct order (respecting foreign key constraints)
     await prisma.requestShareLink.deleteMany({});
     await prisma.document.deleteMany({});
     await prisma.documentRequest.deleteMany({});
     await prisma.folder.deleteMany({});
     await prisma.folderType.deleteMany({});
+    
+    // Wait a moment for cleanup to complete
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Create test folder types
     const testFolderType = await prisma.folderType.create({

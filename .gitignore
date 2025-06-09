@@ -45,3 +45,17 @@ next-env.d.ts
 
 /postgres_data
 .env*.local
+
+# Test results and reports
+test-results/
+playwright-report/
+e2e/screenshots/
+screenshots/
+*.png
+*.jpg
+*.jpeg
+*.gif
+
+# Test databases
+*.test.db
+*.test.sqlite
