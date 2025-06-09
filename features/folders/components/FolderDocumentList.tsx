@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { AppDocumentWithStatus } from "@/shared/types"
-import { DocumentViewer } from "../../documents/components/DocumentViewer";
+import { DocumentViewer } from "@/features/documents/components/DocumentViewer";
 
 interface FolderDocumentListProps {
     document: AppDocumentWithStatus
@@ -12,7 +12,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
 
     return (
         <>
-            <li key={document.id} className="px-4 py-4 flex items-center hover:bg-gray-50">
+            <li key={document.id} onClick={() => setIsViewerOpen(true)} className="px-4 py-4 flex items-center hover:bg-gray-50">
                 <div className="min-w-0 flex-1 flex items-center">
                     <div className="flex-shrink-0">
                         <svg
