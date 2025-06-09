@@ -140,10 +140,11 @@ async function createRandomDocument(requestId: string, folderId: string, documen
     const uploadedAt = isUploaded ? addHours(requestCreatedAt, faker.number.int({ min: 1, max: 240 })) : null;
     
     const metadata = {
-        fileName: `${documentType.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
-        fileSize: faker.number.int({ min: 50000, max: 5000000 }),
+        name: `${documentType.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
+        size: faker.number.int({ min: 50000, max: 5000000 }),
         mimeType: 'application/pdf',
-        originalName: faker.system.fileName({ extensionCount: 0 }) + '.pdf'
+        lastModified: faker.date.recent({ days: 30 }).getTime(),
+        hash: faker.string.hexadecimal({ length: 32, prefix: '' })
     };
 
     const errorMessages = [

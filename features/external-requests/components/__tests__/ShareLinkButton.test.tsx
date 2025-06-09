@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { ShareLinkButton } from '../ShareLinkButton';
-import { generateShareLink } from '@/features/requests/api/externalRequestsApi';
 import { toast } from 'sonner';
+import { useExternalRequest } from '../hooks/useExternalRequest';
 
 // Mock dependencies
-jest.mock('@/features/requests/api/externalRequestsApi');
+jest.mock('../hooks/useExternalRequest');
 jest.mock('sonner', () => ({
     ...jest.requireActual('sonner'),
     toast: {
@@ -24,13 +24,17 @@ describe('ShareLinkButton Component', () => {
     const mockRequestId = 'req-123';
     const mockToken = 'test-token';
     const mockShareLink = `${window.location.origin}/external/requests/${mockToken}`;
+    const mockGenerateShareLink = jest.fn();
 
     beforeEach(() => {
         jest.clearAllMocks();
+        (useExternalRequest as jest.Mock).mockReturnValue({
+            mockGenerateShareLink: mockGenerateShareLink
+        });
     });
 
     it('should generate and copy link on click', async () => {
-        (generateShareLink as jest.Mock).mockResolvedValue({ token: mockToken });
+        mockGenerateShareLink.mockResolvedValue({ token: mockToken });
 
         render(<ShareLinkButton requestId={mockRequestId} />);
 
@@ -39,13 +43,13 @@ describe('ShareLinkButton Component', () => {
             fireEvent.click(button);
         });
 
-        expect(generateShareLink).toHaveBeenCalledWith(mockRequestId);
+        expect(mockGenerateShareLink).toHaveBeenCalledWith(mockRequestId);
         expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockShareLink);
         expect(toast.success).toHaveBeenCalledWith('Lien copié dans le presse-papiers');
     });
 
     it('should show loading state while generating link', async () => {
-        (generateShareLink as jest.Mock).mockImplementation(
+        (mockGenerateShareLink as jest.Mock).mockImplementation(
             () => new Promise(resolve => setTimeout(() => resolve({ token: mockToken }), 100))
         );
 
@@ -66,7 +70,7 @@ describe('ShareLinkButton Component', () => {
 
     it('should handle generation errors gracefully', async () => {
         const error = new Error('Failed to generate link');
-        (generateShareLink as jest.Mock).mockRejectedValue(error);
+        (mockGenerateShareLink as jest.Mock).mockRejectedValue(error);
 
         render(<ShareLinkButton requestId={mockRequestId} />);
 
@@ -80,7 +84,7 @@ describe('ShareLinkButton Component', () => {
     });
 
     it('should handle clipboard errors gracefully', async () => {
-        (generateShareLink as jest.Mock).mockResolvedValue({ token: mockToken });
+        (mockGenerateShareLink as jest.Mock).mockResolvedValue({ token: mockToken });
         (navigator.clipboard.writeText as jest.Mock).mockRejectedValue(new Error('Clipboard error'));
 
         render(<ShareLinkButton requestId={mockRequestId} />);

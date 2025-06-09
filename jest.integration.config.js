@@ -14,10 +14,15 @@ const customJestConfig = {
     // Handle module aliases (this is important for your @/ imports)
     '^@/(.*)$': '<rootDir>/$1',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(superjson|@trpc)/)'
+  ],
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/', '<rootDir>/e2e/'],
   testMatch: [
-    '**/__tests__/**/*.(test|spec).ts',
-    '**/__tests__/**/*.(test|spec).tsx'
+    '**/repository/__tests__/**/*.(test|spec).ts',
+    '**/integration/__tests__/**/*.(test|spec).ts',
+    '**/integration/__tests__/**/*.(test|spec).tsx',
+    '**/types/__tests__/**/*.(test|spec).ts'
   ],
   collectCoverageFrom: [
     'features/**/*.{ts,tsx}',

@@ -4,12 +4,12 @@ import { RequestsList } from '../RequestsList';
 import '@testing-library/jest-dom';
 import { useRequests } from '../../hooks/useRequests';
 import { checkNotificationResponse } from '@/features/notifications/api/notificationsApi';
-import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { DocumentRequest } from '@/shared/types';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 
 // Mock dependencies
-jest.mock('../../hooks/useRequest');
+jest.mock('../../hooks/useRequests');
 jest.mock('@/features/notifications/api/notificationsApi');
 
 // Mock window.confirm
@@ -21,7 +21,6 @@ describe('RequestsList Component', () => {
       id: '1',
       civilId: '123456',
       requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-      status: DOCUMENT_REQUEST_STATUS.PENDING,
       createdAt: new Date('2023-01-01'),
       expiresAt: new Date('2023-01-08'),
       updatedAt: new Date('2023-01-01')
@@ -30,14 +29,13 @@ describe('RequestsList Component', () => {
       id: '2',
       civilId: '789012',
       requestedDocuments: [APP_DOCUMENT_TYPES.PASSPORT, APP_DOCUMENT_TYPES.UTILITY_BILL],
-      status: DOCUMENT_REQUEST_STATUS.ACCEPTED,
       createdAt: new Date('2023-01-02'),
       expiresAt: new Date('2023-01-09'),
-      updatedAt: new Date('2023-01-03')
+      updatedAt: new Date('2023-01-03'),
+      acceptedAt: new Date('2023-01-03')
     }
   ];
 
-  const mockUpdateRequestStatus = jest.fn();
   const mockDeleteRequest = jest.fn();
 
   beforeEach(() => {
@@ -46,8 +44,7 @@ describe('RequestsList Component', () => {
     (useRequests as jest.Mock).mockReturnValue({
       requests: mockRequests,
       isLoaded: true,
-      deleteRequest: mockDeleteRequest,
-      updateRequestStatus: mockUpdateRequestStatus
+      deleteRequest: mockDeleteRequest
     });
 
     (checkNotificationResponse as jest.Mock).mockResolvedValue(null);

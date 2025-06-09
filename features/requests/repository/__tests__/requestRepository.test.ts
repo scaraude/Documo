@@ -2,11 +2,10 @@
 import {
     getRequests,
     createRequest,
-    updateRequestStatus,
     deleteRequest,
     getRequestById
 } from '../requestRepository';
-import { APP_DOCUMENT_TYPES, DOCUMENT_REQUEST_STATUS } from '@/shared/constants';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { CreateRequestParams } from '../../types';
 import prisma from '@/lib/prisma';
 
@@ -46,10 +45,10 @@ describe('Request Repository', () => {
         id: '1',
         civilId: '123456',
         requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-        status: DOCUMENT_REQUEST_STATUS.PENDING,
         createdAt: mockDate,
         expiresAt: expiryDate,
-        UpdatedAt: mockDate // Note: correspond à la structure de la BD
+        updatedAt: mockDate,
+        folderId: 'test-folder-id'
     };
 
     const mockRequests = [mockPrismaRequest];
@@ -106,7 +105,8 @@ describe('Request Repository', () => {
             // GIVEN
             const requestData: CreateRequestParams = {
                 civilId: '123456',
-                requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD]
+                requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+                folderId: 'test-folder-id'
             };
 
             mockPrisma.documentRequest.create.mockResolvedValue(mockPrismaRequest);
@@ -117,12 +117,11 @@ describe('Request Repository', () => {
             // THEN
             expect(result.id).toBe('1');
             expect(result.civilId).toBe('123456');
-            expect(result.status).toBe(DOCUMENT_REQUEST_STATUS.PENDING);
+            expect(result.requestedDocuments).toEqual([APP_DOCUMENT_TYPES.IDENTITY_CARD]);
             expect(mockPrisma.documentRequest.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({
                     civilId: '123456',
-                    requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-                    status: DOCUMENT_REQUEST_STATUS.PENDING
+                    requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD]
                 })
             });
         });
@@ -132,6 +131,7 @@ describe('Request Repository', () => {
             const requestData: CreateRequestParams = {
                 civilId: '123456',
                 requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+                folderId: 'test-folder-id',
                 expirationDays: 14
             };
 
@@ -153,7 +153,8 @@ describe('Request Repository', () => {
             // GIVEN
             const requestData: CreateRequestParams = {
                 civilId: '123456',
-                requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD]
+                requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+                folderId: 'test-folder-id'
             };
 
             mockPrisma.documentRequest.create.mockRejectedValue(new Error('Insertion error'));
@@ -163,36 +164,6 @@ describe('Request Repository', () => {
         });
     });
 
-    describe('updateRequestStatus', () => {
-        it('devrait mettre à jour le statut d\'une demande', async () => {
-            // GIVEN
-            const updatedRequest = {
-                ...mockPrismaRequest,
-                status: DOCUMENT_REQUEST_STATUS.ACCEPTED,
-                UpdatedAt: new Date('2023-01-02') // date mise à jour
-            };
-
-            mockPrisma.documentRequest.update.mockResolvedValue(updatedRequest);
-
-            // WHEN
-            const result = await updateRequestStatus('1', DOCUMENT_REQUEST_STATUS.ACCEPTED);
-
-            // THEN
-            expect(result.status).toBe(DOCUMENT_REQUEST_STATUS.ACCEPTED);
-            expect(mockPrisma.documentRequest.update).toHaveBeenCalledWith({
-                where: { id: '1' },
-                data: { status: DOCUMENT_REQUEST_STATUS.ACCEPTED }
-            });
-        });
-
-        it('devrait gérer les erreurs lors de la mise à jour', async () => {
-            // GIVEN
-            mockPrisma.documentRequest.update.mockRejectedValue(new Error('Update error'));
-
-            // WHEN/THEN
-            await expect(updateRequestStatus('1', DOCUMENT_REQUEST_STATUS.ACCEPTED)).rejects.toThrow('Failed to update request status');
-        });
-    });
 
     describe('deleteRequest', () => {
         it('devrait supprimer une demande par ID', async () => {
