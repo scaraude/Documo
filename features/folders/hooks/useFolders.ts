@@ -1,7 +1,7 @@
 'use client'
 
 import { trpc } from '../../../lib/trpc/client';
-import { computeDocumentStatus, computeFolderStatus, computeRequestStatus } from '../../../shared/hooks';
+import { computeFolderStatus, computeRequestStatus, computeDocumentStatus } from '@/shared/utils/computedStatus';
 
 export function useFolders() {
     const getAllFolders = () => trpc.folder.getAll.useQuery(undefined, {

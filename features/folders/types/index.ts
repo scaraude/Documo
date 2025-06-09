@@ -13,7 +13,6 @@ export interface Folder {
     // Propriétés pour calculer le status
     archivedAt?: Date;
     completedAt?: Date;
-    firstRequestCreatedAt?: Date;
     lastActivityAt: Date;
 
     expiresAt?: Date;
@@ -50,4 +49,4 @@ export interface CreateFolderParams {
 }
 
 // Computed status type
-export type ComputedFolderStatus = 'ACTIVE' | 'ARCHIVED' | 'COMPLETED' | 'PENDING';
+export type ComputedFolderStatus = 'ARCHIVED' | 'COMPLETED' | 'PENDING';

@@ -17,18 +17,32 @@ export default function FoldersPage() {
     const { getAllFolders } = useFolders();
     const { data: folders, isLoading } = getAllFolders();
 
+    console.log('FoldersPage', { folderTypes, folders });
+
     const router = useRouter();
 
     const [searchTerm, setSearchTerm] = useState('');
+    const [selectedFilters, setSelectedFilters] = useState<ComputedFolderStatus[]>([]);
 
-    const filteredFolders = folders?.filter(folder =>
-        folder.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const toggleFilter = (status: ComputedFolderStatus) => {
+        setSelectedFilters(prev => {
+            if (prev.includes(status)) {
+                return prev.filter(f => f !== status);
+            } else {
+                return [...prev, status];
+            }
+        });
+    };
+
+    const filteredFolders = folders?.filter(folder => {
+        const matchesSearch = folder.name.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesFilter = selectedFilters.length === 0 || selectedFilters.includes(folder.status);
+        return matchesSearch && matchesFilter;
+    });
 
     const getStatusBadge = (status: ComputedFolderStatus) => {
         switch (status) {
             case 'PENDING':
-            case 'ACTIVE':
                 return <Badge className="bg-yellow-100 text-yellow-800">🕐 En attente</Badge>;
             case 'COMPLETED':
                 return <Badge className="bg-green-100 text-green-800">✅ Terminé</Badge>;
@@ -174,25 +188,67 @@ export default function FoldersPage() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Rechercher un dossier ou un type..."
+                                placeholder="Rechercher un dossier..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />
                         </div>
 
-                        <div className="flex gap-2">
-                            <Badge variant="outline" className="cursor-pointer hover:bg-yellow-50">
+                        <div className="flex gap-2 items-center">
+
+                            <Badge
+                                variant={selectedFilters.includes('PENDING') ? "default" : "outline"}
+                                className={`cursor-pointer transition-colors ${selectedFilters.includes('PENDING')
+                                    ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                                    : 'hover:bg-yellow-50'
+                                    }`}
+                                onClick={() => toggleFilter('PENDING')}
+                            >
                                 🕐 En attente
                             </Badge>
-                            <Badge variant="outline" className="cursor-pointer hover:bg-green-50">
+                            <Badge
+                                variant={selectedFilters.includes('COMPLETED') ? "default" : "outline"}
+                                className={`cursor-pointer transition-colors ${selectedFilters.includes('COMPLETED')
+                                    ? 'bg-green-500 hover:bg-green-600 text-white'
+                                    : 'hover:bg-green-50'
+                                    }`}
+                                onClick={() => toggleFilter('COMPLETED')}
+                            >
                                 ✅ Terminé
                             </Badge>
-                            <Badge variant="outline" className="cursor-pointer hover:bg-red-50">
+                            <Badge
+                                variant={selectedFilters.includes('ARCHIVED') ? "default" : "outline"}
+                                className={`cursor-pointer transition-colors ${selectedFilters.includes('ARCHIVED')
+                                    ? 'bg-red-500 hover:bg-red-600 text-white'
+                                    : 'hover:bg-red-50'
+                                    }`}
+                                onClick={() => toggleFilter('ARCHIVED')}
+                            >
                                 ❌ Refusé
                             </Badge>
+                            {selectedFilters.length > 0 && (
+                                <button
+                                    onClick={() => setSelectedFilters([])}
+                                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                                >
+                                    Effacer les filtres ({selectedFilters.length})
+                                </button>
+                            )}
                         </div>
                     </div>
+
+                    {/* Results counter */}
+                    {filteredFolders && (
+                        <div className="mb-4">
+                            <p className="text-sm text-gray-600">
+                                {filteredFolders.length} dossier{filteredFolders.length !== 1 ? 's' : ''}
+                                {selectedFilters.length > 0 || searchTerm ? ' trouvé' : ''}
+                                {filteredFolders.length !== 1 && (selectedFilters.length > 0 || searchTerm) ? 's' : ''}
+                                {folders && filteredFolders.length !== folders.length && ` sur ${folders.length}`}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Dossiers Grid */}
                     {isLoading ? (
@@ -208,17 +264,26 @@ export default function FoldersPage() {
                                 <p className="text-gray-500 mb-6">
                                     {folders?.length === 0
                                         ? 'Créez votre premier dossier pour commencer'
-                                        : 'Aucun dossier ne correspond à votre recherche'
+                                        : selectedFilters.length > 0
+                                            ? 'Aucun dossier ne correspond aux filtres sélectionnés'
+                                            : 'Aucun dossier ne correspond à votre recherche'
                                     }
                                 </p>
-                                {folders?.length === 0 && (
+                                {folders?.length === 0 ? (
                                     <Button asChild>
                                         <Link href={ROUTES.FOLDERS.NEW}>
                                             <Plus className="h-4 w-4 mr-2" />
                                             Nouveau dossier
                                         </Link>
                                     </Button>
-                                )}
+                                ) : selectedFilters.length > 0 ? (
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setSelectedFilters([])}
+                                    >
+                                        Effacer les filtres
+                                    </Button>
+                                ) : null}
                             </CardContent>
                         </Card>
                     ) : (
