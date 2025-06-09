@@ -1,30 +1,36 @@
 import * as externalRequestsRepository from '../../repository/externalRequestsRepository'
-import * as requestRepository from '../../../requests/repository/requestRepository'
-import { APP_DOCUMENT_TYPES } from '@/shared/constants'
+import prisma from '@/lib/prisma'
 import { randomUUID } from 'crypto'
 
 describe('ExternalRequestsRepository Integration Tests', () => {
+  let testRequestId: string
+
+  beforeEach(async () => {
+    // Get a test request from seeded data
+    const testRequest = await prisma.documentRequest.findFirst({
+      where: {
+        civilId: 'test-civil-valid@example.com'
+      }
+    })
+    testRequestId = testRequest!.id
+  })
+
   describe('createShareLink', () => {
     it('should create a share link for a request', async () => {
-      // Arrange - First create a document request
-      const request = await requestRepository.createRequest({
-        civilId: 'test-civil-123',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-      })
-
+      // Arrange
       const token = randomUUID()
       const expiresAt = new Date(Date.now() + 86400000) // 24 hours from now
 
       // Act
       const shareLink = await externalRequestsRepository.createShareLink({
-        requestId: request.id,
+        requestId: testRequestId,
         token,
         expiresAt,
       })
 
       // Assert
       expect(shareLink).toMatchObject({
-        requestId: request.id,
+        requestId: testRequestId,
         token,
         expiresAt,
       })
@@ -34,31 +40,16 @@ describe('ExternalRequestsRepository Integration Tests', () => {
   })
 
   describe('getShareLinkByToken', () => {
-    it('should find share link by valid token', async () => {
-      // Arrange
-      const request = await requestRepository.createRequest({
-        civilId: 'test-civil-789',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-      })
-      
-      const token = randomUUID()
-      const expiresAt = new Date(Date.now() + 86400000) // 24 hours from now
-      
-      await externalRequestsRepository.createShareLink({
-        requestId: request.id,
-        token,
-        expiresAt,
-      })
-
-      // Act
-      const foundShareLink = await externalRequestsRepository.getShareLinkByToken(token)
+    it('should find share link by valid token using seeded data', async () => {
+      // Act - Use pre-seeded valid token
+      const foundShareLink = await externalRequestsRepository.getShareLinkByToken('test-valid-token-123')
 
       // Assert
       expect(foundShareLink).toBeTruthy()
-      expect(foundShareLink?.token).toBe(token)
-      expect(foundShareLink?.requestId).toBe(request.id)
+      expect(foundShareLink?.token).toBe('test-valid-token-123')
       expect(foundShareLink?.request).toBeTruthy()
-      expect(foundShareLink?.request?.civilId).toBe('test-civil-789')
+      expect(foundShareLink?.request?.civilId).toBe('test-civil-valid@example.com')
+      expect(foundShareLink?.expiresAt.getTime()).toBeGreaterThan(Date.now())
     })
 
     it('should return null for non-existent token', async () => {
@@ -69,73 +60,108 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       expect(result).toBeNull()
     })
 
-    it('should return null for expired token', async () => {
-      // Arrange - Create an expired share link
-      const request = await requestRepository.createRequest({
-        civilId: 'test-civil-expired',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-      })
-      
-      const expiredToken = randomUUID()
-      const expiredDate = new Date(Date.now() - 86400000) // 24 hours ago
-      
-      await externalRequestsRepository.createShareLink({
-        requestId: request.id,
-        token: expiredToken,
-        expiresAt: expiredDate,
-      })
+    it('should return null for expired token using seeded data', async () => {
+      // Act - Use pre-seeded expired token
+      const result = await externalRequestsRepository.getShareLinkByToken('test-expired-token-456')
 
+      // Assert - Should be null because token is expired (expiresAt is in the past)
+      expect(result).toBeNull()
+    })
+
+    it('should include request details in response', async () => {
       // Act
-      const result = await externalRequestsRepository.getShareLinkByToken(expiredToken)
+      const shareLink = await externalRequestsRepository.getShareLinkByToken('test-valid-token-123')
 
       // Assert
-      expect(result).toBeNull()
+      expect(shareLink?.request).toMatchObject({
+        civilId: 'test-civil-valid@example.com',
+        requestedDocuments: expect.arrayContaining(['IDENTITY_CARD', 'BANK_STATEMENT'])
+      })
+      expect(shareLink?.request?.expiresAt).toBeInstanceOf(Date)
+      expect(shareLink?.request?.createdAt).toBeInstanceOf(Date)
     })
   })
 
   describe('deleteExpiredShareLinks', () => {
-    it('should delete expired share links', async () => {
-      // Arrange - Create both expired and valid share links
-      const request1 = await requestRepository.createRequest({
-        civilId: 'test-civil-expired-1',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
-      })
-      
-      const request2 = await requestRepository.createRequest({
-        civilId: 'test-civil-valid',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+    it('should delete expired share links but keep valid ones', async () => {
+      // Arrange - Create additional test data
+      const newValidToken = randomUUID()
+      const newExpiredToken = randomUUID()
+
+      // Create a new valid share link
+      await externalRequestsRepository.createShareLink({
+        requestId: testRequestId,
+        token: newValidToken,
+        expiresAt: new Date(Date.now() + 86400000), // 24 hours from now
       })
 
-      const expiredToken = randomUUID()
-      const validToken = randomUUID()
-      
-      // Create expired share link
+      // Create a new expired share link
       await externalRequestsRepository.createShareLink({
-        requestId: request1.id,
-        token: expiredToken,
+        requestId: testRequestId,
+        token: newExpiredToken,
         expiresAt: new Date(Date.now() - 86400000), // 24 hours ago
       })
-      
-      // Create valid share link
-      await externalRequestsRepository.createShareLink({
-        requestId: request2.id,
-        token: validToken,
-        expiresAt: new Date(Date.now() + 86400000), // 24 hours from now
+
+      // Count expired links before deletion
+      const expiredLinksBefore = await prisma.requestShareLink.count({
+        where: {
+          expiresAt: {
+            lt: new Date()
+          }
+        }
       })
 
       // Act
       const deleteResult = await externalRequestsRepository.deleteExpiredShareLinks()
 
       // Assert
+      expect(deleteResult.count).toBe(expiredLinksBefore)
       expect(deleteResult.count).toBeGreaterThan(0)
-      
-      // Verify expired link is gone
-      const expiredLinkResult = await externalRequestsRepository.getShareLinkByToken(expiredToken)
+
+      // Verify our newly created expired link is gone
+      const expiredLinkResult = await externalRequestsRepository.getShareLinkByToken(newExpiredToken)
       expect(expiredLinkResult).toBeNull()
-      
-      // Verify valid link still exists
-      const validLinkResult = await externalRequestsRepository.getShareLinkByToken(validToken)
+
+      // Verify our newly created valid link still exists
+      const validLinkResult = await externalRequestsRepository.getShareLinkByToken(newValidToken)
       expect(validLinkResult).toBeTruthy()
+
+      // Verify pre-seeded valid link still exists
+      const seededValidLink = await externalRequestsRepository.getShareLinkByToken('test-valid-token-123')
+      expect(seededValidLink).toBeTruthy()
+    })
+
+    it('should return zero count when no expired links exist', async () => {
+      // Arrange - First delete all expired links
+      await externalRequestsRepository.deleteExpiredShareLinks()
+
+      // Act - Try to delete expired links again
+      const deleteResult = await externalRequestsRepository.deleteExpiredShareLinks()
+
+      // Assert
+      expect(deleteResult.count).toBe(0)
+    })
+  })
+
+  describe('integration with seeded data', () => {
+    it('should work with completed request data', async () => {
+      // Act - Get share link for completed request
+      const completedShareLink = await externalRequestsRepository.getShareLinkByToken('test-completed-token-789')
+
+      // Assert
+      expect(completedShareLink).toBeTruthy()
+      expect(completedShareLink?.request?.civilId).toBe('test-civil-completed@example.com')
+      expect(completedShareLink?.request?.completedAt).toBeInstanceOf(Date)
+    })
+
+    it('should handle requests with different document types', async () => {
+      // Act
+      const shareLink = await externalRequestsRepository.getShareLinkByToken('test-valid-token-123')
+
+      // Assert
+      expect(shareLink?.request?.requestedDocuments).toEqual(
+        expect.arrayContaining(['IDENTITY_CARD', 'BANK_STATEMENT'])
+      )
     })
   })
 })

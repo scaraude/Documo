@@ -14,6 +14,8 @@
     "test:integration:watch": "TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/document_transfer_test jest --config=jest.integration.config.js --watch",
     "test:setup-db": "node scripts/setup-test-db.js",
     "test:teardown-db": "node scripts/teardown-test-db.js",
+    "test:seed": "TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/document_transfer_test npx tsx prisma/seed-test.ts",
+    "test:workflow": "bash scripts/test-workflow.sh",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",

@@ -1,8 +1,14 @@
 // jest.setup.integration.js
 import '@testing-library/jest-dom'
+import { seedTestData } from './prisma/seed-test'
 
 // Global test database URL for integration tests
 process.env.DATABASE_URL = process.env.TEST_DATABASE_URL || 'postgresql://postgres:password@localhost:5433/document_transfer_test'
+
+// Seed test data before all tests
+beforeAll(async () => {
+  await seedTestData()
+})
 
 // Mock Next.js router for tests
 jest.mock('next/navigation', () => ({

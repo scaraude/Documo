@@ -13,6 +13,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn test:integration:watch`: Run integration tests in watch mode  
 - `yarn test:setup-db`: Setup test database with Docker
 - `yarn test:teardown-db`: Teardown test database Docker container
+- `yarn test:seed`: Manually seed test database with test data
+- 'yarn test:workflow: run the all test workflow with database setuyp
 - `yarn test path/to/test`: Run a specific test file
 - `yarn test:watch`: Run tests in watch mode
 - `yarn prisma:generate`: Generate Prisma client
