@@ -1,163 +1,77 @@
-import { PrismaClient, DocumentType } from '../lib/prisma/generated/client';
-import { addDays } from 'date-fns';
+import { PrismaClient } from '../lib/prisma/generated/client';
+import {
+    createRandomFolderType,
+    createRandomFolder,
+    createRandomDocumentRequest,
+    createRandomShareLink,
+    createRandomDocument
+} from './seed';
 
 const prisma = new PrismaClient();
 
+// Lightweight test seeding function
 export async function seedTestData() {
-    // Clean existing test data in correct order (respecting foreign key constraints)
-    await prisma.requestShareLink.deleteMany({});
+    console.log('🧹 Cleaning test data...');
+    await cleanTestData();
+
+    console.log('🏗️ Creating test data...');
+
+    // Create minimal test data
+    const folderType = await createRandomFolderType();
+    const folder = await createRandomFolder(folderType.id, folderType.requiredDocuments);
+    const request = await createRandomDocumentRequest(folder.id, folderType.requiredDocuments);
+    const shareLink = await createRandomShareLink(request.id, request.createdAt);
+
+    // Create a document for each required document type
+    const documents = [];
+    for (const docType of folderType.requiredDocuments.slice(0, 2)) {
+        const document = await createRandomDocument(request.id, folder.id, docType, request.createdAt);
+        documents.push(document);
+    }
+
+    const testData = {
+        folderType,
+        folder,
+        request,
+        shareLink,
+        documents,
+        stats: {
+            folderTypes: 1,
+            folders: 1,
+            requests: 1,
+            shareLinks: 1,
+            documents: documents.length
+        }
+    };
+
+    console.log('✅ Test data created:', testData.stats);
+    return testData;
+}
+
+// Clean test data function (used internally)
+async function cleanTestData() {
     await prisma.document.deleteMany({});
+    await prisma.requestShareLink.deleteMany({});
     await prisma.documentRequest.deleteMany({});
     await prisma.folder.deleteMany({});
     await prisma.folderType.deleteMany({});
-    
-    // Wait a moment for cleanup to complete
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Create test folder types
-    const testFolderType = await prisma.folderType.create({
-        data: {
-            name: 'Test Document Request Type',
-            description: 'Folder type for integration testing',
-            requiredDocuments: [
-                DocumentType.IDENTITY_CARD,
-                DocumentType.BANK_STATEMENT,
-                DocumentType.UTILITY_BILL
-            ],
-        }
-    });
-
-    const expiredFolderType = await prisma.folderType.create({
-        data: {
-            name: 'Expired Document Request Type',
-            description: 'Folder type for testing expired requests',
-            requiredDocuments: [
-                DocumentType.IDENTITY_CARD,
-                DocumentType.PASSPORT
-            ],
-        }
-    });
-
-    // Create test folders
-    const testFolder = await prisma.folder.create({
-        data: {
-            name: 'Test Integration Folder',
-            description: 'Folder for integration testing',
-            folderTypeId: testFolderType.id,
-            requestedDocuments: testFolderType.requiredDocuments,
-            createdById: 'test_user',
-        }
-    });
-
-    const expiredFolder = await prisma.folder.create({
-        data: {
-            name: 'Expired Test Folder',
-            description: 'Folder for testing expired scenarios',
-            folderTypeId: expiredFolderType.id,
-            requestedDocuments: expiredFolderType.requiredDocuments,
-            createdById: 'test_user',
-        }
-    });
-
-    // Create test document requests
-    const validRequest = await prisma.documentRequest.create({
-        data: {
-            civilId: 'test-civil-valid@example.com',
-            requestedDocuments: [DocumentType.IDENTITY_CARD, DocumentType.BANK_STATEMENT],
-            folderId: testFolder.id,
-            expiresAt: addDays(new Date(), 30),
-        }
-    });
-
-    const expiredRequest = await prisma.documentRequest.create({
-        data: {
-            civilId: 'test-civil-expired@example.com',
-            requestedDocuments: [DocumentType.IDENTITY_CARD, DocumentType.PASSPORT],
-            folderId: expiredFolder.id,
-            expiresAt: addDays(new Date(), -1), // Expired yesterday
-        }
-    });
-
-    const completedRequest = await prisma.documentRequest.create({
-        data: {
-            civilId: 'test-civil-completed@example.com',
-            requestedDocuments: [DocumentType.IDENTITY_CARD],
-            folderId: testFolder.id,
-            expiresAt: addDays(new Date(), 15),
-            completedAt: new Date(),
-        }
-    });
-
-    // Create test share links
-    const validShareLink = await prisma.requestShareLink.create({
-        data: {
-            requestId: validRequest.id,
-            token: 'test-valid-token-123',
-            expiresAt: addDays(new Date(), 30),
-        }
-    });
-
-    const expiredShareLink = await prisma.requestShareLink.create({
-        data: {
-            requestId: expiredRequest.id,
-            token: 'test-expired-token-456',
-            expiresAt: addDays(new Date(), -1), // Expired yesterday
-        }
-    });
-
-    const completedShareLink = await prisma.requestShareLink.create({
-        data: {
-            requestId: completedRequest.id,
-            token: 'test-completed-token-789',
-            expiresAt: addDays(new Date(), 15),
-        }
-    });
-
-    // Create some test documents
-    await prisma.document.create({
-        data: {
-            requestId: completedRequest.id,
-            folderId: testFolder.id,
-            type: DocumentType.IDENTITY_CARD,
-            metadata: { fileName: 'test-id-card.pdf', size: 1024 },
-            url: 'https://example.com/test-id-card.pdf',
-            hash: 'test-hash-123',
-            DEK: 'test-encryption-key',
-            uploadedAt: new Date(),
-            validatedAt: new Date(),
-        }
-    });
-
-    return {
-        folderTypes: {
-            testFolderType,
-            expiredFolderType,
-        },
-        folders: {
-            testFolder,
-            expiredFolder,
-        },
-        requests: {
-            validRequest,
-            expiredRequest,
-            completedRequest,
-        },
-        shareLinks: {
-            validShareLink,
-            expiredShareLink,
-            completedShareLink,
-        }
-    };
 }
 
-// Run seed if called directly
+// Main execution for direct running
+async function main() {
+    try {
+        await seedTestData();
+    } catch (error) {
+        console.error('❌ Test seeding failed:', error);
+        throw error;
+    }
+}
+
+// Run if called directly
 if (require.main === module) {
-    seedTestData()
-        .then(() => {
-            console.log('Test data seeded successfully');
-        })
+    main()
         .catch((e) => {
-            console.error('Error seeding test data:', e);
+            console.error(e);
             process.exit(1);
         })
         .finally(async () => {
