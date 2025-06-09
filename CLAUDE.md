@@ -8,7 +8,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn build`: Build for production
 - `yarn start`: Start production server
 - `yarn lint`: Run ESLint
-- `yarn test`: Run all tests
+- `yarn test`: Run unit tests
+- `yarn test:integration`: Run integration tests with database isolation
+- `yarn test:integration:watch`: Run integration tests in watch mode  
+- `yarn test:setup-db`: Setup test database with Docker
+- `yarn test:teardown-db`: Teardown test database Docker container
 - `yarn test path/to/test`: Run a specific test file
 - `yarn test:watch`: Run tests in watch mode
 - `yarn prisma:generate`: Generate Prisma client

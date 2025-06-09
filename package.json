@@ -10,6 +10,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "test:integration": "TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/document_transfer_test jest --config=jest.integration.config.js",
+    "test:integration:watch": "TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/document_transfer_test jest --config=jest.integration.config.js --watch",
+    "test:setup-db": "node scripts/setup-test-db.js",
+    "test:teardown-db": "node scripts/teardown-test-db.js",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
@@ -55,6 +59,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@playwright/test": "^1.52.0",
+    "@quramy/jest-prisma": "^1.8.1",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",

@@ -1,0 +1,13 @@
+services:
+  postgres-test:
+    image: postgres:14.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=document_transfer_test
+    ports:
+      - '5433:5432'  # Use different port to avoid conflicts
+    # Use tmpfs for faster test database (in-memory)
+    tmpfs:
+      - /var/lib/postgresql/data:rw,noexec,nosuid,size=200m

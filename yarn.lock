@@ -1088,6 +1088,20 @@
   dependencies:
     "@prisma/debug" "6.8.2"
 
+"@quramy/jest-prisma-core@^1.8.0":
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@quramy/jest-prisma-core/-/jest-prisma-core-1.8.1.tgz#4f26b13cb1ea8151c0ae5cc89a6ab2cfdbf4356d"
+  integrity sha512-oCb/n3/isNMhq5yjLw12WH/4pGzNanPUJznfsozigbHZISb8prg/VTl23V2lJdgTbSJD0SjWAFsEKoNmCUq3DQ==
+  dependencies:
+    chalk "^4.0.0"
+
+"@quramy/jest-prisma@^1.8.1":
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/@quramy/jest-prisma/-/jest-prisma-1.8.1.tgz#9522954f915adcbf2bb98f15a2c31943ac90d09c"
+  integrity sha512-ioSP6aiuGQOTnMDxaefGvp3n1YOIipd7YDEVX3e0PCy4s3RB+/N67vwkHr1bCe0KcdVLD5sT0rVQ81/zTlw8Yg==
+  dependencies:
+    "@quramy/jest-prisma-core" "^1.8.0"
+
 "@radix-ui/number@1.1.1":
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/@radix-ui/number/-/number-1.1.1.tgz#7b2c9225fbf1b126539551f5985769d0048d9090"
