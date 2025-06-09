@@ -35,3 +35,31 @@ export const getExportedKeyBase64 = async (key: CryptoKey): Promise<string> => {
     const exportedKey = await window.crypto.subtle.exportKey('raw', key)
     return btoa(String.fromCharCode(...new Uint8Array(exportedKey)))
 }
+
+export const importEncryptionKey = async (keyBase64: string): Promise<CryptoKey> => {
+    const keyData = Uint8Array.from(atob(keyBase64), c => c.charCodeAt(0))
+    return await crypto.subtle.importKey(
+        'raw',
+        keyData,
+        'AES-GCM',
+        true,
+        ['decrypt']
+    )
+
+}
+
+export const decryptBlob = async (encryptedBlob: Blob, key: CryptoKey, mimeType: string): Promise<Blob> => {
+    const iv = encryptedBlob.slice(0, 12)
+    const encryptedData = encryptedBlob.slice(12)
+
+    const decryptedBuffer = await window.crypto.subtle.decrypt(
+        {
+            name: 'AES-GCM',
+            iv: await iv.arrayBuffer(),
+        },
+        key,
+        await encryptedData.arrayBuffer()
+    )
+
+    return new Blob([decryptedBuffer], { type: mimeType })
+}

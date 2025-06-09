@@ -5,6 +5,7 @@ import { ScrollArea } from '../../../shared/components/ui/scroll-area'
 import { Button } from '../../../shared/components/ui/button'
 import { Loader2, Download } from 'lucide-react'
 import Image from 'next/image'
+import { decryptBlob, importEncryptionKey } from '../utils/encryption'
 
 interface DocumentViewerProps {
     document: AppDocument
@@ -36,31 +37,10 @@ export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerP
             const encryptedBlob = await response.blob()
 
             // Import the DEK (Document Encryption Key)
-            const keyData = Uint8Array.from(atob(document.dek!), c => c.charCodeAt(0))
-            const key = await crypto.subtle.importKey(
-                'raw',
-                keyData,
-                'AES-GCM',
-                true,
-                ['decrypt']
-            )
-
-            // Get the IV from the first 12 bytes of the file
-            const iv = encryptedBlob.slice(0, 12)
-            const encryptedData = encryptedBlob.slice(12)
-
-            // Decrypt the file
-            const decryptedArrayBuffer = await crypto.subtle.decrypt(
-                {
-                    name: 'AES-GCM',
-                    iv: await iv.arrayBuffer(),
-                },
-                key,
-                await encryptedData.arrayBuffer()
-            )
+            const key = await importEncryptionKey(document.dek)
 
             // Create a new blob with the decrypted data
-            const decryptedBlob = new Blob([decryptedArrayBuffer], { type: document.metadata.mimeType })
+            const decryptedBlob = await decryptBlob(encryptedBlob, key, document.metadata.mimeType)
             const url = URL.createObjectURL(decryptedBlob)
             setObjectUrl(url)
         } catch (err) {
