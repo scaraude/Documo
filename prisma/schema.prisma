@@ -35,7 +35,6 @@ model Folder {
   folderTypeId String
   folderType   FolderType        @relation(fields: [folderTypeId], references: [id])
   requests     DocumentRequest[]
-  documents    Document[]
 
   @@map("folders")
 }
@@ -99,8 +98,6 @@ model Document {
   errorMessage  String?
 
   validationErrors String[]
-  folder           Folder?  @relation(fields: [folderId], references: [id])
-  folderId         String?
 
   DEK String // Data Encryption Key for encrypted documents
 

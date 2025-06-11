@@ -4,7 +4,6 @@ import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 import { AppDocumentType } from '@/shared/constants';
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
-import { prismaDocumentToAppDocument } from '../../documents/mappers';
 import { prismaDocumentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
 
 // Type mapper between Prisma and App
@@ -66,7 +65,6 @@ export async function getFolderByIdWithRelations(
             where: { id, archivedAt: null },
             include: {
                 requests: true,
-                documents: true,
                 folderType: true
             },
         })
@@ -76,7 +74,6 @@ export async function getFolderByIdWithRelations(
         return {
             ...toAppModel(folder),
             requests: folder.requests.map(resquestToAppModel),
-            documents: folder.documents.map(prismaDocumentToAppDocument),
             folderType: folderTypeToAppModel(folder.folderType)
         };
     } catch (error) {

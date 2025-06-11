@@ -50,7 +50,7 @@ async function createRandomFolderType() {
     const name = faker.helpers.arrayElement(folderTypeNames);
     const description = faker.helpers.arrayElement(descriptions);
     const requiredDocuments = getRandomDocumentTypes(2, 5);
-    
+
     return prisma.folderType.create({
         data: {
             name,
@@ -66,14 +66,14 @@ async function createRandomFolderType() {
 async function createRandomFolder(folderTypeId: string, folderTypeRequiredDocs: DocumentType[]) {
     const cities = ['Paris', 'Lyon', 'Marseille', 'Toulouse', 'Nice', 'Nantes', 'Strasbourg', 'Montpellier', 'Bordeaux', 'Lille', 'Rennes'];
     const propertyTypes = ['Studio', 'T2', 'T3', 'T4', 'Maison', 'Loft', 'Local Commercial', 'Bureau'];
-    
+
     const city = faker.helpers.arrayElement(cities);
     const propertyType = faker.helpers.arrayElement(propertyTypes);
     const address = faker.location.streetAddress();
-    
+
     const name = `${propertyType} ${city}`;
     const description = `${propertyType} - ${address}, ${city}`;
-    
+
     const isCompleted = Math.random() < 0.3; // 30% chance of being completed
     const isArchived = Math.random() < 0.1; // 10% chance of being archived
     const hasActivity = Math.random() < 0.8; // 80% chance of recent activity
@@ -101,7 +101,7 @@ async function createRandomDocumentRequest(folderId: string, requestedDocuments:
     const hasFirstUpload = Math.random() < 0.5; // 50% chance of having first document uploaded
 
     const createdAt = faker.date.past({ years: 1 });
-    
+
     return prisma.documentRequest.create({
         data: {
             civilId: faker.internet.email(),
@@ -119,7 +119,7 @@ async function createRandomDocumentRequest(folderId: string, requestedDocuments:
 // Generate random share link
 async function createRandomShareLink(requestId: string, requestCreatedAt: Date) {
     const isAccessed = Math.random() < 0.7; // 70% chance of being accessed
-    
+
     return prisma.requestShareLink.create({
         data: {
             requestId,
@@ -138,7 +138,7 @@ async function createRandomDocument(requestId: string, folderId: string, documen
     const hasError = isUploaded && Math.random() < 0.1; // 10% chance of error
 
     const uploadedAt = isUploaded ? addHours(requestCreatedAt, faker.number.int({ min: 1, max: 240 })) : null;
-    
+
     const metadata = {
         name: `${documentType.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
         size: faker.number.int({ min: 50000, max: 5000000 }),
@@ -149,7 +149,7 @@ async function createRandomDocument(requestId: string, folderId: string, documen
 
     const errorMessages = [
         'Document illisible',
-        'Format non supporté', 
+        'Format non supporté',
         'Document expiré',
         'Informations manquantes',
         'Qualité insuffisante'
@@ -160,7 +160,6 @@ async function createRandomDocument(requestId: string, folderId: string, documen
     return prisma.document.create({
         data: {
             requestId,
-            folderId,
             type: documentType,
             metadata,
             url: isUploaded ? `https://storage.example.com/documents/${faker.string.uuid()}.pdf` : null,
@@ -210,7 +209,7 @@ async function seedDatabase(options: {
     const folders = [];
     for (const folderType of folderTypes) {
         if (folderType.deletedAt) continue; // Skip deleted folder types
-        
+
         for (let i = 0; i < foldersPerType; i++) {
             const folder = await createRandomFolder(folderType.id, folderType.requiredDocuments);
             folders.push({ folder, folderType });
@@ -223,7 +222,7 @@ async function seedDatabase(options: {
         for (let i = 0; i < requestsPerFolder; i++) {
             const request = await createRandomDocumentRequest(folder.id, folderType.requiredDocuments);
             requests.push({ request, folder, folderType });
-            
+
             // Create share link for each request
             await createRandomShareLink(request.id, request.createdAt);
         }
@@ -235,7 +234,7 @@ async function seedDatabase(options: {
         const documentsToCreate = folderType.requiredDocuments
             .sort(() => 0.5 - Math.random())
             .slice(0, Math.min(documentsPerRequest, folderType.requiredDocuments.length));
-            
+
         for (const docType of documentsToCreate) {
             await createRandomDocument(request.id, folder.id, docType, request.createdAt);
         }
@@ -251,7 +250,7 @@ async function seedDatabase(options: {
 
     console.log('✅ Database seeded successfully!');
     console.log('📊 Statistics:', stats);
-    
+
     return stats;
 }
 

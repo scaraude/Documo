@@ -30,7 +30,9 @@
     "unused:exports": "unimported --show-preset exports",
     "unused:summary": "unimported --show-preset summary",
     "unused:fix": "unimported --update",
-    "clean": "yarn unused:fix && yarn lint --fix"
+    "clean": "yarn unused:fix && yarn lint --fix",
+    "ts-watch": "tsc --noEmit --watch",
+    "ts": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",

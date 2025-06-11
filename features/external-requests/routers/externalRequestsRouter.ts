@@ -61,7 +61,6 @@ export const externalRouter = router({
                 }
 
                 const requestId = shareLink.request.id;
-                const folderId = shareLink.request.folderId || undefined;
 
                 if (!file || !documentData) {
                     throw new TRPCError({
@@ -78,7 +77,7 @@ export const externalRouter = router({
                 });
                 console.log('File uploaded:', url)
                 // Sauvegarder le document dans la base de données
-                return await documentRepository.uploadDocument({ ...documentData, requestId, folderId, url, dek });
+                return await documentRepository.uploadDocument({ ...documentData, requestId, url, dek });
             } catch (error) {
                 console.error('Error uploading document:', error);
                 throw new TRPCError({

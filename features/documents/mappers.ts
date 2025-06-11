@@ -38,9 +38,6 @@ export function inputToPrismaCreateInput(appDocument: AppDocument): Prisma.Docum
         hash: appDocument.metadata.hash,
         metadata: appDocument.metadata, // Add the required metadata property
         validationErrors: appDocument.validationErrors || [],
-        folder: {
-            connect: { id: appDocument.folderId }
-        },
         DEK: appDocument.dek
     };
 }

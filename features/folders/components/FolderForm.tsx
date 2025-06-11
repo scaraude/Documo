@@ -11,17 +11,20 @@ import { Button, Card, CardContent, CardHeader, CardTitle, Badge } from '@/share
 import { ChevronLeft, ChevronRight, FolderOpen, FileText, Users, Send, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
+import { useFolders } from '../hooks/useFolders';
+import { toast } from 'sonner';
 
 interface FolderFormProps {
-    onSubmit: (data: CreateFolderParams) => void
     isLoading: boolean;
 }
 
-export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
+export const FolderForm = ({ isLoading }: FolderFormProps) => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const preSelectedTypeId = searchParams?.get('typeId');
 
+
+    const { createFolderMutation } = useFolders();
     const { getAllFolderTypes } = useFolderTypes();
     const { data: folderTypes, isLoading: isFolderTypesLoading } = getAllFolderTypes();
     const { createRequest } = useRequests();
@@ -38,6 +41,20 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
     // Requests data
     const [civilIds, setCivilIds] = useState<string[]>(['']);
     const [sendNotifications, setSendNotifications] = useState(true);
+
+    const onSubmit = async (data: CreateFolderParams) => {
+        try {
+            createFolderMutation.mutate(data, {
+                onSuccess: (folder) => {
+                    setCreatedFolder(folder);
+                    toast.success('Dossier créé avec succès !');
+                    setStep('sendRequests');
+                }
+            });
+        } catch {
+            toast.error('Une erreur est survenue');
+        }
+    };
 
     // Si un typeId est fourni en query param, sélectionner automatiquement le type
     useEffect(() => {
@@ -69,9 +86,8 @@ export const FolderForm = ({ onSubmit, isLoading }: FolderFormProps) => {
                 expiresAt: expirationDate ? new Date(expirationDate) : null
             };
 
-            const newFolder = await onSubmit(formData);
-            setCreatedFolder(newFolder || null);
             setStep('sendRequests');
+            await onSubmit(formData);
         } catch (error) {
             console.error('Error submitting folder:', error);
         }

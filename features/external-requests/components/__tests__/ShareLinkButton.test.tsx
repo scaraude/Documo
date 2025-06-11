@@ -1,10 +1,11 @@
 import { render, screen, fireEvent, act } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { ShareLinkButton } from '../ShareLinkButton';
 import { toast } from 'sonner';
-import { useExternalRequest } from '../hooks/useExternalRequest';
+import { useExternalRequest } from '../../hooks/useExternalRequest';
 
 // Mock dependencies
-jest.mock('../hooks/useExternalRequest');
+jest.mock('../../hooks/useExternalRequest');
 jest.mock('sonner', () => ({
     ...jest.requireActual('sonner'),
     toast: {
