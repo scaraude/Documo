@@ -27,7 +27,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
     const { createFolderMutation } = useFolders();
     const { getAllFolderTypes } = useFolderTypes();
     const { data: folderTypes, isLoading: isFolderTypesLoading } = getAllFolderTypes();
-    const { createRequest } = useRequests();
+    const { createRequestMutation } = useRequests();
 
     const [step, setStep] = useState<'selectType' | 'fillForm' | 'sendRequests'>('selectType');
     const [selectedType, setSelectedType] = useState<FolderType | null>(null);
@@ -119,7 +119,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         try {
             await Promise.all(
                 validCivilIds.map(civilId =>
-                    createRequest(
+                    createRequestMutation.mutateAsync(
                         {
                             civilId: civilId.trim(),
                             requestedDocuments: selectedType.requiredDocuments,

@@ -10,6 +10,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ComputedFolderStatus, FolderWithStatus } from '../../features/folders/types';
 import { useRouter } from 'next/navigation';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 
 export default function FoldersPage() {
     const { getAllFolderTypes } = useFolderTypes();
@@ -64,22 +65,29 @@ export default function FoldersPage() {
             {/* Folder Representation */}
             <div className="relative">
 
-                <div className="absolute bottom-4 right-4 z-50">
+                <div className="absolute bottom-4 right-4 z-50 group/button">
                     <Link
                         href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <button className="w-9 h-9 border border-stone-400 text-stone-400 rounded-full hover:text-white hover:bg-stone-700 hover:scale-120 transition-all duration-200 flex items-center justify-center group-hover:-translate-y-2">
-                            <Plus className="h-5 w-5" />
-                        </button>
+                        <div className="relative">
+                            {/* Tooltip */}
+                            <div className="absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover/button:opacity-100 transform scale-95 group-hover/button:scale-100 transition-all duration-200 pointer-events-none whitespace-nowrap z-60">
+                                Créer un dossier
+                                <div className="absolute top-full right-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                            </div>
+                            <button className="w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl group-hover:-translate-y-3">
+                                <Plus className="h-5 w-5" />
+                            </button>
+                        </div>
                     </Link>
                 </div>
 
                 {/* Folder Tab */}
-                <div className="absolute -top-3.5 left-0 bg-stone-100 w-20 h-6 rounded-t-lg rounded-tl-sm border-2 border-stone-200 border-b-0 group-hover:-translate-y-2 duration-200 group-hover:bg-stone-200 group-hover:border-stone-300"></div>
+                <div className="absolute -top-3.5 left-0 bg-white w-24 h-7 rounded-t-lg rounded-tl-sm border-2 border-gray-200 border-b-0 group-hover:-translate-y-3 duration-300 group-hover:bg-gray-50 group-hover:border-blue-300"></div>
 
                 {/* Folder Body */}
-                <div className=" h-46 w-72 bg-stone-100 border-2 border-stone-200 rounded-lg rounded-tl-none p-4 transition-all duration-200 group-hover:shadow-lg group-hover:-translate-y-2 group-hover:bg-stone-200 group-hover:border-stone-300 relative overflow-hidden">
+                <div className="h-48 w-80 md:w-80 sm:w-72 bg-white border-2 border-gray-200 rounded-lg rounded-tl-none p-5 transition-all duration-300 group-hover:shadow-xl group-hover:-translate-y-3 group-hover:bg-gray-50 group-hover:border-blue-300 relative overflow-hidden">
 
                     {/* Folder Content */}
                     <div className="h-full flex flex-col justify-between">
@@ -87,13 +95,31 @@ export default function FoldersPage() {
                             <h3 className="font-semibold text-gray-800 text-lg mb-1 truncate">
                                 {folderType.name}
                             </h3>
-                            <h4 className="text-sm text-gray-600 mb-2">
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-3 leading-relaxed">
                                 {folderType.description || 'Aucune description'}
-                            </h4>
-                            <div className="mt-5 flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
-                                    <FileText className="h-3 w-3" />{folderType.requiredDocuments.length} document{folderType.requiredDocuments.length > 1 ? 's' : ''} requis
-                                </Badge>
+                            </p>
+                            <div className="mt-4">
+                                <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                                    <FileText className="h-3 w-3" />
+                                    Documents requis:
+                                </p>
+                                <div className="flex flex-wrap gap-1">
+                                    {folderType.requiredDocuments.slice(0, 2).map((doc, index) => (
+                                        <Badge key={index} variant="outline" className="text-xs px-2 py-0.5">
+                                            {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                                        </Badge>
+                                    ))}
+                                    {folderType.requiredDocuments.length > 2 && (
+                                        <Badge variant="outline" className="text-xs px-2 py-0.5 bg-gray-50">
+                                            +{folderType.requiredDocuments.length - 2}
+                                        </Badge>
+                                    )}
+                                </div>
+                                {folderType.foldersCount !== undefined && (
+                                    <p className="text-xs text-gray-500 mt-2">
+                                        {folderType.foldersCount} dossier{folderType.foldersCount !== 1 ? 's' : ''} créé{folderType.foldersCount !== 1 ? 's' : ''}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -127,9 +153,9 @@ export default function FoldersPage() {
                 <div className="mb-12">
                     <div className="flex justify-between items-center mb-6">
                         <h1 className="text-2xl font-semibold text-gray-900">Types de dossier</h1>
-                        <Button asChild>
+                        <Button asChild size="lg" className="font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200">
                             <Link href={ROUTES.FOLDER_TYPES.NEW}>
-                                <Plus className="h-4 w-4 mr-2" />
+                                <Plus className="h-5 w-5 mr-2" />
                                 Nouveau type de dossier
                             </Link>
                         </Button>
@@ -157,14 +183,27 @@ export default function FoldersPage() {
                             </CardContent>
                         </Card>
                     ) : (
-                        <ScrollArea className="w-full rounded-md whitespace-nowrap">
-                            <div className="flex w-max space-x-4 p-4 pt-6">
-                                {folderTypes.map((folderType) => (
-                                    <FolderGridItem key={folderType.id} folderType={folderType} />
-                                ))}
+                        <>
+                            {/* Desktop: Horizontal scroll */}
+                            <div className="hidden md:block">
+                                <ScrollArea className="w-full rounded-md whitespace-nowrap">
+                                    <div className="flex w-max space-x-6 p-4 pt-7">
+                                        {folderTypes.map((folderType) => (
+                                            <FolderGridItem key={folderType.id} folderType={folderType} />
+                                        ))}
+                                    </div>
+                                    <ScrollBar orientation="horizontal" />
+                                </ScrollArea>
                             </div>
-                            <ScrollBar orientation="horizontal" />
-                        </ScrollArea>
+                            {/* Mobile: Vertical grid */}
+                            <div className="md:hidden">
+                                <div className="grid grid-cols-1 gap-4 p-6">
+                                    {folderTypes.map((folderType) => (
+                                        <FolderGridItem key={folderType.id} folderType={folderType} />
+                                    ))}
+                                </div>
+                            </div>
+                        </>
                     )}
                 </div>
                 <div className="border-t border-gray-200 my-12"></div>
@@ -172,7 +211,7 @@ export default function FoldersPage() {
                 <div>
                     <div className="flex justify-between items-center mb-6">
                         <h2 className="text-2xl font-semibold text-gray-900">Dossiers en cours</h2>
-                        <Button asChild>
+                        <Button asChild size="lg" className='font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200'>
                             <Link href={ROUTES.FOLDERS.NEW}>
                                 <Plus className="h-4 w-4 mr-2" />
                                 Nouveau dossier
