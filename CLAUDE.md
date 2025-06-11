@@ -36,6 +36,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Repository pattern: Data access in repository files, API in api files
 - Testing: Component tests with React Testing Library, repository tests with mocks
 - Documentation: JSDoc comments for functions and types
+- Logging: Use structured logging with Pino logger (see Logging section)
 
 ## MORE GUIDELINE
 
@@ -106,6 +107,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Dependencies
 - **Installation**: Use Yarn to install dependencies.
 - **Updates**: Regularly update dependencies to their latest stable versions.
+
+## Logging Guidelines
+- **Logger**: Use Pino structured logging from `@/lib/logger`
+- **Import**: Always import logger with `import logger from '@/lib/logger'`
+- **Structure**: Use structured logging with context objects
+  ```typescript
+  logger.info({ userId, operation: 'user.create' }, 'Creating new user');
+  logger.error({ userId, error: error.message }, 'Failed to create user');
+  ```
+- **Log Levels**: Use appropriate log levels (debug, info, warn, error)
+- **Context**: Include relevant context like IDs, operation names, and metadata
+- **Security**: Mask sensitive data (tokens, passwords) in logs
+  ```typescript
+  logger.info({ token: token.substring(0, 8) + '...' }, 'Processing token');
+  ```
+- **Error Handling**: Always log errors with context before throwing
+- **Development**: Run `yarn dev` for pretty-formatted logs in development
+- **Production**: Logs output as JSON for structured parsing in production
 
 ## User Stories
 - When the user arrives on the homepage for the first time, they see the "Create a new file type" CTA, and the "Create a new file" CTA is greyed out with an overlay saying "Create a new file type first".
