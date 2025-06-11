@@ -2,10 +2,12 @@ import { z } from "zod";
 import { publicProcedure, router } from "../../../lib/trpc/trpc";
 import * as folderRepository from "../repository/foldersRepository";
 import { CreateFolderSchema } from "../types/zod";
+import logger from "@/lib/logger";
 
 export const folderRouter = router({
     getAll: publicProcedure.query(async () => {
         try {
+            logger.info('Fetching all folders');
             return await folderRepository.getFolders();
         } catch (error) {
             console.error('Error fetching folders:', error);
