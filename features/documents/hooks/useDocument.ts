@@ -9,7 +9,15 @@ export const useDocument = () => {
         select: (documents) => documents.map((document) => { return { ...document, status: computeDocumentStatus(document) } })
     });
 
+    const getDocumentsByRequestIds = (requestIds: string[]) => trpc.documents.getValidDocumentsByRequestIds.useQuery({
+        requestIds,
+    }, {
+        enabled: requestIds.length > 0,
+        select: (documents) => documents.map((document) => { return { ...document, status: computeDocumentStatus(document) } })
+    });
+
     return {
         getDocumentsByRequestId,
+        getDocumentsByRequestIds,
     }
 }

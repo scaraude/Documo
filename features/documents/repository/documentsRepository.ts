@@ -84,3 +84,27 @@ export async function getValidDocumentsByRequestId(requestId: string): Promise<A
         throw new Error('Failed to fetch documents by request');
     }
 }
+
+/**
+ * Get documents by multiple request IDs
+ */
+export async function getValidDocumentsByRequestIds(requestIds: string[]): Promise<AppDocument[]> {
+    try {
+        if (requestIds.length === 0) {
+            return [];
+        }
+
+        const documents = await prisma.document.findMany({
+            where: { 
+                requestId: { in: requestIds }, 
+                deletedAt: null, 
+                invalidatedAt: null 
+            },
+        });
+
+        return documents.map(prismaDocumentToAppDocument);
+    } catch (error) {
+        console.error('Error fetching documents by multiple requests from database:', error);
+        throw new Error('Failed to fetch documents by multiple requests');
+    }
+}
