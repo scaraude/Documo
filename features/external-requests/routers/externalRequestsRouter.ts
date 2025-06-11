@@ -75,7 +75,6 @@ export const externalRouter = router({
                     access: 'public',
                     addRandomSuffix: true
                 });
-                console.log('File uploaded:', url)
                 // Sauvegarder le document dans la base de données
                 return await documentRepository.uploadDocument({ ...documentData, requestId, url, dek });
             } catch (error) {

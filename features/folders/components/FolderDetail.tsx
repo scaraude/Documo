@@ -24,7 +24,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
     const router = useRouter();
     const { data: documents } = getDocumentsByRequestIds(folder.requests?.map(request => request.id) || []);
     const [activeTab, setActiveTab] = useState<'info' | 'requests' | 'documents'>('info');
-    console.log('FolderDetail rendered with documents:', documents);
 
 
     const handleDelete = async () => {

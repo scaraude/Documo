@@ -33,7 +33,7 @@ export function useDecryptedDocument(document: AppDocument): DecryptedDocumentSt
             }
 
             // Fetch the encrypted file
-            const response = await fetch(document.url)
+            const response = await fetch(document.url!)
             const encryptedBlob = await response.blob()
 
             // Import the DEK (Document Encryption Key)

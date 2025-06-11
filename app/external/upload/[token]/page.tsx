@@ -100,7 +100,6 @@ export default function ExternalUploadPage() {
         )
     }
 
-    console.log('documentTypesMissing', documentTypesMissing);
     return (
         <div className="container mx-auto p-6">
             <Card>
