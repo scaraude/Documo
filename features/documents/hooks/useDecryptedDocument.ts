@@ -28,8 +28,12 @@ export function useDecryptedDocument(document: AppDocument): DecryptedDocumentSt
             setIsLoading(true)
             setError(null)
 
+            if (!document.url || !document.dek) {
+                throw new Error('Document URL or DEK is missing')
+            }
+
             // Fetch the encrypted file
-            const response = await fetch(document.url!)
+            const response = await fetch(document.url)
             const encryptedBlob = await response.blob()
 
             // Import the DEK (Document Encryption Key)
@@ -42,7 +46,6 @@ export function useDecryptedDocument(document: AppDocument): DecryptedDocumentSt
         } catch (err) {
             console.error('Failed to decrypt document:', err)
             setError('Failed to decrypt document. Please try again.')
-            throw err // Re-throw to allow handling by the caller if needed
         } finally {
             setIsLoading(false)
         }
@@ -50,10 +53,10 @@ export function useDecryptedDocument(document: AppDocument): DecryptedDocumentSt
 
     // Automatically decrypt when document changes
     useEffect(() => {
-        if (document.url && !objectUrl && !isLoading) {
+        if (document.url && !objectUrl && !isLoading && !error) {
             decryptDocument()
         }
-    }, [document.url, objectUrl, isLoading, decryptDocument])
+    }, [document.url, document.dek, objectUrl, isLoading, error, decryptDocument])
 
     return {
         objectUrl,

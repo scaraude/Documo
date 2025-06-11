@@ -207,9 +207,11 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                             </div>
                         ) : (
                             <ul className="divide-y divide-gray-200">
-                                {documents.map((document) => (
-                                    <FolderDocumentList key={document.id} document={document} />
-                                ))}
+                                {documents
+                                    .filter(document => document.url)
+                                    .map(document => (
+                                        <FolderDocumentList key={document.id} document={document} />
+                                    ))}
                             </ul>
                         )}
                     </div>
