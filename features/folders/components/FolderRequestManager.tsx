@@ -17,7 +17,7 @@ interface FolderRequestManagerProps {
 }
 
 export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestManagerProps) => {
-    const { createRequest } = useRequests();
+    const { createRequestMutation } = useRequests();
     const [isCreatingRequest, setIsCreatingRequest] = useState(false);
     const [newCivilIds, setNewCivilIds] = useState<string[]>(['']);
     const [isLoading, setIsLoading] = useState(false);
@@ -44,7 +44,7 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
 
             await Promise.all(
                 validCivilIds.map(civilId =>
-                    createRequest(
+                    createRequestMutation.mutateAsync(
                         {
                             civilId: civilId.trim(),
                             requestedDocuments: folder.requestedDocuments,

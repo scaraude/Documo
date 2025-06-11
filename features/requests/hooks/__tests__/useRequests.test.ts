@@ -34,9 +34,9 @@ describe('useRequests Hook', () => {
     expect(result.current).toHaveProperty('getById');
     expect(result.current).toHaveProperty('getAllRequests');
     expect(result.current).toHaveProperty('createRequest');
-    
+
     expect(typeof result.current.getById).toBe('function');
     expect(typeof result.current.getAllRequests).toBe('function');
-    expect(typeof result.current.createRequest).toBe('function');
+    expect(typeof result.current.createRequestMutation).toBe('function');
   });
 });
