@@ -47,5 +47,5 @@ export const folderRouter = router({
                 console.error('Error removing request from folder:', error);
                 throw new Error('Failed to remove request from folder');
             }
-        }),
+        })
 })

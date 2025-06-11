@@ -3,6 +3,7 @@ import * as requestRepository from './../repository/requestRepository';
 import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { publicProcedure, router } from '@/lib/trpc/trpc';
 
+
 // Schéma de validation pour la création de request
 const createRequestSchema = z.object({
     civilId: z.string().min(1),
@@ -42,7 +43,5 @@ export const requestsRouter = router({
                 console.error('Error creating request:', error);
                 throw new Error('Failed to create request');
             }
-        }),
-
-
+        })
 });

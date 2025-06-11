@@ -1,10 +1,13 @@
 import { trpc } from "../../../lib/trpc/client"
+import { computeDocumentStatus } from "../../../shared/utils"
 
 export const useDocument = () => {
     const getDocumentsByRequestId = (requestId?: string) => trpc.documents.getValidDocumentsByRequestId.useQuery({
         requestId: requestId || '',
-    }, { enabled: !!requestId } // Only run when requestId exists)
-    );
+    }, {
+        enabled: !!requestId,
+        select: (documents) => documents.map((document) => { return { ...document, status: computeDocumentStatus(document) } })
+    });
 
     return {
         getDocumentsByRequestId,

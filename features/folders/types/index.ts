@@ -1,5 +1,5 @@
 import { AppDocumentType } from '@/shared/constants';
-import { DocumentRequest, DocumentRequestWithStatue, AppDocumentWithStatus } from '@/shared/types';
+import { DocumentRequest, DocumentRequestWithStatue } from '@/shared/types';
 import { FolderType } from '@/features/folder-types/types';
 
 export interface Folder {
@@ -34,7 +34,6 @@ export interface FolderWithRelations extends Folder {
 
 export interface FolderWithRelationsAndStatus extends FolderWithStatus {
     requests?: DocumentRequestWithStatue[];
-    documents?: AppDocumentWithStatus[];
     folderType?: FolderType;
 }
 

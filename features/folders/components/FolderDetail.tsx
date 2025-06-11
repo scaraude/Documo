@@ -7,6 +7,7 @@ import { ROUTES } from '@/shared/constants';
 import { ComputedFolderStatus, FolderWithRelationsAndStatus } from '../types';
 import { FolderRequestManager } from './FolderRequestManager';
 import { FolderDocumentList } from './FolderDocumentList';
+import { useDocument } from '../../documents/hooks/useDocument';
 
 interface FolderDetailProps {
     folder: FolderWithRelationsAndStatus;
@@ -19,7 +20,9 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
     onDelete,
     onRemoveRequest
 }) => {
+    const { getDocumentsByRequestId } = useDocument();
     const router = useRouter();
+    const { data: documents } = getDocumentsByRequestId(folder.id);
     const [activeTab, setActiveTab] = useState<'info' | 'requests' | 'documents'>('info');
 
 
@@ -113,9 +116,9 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                         onClick={() => setActiveTab('documents')}
                     >
                         Documents
-                        {folder.documents && folder.documents.length > 0 && (
+                        {documents && documents.length > 0 && (
                             <span className="ml-2 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-200">
-                                {folder.documents.length}
+                                {documents.length}
                             </span>
                         )}
                     </button>
@@ -192,7 +195,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
 
                 {activeTab === 'documents' && (
                     <div className="overflow-hidden">
-                        {!folder.documents || folder.documents.length === 0 ? (
+                        {!documents || documents.length === 0 ? (
                             <div className="text-center py-6">
                                 <p className="text-sm text-gray-500">Aucun document dans ce dossier</p>
                                 {folder.requests && folder.requests.length > 0 && (
@@ -203,7 +206,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                             </div>
                         ) : (
                             <ul className="divide-y divide-gray-200">
-                                {folder.documents.map((document) => (
+                                {documents.map((document) => (
                                     <FolderDocumentList key={document.id} document={document} />
                                 ))}
                             </ul>
