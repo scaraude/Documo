@@ -41,7 +41,7 @@ export function DownloadButton({ document }: DownloadButtonProps) {
     return (
         <Button className={classNames} onClick={handleClick}
             asChild>
-            <a href={objectUrl} download={document.metadata.name}>
+            <a href={objectUrl} download={document.fileName}>
                 <Download className="h-4 w-4" />
                 Download
             </a>

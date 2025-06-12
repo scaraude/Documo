@@ -27,24 +27,24 @@ model User {
   // Relations
   authProviders AuthProvider[]
   sessions      UserSession[]
-  folders       Folder[]     @relation("CreatedByUser")
-  folderTypes   FolderType[] @relation("CreatedByUser")
+  folders       Folder[]       @relation("CreatedByUser")
+  folderTypes   FolderType[]   @relation("CreatedByUser")
 
   @@map("users")
 }
 
 model AuthProvider {
-  id               String       @id @default(uuid())
-  userId           String
-  user             User         @relation(fields: [userId], references: [id])
-  providerType     ProviderType
-  providerId       String
-  providerData     Json?
-  isVerified       Boolean      @default(false)
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
-  passwordHash     String?
-  emailVerifiedAt  DateTime?
+  id              String       @id @default(uuid())
+  userId          String
+  user            User         @relation(fields: [userId], references: [id])
+  providerType    ProviderType
+  providerId      String
+  providerData    Json?
+  isVerified      Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  passwordHash    String?
+  emailVerifiedAt DateTime?
 
   @@unique([providerType, providerId])
   @@map("auth_providers")
@@ -91,7 +91,7 @@ model Folder {
 
   expiresAt   DateTime?
   createdById String?
-  createdBy   User?   @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
+  createdBy   User?     @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
 
   // Relations
   folderTypeId String
@@ -142,19 +142,21 @@ model DocumentRequest {
 }
 
 model Document {
-  id        String          @id @default(uuid())
-  requestId String
-  request   DocumentRequest @relation(fields: [requestId], references: [id])
-  type      DocumentType
-  metadata  Json
-  url       String?
-  hash      String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  deletedAt DateTime? // Soft delete
+  id           String          @id @default(uuid())
+  requestId    String
+  request      DocumentRequest @relation(fields: [requestId], references: [id])
+  type         DocumentType
+  fileName     String
+  mimeType     String
+  originalSize Int
+  url          String
+  hash         String
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime? // Soft delete
 
   // Nouveaux champs pour calculer le status
-  uploadedAt    DateTime?
+  uploadedAt    DateTime
   validatedAt   DateTime?
   invalidatedAt DateTime?
   errorAt       DateTime?

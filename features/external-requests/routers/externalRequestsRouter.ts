@@ -57,7 +57,7 @@ export const externalRouter = router({
                 logger.info({
                     token: token.substring(0, 8) + '...',
                     documentType: documentData.type,
-                    fileName: documentData.metadata.name
+                    fileName: documentData.fileName
                 }, 'Creating external document');
 
                 const shareLink = await externalRequestsRepository.getShareLinkByToken(token);
@@ -82,7 +82,7 @@ export const externalRouter = router({
 
                 const blob = new Blob([file], { type: 'application/octet-stream' });
 
-                const { url } = await put(documentData.metadata.name, blob, {
+                const { url } = await put(documentData.fileName, blob, {
                     access: 'public',
                     addRandomSuffix: true
                 });

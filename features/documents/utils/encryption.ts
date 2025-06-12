@@ -63,3 +63,10 @@ export const decryptBlob = async (encryptedBlob: Blob, key: CryptoKey, mimeType:
 
     return new Blob([decryptedBuffer], { type: mimeType })
 }
+
+export const computeFileHash = async (file: File): Promise<string> => {
+    const fileBuffer = await file.arrayBuffer()
+    const hashBuffer = await window.crypto.subtle.digest('SHA-256', fileBuffer)
+    const hashArray = new Uint8Array(hashBuffer)
+    return Array.from(hashArray).map(b => b.toString(16).padStart(2, '0')).join('')
+}

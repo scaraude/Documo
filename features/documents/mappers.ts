@@ -1,5 +1,5 @@
 import { Prisma } from "@/lib/prisma";
-import { AppDocument, metadataSchema } from "../../shared/types";
+import { AppDocument } from "../../shared/types";
 import { prismaDocumentTypeToAppDocumentType } from "../../shared/mapper/prismaMapper";
 
 // Type du modèle Document de Prisma
@@ -9,18 +9,21 @@ type PrismaDocument = Prisma.DocumentGetPayload<null>;
  * Convertir un document Prisma en document d'application
  */
 export function prismaDocumentToAppDocument(prismaModel: PrismaDocument): AppDocument {
-    const metadata = metadataSchema.parse(prismaModel.metadata);
 
     return {
         id: prismaModel.id,
         requestId: prismaModel.requestId,
         type: prismaDocumentTypeToAppDocumentType(prismaModel.type),
-        metadata,
-        url: prismaModel.url || undefined,
-        createdAt: prismaModel.createdAt,
-        updatedAt: prismaModel.updatedAt,
+        fileName: prismaModel.fileName,
+        mimeType: prismaModel.mimeType,
+        originalSize: prismaModel.originalSize,
+        hash: prismaModel.hash,
+        url: prismaModel.url,
         validationErrors: prismaModel.validationErrors || [],
         dek: prismaModel.DEK,
+        createdAt: prismaModel.createdAt,
+        updatedAt: prismaModel.updatedAt,
+        uploadedAt: prismaModel.uploadedAt,
     };
 }
 
@@ -35,9 +38,12 @@ export function inputToPrismaCreateInput(appDocument: AppDocument): Prisma.Docum
         },
         type: appDocument.type,
         url: appDocument.url,
-        hash: appDocument.metadata.hash,
-        metadata: appDocument.metadata, // Add the required metadata property
+        hash: appDocument.hash,
         validationErrors: appDocument.validationErrors || [],
-        DEK: appDocument.dek
+        DEK: appDocument.dek,
+        fileName: appDocument.fileName,
+        mimeType: appDocument.mimeType,
+        originalSize: appDocument.originalSize,
+        uploadedAt: appDocument.uploadedAt,
     };
 }

@@ -35,7 +35,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                     <div className="min-w-0 flex-1 px-4">
                         <div>
                             <p className="text-sm font-medium text-blue-600 truncate">
-                                {document.metadata.name}
+                                {document.fileName}
                             </p>
                             <p className="mt-1 flex items-center text-sm text-gray-500">
                                 <span className="truncate">{document.type}</span>

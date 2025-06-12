@@ -122,7 +122,7 @@ async function createRandomDocumentRequest(folderId: string, requestedDocuments:
     const lastName = faker.person.lastName().toLowerCase();
     const emailProviders = ['gmail.com', 'outlook.com', 'yahoo.fr', 'hotmail.com', 'orange.fr', 'free.fr'];
     const provider = faker.helpers.arrayElement(emailProviders);
-    
+
     // Create realistic email patterns
     const emailPatterns = [
         `${firstName}.${lastName}@${provider}`,
@@ -130,7 +130,7 @@ async function createRandomDocumentRequest(folderId: string, requestedDocuments:
         `${firstName}${faker.number.int({ min: 10, max: 99 })}@${provider}`,
         `${firstName.charAt(0)}${lastName}@${provider}`
     ];
-    
+
     const email = faker.helpers.arrayElement(emailPatterns);
 
     return prisma.documentRequest.create({
@@ -164,20 +164,11 @@ async function createRandomShareLink(requestId: string, requestCreatedAt: Date) 
 
 // Generate random document
 async function createRandomDocument(requestId: string, folderId: string, documentType: DocumentType, requestCreatedAt: Date) {
-    const isUploaded = Math.random() < 0.6; // 60% chance of being uploaded
-    const isValidated = isUploaded && Math.random() < 0.8; // 80% chance of validation if uploaded
-    const isInvalidated = isUploaded && !isValidated && Math.random() < 0.3; // 30% chance of invalidation if not validated
-    const hasError = isUploaded && Math.random() < 0.1; // 10% chance of error
+    const isValidated = Math.random() < 0.8; // 80% chance of validation if uploaded
+    const isInvalidated = !isValidated && Math.random() < 0.3; // 30% chance of invalidation if not validated
+    const hasError = Math.random() < 0.1; // 10% chance of error
 
-    const uploadedAt = isUploaded ? addHours(requestCreatedAt, faker.number.int({ min: 1, max: 240 })) : null;
-
-    const metadata = {
-        name: `${documentType.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
-        size: faker.number.int({ min: 50000, max: 5000000 }),
-        mimeType: 'application/pdf',
-        lastModified: faker.date.recent({ days: 30 }).getTime(),
-        hash: faker.string.hexadecimal({ length: 32, prefix: '' })
-    };
+    const uploadedAt = addHours(requestCreatedAt, faker.number.int({ min: 1, max: 240 }));
 
     const errorMessages = [
         'Document illisible',
@@ -193,9 +184,11 @@ async function createRandomDocument(requestId: string, folderId: string, documen
         data: {
             requestId,
             type: documentType,
-            metadata,
-            url: isUploaded ? `https://storage.example.com/documents/${faker.string.uuid()}.pdf` : null,
-            hash: isUploaded ? faker.string.hexadecimal({ length: 64, prefix: '' }) : null,
+            fileName: `${documentType.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
+            mimeType: 'application/pdf',
+            url: `https://storage.example.com/documents/${faker.string.uuid()}.pdf`,
+            originalSize: faker.number.int({ min: 50000, max: 5000000 }),
+            hash: faker.string.hexadecimal({ length: 64, prefix: '' }),
             DEK: generateDEK(),
             uploadedAt,
             validatedAt: isValidated ? addHours(uploadedAt!, faker.number.int({ min: 1, max: 48 })) : null,

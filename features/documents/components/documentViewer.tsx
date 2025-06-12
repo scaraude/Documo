@@ -48,11 +48,11 @@ export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerP
             return null
         }
 
-        if (document.metadata.mimeType.startsWith('image/')) {
+        if (document.mimeType.startsWith('image/')) {
             return (
                 <Image
                     src={objectUrl}
-                    alt={document.metadata.name}
+                    alt={document.fileName}
                     className="max-w-full h-auto"
                     width={800}
                     height={600}
@@ -60,12 +60,12 @@ export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerP
             )
         }
 
-        if (document.metadata.mimeType === 'application/pdf') {
+        if (document.mimeType === 'application/pdf') {
             return (
                 <iframe
                     src={objectUrl}
                     className="w-full h-[calc(100vh-200px)] min-h-[500px]"
-                    title={document.metadata.name}
+                    title={document.fileName}
                 />
             )
         }
@@ -76,7 +76,7 @@ export function DocumentViewer({ document, open, onOpenChange }: DocumentViewerP
                     Preview not available for this file type
                 </p>
                 <Button asChild>
-                    <a href={objectUrl} download={document.metadata.name}>
+                    <a href={objectUrl} download={document.fileName}>
                         <Download className="mr-2 h-4 w-4" />
                         Download File
                     </a>

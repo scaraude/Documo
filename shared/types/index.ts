@@ -1,18 +1,6 @@
 import z from "zod";
 import { APP_DOCUMENT_TYPES, AppDocumentType } from "../constants";
 
-// Définir un schéma de validation
-export const metadataSchema = z.object({
-    name: z.string(),
-    mimeType: z.string(),
-    size: z.number(),
-    lastModified: z.number(),
-    hash: z.string().optional()
-});
-
-export type AppDocumentMetadata = z.infer<typeof metadataSchema>;
-
-
 // Create folder type validation schema
 export const createFolderTypeSchema = z.object({
     name: z.string().min(1).max(255),
@@ -45,26 +33,6 @@ export interface DocumentRequestWithStatue extends DocumentRequest {
 // Computed status type
 export type ComputedRequestStatus = 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'COMPLETED';
 
-export interface AppDocument {
-    id: string;
-    requestId: string;
-    type: AppDocumentType;
-    metadata: AppDocumentMetadata;
-    url?: string;
-    createdAt: Date;
-    updatedAt: Date;
-
-    // Propriétés pour calculer le status
-    uploadedAt?: Date;
-    validatedAt?: Date;
-    invalidatedAt?: Date;
-    errorAt?: Date;
-    errorMessage?: string;
-
-    validationErrors?: string[];
-    dek: string; // Data Encryption Key, utilisé pour chiffrer le document
-}
-
 export interface AppDocumentWithStatus extends AppDocument {
     status: ComputedDocumentStatus
 }
@@ -74,19 +42,26 @@ export const AppDocumentSchema = z.object({
     requestId: z.string(),
     folderId: z.string().optional(),
     type: z.nativeEnum(APP_DOCUMENT_TYPES),
-    metadata: metadataSchema,
-    url: z.string().optional(),
+    fileName: z.string(),
+    mimeType: z.string(),
+    originalSize: z.number(),
+    url: z.string().url(),
+    hash: z.string(),
     createdAt: z.date(),
     updatedAt: z.date(),
+    deletedAt: z.date().optional(),
 
     // Propriétés pour calculer le status
-    uploadedAt: z.date().optional(),
+    uploadedAt: z.date(),
     validatedAt: z.date().optional(),
     invalidatedAt: z.date().optional(),
     errorAt: z.date().optional(),
     errorMessage: z.string().optional(),
 
     validationErrors: z.array(z.string()).optional(),
+    dek: z.string(), // Data Encryption Key, utilisé pour chiffrer le document
 });
+
+export type AppDocument = z.infer<typeof AppDocumentSchema>;
 // Computed status type
 export type ComputedDocumentStatus = 'PENDING' | 'UPLOADING' | 'UPLOADED' | 'VALIDATING' | 'VALID' | 'INVALID' | 'ERROR';

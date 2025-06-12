@@ -1,7 +1,7 @@
 'use client'
 
 import { v4 as uuidv4 } from 'uuid'
-import { encryptFile, exportedKeyBase64 } from '@/features/documents/utils/encryption'
+import { encryptFile, exportedKeyBase64, computeFileHash } from '@/features/documents/utils/encryption'
 import { AppDocumentType } from '@/shared/constants'
 import { AppDocumentToUpload } from '../types'
 import { trpcVanilla } from '@/lib/trpc/client'
@@ -13,19 +13,6 @@ interface UploadDocumentOptions {
     onProgress?: (progress: number) => void
 }
 
-interface AppDocumentMetadata {
-    name: string
-    mimeType: string
-    size: number
-    lastModified: number
-}
-
-const extractMetadata = (file: File): AppDocumentMetadata => ({
-    name: file.name,
-    mimeType: file.type,
-    size: file.size,
-    lastModified: file.lastModified
-})
 
 export const uploadDocument = async ({
     file,
@@ -37,12 +24,17 @@ export const uploadDocument = async ({
 
         // Create document metadata
         const documentId = uuidv4()
+        const fileHash = await computeFileHash(file)
         const document: AppDocumentToUpload = {
             id: documentId,
             type: documentType,
-            metadata: extractMetadata(file),
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            fileName: file.name,
+            mimeType: file.type,
+            originalSize: file.size,
+            hash: fileHash,
+            uploadedAt: new Date(),
         }
 
 

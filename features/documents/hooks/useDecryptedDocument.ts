@@ -40,7 +40,7 @@ export function useDecryptedDocument(document: AppDocument): DecryptedDocumentSt
             const key = await importEncryptionKey(document.dek)
 
             // Create a new blob with the decrypted data
-            const decryptedBlob = await decryptBlob(encryptedBlob, key, document.metadata.mimeType)
+            const decryptedBlob = await decryptBlob(encryptedBlob, key, document.mimeType)
             const url = URL.createObjectURL(decryptedBlob)
             setObjectUrl(url)
         } catch (err) {
@@ -49,7 +49,7 @@ export function useDecryptedDocument(document: AppDocument): DecryptedDocumentSt
         } finally {
             setIsLoading(false)
         }
-    }, [document.url, document.dek, document.metadata.mimeType])
+    }, [document.url, document.dek, document.mimeType])
 
     // Automatically decrypt when document changes
     useEffect(() => {
