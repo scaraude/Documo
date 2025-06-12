@@ -1,0 +1,324 @@
+import { z } from 'zod';
+import { TRPCError } from '@trpc/server';
+import { createTRPCRouter, publicProcedure, protectedProcedure } from '@/lib/trpc/trpc';
+import { AuthRepository } from '../repository/authRepository';
+import { prisma } from '@/lib/prisma';
+import { 
+  loginSchema, 
+  signupSchema, 
+  verifyEmailSchema, 
+  resendVerificationSchema 
+} from '../types/zod';
+import logger from '@/lib/logger';
+
+const authRepository = new AuthRepository(prisma);
+
+export const authRouter = createTRPCRouter({
+  signup: publicProcedure
+    .input(signupSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const user = await authRepository.createUser(input);
+        
+        // Create email verification token
+        const verificationToken = await authRepository.createEmailVerificationToken(user.email!);
+        
+        // TODO: Send verification email
+        logger.info(
+          { 
+            userId: user.id, 
+            email: user.email,
+            token: verificationToken.token,
+            operation: 'auth.signup' 
+          }, 
+          'User signed up, verification email needed'
+        );
+
+        return {
+          success: true,
+          message: 'Account created successfully. Please check your email to verify your account.',
+          userId: user.id,
+          // In development, return the token for testing
+          ...(process.env.NODE_ENV === 'development' && { verificationToken: verificationToken.token }),
+        };
+      } catch (error) {
+        logger.error({ input: { email: input.email }, error: (error as Error).message }, 'Signup failed');
+        
+        if ((error as Error).message.includes('already exists')) {
+          throw new TRPCError({
+            code: 'CONFLICT',
+            message: 'An account with this email already exists',
+          });
+        }
+        
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to create account',
+        });
+      }
+    }),
+
+  login: publicProcedure
+    .input(loginSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        const user = await authRepository.authenticateUser(input);
+        
+        if (!user) {
+          throw new TRPCError({
+            code: 'UNAUTHORIZED',
+            message: 'Invalid email or password',
+          });
+        }
+
+        // Check if email is verified
+        const authProvider = await prisma.authProvider.findFirst({
+          where: {
+            userId: user.id,
+            providerType: 'EMAIL_PASSWORD',
+          },
+        });
+
+        if (!authProvider?.isVerified) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Please verify your email before logging in',
+          });
+        }
+
+        // Create session
+        const session = await authRepository.createSession(
+          user.id,
+          ctx.req?.headers.get('user-agent') || undefined,
+          ctx.req?.headers.get('x-forwarded-for') || ctx.req?.headers.get('x-real-ip') || undefined,
+        );
+
+        // Set session cookie
+        ctx.res?.cookies.set('session', session.token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 7 * 24 * 60 * 60, // 7 days
+        });
+
+        return {
+          success: true,
+          user: {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          },
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
+        logger.error({ input: { email: input.email }, error: (error as Error).message }, 'Login failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Login failed',
+        });
+      }
+    }),
+
+  logout: protectedProcedure
+    .mutation(async ({ ctx }) => {
+      try {
+        if (ctx.session) {
+          await authRepository.revokeSession(ctx.session.id);
+        }
+
+        // Clear session cookie
+        ctx.res?.cookies.set('session', '', {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+          maxAge: 0,
+        });
+
+        return { success: true };
+      } catch (error) {
+        logger.error({ userId: ctx.user?.id, error: (error as Error).message }, 'Logout failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Logout failed',
+        });
+      }
+    }),
+
+  verifyEmail: publicProcedure
+    .input(verifyEmailSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const success = await authRepository.verifyEmail(input.token);
+        
+        if (!success) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Invalid or expired verification token',
+          });
+        }
+
+        return {
+          success: true,
+          message: 'Email verified successfully. You can now log in.',
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
+        logger.error({ token: input.token.substring(0, 8) + '...', error: (error as Error).message }, 'Email verification failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Email verification failed',
+        });
+      }
+    }),
+
+  resendVerification: publicProcedure
+    .input(resendVerificationSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const user = await authRepository.findUserByEmail(input.email);
+        
+        if (!user) {
+          // Don't reveal if user exists or not for security
+          return {
+            success: true,
+            message: 'If an account with this email exists, a verification email has been sent.',
+          };
+        }
+
+        // Check if already verified
+        const authProvider = await prisma.authProvider.findFirst({
+          where: {
+            userId: user.id,
+            providerType: 'EMAIL_PASSWORD',
+          },
+        });
+
+        if (authProvider?.isVerified) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Email is already verified',
+          });
+        }
+
+        const verificationToken = await authRepository.createEmailVerificationToken(user.email!);
+        
+        // TODO: Send verification email
+        logger.info(
+          { 
+            userId: user.id, 
+            email: user.email,
+            token: verificationToken.token,
+            operation: 'auth.resendVerification' 
+          }, 
+          'Verification email resent'
+        );
+
+        return {
+          success: true,
+          message: 'Verification email sent. Please check your inbox.',
+          // In development, return the token for testing
+          ...(process.env.NODE_ENV === 'development' && { verificationToken: verificationToken.token }),
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
+        logger.error({ email: input.email, error: (error as Error).message }, 'Resend verification failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to resend verification email',
+        });
+      }
+    }),
+
+  me: protectedProcedure
+    .query(({ ctx }) => {
+      return {
+        id: ctx.user.id,
+        email: ctx.user.email,
+        firstName: ctx.user.firstName,
+        lastName: ctx.user.lastName,
+      };
+    }),
+
+  sessions: protectedProcedure
+    .query(async ({ ctx }) => {
+      try {
+        const sessions = await prisma.userSession.findMany({
+          where: {
+            userId: ctx.user.id,
+            revokedAt: null,
+          },
+          select: {
+            id: true,
+            createdAt: true,
+            expiresAt: true,
+            userAgent: true,
+            ipAddress: true,
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        });
+
+        return sessions;
+      } catch (error) {
+        logger.error({ userId: ctx.user.id, error: (error as Error).message }, 'Failed to fetch sessions');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch sessions',
+        });
+      }
+    }),
+
+  revokeSession: protectedProcedure
+    .input(z.object({ sessionId: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      try {
+        // Verify the session belongs to the user
+        const session = await prisma.userSession.findFirst({
+          where: {
+            id: input.sessionId,
+            userId: ctx.user.id,
+            revokedAt: null,
+          },
+        });
+
+        if (!session) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Session not found',
+          });
+        }
+
+        await authRepository.revokeSession(input.sessionId);
+
+        return { success: true };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+        
+        logger.error({ 
+          userId: ctx.user.id, 
+          sessionId: input.sessionId, 
+          error: (error as Error).message 
+        }, 'Failed to revoke session');
+        
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to revoke session',
+        });
+      }
+    }),
+});

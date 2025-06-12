@@ -14,6 +14,67 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String    @id @default(uuid())
+  email     String?   @unique
+  firstName String?
+  lastName  String?
+  civilId   String?   @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  // Relations
+  authProviders AuthProvider[]
+  sessions      UserSession[]
+  folders       Folder[]     @relation("CreatedByUser")
+  folderTypes   FolderType[] @relation("CreatedByUser")
+
+  @@map("users")
+}
+
+model AuthProvider {
+  id               String       @id @default(uuid())
+  userId           String
+  user             User         @relation(fields: [userId], references: [id])
+  providerType     ProviderType
+  providerId       String
+  providerData     Json?
+  isVerified       Boolean      @default(false)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  passwordHash     String?
+  emailVerifiedAt  DateTime?
+
+  @@unique([providerType, providerId])
+  @@map("auth_providers")
+}
+
+model UserSession {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id])
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  revokedAt DateTime?
+  userAgent String?
+  ipAddress String?
+
+  @@map("user_sessions")
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  @@map("email_verification_tokens")
+}
+
 model Folder {
   id          String  @id @default(uuid())
   name        String
@@ -30,6 +91,7 @@ model Folder {
 
   expiresAt   DateTime?
   createdById String?
+  createdBy   User?   @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
 
   // Relations
   folderTypeId String
@@ -48,6 +110,7 @@ model FolderType {
   updatedAt         DateTime       @updatedAt
   deletedAt         DateTime? // Soft delete
   createdById       String?
+  createdBy         User?          @relation("CreatedByUser", fields: [createdById], references: [id], onDelete: SetNull)
 
   folders Folder[] // Relation to folders
 
@@ -123,4 +186,9 @@ enum DocumentType {
   BANK_STATEMENT
   UTILITY_BILL
   OTHER
+}
+
+enum ProviderType {
+  EMAIL_PASSWORD
+  FRANCE_CONNECT
 }
