@@ -43,7 +43,7 @@ describe('Request Repository', () => {
 
     const mockPrismaRequest = {
         id: '1',
-        civilId: '123456',
+        email: 'test@example.com',
         requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
         createdAt: mockDate,
         expiresAt: expiryDate,
@@ -74,7 +74,7 @@ describe('Request Repository', () => {
             // THEN
             expect(result).toHaveLength(1);
             expect(result[0].id).toBe('1');
-            expect(result[0].civilId).toBe('123456');
+            expect(result[0].email).toBe('test@example.com');
             expect(mockPrisma.documentRequest.findMany).toHaveBeenCalledTimes(1);
         });
 
@@ -104,7 +104,7 @@ describe('Request Repository', () => {
         it('devrait créer une nouvelle demande dans la base de données', async () => {
             // GIVEN
             const requestData: CreateRequestParams = {
-                civilId: '123456',
+                email: 'test@example.com',
                 requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
                 folderId: 'test-folder-id'
             };
@@ -116,11 +116,11 @@ describe('Request Repository', () => {
 
             // THEN
             expect(result.id).toBe('1');
-            expect(result.civilId).toBe('123456');
+            expect(result.email).toBe('test@example.com');
             expect(result.requestedDocuments).toEqual([APP_DOCUMENT_TYPES.IDENTITY_CARD]);
             expect(mockPrisma.documentRequest.create).toHaveBeenCalledWith({
                 data: expect.objectContaining({
-                    civilId: '123456',
+                    email: 'test@example.com',
                     requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD]
                 })
             });
@@ -129,7 +129,7 @@ describe('Request Repository', () => {
         it('devrait utiliser le nombre de jours d\'expiration personnalisé', async () => {
             // GIVEN
             const requestData: CreateRequestParams = {
-                civilId: '123456',
+                email: 'test@example.com',
                 requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
                 folderId: 'test-folder-id',
                 expirationDays: 14
@@ -152,7 +152,7 @@ describe('Request Repository', () => {
         it('devrait gérer les erreurs lors de la création', async () => {
             // GIVEN
             const requestData: CreateRequestParams = {
-                civilId: '123456',
+                email: 'test@example.com',
                 requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
                 folderId: 'test-folder-id'
             };

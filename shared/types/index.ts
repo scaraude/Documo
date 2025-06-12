@@ -23,7 +23,7 @@ export const createFolderTypeSchema = z.object({
 
 export interface DocumentRequest {
     id: string;
-    civilId: string;
+    email: string;
     requestedDocuments: AppDocumentType[];
     createdAt: Date;
     expiresAt: Date;

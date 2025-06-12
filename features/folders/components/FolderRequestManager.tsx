@@ -19,34 +19,34 @@ interface FolderRequestManagerProps {
 export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestManagerProps) => {
     const { createRequestMutation } = useRequests();
     const [isCreatingRequest, setIsCreatingRequest] = useState(false);
-    const [newCivilIds, setNewCivilIds] = useState<string[]>(['']);
+    const [newEmails, setNewEmails] = useState<string[]>(['']);
     const [isLoading, setIsLoading] = useState(false);
 
-    const addCivilId = () => {
-        setNewCivilIds(prev => [...prev, '']);
+    const addEmail = () => {
+        setNewEmails(prev => [...prev, '']);
     };
 
-    const removeCivilId = (index: number) => {
-        setNewCivilIds(prev => prev.filter((_, i) => i !== index));
+    const removeEmail = (index: number) => {
+        setNewEmails(prev => prev.filter((_, i) => i !== index));
     };
 
-    const updateCivilId = (index: number, value: string) => {
-        setNewCivilIds(prev => prev.map((id, i) => i === index ? value : id));
+    const updateEmail = (index: number, value: string) => {
+        setNewEmails(prev => prev.map((email, i) => i === index ? value : email));
     };
 
     const handleCreateRequests = async () => {
-        const validCivilIds = newCivilIds.filter(id => id.trim() !== '');
+        const validEmails = newEmails.filter(email => email.trim() !== '' && email.includes('@'));
 
-        if (validCivilIds.length === 0) return;
+        if (validEmails.length === 0) return;
 
         try {
             setIsLoading(true);
 
             await Promise.all(
-                validCivilIds.map(civilId =>
+                validEmails.map(email =>
                     createRequestMutation.mutateAsync(
                         {
-                            civilId: civilId.trim(),
+                            email: email.trim(),
                             requestedDocuments: folder.requestedDocuments,
                             folderId: folder.id,
                         }
@@ -55,7 +55,7 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
             );
 
             // Reset form
-            setNewCivilIds(['']);
+            setNewEmails(['']);
             setIsCreatingRequest(false);
         } catch (error) {
             console.error('Error creating requests:', error);
@@ -142,23 +142,23 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                ID civils des personnes concernées
+                                Adresses email des personnes concernées
                             </label>
                             <div className="space-y-3">
-                                {newCivilIds.map((civilId, index) => (
+                                {newEmails.map((email, index) => (
                                     <div key={index} className="flex gap-3">
                                         <input
-                                            type="text"
-                                            value={civilId}
-                                            onChange={(e) => updateCivilId(index, e.target.value)}
-                                            placeholder="ID civil (ex: 123456789)"
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => updateEmail(index, e.target.value)}
+                                            placeholder="email@exemple.com"
                                             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         />
-                                        {newCivilIds.length > 1 && (
+                                        {newEmails.length > 1 && (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => removeCivilId(index)}
+                                                onClick={() => removeEmail(index)}
                                                 className="text-red-600 hover:text-red-700"
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -167,7 +167,7 @@ export const FolderRequestManager = ({ folder, onRemoveRequest }: FolderRequestM
                                     </div>
                                 ))}
                             </div>
-                            <Button variant="outline" size="sm" onClick={addCivilId} className="mt-2">
+                            <Button variant="outline" size="sm" onClick={addEmail} className="mt-2">
                                 <Plus className="h-4 w-4 mr-2" />
                                 Ajouter une personne
                             </Button>
@@ -251,8 +251,8 @@ const RequestCard = ({
                     <div className="flex items-center space-x-4">
                         <div className="flex items-center space-x-2">
                             <Hash className="h-4 w-4 text-gray-400" />
-                            <span className="font-mono text-sm font-medium text-gray-900">
-                                {request.civilId}
+                            <span className="text-sm font-medium text-gray-900">
+                                {request.email}
                             </span>
                         </div>
 

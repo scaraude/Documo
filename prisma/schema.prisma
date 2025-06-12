@@ -119,7 +119,7 @@ model FolderType {
 
 model DocumentRequest {
   id                 String         @id @default(uuid())
-  civilId            String
+  email              String
   requestedDocuments DocumentType[]
   // SUPPRIMER: status     RequestStatus
   createdAt          DateTime       @default(now())

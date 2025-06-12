@@ -6,8 +6,8 @@ import { Button } from '@/shared/components'
 interface RequestSearchAndSortProps {
     searchTerm: string
     onSearchChange: (term: string) => void
-    sortBy: 'date' | 'status' | 'civilId'
-    onSortByChange: (sortBy: 'date' | 'status' | 'civilId') => void
+    sortBy: 'date' | 'status' | 'email'
+    onSortByChange: (sortBy: 'date' | 'status' | 'email') => void
     sortOrder: 'asc' | 'desc'
     onSortOrderChange: (order: 'asc' | 'desc') => void
 }
@@ -23,7 +23,7 @@ export const RequestSearchAndSort = ({
     const sortOptions = [
         { value: 'date' as const, label: 'Date' },
         { value: 'status' as const, label: 'Statut' },
-        { value: 'civilId' as const, label: 'ID Civil' }
+        { value: 'email' as const, label: 'Email' }
     ]
 
     const getSortIcon = () => {
@@ -40,7 +40,7 @@ export const RequestSearchAndSort = ({
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                     <input
                         type="text"
-                        placeholder="Rechercher par ID civil..."
+                        placeholder="Rechercher par email..."
                         value={searchTerm}
                         onChange={(e) => onSearchChange(e.target.value)}
                         className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -56,7 +56,7 @@ export const RequestSearchAndSort = ({
                     {/* Sort By */}
                     <select
                         value={sortBy}
-                        onChange={(e) => onSortByChange(e.target.value as 'date' | 'status' | 'civilId')}
+                        onChange={(e) => onSortByChange(e.target.value as 'date' | 'status' | 'email')}
                         className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                         {sortOptions.map((option) => (

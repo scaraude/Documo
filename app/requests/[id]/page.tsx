@@ -81,7 +81,7 @@ export default function RequestDetailPage() {
                         <div>
                             <div className="flex items-center space-x-4">
                                 <h1 className="text-2xl font-semibold text-gray-900">
-                                    Demande #{request.civilId}
+                                    Demande #{request.id.substring(0, 8)}
                                 </h1>
                                 <Badge className={`px-3 py-1 text-sm font-medium border ${getStatusColor(status)}`}>
                                     {getStatusLabel(status)}
@@ -118,8 +118,8 @@ export default function RequestDetailPage() {
                                 </CardHeader>
                                 <CardContent className="space-y-4">
                                     <div className="grid grid-cols-2 gap-4 text-sm">
-                                        <div className="text-gray-600">ID Civil</div>
-                                        <div className="font-medium">{request.civilId}</div>
+                                        <div className="text-gray-600">Email</div>
+                                        <div className="font-medium">{request.email}</div>
                                         <div className="text-gray-600">Statut</div>
                                         <div>
                                             <Badge className={`px-2 py-0.5 text-xs font-medium border ${getStatusColor(status)}`}>

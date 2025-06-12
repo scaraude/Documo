@@ -14,7 +14,7 @@ export default function RequestsPage() {
     const { data: requests, isLoading, error } = getAllRequests()
     const [searchTerm, setSearchTerm] = useState('')
     const [statusFilter, setStatusFilter] = useState<ComputedRequestStatus | 'ALL'>('ALL')
-    const [sortBy, setSortBy] = useState<'date' | 'status' | 'civilId'>('date')
+    const [sortBy, setSortBy] = useState<'date' | 'status' | 'email'>('date')
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
 
     const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus => {
@@ -28,7 +28,7 @@ export default function RequestsPage() {
         if (!requests) return [];
 
         const filtered = requests.filter(request => {
-            const matchesSearch = request.civilId.toLowerCase().includes(searchTerm.toLowerCase())
+            const matchesSearch = request.email.toLowerCase().includes(searchTerm.toLowerCase())
             const matchesStatus = statusFilter === 'ALL' || getRequestStatus(request) === statusFilter
             return matchesSearch && matchesStatus
         })
@@ -41,8 +41,8 @@ export default function RequestsPage() {
                 case 'date':
                     comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
                     break
-                case 'civilId':
-                    comparison = a.civilId.localeCompare(b.civilId)
+                case 'email':
+                    comparison = a.email.localeCompare(b.email)
                     break
                 case 'status':
                     comparison = getRequestStatus(a).localeCompare(getRequestStatus(b))

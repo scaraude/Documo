@@ -1,13 +1,16 @@
 import { z } from 'zod';
 import * as requestRepository from './../repository/requestRepository';
+import * as foldersRepository from '@/features/folders/repository/foldersRepository';
 import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 import { publicProcedure, router } from '@/lib/trpc/trpc';
+import { sendDocumentRequestEmail } from '@/lib/email';
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 import logger from '@/lib/logger';
 
 
 // Schéma de validation pour la création de request
 const createRequestSchema = z.object({
-    civilId: z.string().min(1),
+    email: z.string().email(),
     requestedDocuments: z.nativeEnum(APP_DOCUMENT_TYPES).array(),
     expirationDays: z.number().optional(),
     folderId: z.string().uuid(), // Add folder ID
@@ -45,12 +48,61 @@ export const requestsRouter = router({
         .input(createRequestSchema)
         .mutation(async ({ input }) => {
             try {
-                logger.info({ civilId: input.civilId, folderId: input.folderId, documentsCount: input.requestedDocuments.length }, 'Creating request');
+                logger.info({ 
+                    email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'), 
+                    folderId: input.folderId, 
+                    documentsCount: input.requestedDocuments.length 
+                }, 'Creating request');
+                
+                // Create the request
                 const result = await requestRepository.createRequest(input);
-                logger.info({ requestId: result.id, civilId: input.civilId }, 'Request created successfully');
+                
+                // Get folder information for the email
+                const folder = await foldersRepository.getFolderById(input.folderId);
+                if (!folder) {
+                    throw new Error('Folder not found');
+                }
+                
+                // Prepare email data
+                const documentLabels = input.requestedDocuments.map(doc => APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]);
+                const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/requests/${result.id}/upload`;
+                const expirationDate = new Intl.DateTimeFormat('fr-FR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }).format(result.expiresAt);
+                
+                // Send email
+                const emailResult = await sendDocumentRequestEmail({
+                    to: input.email,
+                    requestedDocuments: documentLabels,
+                    uploadUrl,
+                    expirationDate,
+                    folderName: folder.name,
+                });
+                
+                if (!emailResult.success) {
+                    logger.warn({ 
+                        requestId: result.id, 
+                        email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'),
+                        error: emailResult.error 
+                    }, 'Request created but email failed to send');
+                }
+                
+                logger.info({ 
+                    requestId: result.id, 
+                    email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'),
+                    emailSent: emailResult.success 
+                }, 'Request created successfully');
+                
                 return result;
             } catch (error) {
-                logger.error({ civilId: input.civilId, error: error instanceof Error ? error.message : error }, 'Error creating request');
+                logger.error({ 
+                    email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'), 
+                    error: error instanceof Error ? error.message : error 
+                }, 'Error creating request');
                 throw new Error('Failed to create request');
             }
         })

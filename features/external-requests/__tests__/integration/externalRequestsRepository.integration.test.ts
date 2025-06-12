@@ -19,7 +19,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
     
     testRequestId = testRequest.id
     testShareLinkToken = testShareLink.token
-    testCivilId = testRequest.civilId
+    testCivilId = testRequest.email
     testRequestedDocuments = testRequest.requestedDocuments
   })
 
@@ -56,7 +56,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       expect(foundShareLink).toBeTruthy()
       expect(foundShareLink?.token).toBe(testShareLinkToken)
       expect(foundShareLink?.request).toBeTruthy()
-      expect(foundShareLink?.request?.civilId).toBe(testCivilId)
+      expect(foundShareLink?.request?.email).toBe(testCivilId)
       expect(foundShareLink?.expiresAt.getTime()).toBeGreaterThan(Date.now())
     })
 
@@ -171,7 +171,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
 
       // Assert
       expect(shareLink).toBeTruthy()
-      expect(shareLink?.request?.civilId).toBe(testCivilId)
+      expect(shareLink?.request?.email).toBe(testCivilId)
       expect(shareLink?.request?.createdAt).toBeInstanceOf(Date)
     })
 

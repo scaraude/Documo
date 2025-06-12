@@ -12,7 +12,7 @@ type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<null>;
 export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest {
     return {
         id: prismaModel.id,
-        civilId: prismaModel.civilId,
+        email: prismaModel.email,
         requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
         createdAt: prismaModel.createdAt,
         expiresAt: prismaModel.expiresAt,
@@ -43,14 +43,14 @@ export async function getRequests(): Promise<DocumentRequest[]> {
  */
 export async function createRequest(params: CreateRequestParams): Promise<DocumentRequest> {
     try {
-        const { civilId, requestedDocuments, expirationDays = 7, folderId } = params;
+        const { email, requestedDocuments, expirationDays = 7, folderId } = params;
         const now = new Date();
 
         const expiresAt = new Date(now.getTime() + expirationDays * 24 * 60 * 60 * 1000);
 
         const newRequest = await prisma.documentRequest.create({
             data: {
-                civilId,
+                email,
                 requestedDocuments,
                 expiresAt,
                 folderId

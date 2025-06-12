@@ -39,7 +39,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
     const [expirationDate, setExpirationDate] = useState<string>('');
 
     // Requests data
-    const [civilIds, setCivilIds] = useState<string[]>(['']);
+    const [emails, setEmails] = useState<string[]>(['']);
     const [sendNotifications, setSendNotifications] = useState(true);
 
     const onSubmit = async (data: CreateFolderParams) => {
@@ -93,24 +93,24 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         }
     };
 
-    const addCivilId = () => {
-        setCivilIds(prev => [...prev, '']);
+    const addEmail = () => {
+        setEmails(prev => [...prev, '']);
     };
 
-    const removeCivilId = (index: number) => {
-        setCivilIds(prev => prev.filter((_, i) => i !== index));
+    const removeEmail = (index: number) => {
+        setEmails(prev => prev.filter((_, i) => i !== index));
     };
 
-    const updateCivilId = (index: number, value: string) => {
-        setCivilIds(prev => prev.map((id, i) => i === index ? value : id));
+    const updateEmail = (index: number, value: string) => {
+        setEmails(prev => prev.map((email, i) => i === index ? value : email));
     };
 
     const handleSendRequests = async () => {
         if (!createdFolder || !selectedType) return;
 
-        const validCivilIds = civilIds.filter(id => id.trim() !== '');
+        const validEmails = emails.filter(email => email.trim() !== '' && email.includes('@'));
 
-        if (validCivilIds.length === 0) {
+        if (validEmails.length === 0) {
             // Pas de demandes, aller directement au dossier
             router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
             return;
@@ -118,10 +118,10 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
 
         try {
             await Promise.all(
-                validCivilIds.map(civilId =>
+                validEmails.map(email =>
                     createRequestMutation.mutateAsync(
                         {
-                            civilId: civilId.trim(),
+                            email: email.trim(),
                             requestedDocuments: selectedType.requiredDocuments,
                             folderId: createdFolder.id,
                         }
@@ -378,7 +378,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
                                     <Send className="h-5 w-5 mr-2" />
                                     Envoyer des demandes
                                 </span>
-                                <Button variant="outline" size="sm" onClick={addCivilId}>
+                                <Button variant="outline" size="sm" onClick={addEmail}>
                                     <Plus className="h-4 w-4 mr-2" />
                                     Ajouter une personne
                                 </Button>
@@ -386,24 +386,24 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
                         </CardHeader>
                         <CardContent className="space-y-4">
                             <p className="text-sm text-gray-600">
-                                Ajoutez les ID civils des personnes à qui vous voulez envoyer une demande de documents.
+                                Ajoutez les adresses email des personnes à qui vous voulez envoyer une demande de documents.
                             </p>
 
                             <div className="space-y-3">
-                                {civilIds.map((civilId, index) => (
+                                {emails.map((email, index) => (
                                     <div key={index} className="flex gap-3">
                                         <input
-                                            type="text"
-                                            value={civilId}
-                                            onChange={(e) => updateCivilId(index, e.target.value)}
-                                            placeholder="ID civil (ex: 123456789)"
+                                            type="email"
+                                            value={email}
+                                            onChange={(e) => updateEmail(index, e.target.value)}
+                                            placeholder="email@exemple.com"
                                             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         />
-                                        {civilIds.length > 1 && (
+                                        {emails.length > 1 && (
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                onClick={() => removeCivilId(index)}
+                                                onClick={() => removeEmail(index)}
                                                 className="text-red-600 hover:text-red-700"
                                             >
                                                 <Trash2 className="h-4 w-4" />

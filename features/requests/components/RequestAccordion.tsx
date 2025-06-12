@@ -71,11 +71,11 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                             )}
                         </div>
 
-                        {/* ID */}
+                        {/* Email */}
                         <div className="flex items-center space-x-2">
                             <Hash className="h-4 w-4 text-gray-400" />
-                            <span className="font-mono text-sm font-medium text-gray-900">
-                                {request.civilId}
+                            <span className="text-sm font-medium text-gray-900">
+                                {request.email}
                             </span>
                         </div>
 
@@ -117,8 +117,8 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                 </h4>
                                 <div className="space-y-2 text-sm">
                                     <div className="flex justify-between">
-                                        <span className="text-gray-500">ID Civil:</span>
-                                        <span className="font-mono font-medium">{request.civilId}</span>
+                                        <span className="text-gray-500">Email:</span>
+                                        <span className="font-medium">{request.email}</span>
                                     </div>
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Créée le:</span>

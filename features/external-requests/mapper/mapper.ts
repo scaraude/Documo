@@ -12,7 +12,7 @@ export const prismaShareLinkToExternalRequest = (shareLink: Prisma.RequestShareL
     const request = shareLink.request
     return {
         id: request.id,
-        civilId: request.civilId,
+        email: request.email,
         requestedDocuments: request.requestedDocuments.map(prismaDocumentTypeToAppDocumentType),
         createdAt: request.createdAt,
         expiresAt: request.expiresAt,

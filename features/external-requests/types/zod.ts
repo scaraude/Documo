@@ -5,7 +5,7 @@ import { AppDocumentSchema } from "../../../shared/types";
 // Schema for external request response
 export const externalRequestSchema = z.object({
     id: z.string(),
-    civilId: z.string(),
+    email: z.string(),
     requestedDocuments: z.nativeEnum(APP_DOCUMENT_TYPES).array(),
     createdAt: z.date(),
     expiresAt: z.date(),

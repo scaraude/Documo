@@ -1,3 +1,18 @@
+/**
+ * Database Seeding Script
+ * 
+ * This script seeds the database with realistic test data for the Document Transfer App.
+ * The app uses an email-based system where document requests are sent to recipients
+ * via email addresses instead of civil IDs.
+ * 
+ * Generated data includes:
+ * - Folder types with required documents
+ * - Folders for document organization
+ * - Document requests with realistic email addresses
+ * - Share links for external access
+ * - Documents with various states (uploaded, validated, etc.)
+ */
+
 import { PrismaClient, DocumentType } from '../lib/prisma/generated/client';
 import { addDays, addHours } from 'date-fns';
 import { faker } from '@faker-js/faker';
@@ -56,7 +71,7 @@ async function createRandomFolderType() {
             name,
             description,
             requiredDocuments,
-            createdById: faker.string.uuid(),
+            createdById: null, // Skip user creation for seeding
             deletedAt: Math.random() < 0.1 ? faker.date.past() : null, // 10% chance of soft delete
         }
     });
@@ -84,7 +99,7 @@ async function createRandomFolder(folderTypeId: string, folderTypeRequiredDocs: 
             description,
             folderTypeId,
             requestedDocuments: folderTypeRequiredDocs,
-            createdById: faker.string.uuid(),
+            createdById: null, // Skip user creation for seeding
             expiresAt: Math.random() < 0.7 ? addDays(new Date(), faker.number.int({ min: 7, max: 90 })) : null,
             completedAt: isCompleted ? faker.date.past() : null,
             archivedAt: isArchived ? faker.date.past() : null,
@@ -93,7 +108,7 @@ async function createRandomFolder(folderTypeId: string, folderTypeRequiredDocs: 
     });
 }
 
-// Generate random document request
+// Generate random document request with realistic email patterns
 async function createRandomDocumentRequest(folderId: string, requestedDocuments: DocumentType[]) {
     const isAccepted = Math.random() < 0.6; // 60% chance of being accepted
     const isRejected = Math.random() < 0.1; // 10% chance of being rejected
@@ -102,9 +117,25 @@ async function createRandomDocumentRequest(folderId: string, requestedDocuments:
 
     const createdAt = faker.date.past({ years: 1 });
 
+    // Generate more realistic email addresses
+    const firstName = faker.person.firstName().toLowerCase();
+    const lastName = faker.person.lastName().toLowerCase();
+    const emailProviders = ['gmail.com', 'outlook.com', 'yahoo.fr', 'hotmail.com', 'orange.fr', 'free.fr'];
+    const provider = faker.helpers.arrayElement(emailProviders);
+    
+    // Create realistic email patterns
+    const emailPatterns = [
+        `${firstName}.${lastName}@${provider}`,
+        `${firstName}${lastName}@${provider}`,
+        `${firstName}${faker.number.int({ min: 10, max: 99 })}@${provider}`,
+        `${firstName.charAt(0)}${lastName}@${provider}`
+    ];
+    
+    const email = faker.helpers.arrayElement(emailPatterns);
+
     return prisma.documentRequest.create({
         data: {
-            civilId: faker.internet.email(),
+            email: email,
             requestedDocuments,
             folderId,
             expiresAt: addDays(createdAt, faker.number.int({ min: 14, max: 60 })),
@@ -112,6 +143,7 @@ async function createRandomDocumentRequest(folderId: string, requestedDocuments:
             rejectedAt: isRejected ? addHours(createdAt, faker.number.int({ min: 1, max: 24 })) : null,
             completedAt: isCompleted ? addDays(createdAt, faker.number.int({ min: 1, max: 30 })) : null,
             firstDocumentUploadedAt: hasFirstUpload ? addHours(createdAt, faker.number.int({ min: 2, max: 120 })) : null,
+            createdAt,
         }
     });
 }
