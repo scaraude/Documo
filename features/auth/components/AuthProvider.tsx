@@ -24,7 +24,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const resendVerificationMutation = trpc.auth.resendVerification.useMutation();
 
   // tRPC query for current user
-  const { data: currentUser, isLoading: isLoadingUser, refetch: refetchUser, error } = trpc.auth.me.useQuery(
+  const { data: currentUser, isLoading: isLoadingUser, error } = trpc.auth.me.useQuery(
     undefined,
     {
       enabled: true,
@@ -41,13 +41,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setSession(null);
       }
       setIsLoading(false);
+    } else {
+      setIsLoading(true);
     }
   }, [isLoadingUser, currentUser, error]);
 
   const signup = useCallback(
     async (email: string, password: string, firstName?: string, lastName?: string) => {
       try {
-        setIsLoading(true);
         const result = await signupMutation.mutateAsync({
           email,
           password,
@@ -60,8 +61,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       } catch (error) {
         logger.error({ email, error: (error as Error).message }, 'Signup failed');
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
     [signupMutation]
@@ -70,41 +69,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const login = useCallback(
     async (email: string, password: string) => {
       try {
-        setIsLoading(true);
         const result = await loginMutation.mutateAsync({ email, password });
-        
+
         if (result.success && result.user) {
           setUser(result.user);
-          await refetchUser();
         }
 
         logger.info({ email, operation: 'auth.login.success' }, 'User logged in successfully');
       } catch (error) {
         logger.error({ email, error: (error as Error).message }, 'Login failed');
         throw error;
-      } finally {
-        setIsLoading(false);
       }
     },
-    [loginMutation, refetchUser]
+    [loginMutation]
   );
 
   const logout = useCallback(async () => {
     try {
-      setIsLoading(true);
       await logoutMutation.mutateAsync();
-      
+
       setUser(null);
       setSession(null);
-      
+
       logger.info({ operation: 'auth.logout.success' }, 'User logged out successfully');
     } catch (error) {
       logger.error({ error: (error as Error).message }, 'Logout failed');
       // Even if logout fails, clear local state
       setUser(null);
       setSession(null);
-    } finally {
-      setIsLoading(false);
     }
   }, [logoutMutation]);
 
@@ -136,16 +128,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [resendVerificationMutation]
   );
 
-  const value: AuthContextValue = {
+  const value: AuthContextValue = React.useMemo(() => ({
     user,
     session,
-    isLoading,
+    isLoading: isLoading || signupMutation.isPending || loginMutation.isPending || logoutMutation.isPending,
     login,
     signup,
     logout,
     verifyEmail,
     resendVerification,
-  };
+  }), [user, session, isLoading, signupMutation.isPending, loginMutation.isPending, logoutMutation.isPending, login, signup, logout, verifyEmail, resendVerification]);
 
   return (
     <AuthContext.Provider value={value}>
