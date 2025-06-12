@@ -3,35 +3,55 @@ import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, publicProcedure, protectedProcedure } from '@/lib/trpc/trpc';
 import { AuthRepository } from '../repository/authRepository';
 import { prisma } from '@/lib/prisma';
-import { 
-  loginSchema, 
-  signupSchema, 
-  verifyEmailSchema, 
-  resendVerificationSchema 
+import {
+  loginSchema,
+  signupSchema,
+  verifyEmailSchema,
+  resendVerificationSchema
 } from '../types/zod';
 import logger from '@/lib/logger';
+import { sendVerificationEmail } from '@/lib/email';
 
 const authRepository = new AuthRepository(prisma);
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
     .input(signupSchema)
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       try {
+        logger.info('Starting signup process')
         const user = await authRepository.createUser(input);
-        
+
         // Create email verification token
         const verificationToken = await authRepository.createEmailVerificationToken(user.email!);
-        
-        // TODO: Send verification email
+
+        // Send verification email
+        const emailResult = await sendVerificationEmail({
+          to: user.email!,
+          firstName: user.firstName || 'User',
+          verificationToken: verificationToken.token,
+        });
+
+        if (!emailResult.success) {
+          logger.error(
+            {
+              userId: user.id,
+              email: user.email,
+              error: emailResult.error,
+              operation: 'auth.signup'
+            },
+            'Failed to send verification email during signup'
+          );
+        }
+
         logger.info(
-          { 
-            userId: user.id, 
+          {
+            userId: user.id,
             email: user.email,
-            token: verificationToken.token,
-            operation: 'auth.signup' 
-          }, 
-          'User signed up, verification email needed'
+            emailSent: emailResult.success,
+            operation: 'auth.signup'
+          },
+          'User signed up, verification email sent'
         );
 
         return {
@@ -43,14 +63,14 @@ export const authRouter = createTRPCRouter({
         };
       } catch (error) {
         logger.error({ input: { email: input.email }, error: (error as Error).message }, 'Signup failed');
-        
+
         if ((error as Error).message.includes('already exists')) {
           throw new TRPCError({
             code: 'CONFLICT',
             message: 'An account with this email already exists',
           });
         }
-        
+
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to create account',
@@ -63,7 +83,7 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       try {
         const user = await authRepository.authenticateUser(input);
-        
+
         if (!user) {
           throw new TRPCError({
             code: 'UNAUTHORIZED',
@@ -115,7 +135,7 @@ export const authRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        
+
         logger.error({ input: { email: input.email }, error: (error as Error).message }, 'Login failed');
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -155,7 +175,7 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       try {
         const success = await authRepository.verifyEmail(input.token);
-        
+
         if (!success) {
           throw new TRPCError({
             code: 'BAD_REQUEST',
@@ -171,7 +191,7 @@ export const authRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        
+
         logger.error({ token: input.token.substring(0, 8) + '...', error: (error as Error).message }, 'Email verification failed');
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -185,7 +205,7 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       try {
         const user = await authRepository.findUserByEmail(input.email);
-        
+
         if (!user) {
           // Don't reveal if user exists or not for security
           return {
@@ -210,15 +230,33 @@ export const authRouter = createTRPCRouter({
         }
 
         const verificationToken = await authRepository.createEmailVerificationToken(user.email!);
-        
-        // TODO: Send verification email
+
+        // Send verification email
+        const emailResult = await sendVerificationEmail({
+          to: user.email!,
+          firstName: user.firstName || 'User',
+          verificationToken: verificationToken.token,
+        });
+
+        if (!emailResult.success) {
+          logger.error(
+            {
+              userId: user.id,
+              email: user.email,
+              error: emailResult.error,
+              operation: 'auth.resendVerification'
+            },
+            'Failed to resend verification email'
+          );
+        }
+
         logger.info(
-          { 
-            userId: user.id, 
+          {
+            userId: user.id,
             email: user.email,
-            token: verificationToken.token,
-            operation: 'auth.resendVerification' 
-          }, 
+            emailSent: emailResult.success,
+            operation: 'auth.resendVerification'
+          },
           'Verification email resent'
         );
 
@@ -232,7 +270,7 @@ export const authRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        
+
         logger.error({ email: input.email, error: (error as Error).message }, 'Resend verification failed');
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -308,13 +346,13 @@ export const authRouter = createTRPCRouter({
         if (error instanceof TRPCError) {
           throw error;
         }
-        
-        logger.error({ 
-          userId: ctx.user.id, 
-          sessionId: input.sessionId, 
-          error: (error as Error).message 
+
+        logger.error({
+          userId: ctx.user.id,
+          sessionId: input.sessionId,
+          error: (error as Error).message
         }, 'Failed to revoke session');
-        
+
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to revoke session',
