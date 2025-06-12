@@ -13,10 +13,11 @@
  * - Documents with various states (uploaded, validated, etc.)
  */
 
-import { PrismaClient, DocumentType } from '../lib/prisma/generated/client';
+import { PrismaClient, DocumentType, ProviderType } from '../lib/prisma/generated/client';
 import { addDays, addHours } from 'date-fns';
 import { faker } from '@faker-js/faker';
 import * as crypto from 'crypto';
+import { hashPassword } from '../features/auth/utils/password';
 
 const prisma = new PrismaClient();
 
@@ -32,6 +33,76 @@ function getRandomDocumentTypes(min = 1, max = 4): DocumentType[] {
 // Helper function to generate random DEK
 function generateDEK(): string {
     return crypto.randomBytes(32).toString('base64');
+}
+
+// Test user data configuration
+export const TEST_USERS = {
+    verified: {
+        email: 'test@example.com',
+        password: 'password123',
+        firstName: 'Test',
+        lastName: 'User',
+        initials: 'TU'
+    },
+    unverified: {
+        email: 'unverified@example.com',
+        password: 'password123',
+        firstName: 'Unverified',
+        lastName: 'User',
+        initials: 'UU'
+    }
+} as const;
+
+// Create test users for authentication testing
+async function createTestUsers() {
+    console.log('👤 Creating test users...');
+    
+    // Create a verified test user
+    const testUser = await prisma.user.create({
+        data: {
+            email: TEST_USERS.verified.email,
+            firstName: TEST_USERS.verified.firstName,
+            lastName: TEST_USERS.verified.lastName,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
+
+    await prisma.authProvider.create({
+        data: {
+            userId: testUser.id,
+            providerType: ProviderType.EMAIL_PASSWORD,
+            providerId: TEST_USERS.verified.email,
+            passwordHash: await hashPassword(TEST_USERS.verified.password),
+            isVerified: true,
+            emailVerifiedAt: new Date(),
+        }
+    });
+
+    // Create an unverified test user
+    const unverifiedUser = await prisma.user.create({
+        data: {
+            email: TEST_USERS.unverified.email,
+            firstName: TEST_USERS.unverified.firstName,
+            lastName: TEST_USERS.unverified.lastName,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
+
+    await prisma.authProvider.create({
+        data: {
+            userId: unverifiedUser.id,
+            providerType: ProviderType.EMAIL_PASSWORD,
+            providerId: TEST_USERS.unverified.email,
+            passwordHash: await hashPassword(TEST_USERS.unverified.password),
+            isVerified: false,
+            emailVerifiedAt: null,
+        }
+    });
+
+    console.log('✅ Test users created successfully');
+    return { testUser, unverifiedUser };
 }
 
 // Generate random folder type
@@ -216,12 +287,19 @@ async function seedDatabase(options: {
     } = options;
 
     console.log('🧹 Cleaning existing data...');
-    // Clean existing data in correct order
+    // Clean existing data in correct order (respecting foreign key constraints)
     await prisma.document.deleteMany({});
     await prisma.requestShareLink.deleteMany({});
     await prisma.documentRequest.deleteMany({});
     await prisma.folder.deleteMany({});
     await prisma.folderType.deleteMany({});
+    await prisma.emailVerificationToken.deleteMany({});
+    await prisma.userSession.deleteMany({});
+    await prisma.authProvider.deleteMany({});
+    await prisma.user.deleteMany({});
+
+    // Create test users for authentication
+    await createTestUsers();
 
     console.log('🏗️ Creating folder types...');
     const folderTypes = [];
@@ -266,6 +344,8 @@ async function seedDatabase(options: {
     }
 
     const stats = {
+        users: await prisma.user.count(),
+        authProviders: await prisma.authProvider.count(),
         folderTypes: await prisma.folderType.count(),
         folders: await prisma.folder.count(),
         requests: await prisma.documentRequest.count(),
@@ -281,6 +361,7 @@ async function seedDatabase(options: {
 
 // Export functions for use in tests
 export {
+    createTestUsers,
     createRandomFolderType,
     createRandomFolder,
     createRandomDocumentRequest,
