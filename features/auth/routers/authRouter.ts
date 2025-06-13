@@ -59,7 +59,7 @@ export const authRouter = createTRPCRouter({
           message: 'Account created successfully. Please check your email to verify your account.',
           userId: user.id,
           // In development, return the token for testing
-          ...(process.env.NODE_ENV === 'development' && { verificationToken: verificationToken.token }),
+          ...(process.env.NODE_ENV === 'production' && { verificationToken: verificationToken.token }),
         };
       } catch (error) {
         logger.error({ input: { email: input.email }, error: (error as Error).message }, 'Signup failed');
