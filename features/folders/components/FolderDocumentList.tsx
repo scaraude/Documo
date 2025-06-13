@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { AppDocumentWithStatus } from "@/shared/types"
 import { DocumentViewer } from "@/features/documents/components/DocumentViewer";
-import { DownloadButton } from "../../documents/components/DownloadButton";
+import { DownloadButton } from "@/features/documents/components/DownloadButton";
 import { Eye } from "lucide-react";
 
 interface FolderDocumentListProps {
