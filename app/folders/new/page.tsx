@@ -1,6 +1,13 @@
 // app/folders/new/page.tsx
 'use client'
+import { Suspense } from 'react';
 import { FolderForm } from '@/features/folders/components/FolderForm';
+
+function FolderFormWrapper() {
+    return (
+        <FolderForm isLoading={false} />
+    );
+}
 
 export default function NewFolderPage() {
     return (
@@ -8,9 +15,13 @@ export default function NewFolderPage() {
             <h1 className="text-2xl font-bold text-gray-900 mb-6">Créer un nouveau dossier</h1>
 
             <div className="bg-white shadow-md rounded-lg p-6">
-                <FolderForm
-                    isLoading={false}
-                />
+                <Suspense fallback={
+                    <div className="flex items-center justify-center py-12">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                }>
+                    <FolderFormWrapper />
+                </Suspense>
             </div>
         </div>
     );
