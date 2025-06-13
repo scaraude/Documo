@@ -25,6 +25,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn prisma:migrate`: Run database migrations
 - `yarn prisma:studio`: Open Prisma database UI
 - `yarn unused`: Check for unused files/exports
+- `yarn check-env`: Verify environment variables in .env file
+- `yarn check-env:dev`: Verify environment variables in .env.development file
+- `yarn check-env:test`: Verify environment variables in .env.test file
 
 ## Code Style Guidelines
 - TypeScript: Use strict typing with interfaces/types in separate files

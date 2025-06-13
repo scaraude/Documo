@@ -32,7 +32,10 @@
     "unused:fix": "unimported --update",
     "clean": "yarn unused:fix && yarn lint --fix",
     "ts-watch": "tsc --noEmit --watch",
-    "ts": "tsc --noEmit"
+    "ts": "tsc --noEmit",
+    "check-env": "npx tsx scripts/check-env.ts",
+    "check-env:dev": "npx tsx scripts/check-env.ts .env.development",
+    "check-env:test": "npx tsx scripts/check-env.ts .env.test"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
