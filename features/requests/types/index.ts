@@ -1,8 +1,4 @@
-import { AppDocumentType } from "@/shared/constants";
+import z from "zod";
+import { createRequestSchema } from "./zod";
 
-export interface CreateRequestParams {
-    email: string;
-    requestedDocuments: AppDocumentType[];
-    expirationDays?: number;
-    folderId: string; // Add folder ID
-}
+export type createRequestParams = z.infer<typeof createRequestSchema>;    
