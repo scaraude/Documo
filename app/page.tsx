@@ -15,45 +15,48 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
       {/* Hero Section */}
-      <div className="relative px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl pt-20 pb-32 sm:pt-32 sm:pb-40">
-          <div className="text-center">
-            <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Simplifiez vos transferts de{' '}
-              <span className="text-blue-600">documents</span>
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
-              Une solution sécurisée pour gérer et échanger vos documents administratifs.
-              Créez des dossiers personnalisés, envoyez des demandes et recevez les documents
-              en toute simplicité.
-            </p>
+      <div className="min-h-[calc(100vh-4rem)] flex flex-col justify-evenly">
+        <div className="relative px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            <div className="text-center">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl mb-12">
+                Simplifiez vos transferts de{' '}
+                <span className="text-blue-600">documents</span>
+              </h1>
+              <p className="mt-6 text-lg leading-8 text-gray-600 max-w-2xl mx-auto">
+                Une solution sécurisée pour gérer et échanger vos documents administratifs.
+                Créez des dossiers personnalisés, envoyez des demandes et recevez les documents
+                en toute simplicité.
+              </p>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className='flex justify-evenly mb-10'>
-        <Button size={'xl'} variant={'outline'} onClick={() => router.push(ROUTES.FOLDER_TYPES.NEW)}>
-          <FolderOpen className="size-6" />
-          <span className='text-lg'>Créer un type de dossier</span>
-        </Button>
-        {!hasFolderTypes ? <HoverCard>
-          <HoverCardTrigger>
+        <div className='flex justify-evenly mb-10'>
+          <Button size={'xl'} variant={'outline'} onClick={() => router.push(ROUTES.FOLDER_TYPES.NEW)}>
+            <FolderOpen className="size-6" />
+            <span className='text-lg'>Créer un type de dossier</span>
+          </Button>
+          {!hasFolderTypes ? <HoverCard>
+            <HoverCardTrigger>
+              <Button size={'xl'} disabled={!hasFolderTypes} className='bg-blue-600 hover:bg-blue-700' onClick={() => router.push(ROUTES.FOLDERS.NEW)} >
+                <Plus className="size-6" strokeWidth={2.25} />
+                <span className='text-lg font-bold'>Créer un dossier</span>
+              </Button>
+            </HoverCardTrigger>
+            <HoverCardContent className="w-80">
+              <p className="text-sm text-gray-500">
+                Commencez par créer un dossier 📂
+              </p>
+            </HoverCardContent>
+          </HoverCard> :
             <Button size={'xl'} disabled={!hasFolderTypes} className='bg-blue-600 hover:bg-blue-700' onClick={() => router.push(ROUTES.FOLDERS.NEW)} >
               <Plus className="size-6" strokeWidth={2.25} />
               <span className='text-lg font-bold'>Créer un dossier</span>
-            </Button>
-          </HoverCardTrigger>
-          <HoverCardContent className="w-80">
-            <p className="text-sm text-gray-500">
-              Commencez par créer un dossier 📂
-            </p>
-          </HoverCardContent>
-        </HoverCard> :
-          <Button size={'xl'} disabled={!hasFolderTypes} className='bg-blue-600 hover:bg-blue-700' onClick={() => router.push(ROUTES.FOLDERS.NEW)} >
-            <Plus className="size-6" strokeWidth={2.25} />
-            <span className='text-lg font-bold'>Créer un dossier</span>
-          </Button>}
+            </Button>}
+        </div>
       </div>
+
       {/* Features Section */}
       <div className="py-16 bg-white">
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -106,6 +109,6 @@ export default function HomePage() {
           </div>
         )}
       </div>
-    </div>
+    </div >
   )
 }
