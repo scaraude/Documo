@@ -3,6 +3,7 @@ import { resend } from '@/lib/resend';
 import { VerificationEmail } from '@/shared/components/emails/VerificationEmail';
 import { DocumentRequestEmail } from '@/shared/components/emails/DocumentRequestEmail';
 import logger from '@/lib/logger';
+import { DOMAIN } from '../shared/constants';
 
 interface EmailVerificationOptions {
   to: string;
@@ -19,7 +20,7 @@ export async function sendVerificationEmail({
     const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/verify-email?token=${verificationToken}`;
 
     const { data, error } = await resend.emails.send({
-      from: `Centradoc <${process.env.FROM_EMAIL || 'noreply@centradoc.fr'}>`,
+      from: `Centradoc <${process.env.FROM_EMAIL || 'noreply@' + DOMAIN}>`,
       to: [to.toLowerCase()],
       subject: 'Verify your email address',
       react: VerificationEmail({
@@ -81,7 +82,7 @@ export async function sendDocumentRequestEmail({
 }: DocumentRequestEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
     const { data, error } = await resend.emails.send({
-      from: `Centradoc <${process.env.FROM_EMAIL || 'noreply@centradoc.fr'}>`,
+      from: `Centradoc <${process.env.FROM_EMAIL || 'noreply@' + DOMAIN}>`,
       to: [to.toLowerCase()],
       subject: `Demande de documents - ${folderName}`,
       react: DocumentRequestEmail({
