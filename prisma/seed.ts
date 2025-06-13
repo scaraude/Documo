@@ -1,7 +1,7 @@
 /**
  * Database Seeding Script
  * 
- * This script seeds the database with realistic test data for the Document Transfer App.
+ * This script seeds the database with realistic test data for Centradoc.
  * The app uses an email-based system where document requests are sent to recipients
  * via email addresses instead of civil IDs.
  * 

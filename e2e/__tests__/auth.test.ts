@@ -144,7 +144,7 @@ test.describe('Auth Feature E2E Tests', () => {
       
       // Should either redirect to verification page or show message
       const hasVerificationMessage = await page.locator('text=verify').isVisible();
-      const isHomePage = await page.locator('text=Document Transfer').isVisible();
+      const isHomePage = await page.locator('text=Centradoc').isVisible();
       
       // Either outcome is acceptable for this test
       expect(hasVerificationMessage || isHomePage).toBe(true);

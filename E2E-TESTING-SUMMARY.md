@@ -87,7 +87,7 @@ scripts/
    - ✅ Tests interactivity
 
 3. **Content Validation Test**
-   - ✅ Checks for "Document Transfer"
+   - ✅ Checks for "Centradoc"
    - ✅ Validates French navigation ("Accueil", "Dossiers", "Demandes")
    - ✅ Confirms expected content structure
 

@@ -21,7 +21,7 @@ test.describe('Simple E2E Success Tests', () => {
     console.log('📝 Content length:', pageContent?.length || 0);
     
     // Basic assertions
-    expect(title).toBe('Document Transfer App');
+    expect(title).toBe('Centradoc');
     expect(pageContent).toBeTruthy();
     expect(pageContent?.length).toBeGreaterThan(1000);
     

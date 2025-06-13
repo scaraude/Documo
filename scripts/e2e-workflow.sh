@@ -13,7 +13,7 @@ yarn test:setup-db
 
 # Step 2: Generate Prisma client for test environment
 echo "🔧 Generating Prisma client..."
-TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/document_transfer_test npx prisma generate
+TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/centradoc_test npx prisma generate
 
 # Step 3: Install Playwright browsers if needed
 echo "🌐 Ensuring Playwright browsers are installed..."

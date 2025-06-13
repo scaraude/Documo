@@ -3,7 +3,7 @@
 import { execSync } from 'child_process'
 
 // Set test database URL
-const testDbUrl = process.env.TEST_DATABASE_URL || 'postgresql://postgres:password@localhost:5433/document_transfer_test'
+const testDbUrl = process.env.TEST_DATABASE_URL || 'postgresql://postgres:password@localhost:5433/centradoc_test'
 
 console.log('🐳 Starting test database container...')
 

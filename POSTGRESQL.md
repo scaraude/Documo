@@ -1,6 +1,6 @@
-# PostgreSQL Integration Guide for Document Transfer App
+# PostgreSQL Integration Guide for Centradoc
 
-This guide outlines how to set up and use PostgreSQL with the Document Transfer App.
+This guide outlines how to set up and use PostgreSQL with the Centradoc.
 
 ## Prerequisites
 

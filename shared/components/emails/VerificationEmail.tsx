@@ -24,29 +24,29 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
 }) => (
   <Html>
     <Head />
-    <Preview>Verify your email address for Document Transfer App</Preview>
+    <Preview>Vérifiez votre adresse email pour Centradoc</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
-          <Heading style={h1}>Document Transfer App</Heading>
+          <Heading style={h1}>Centradoc</Heading>
         </Section>
         
         <Section style={heroSection}>
           <Heading style={h2}>Welcome, {firstName}!</Heading>
           <Text style={text}>
-            Thank you for creating an account with Document Transfer App. To complete your registration and start using our secure document sharing platform, please verify your email address.
+            Merci d'avoir créé un compte avec Centradoc. Pour finaliser votre inscription et commencer à utiliser notre plateforme sécurisée de partage de documents, veuillez vérifier votre adresse email.
           </Text>
         </Section>
 
         <Section style={buttonSection}>
           <Button style={button} href={verificationUrl}>
-            Verify Email Address
+            Vérifier mon adresse email
           </Button>
         </Section>
 
         <Section style={linkSection}>
           <Text style={smallText}>
-            If the button above doesn't work, you can copy and paste this link into your browser:
+            Si le bouton ci-dessus ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :
           </Text>
           <Link style={link} href={verificationUrl}>
             {verificationUrl}
@@ -57,11 +57,11 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
 
         <Section style={footerSection}>
           <Text style={footerText}>
-            This verification link will expire in 24 hours. If you didn't create an account with us, you can safely ignore this email.
+            Ce lien de vérification expire dans 24 heures. Si vous n'avez pas créé de compte chez nous, vous pouvez ignorer cet email en toute sécurité.
           </Text>
           <Text style={footerText}>
-            Best regards,<br />
-            The Document Transfer App Team
+            Cordialement,<br />
+            L'équipe Centradoc
           </Text>
         </Section>
       </Container>

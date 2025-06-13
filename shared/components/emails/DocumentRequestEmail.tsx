@@ -22,7 +22,7 @@ interface DocumentRequestEmailProps {
 
 export const DocumentRequestEmail = ({
   recipientEmail,
-  requesterName = "L'équipe Document Transfer",
+  requesterName = "L'équipe Centradoc",
   requestedDocuments,
   uploadUrl,
   expirationDate,
@@ -35,7 +35,7 @@ export const DocumentRequestEmail = ({
       <Body style={main}>
         <Container style={container}>
           <Section style={header}>
-            <Heading style={title}>📄 Document Transfer App</Heading>
+            <Heading style={title}>📄 Centradoc</Heading>
           </Section>
           
           <Section style={content}>
@@ -96,7 +96,7 @@ export const DocumentRequestEmail = ({
             
             <Text style={footer}>
               Merci pour votre confiance,<br />
-              L&apos;équipe Document Transfer App
+              L&apos;équipe Centradoc
             </Text>
             
             <Text style={disclaimer}>
