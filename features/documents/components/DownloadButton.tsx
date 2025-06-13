@@ -1,3 +1,4 @@
+'use client'
 import { Button } from '@/shared/components/ui/button'
 import { Download, Loader2 } from 'lucide-react'
 import { AppDocument } from '@/shared/types'
