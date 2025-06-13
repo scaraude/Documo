@@ -1,4 +1,3 @@
-'use client'
 import { useEffect } from 'react'
 import { AppDocument } from '@/shared/types'
 import { Dialog, DialogContent, DialogTitle } from '../../../shared/components/ui/dialog'
