@@ -9,6 +9,9 @@ interface RequestFiltersProps {
     onStatusFilterChange: (status: ComputedRequestStatus | 'ALL') => void
     requestsCount: number
     filteredCount: number
+    statusCounts?: {
+        [key in ComputedRequestStatus]: number
+    }
     isMobile?: boolean
 }
 
@@ -17,14 +20,15 @@ export const RequestFilters = ({
     onStatusFilterChange,
     requestsCount,
     filteredCount,
+    statusCounts,
     isMobile = false
 }: RequestFiltersProps) => {
     const statusOptions = [
         { value: 'ALL' as const, label: 'Toutes', icon: Filter, count: requestsCount },
-        { value: 'PENDING' as const, label: 'En attente', icon: Clock, color: 'text-yellow-600' },
-        { value: 'ACCEPTED' as const, label: 'Acceptées', icon: CheckCircle, color: 'text-green-600' },
-        { value: 'REJECTED' as const, label: 'Refusées', icon: XCircle, color: 'text-red-600' },
-        { value: 'COMPLETED' as const, label: 'Terminées', icon: FileCheck, color: 'text-blue-600' }
+        { value: 'PENDING' as const, label: 'En attente', icon: Clock, color: 'text-yellow-600', count: statusCounts?.PENDING || 0 },
+        { value: 'ACCEPTED' as const, label: 'Acceptées', icon: CheckCircle, color: 'text-green-600', count: statusCounts?.ACCEPTED || 0 },
+        { value: 'REJECTED' as const, label: 'Refusées', icon: XCircle, color: 'text-red-600', count: statusCounts?.REJECTED || 0 },
+        { value: 'COMPLETED' as const, label: 'Terminées', icon: FileCheck, color: 'text-blue-600', count: statusCounts?.COMPLETED || 0 }
     ]
 
     if (isMobile) {

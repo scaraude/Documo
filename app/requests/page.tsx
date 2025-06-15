@@ -24,16 +24,30 @@ export default function RequestsPage() {
         return 'PENDING'
     }
 
-    const filteredAndSortedRequests = useMemo(() => {
-        if (!requests) return [];
+    const { filteredAndSortedRequests, statusCounts } = useMemo(() => {
+        if (!requests) return { filteredAndSortedRequests: [], statusCounts: { PENDING: 0, ACCEPTED: 0, REJECTED: 0, COMPLETED: 0 } };
 
+        // Calculate status counts
+        const counts = {
+            PENDING: 0,
+            ACCEPTED: 0,
+            REJECTED: 0,
+            COMPLETED: 0
+        }
+
+        requests.forEach(request => {
+            const status = getRequestStatus(request)
+            counts[status]++
+        })
+
+        // Filter requests
         const filtered = requests.filter(request => {
             const matchesSearch = request.email.toLowerCase().includes(searchTerm.toLowerCase())
             const matchesStatus = statusFilter === 'ALL' || getRequestStatus(request) === statusFilter
             return matchesSearch && matchesStatus
         })
 
-        // Sorting
+        // Sort requests
         filtered.sort((a, b) => {
             let comparison = 0
 
@@ -52,7 +66,7 @@ export default function RequestsPage() {
             return sortOrder === 'asc' ? comparison : -comparison
         })
 
-        return filtered
+        return { filteredAndSortedRequests: filtered, statusCounts: counts }
     }, [requests, searchTerm, statusFilter, sortBy, sortOrder])
 
     if (isLoading) {
@@ -104,6 +118,7 @@ export default function RequestsPage() {
                             onStatusFilterChange={setStatusFilter}
                             requestsCount={requests.length}
                             filteredCount={filteredAndSortedRequests.length}
+                            statusCounts={statusCounts}
                         />
                     </div>
 
@@ -128,6 +143,7 @@ export default function RequestsPage() {
                                 onStatusFilterChange={setStatusFilter}
                                 requestsCount={requests.length}
                                 filteredCount={filteredAndSortedRequests.length}
+                                statusCounts={statusCounts}
                                 isMobile={true}
                             />
                         </div>
