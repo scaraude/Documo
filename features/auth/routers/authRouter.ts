@@ -5,7 +5,7 @@ import { AuthRepository } from '../repository/authRepository';
 import { prisma } from '@/lib/prisma';
 import {
   loginSchema,
-  signupSchema,
+  signupApiSchema,
   verifyEmailSchema,
   resendVerificationSchema
 } from '../types/zod';
@@ -16,7 +16,7 @@ const authRepository = new AuthRepository(prisma);
 
 export const authRouter = createTRPCRouter({
   signup: publicProcedure
-    .input(signupSchema)
+    .input(signupApiSchema)
     .mutation(async ({ input }) => {
       try {
         logger.info('Starting signup process')

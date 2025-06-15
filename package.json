@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "prisma generate && prisma migrate dev && next dev --turbopack | npx pino-pretty --ignore pid,hostname",
+    "dev:clean": "rm -rf .next && yarn dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

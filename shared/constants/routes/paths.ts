@@ -1,5 +1,10 @@
 export const ROUTES = {
     HOME: '/',
+    AUTH: {
+        LOGIN: '/login',
+        SIGNUP: '/signup',
+        VERIFY_EMAIL: '/verify-email',
+    },
     FOLDER_TYPES: {
         HOME: '/folder-types',
         NEW: '/folder-types/new',

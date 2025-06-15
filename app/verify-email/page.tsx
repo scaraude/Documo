@@ -3,8 +3,11 @@
 import React, { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/features/auth';
+import { EmailVerificationRequired } from '@/features/auth/components/EmailVerificationRequired';
+import { useVerificationSession } from '@/features/auth/hooks/useVerificationSession';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
+import { ROUTES } from '@/shared/constants/routes/paths';
 
 function VerifyEmailContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
@@ -13,13 +16,23 @@ function VerifyEmailContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { verifyEmail, resendVerification } = useAuth();
+  const { email: sessionEmail, hasSession, clearSession } = useVerificationSession();
 
   const token = searchParams.get('token');
 
+  const handleVerificationComplete = () => {
+    clearSession(); // Clear session storage after successful verification
+    // After email verification, redirect to login page for user to enter password again
+    router.push(ROUTES.AUTH.LOGIN);
+  };
+
   useEffect(() => {
     if (!token) {
-      setStatus('error');
-      setMessage('No verification token provided');
+      // If no token but we have a session, that's handled in the component return
+      if (!hasSession) {
+        setStatus('error');
+        setMessage('No verification token provided. Please try logging in again.');
+      }
       return;
     }
 
@@ -31,7 +44,7 @@ function VerifyEmailContent() {
         
         // Redirect to login after 3 seconds
         setTimeout(() => {
-          router.push('/login');
+          router.push(ROUTES.AUTH.LOGIN);
         }, 3000);
       } catch (error) {
         setStatus('error');
@@ -40,7 +53,41 @@ function VerifyEmailContent() {
     };
 
     verify();
-  }, [token, verifyEmail, router]);
+  }, [token, verifyEmail, router, hasSession]);
+
+  // If email is available in session, show EmailVerificationRequired component
+  if (hasSession && sessionEmail) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <EmailVerificationRequired
+          email={sessionEmail}
+          onVerificationComplete={handleVerificationComplete}
+        />
+      </div>
+    );
+  }
+
+  // If no session and no token, show error message
+  if (!hasSession && !token) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <Card className="w-full max-w-md p-6">
+          <div className="text-center space-y-4">
+            <h2 className="text-2xl font-bold">Email Verification</h2>
+            <div className="text-red-600 text-6xl mb-4">✗</div>
+            <p className="text-red-700 mb-4">No verification session found. Please try logging in again.</p>
+            <Button
+              variant="outline"
+              onClick={() => router.push(ROUTES.AUTH.LOGIN)}
+              className="w-full"
+            >
+              Back to Login
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   const handleResendVerification = async () => {
     if (!email) return;
@@ -100,7 +147,7 @@ function VerifyEmailContent() {
                 
                 <Button
                   variant="outline"
-                  onClick={() => router.push('/login')}
+                  onClick={() => router.push(ROUTES.AUTH.LOGIN)}
                   className="w-full"
                 >
                   Back to Login

@@ -1,36 +1,28 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/navigation';
-import { LoginForm, SignupForm } from '@/features/auth';
+import { LoginForm } from '@/features/auth';
+import { ROUTES } from '@/shared/constants/routes/paths';
 
 export default function LoginPage() {
-  const [isSignup, setIsSignup] = useState(false);
   const router = useRouter();
 
   const handleLoginSuccess = () => {
-    router.push('/');
+    router.push(ROUTES.HOME);
   };
 
-  const handleSignupSuccess = () => {
-    // Could show a verification message or redirect to verification page
-    setIsSignup(false);
+  const handleSwitchToSignup = () => {
+    router.push(ROUTES.AUTH.SIGNUP);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {isSignup ? (
-          <SignupForm
-            onSuccess={handleSignupSuccess}
-            onSwitchToLogin={() => setIsSignup(false)}
-          />
-        ) : (
-          <LoginForm
-            onSuccess={handleLoginSuccess}
-            onSwitchToSignup={() => setIsSignup(true)}
-          />
-        )}
+        <LoginForm
+          onSuccess={handleLoginSuccess}
+          onSwitchToSignup={handleSwitchToSignup}
+        />
       </div>
     </div>
   );

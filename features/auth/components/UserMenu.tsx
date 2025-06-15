@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../hooks/useAuth';
 import { Button } from '@/shared/components/ui/button';
+import { ROUTES } from '@/shared/constants/routes/paths';
 
 export const UserMenu: React.FC = () => {
   const { user, logout, isLoading } = useAuth();
@@ -27,7 +28,7 @@ export const UserMenu: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     setIsOpen(false);
-    router.push('/');
+    router.push(ROUTES.HOME);
   };
 
   if (isLoading) {
@@ -41,7 +42,7 @@ export const UserMenu: React.FC = () => {
       <Button
         variant="outline"
         size="sm"
-        onClick={() => router.push('/login')}
+        onClick={() => router.push(ROUTES.AUTH.LOGIN)}
         className="text-blue-600 border-blue-600 hover:bg-blue-50"
       >
         Sign In

@@ -3,11 +3,13 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
+import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { useAuth } from '../hooks/useAuth';
 import { loginSchema, type LoginInput } from '../types/zod';
-import { EmailVerificationRequired } from './EmailVerificationRequired';
+import { ROUTES } from '@/shared/constants/routes/paths';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -16,10 +18,9 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup }) => {
   const [error, setError] = useState<string>('');
-  const [showVerificationRequired, setShowVerificationRequired] = useState(false);
-  const [unverifiedEmail, setUnverifiedEmail] = useState<string>('');
-  const [pendingPassword, setPendingPassword] = useState<string>('');
+  const [showPassword, setShowPassword] = useState<boolean>(false);
   const { login, isLoading } = useAuth();
+  const router = useRouter();
 
   const {
     register,
@@ -40,30 +41,15 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
 
       // Check if error is about email verification
       if (errorMessage.includes('UNVERIFIED_EMAIL')) {
-        setUnverifiedEmail(data.email);
-        setPendingPassword(data.password);
-        setShowVerificationRequired(true);
+        // Store only email in sessionStorage (no password for security)
+        sessionStorage.setItem('unverified_email', data.email);
+        router.push(ROUTES.AUTH.VERIFY_EMAIL);
       } else {
         setError(errorMessage);
       }
     }
   };
 
-  const handleVerificationComplete = async () => {
-    setShowVerificationRequired(false);
-    onSuccess?.();
-  };
-
-  // Show verification required screen if needed
-  if (showVerificationRequired) {
-    return (
-      <EmailVerificationRequired
-        email={unverifiedEmail}
-        password={pendingPassword}
-        onVerificationComplete={handleVerificationComplete}
-      />
-    );
-  }
 
   return (
     <Card className="w-full max-w-md p-6">
@@ -94,13 +80,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
               Password
             </label>
-            <input
-              {...register('password')}
-              type="password"
-              id="password"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your password"
-            />
+            <div className="relative">
+              <input
+                {...register('password')}
+                type={showPassword ? 'text' : 'password'}
+                id="password"
+                className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
             )}

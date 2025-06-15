@@ -59,6 +59,11 @@ export const EmailVerificationRequired: React.FC<EmailVerificationRequiredProps>
             Please check your email and click the verification link to continue.
             Don&apos;t forget to check your spam folder!
           </p>
+          {!password && (
+            <p className="text-amber-700 text-sm mt-2 font-medium">
+              After verification, you&apos;ll be redirected to the login page to sign in.
+            </p>
+          )}
         </div>
 
         {resendSuccess && (
