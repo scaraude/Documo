@@ -13,7 +13,7 @@ export const useEmailVerification = ({
   onVerificationComplete,
 }: UseEmailVerificationProps) => {
   const [timeLeft, setTimeLeft] = useState(0);
-  const [canResend, setCanResend] = useState(false);
+  const [canResend, setCanResend] = useState(true);
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
 
@@ -32,10 +32,10 @@ export const useEmailVerification = ({
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else {
+    } else if (timeLeft === 0 && !canResend) {
       setCanResend(true);
     }
-  }, [timeLeft]);
+  }, [timeLeft, canResend]);
 
   // Handle verification completion
   useEffect(() => {
