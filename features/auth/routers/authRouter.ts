@@ -85,24 +85,10 @@ export const authRouter = createTRPCRouter({
         const user = await authRepository.authenticateUser(input);
 
         if (!user) {
+          console.log('Login failed: User not found or password mismatch');
           throw new TRPCError({
             code: 'UNAUTHORIZED',
             message: 'Invalid email or password',
-          });
-        }
-
-        // Check if email is verified
-        const authProvider = await prisma.authProvider.findFirst({
-          where: {
-            userId: user.id,
-            providerType: 'EMAIL_PASSWORD',
-          },
-        });
-
-        if (!authProvider?.isVerified) {
-          throw new TRPCError({
-            code: 'FORBIDDEN',
-            message: 'Please verify your email before logging in',
           });
         }
 
@@ -133,6 +119,11 @@ export const authRouter = createTRPCRouter({
         };
       } catch (error) {
         if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        // Handle specific unverified email error
+        if ((error as Error).message === 'UNVERIFIED_EMAIL') {
           throw error;
         }
 
@@ -356,6 +347,21 @@ export const authRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to revoke session',
+        });
+      }
+    }),
+
+  checkEmailVerification: publicProcedure
+    .input(z.object({ email: z.string().email() }))
+    .query(async ({ input }) => {
+      try {
+        const isVerified = await authRepository.isEmailVerified(input.email);
+        return { isVerified };
+      } catch (error) {
+        logger.error({ email: input.email, error: (error as Error).message }, 'Failed to check email verification');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to check verification status',
         });
       }
     }),

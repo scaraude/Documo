@@ -11,7 +11,6 @@ import {
 } from '../utils/tokens';
 import type {
   User,
-  AuthProvider,
   UserSession,
   EmailVerificationToken,
   SignupCredentials,
@@ -19,7 +18,7 @@ import type {
 } from '../types';
 
 export class AuthRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(private prisma: PrismaClient) { }
 
   async createUser(credentials: SignupCredentials): Promise<User> {
     const { email, password, firstName, lastName } = credentials;
@@ -87,20 +86,32 @@ export class AuthRepository {
       }
 
       const authProvider = user.authProviders[0];
-      if (!authProvider.passwordHash || !authProvider.isVerified) {
-        logger.warn({ email, operation: 'auth.failed' }, 'User not verified or no password');
+      if (!authProvider.passwordHash) {
+        logger.warn({ email, operation: 'auth.failed' }, 'No password hash found');
         return null;
       }
 
+      // Check password first before checking verification
       const isValidPassword = await verifyPassword(password, authProvider.passwordHash);
       if (!isValidPassword) {
         logger.warn({ email, operation: 'auth.failed' }, 'Invalid password');
         return null;
       }
 
+      // If password is valid but email not verified, throw specific error
+      if (!authProvider.isVerified) {
+        logger.warn({ email, operation: 'auth.unverified' }, 'User email not verified');
+        throw new Error('UNVERIFIED_EMAIL');
+      }
+
       logger.info({ userId: user.id, operation: 'auth.success' }, 'User authenticated successfully');
       return user;
     } catch (error) {
+      // Re-throw specific errors that need special handling in the router
+      if ((error as Error).message === 'UNVERIFIED_EMAIL') {
+        throw error;
+      }
+      
       logger.error({ email, error: (error as Error).message }, 'Authentication error');
       return null;
     }
@@ -203,9 +214,28 @@ export class AuthRepository {
     logger.info({ email, operation: 'verification.create' }, 'Creating email verification token');
 
     try {
-      // Clean up any existing tokens for this email
+      // Check rate limiting - max 3 attempts per 15 minutes
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+      const recentAttempts = await this.prisma.emailVerificationToken.count({
+        where: {
+          email,
+          createdAt: {
+            gte: fifteenMinutesAgo,
+          },
+        },
+      });
+
+      if (recentAttempts >= 3) {
+        logger.warn({ email, attempts: recentAttempts, operation: 'verification.rate_limited' }, 'Too many verification attempts');
+        throw new Error('Too many verification attempts. Please wait 15 minutes before trying again.');
+      }
+
+      // Clean up any existing unused tokens for this email
       await this.prisma.emailVerificationToken.deleteMany({
-        where: { email },
+        where: {
+          email,
+          usedAt: null
+        },
       });
 
       const token = generateVerificationToken();
@@ -299,6 +329,22 @@ export class AuthRepository {
     } catch (error) {
       logger.error({ userId: id, error: (error as Error).message }, 'Failed to find user by ID');
       return null;
+    }
+  }
+
+  async isEmailVerified(email: string): Promise<boolean> {
+    try {
+      const authProvider = await this.prisma.authProvider.findFirst({
+        where: {
+          providerType: ProviderType.EMAIL_PASSWORD,
+          providerId: email,
+        },
+      });
+
+      return authProvider?.isVerified || false;
+    } catch (error) {
+      logger.error({ email, error: (error as Error).message }, 'Failed to check email verification status');
+      return false;
     }
   }
 }

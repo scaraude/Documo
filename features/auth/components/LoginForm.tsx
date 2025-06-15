@@ -7,6 +7,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { useAuth } from '../hooks/useAuth';
 import { loginSchema, type LoginInput } from '../types/zod';
+import { EmailVerificationRequired } from './EmailVerificationRequired';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -15,6 +16,9 @@ interface LoginFormProps {
 
 export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup }) => {
   const [error, setError] = useState<string>('');
+  const [showVerificationRequired, setShowVerificationRequired] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string>('');
+  const [pendingPassword, setPendingPassword] = useState<string>('');
   const { login, isLoading } = useAuth();
 
   const {
@@ -31,9 +35,35 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
       await login(data.email, data.password);
       onSuccess?.();
     } catch (err) {
-      setError((err as Error)?.message || 'Login failed. Please try again.');
+      const errorMessage = (err as Error)?.message || 'Login failed. Please try again.';
+      console.log('errorMessage', errorMessage);
+
+      // Check if error is about email verification
+      if (errorMessage.includes('UNVERIFIED_EMAIL')) {
+        setUnverifiedEmail(data.email);
+        setPendingPassword(data.password);
+        setShowVerificationRequired(true);
+      } else {
+        setError(errorMessage);
+      }
     }
   };
+
+  const handleVerificationComplete = async () => {
+    setShowVerificationRequired(false);
+    onSuccess?.();
+  };
+
+  // Show verification required screen if needed
+  if (showVerificationRequired) {
+    return (
+      <EmailVerificationRequired
+        email={unverifiedEmail}
+        password={pendingPassword}
+        onVerificationComplete={handleVerificationComplete}
+      />
+    );
+  }
 
   return (
     <Card className="w-full max-w-md p-6">
@@ -94,7 +124,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
         {onSwitchToSignup && (
           <div className="text-center">
             <p className="text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToSignup}

@@ -70,7 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (email: string, password: string) => {
       try {
         const result = await loginMutation.mutateAsync({ email, password });
-
+        console.log('Provider: Login result:', result);
         if (result.success && result.user) {
           setUser(result.user);
         }
