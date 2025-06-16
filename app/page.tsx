@@ -1,21 +1,19 @@
 'use client'
 import { useFolderTypes } from '@/features/folder-types'
 import { ROUTES } from '@/shared/constants'
-import { 
-  Plus, 
-  FileText, 
-  FolderOpen, 
-  Shield, 
-  Clock, 
-  Users, 
-  CheckCircle, 
+import {
+  Plus,
+  FileText,
+  FolderOpen,
+  Shield,
+  Clock,
+  Users,
+  CheckCircle,
   Mail,
   Lock,
   Zap,
   ArrowRight,
   Star,
-  Sparkles,
-  FileCheck
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../shared/components/ui/hover-card'
@@ -31,20 +29,10 @@ export default function HomePage() {
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        {/* Background decoration */}
-        <div className="absolute inset-0">
-          <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
-          <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob delay-[2s]"></div>
-          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob delay-[4s]"></div>
-        </div>
-        
+
+
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8 pt-20 pb-32">
           <div className="mx-auto max-w-5xl text-center">
-            {/* Badge */}
-            <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-6 py-2 text-sm font-medium text-blue-600 mb-8 animate-fadeInUp">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Nouvelle version disponible
-            </div>
 
             {/* Main title */}
             <h1 className="text-6xl font-bold tracking-tight text-gray-900 sm:text-8xl mb-8 animate-fadeInUp delay-200">
@@ -60,23 +48,23 @@ export default function HomePage() {
 
             {/* Description */}
             <p className="mt-8 text-xl leading-relaxed text-gray-600 max-w-4xl mx-auto mb-12 animate-fadeInUp delay-700">
-              La plateforme sécurisée qui révolutionne la gestion documentaire entre organisations et citoyens. 
+              La plateforme sécurisée qui révolutionne la gestion documentaire entre organisations et citoyens.
               <span className="font-semibold text-gray-800"> Fini les envois d&apos;emails non sécurisés</span> et les processus complexes.
             </p>
 
             {/* CTA Buttons */}
             <div className="flex items-center justify-center gap-6 flex-wrap mb-16 animate-fadeInUp delay-1000">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
                 onClick={() => router.push(ROUTES.AUTH.SIGNUP)}
               >
                 Commencer gratuitement
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="px-10 py-4 text-lg border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transform hover:scale-105 transition-all duration-200"
                 onClick={() => router.push('#features')}
               >
@@ -101,17 +89,6 @@ export default function HomePage() {
             </div>
           </div>
         </div>
-
-        {/* Floating elements */}
-        <div className="absolute top-1/4 left-8 animate-bounce">
-          <FileCheck className="h-8 w-8 text-blue-400 opacity-60" />
-        </div>
-        <div className="absolute top-1/3 right-12 animate-bounce delay-1000">
-          <Mail className="h-6 w-6 text-purple-400 opacity-60" />
-        </div>
-        <div className="absolute bottom-1/4 left-16 animate-bounce delay-[2s]">
-          <Lock className="h-7 w-7 text-green-400 opacity-60" />
-        </div>
       </section>
 
       {/* Features Section */}
@@ -129,7 +106,7 @@ export default function HomePage() {
               Une solution complète qui simplifie la gestion documentaire tout en garantissant la sécurité maximale
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature cards with enhanced design */}
             <div className="group relative p-8 bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100">
@@ -231,7 +208,7 @@ export default function HomePage() {
           <div className="absolute top-1/4 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
           <div className="absolute bottom-1/4 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
         </div>
-        
+
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-20">
             <h2 className="text-5xl font-bold tracking-tight text-gray-900 mb-6">
@@ -241,7 +218,7 @@ export default function HomePage() {
               Un processus simple en 3 étapes pour révolutionner votre gestion documentaire
             </p>
           </div>
-          
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
             <div className="relative text-center group">
               <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transform group-hover:scale-110 transition-all duration-300">
@@ -298,7 +275,7 @@ export default function HomePage() {
           <div className="absolute top-0 left-1/4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse delay-1000"></div>
         </div>
-        
+
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-4xl text-center">
             <h2 className="text-5xl font-bold text-white mb-8">
@@ -307,14 +284,14 @@ export default function HomePage() {
             <p className="text-xl text-blue-100 mb-16 max-w-3xl mx-auto leading-relaxed">
               Rejoignez les organisations qui ont choisi Documo pour simplifier leurs processus et sécuriser leurs échanges.
             </p>
-            
+
             <div className="flex items-center justify-center gap-8 flex-wrap mb-20">
               {!hasFolderTypes ? (
                 <HoverCard>
                   <HoverCardTrigger>
-                    <Button 
-                      size="lg" 
-                      disabled={!hasFolderTypes} 
+                    <Button
+                      size="lg"
+                      disabled={!hasFolderTypes}
                       className="bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
                       onClick={() => router.push(ROUTES.FOLDERS.NEW)}
                     >
@@ -329,8 +306,8 @@ export default function HomePage() {
                   </HoverCardContent>
                 </HoverCard>
               ) : (
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
                   onClick={() => router.push(ROUTES.FOLDERS.NEW)}
                 >
@@ -338,10 +315,10 @@ export default function HomePage() {
                   Créer votre premier dossier
                 </Button>
               )}
-              
-              <Button 
-                size="lg" 
-                variant="outline" 
+
+              <Button
+                size="lg"
+                variant="outline"
                 className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
                 onClick={() => router.push(ROUTES.FOLDER_TYPES.NEW)}
               >
