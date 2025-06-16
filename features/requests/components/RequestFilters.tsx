@@ -73,19 +73,19 @@ export const RequestFilters = ({
 
     return (
         <div className="space-y-6">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-base flex items-center">
-                        <Filter className="h-4 w-4 mr-2" />
+            <div>
+                <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <Filter className="h-5 w-5 mr-2 text-blue-600" />
                         Filtres
                         {filteredCount < requestsCount && (
-                            <Badge variant="secondary" className="ml-2">
+                            <Badge variant="secondary" className="ml-2 bg-blue-100 text-blue-800 border-blue-200">
                                 {filteredCount}
                             </Badge>
                         )}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-2">
+                    </h3>
+                </div>
+                <div className="space-y-2">
                     {statusOptions.map((option) => {
                         const Icon = option.icon
                         const isActive = statusFilter === option.value
@@ -96,7 +96,7 @@ export const RequestFilters = ({
                                 onClick={() => onStatusFilterChange(option.value)}
                                 className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-md text-sm transition-colors ${isActive
                                     ? 'bg-blue-50 text-blue-900 border border-blue-200'
-                                    : 'text-gray-700 hover:bg-gray-50'
+                                    : 'text-gray-700 hover:bg-gray-50 border border-transparent'
                                     }`}
                             >
                                 <div className="flex items-center">
@@ -104,28 +104,39 @@ export const RequestFilters = ({
                                     <span className="font-medium">{option.label}</span>
                                 </div>
                                 {option.count !== undefined && (
-                                    <Badge variant="outline" className="text-xs">
+                                    <Badge 
+                                        variant="outline" 
+                                        className="text-xs"
+                                    >
                                         {option.count}
                                     </Badge>
                                 )}
                             </button>
                         )
                     })}
-                </CardContent>
-            </Card>
+                </div>
+            </div>
 
-            {/* Stats */}
-            <Card>
-                <CardHeader>
-                    <CardTitle className="text-base">Statistiques</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex justify-between text-sm">
-                        <span className="text-gray-600">Total</span>
-                        <span className="font-medium">{requestsCount}</span>
+            {/* Enhanced Stats */}
+            <div>
+                <div className="mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">
+                        Statistiques
+                    </h3>
+                </div>
+                <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-blue-600">{requestsCount}</div>
+                            <div className="text-xs text-gray-600 font-medium">Total</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-2xl font-bold text-green-600">{statusCounts?.COMPLETED || 0}</div>
+                            <div className="text-xs text-gray-600 font-medium">Terminées</div>
+                        </div>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     )
 }

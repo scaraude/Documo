@@ -33,48 +33,52 @@ export const RequestSearchAndSort = ({
     }
 
     return (
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+        <div>
+            <div className="flex flex-col gap-4">
                 {/* Search */}
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-                    <input
-                        type="text"
-                        placeholder="Rechercher par email..."
-                        value={searchTerm}
-                        onChange={(e) => onSearchChange(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                    />
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Rechercher</label>
+                    <div className="relative">
+                        <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500">
+                            <Search className="h-4 w-4" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Rechercher par email..."
+                            value={searchTerm}
+                            onChange={(e) => onSearchChange(e.target.value)}
+                            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                        />
+                    </div>
                 </div>
 
                 {/* Sort Controls */}
-                <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                        Trier par:
-                    </span>
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Tri</label>
+                    <div className="flex gap-2">
+                        {/* Sort By */}
+                        <select
+                            value={sortBy}
+                            onChange={(e) => onSortByChange(e.target.value as 'date' | 'status' | 'email')}
+                            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        >
+                            {sortOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
 
-                    {/* Sort By */}
-                    <select
-                        value={sortBy}
-                        onChange={(e) => onSortByChange(e.target.value as 'date' | 'status' | 'email')}
-                        className="px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                        {sortOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-
-                    {/* Sort Order */}
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
-                        className="px-3"
-                    >
-                        {getSortIcon()}
-                    </Button>
+                        {/* Sort Order */}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')}
+                            className="px-3"
+                        >
+                            {getSortIcon()}
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -54,50 +54,56 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
     }
 
     return (
-        <div className="bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-colors">
+        <div className="bg-transparent">
             {/* Collapsed Header */}
             <div
-                className="px-6 py-4 cursor-pointer select-none"
+                className="px-6 py-5 cursor-pointer select-none group"
                 onClick={() => setIsExpanded(!isExpanded)}
             >
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4 min-w-0 flex-1">
+                    <div className="flex items-center space-x-6 min-w-0 flex-1">
                         {/* Expand Icon */}
                         <div className="flex-shrink-0">
                             {isExpanded ? (
-                                <ChevronDown className="h-5 w-5 text-gray-400" />
+                                <ChevronDown className="h-5 w-5 text-blue-500 transition-colors" />
                             ) : (
-                                <ChevronRight className="h-5 w-5 text-gray-400" />
+                                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
                             )}
                         </div>
 
                         {/* Email */}
-                        <div className="flex items-center space-x-2">
-                            <Hash className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm font-medium text-gray-900">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-blue-100 rounded-lg">
+                                <Hash className="h-4 w-4 text-blue-600" />
+                            </div>
+                            <span className="text-sm font-semibold text-gray-900">
                                 {request.email}
                             </span>
                         </div>
 
                         {/* Documents Count */}
-                        <div className="flex items-center space-x-2">
-                            <FileText className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-gray-600">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-purple-100 rounded-lg">
+                                <FileText className="h-4 w-4 text-purple-600" />
+                            </div>
+                            <span className="text-sm text-gray-700 font-medium">
                                 {request.requestedDocuments.length} document{request.requestedDocuments.length > 1 ? 's' : ''}
                             </span>
                         </div>
 
                         {/* Time */}
-                        <div className="flex items-center space-x-2">
-                            <Clock className="h-4 w-4 text-gray-400" />
-                            <span className="text-sm text-gray-500">
+                        <div className="flex items-center space-x-3">
+                            <div className="p-2 bg-gray-100 rounded-lg">
+                                <Clock className="h-4 w-4 text-gray-600" />
+                            </div>
+                            <span className="text-sm text-gray-600 font-medium">
                                 {formatRelativeTime(request.createdAt)}
                             </span>
                         </div>
                     </div>
 
                     {/* Status Badge */}
-                    <Badge className={`px-3 py-1 text-xs font-medium border ${getStatusColor(status)}`}>
+                    <Badge className={`px-4 py-2 text-sm font-semibold border-2 ${getStatusColor(status)} shadow-sm`}>
                         {getStatusLabel(status)}
                     </Badge>
                 </div>
@@ -207,14 +213,18 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                 <h4 className="text-sm font-medium text-gray-900 mb-3">Actions</h4>
                                 <div className="space-y-2 flex justify-evenly">
                                     <Link href={ROUTES.REQUESTS.DETAIL(request.id)} >
-                                        <Button variant="outline" size="sm" className=" justify-start">
+                                        <Button variant="outline" size="sm" className="justify-start">
                                             <ExternalLink className="h-4 w-4 mr-2" />
                                             Voir les détails
                                         </Button>
                                     </Link>
-                                    <ShareLinkButton requestId={request.id} variant="outline" size="sm" />
+                                    <ShareLinkButton
+                                        requestId={request.id}
+                                        variant="outline"
+                                        size="sm"
+                                    />
                                     {status === 'ACCEPTED' && (
-                                        <Button variant="outline" size="sm" className="w-full justify-start">
+                                        <Button variant="outline" size="sm" className="justify-start">
                                             <FileText className="h-4 w-4 mr-2" />
                                             Voir les documents
                                         </Button>
