@@ -3,6 +3,7 @@ import { AppDocumentWithStatus } from "@/shared/types"
 import { DocumentViewer } from "@/features/documents/components/DocumentViewer";
 import { DownloadButton } from "@/features/documents/components/DownloadButton";
 import { Eye } from "lucide-react";
+import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from "../../../shared/mapper";
 
 interface FolderDocumentListProps {
     document: AppDocumentWithStatus
@@ -38,7 +39,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                                 {document.fileName}
                             </p>
                             <p className="mt-1 flex items-center text-sm text-gray-500">
-                                <span className="truncate">{document.type}</span>
+                                <span className="truncate">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[document.type]}</span>
                                 <span className="ml-1.5 flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
                                     {document.status}
                                 </span>
