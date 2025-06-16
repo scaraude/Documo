@@ -127,11 +127,19 @@ export const RequestFilters = ({
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
                     <div className="grid grid-cols-2 gap-4">
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-blue-600">{requestsCount}</div>
+                            <div className="text-lg font-bold text-gray-600">{requestsCount}</div>
                             <div className="text-xs text-gray-600 font-medium">Total</div>
                         </div>
                         <div className="text-center">
-                            <div className="text-2xl font-bold text-green-600">{statusCounts?.COMPLETED || 0}</div>
+                            <div className="text-lg font-bold text-yellow-600">{statusCounts?.PENDING || 0}</div>
+                            <div className="text-xs text-gray-600 font-medium">En attente</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-lg font-bold text-green-600">{statusCounts?.ACCEPTED || 0}</div>
+                            <div className="text-xs text-gray-600 font-medium">Acceptées</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-lg font-bold text-blue-600">{statusCounts?.COMPLETED || 0}</div>
                             <div className="text-xs text-gray-600 font-medium">Terminées</div>
                         </div>
                     </div>

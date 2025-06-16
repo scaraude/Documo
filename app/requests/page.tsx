@@ -115,16 +115,20 @@ export default function RequestsPage() {
                         </div>
                         <div className="hidden sm:flex items-center space-x-6">
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-green-600">{statusCounts.COMPLETED}</div>
+                                <div className="text-2xl font-bold text-blue-600">{statusCounts.COMPLETED}</div>
                                 <div className="text-sm text-gray-500 font-medium">Terminées</div>
                             </div>
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-blue-600">{statusCounts.ACCEPTED}</div>
+                                <div className="text-2xl font-bold text-green-600">{statusCounts.ACCEPTED}</div>
                                 <div className="text-sm text-gray-500 font-medium">Acceptées</div>
                             </div>
                             <div className="text-center">
-                                <div className="text-2xl font-bold text-orange-600">{statusCounts.PENDING}</div>
+                                <div className="text-2xl font-bold text-yellow-600">{statusCounts.PENDING}</div>
                                 <div className="text-sm text-gray-500 font-medium">En attente</div>
+                            </div>
+                            <div className="text-center">
+                                <div className="text-2xl font-bold text-red-600">{statusCounts.REJECTED}</div>
+                                <div className="text-sm text-gray-500 font-medium">Refusées</div>
                             </div>
                         </div>
                     </div>

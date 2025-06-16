@@ -21,11 +21,11 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
 
     const getStatusColor = (status: ComputedRequestStatus) => {
         switch (status) {
-            case 'PENDING': return 'bg-yellow-50 text-yellow-700 border-yellow-200'
-            case 'ACCEPTED': return 'bg-green-50 text-green-700 border-green-200'
-            case 'REJECTED': return 'bg-red-50 text-red-700 border-red-200'
-            case 'COMPLETED': return 'bg-blue-50 text-blue-700 border-blue-200'
-            default: return 'bg-gray-50 text-gray-700 border-gray-200'
+            case 'PENDING': return 'bg-yellow-50 text-yellow-600 border-yellow-200'
+            case 'ACCEPTED': return 'bg-green-50 text-green-600 border-green-200'
+            case 'REJECTED': return 'bg-red-50 text-red-600 border-red-200'
+            case 'COMPLETED': return 'bg-blue-50 text-blue-600 border-blue-200'
+            default: return 'bg-gray-50 text-gray-600 border-gray-200'
         }
     }
 
@@ -83,8 +83,8 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
 
                         {/* Documents Count */}
                         <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-purple-100 rounded-lg">
-                                <FileText className="h-4 w-4 text-purple-600" />
+                            <div className="p-2 bg-gray-100 rounded-lg">
+                                <FileText className="h-4 w-4 text-gray-600" />
                             </div>
                             <span className="text-sm text-gray-700 font-medium">
                                 {request.requestedDocuments.length} document{request.requestedDocuments.length > 1 ? 's' : ''}
@@ -151,7 +151,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                 </h4>
                                 <div className="space-y-2">
                                     <div className="flex items-center text-sm">
-                                        <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                        <div className="w-2 h-2 bg-yellow-600 rounded-full mr-3"></div>
                                         <span className="text-gray-600">Demande créée</span>
                                         <span className="text-gray-400 ml-auto">
                                             {formatRelativeTime(request.createdAt)}
@@ -159,7 +159,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                     </div>
                                     {request.acceptedAt && (
                                         <div className="flex items-center text-sm">
-                                            <div className="w-2 h-2 bg-green-500 rounded-full mr-3"></div>
+                                            <div className="w-2 h-2 bg-green-600 rounded-full mr-3"></div>
                                             <span className="text-gray-600">Demande acceptée</span>
                                             <span className="text-gray-400 ml-auto">
                                                 {formatRelativeTime(request.acceptedAt)}
@@ -168,7 +168,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                     )}
                                     {request.rejectedAt && (
                                         <div className="flex items-center text-sm">
-                                            <div className="w-2 h-2 bg-red-500 rounded-full mr-3"></div>
+                                            <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
                                             <span className="text-gray-600">Demande refusée</span>
                                             <span className="text-gray-400 ml-auto">
                                                 {formatRelativeTime(request.rejectedAt)}
@@ -177,7 +177,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                     )}
                                     {request.completedAt && (
                                         <div className="flex items-center text-sm">
-                                            <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                                            <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
                                             <span className="text-gray-600">Demande terminée</span>
                                             <span className="text-gray-400 ml-auto">
                                                 {formatRelativeTime(request.completedAt)}
