@@ -24,7 +24,7 @@ export const Navbar = () => {
                 <div className="h-16 flex justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center">
-                        <span className="text-2xl font-bold text-blue-600">Centradoc</span>
+                        <span className="text-2xl font-bold text-blue-600">Documo</span>
                     </Link>
 
                     {/* Desktop navigation */}

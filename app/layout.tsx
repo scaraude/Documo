@@ -9,8 +9,8 @@ import { AuthProvider } from '@/features/auth'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Centradoc',
-  description: 'Plateforme sécurisée de transfert de documents entre organisations et citoyens',
+  title: 'Documo',
+  description: 'l\'échange de document à l\'ère moderne - Plateforme sécurisée de transfert de documents',
 }
 
 export default function RootLayout({

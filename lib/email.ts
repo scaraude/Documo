@@ -19,7 +19,7 @@ export async function sendVerificationEmail({
     const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
 
     const { data, error } = await resend.emails.send({
-      from: `Centradoc <${process.env.FROM_EMAIL}>`,
+      from: `Documo <${process.env.FROM_EMAIL}>`,
       to: [to.toLowerCase()],
       subject: 'Verify your email address',
       react: VerificationEmail({
@@ -81,7 +81,7 @@ export async function sendDocumentRequestEmail({
 }: DocumentRequestEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
     const { data, error } = await resend.emails.send({
-      from: `Centradoc <${process.env.FROM_EMAIL}>`,
+      from: `Documo <${process.env.FROM_EMAIL}>`,
       to: [to.toLowerCase()],
       subject: `Demande de documents - ${folderName}`,
       react: DocumentRequestEmail({

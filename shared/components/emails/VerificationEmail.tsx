@@ -24,17 +24,17 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
 }) => (
   <Html>
     <Head />
-    <Preview>Vérifiez votre adresse email pour Centradoc</Preview>
+    <Preview>Vérifiez votre adresse email pour Documo</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={logoSection}>
-          <Heading style={h1}>Centradoc</Heading>
+          <Heading style={h1}>Documo</Heading>
         </Section>
         
         <Section style={heroSection}>
           <Heading style={h2}>Welcome, {firstName}!</Heading>
           <Text style={text}>
-            Merci d'avoir créé un compte avec Centradoc. Pour finaliser votre inscription et commencer à utiliser notre plateforme sécurisée de partage de documents, veuillez vérifier votre adresse email.
+            Merci d'avoir créé un compte avec Documo. Pour finaliser votre inscription et commencer à utiliser notre plateforme sécurisée de partage de documents, veuillez vérifier votre adresse email.
           </Text>
         </Section>
 
@@ -61,7 +61,7 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
           </Text>
           <Text style={footerText}>
             Cordialement,<br />
-            L'équipe Centradoc
+            L'équipe Documo
           </Text>
         </Section>
       </Container>
