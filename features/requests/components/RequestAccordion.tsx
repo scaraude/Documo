@@ -54,7 +54,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
     }
 
     return (
-        <div className="bg-transparent">
+        <div className="bg-transparent rounded-3xl">
             {/* Collapsed Header */}
             <div
                 className="px-6 py-5 cursor-pointer select-none group"
@@ -111,7 +111,7 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
 
             {/* Expanded Content */}
             {isExpanded && (
-                <div className="border-t border-gray-100 px-6 py-6 bg-gray-50">
+                <div className="border-t border-gray-100 px-6 py-6 bg-gray-50 rounded-3xl">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         {/* Left Column */}
                         <div className="space-y-6">

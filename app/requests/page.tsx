@@ -151,7 +151,7 @@ export default function RequestsPage() {
                                     onSortOrderChange={setSortOrder}
                                 />
                             </div>
-                            
+
                             {/* Filters */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <RequestFilters
@@ -181,7 +181,7 @@ export default function RequestsPage() {
                                     onSortOrderChange={setSortOrder}
                                 />
                             </div>
-                            
+
                             {/* Mobile Filters */}
                             <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                                 <RequestFilters
@@ -214,9 +214,9 @@ export default function RequestsPage() {
                                 </Card>
                             </div>
                         ) : (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                                {filteredAndSortedRequests.map((request, index) => (
-                                    <div key={request.id} className={`${index !== 0 ? 'border-t border-gray-100' : ''} ${index === 0 ? 'rounded-t-xl' : ''} ${index === filteredAndSortedRequests.length - 1 ? 'rounded-b-xl' : ''}`}>
+                            <div className="overflow-hidden">
+                                {filteredAndSortedRequests.map((request) => (
+                                    <div key={request.id} className={`bg-white border border-gray-200 rounded-xl`}>
                                         <RequestAccordion
                                             request={request}
                                             getRequestStatus={getRequestStatus}
