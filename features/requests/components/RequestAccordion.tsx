@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { DocumentRequest, ComputedRequestStatus } from '@/shared/types'
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper'
 import { Badge, Button } from '@/shared/components'
-import { ChevronDown, ChevronRight, Calendar, Hash, FileText, Clock, User, ExternalLink } from 'lucide-react'
+import { ChevronDown, ChevronRight, Calendar, Hash, FileText, Clock, User, ExternalLink, FolderOpen } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
 import Link from 'next/link'
@@ -71,14 +71,22 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                             )}
                         </div>
 
-                        {/* Email */}
+                        {/* Email and Folder */}
                         <div className="flex items-center space-x-3">
                             <div className="p-2 bg-blue-100 rounded-lg">
                                 <Hash className="h-4 w-4 text-blue-600" />
                             </div>
-                            <span className="text-sm font-semibold text-gray-900">
-                                {request.email}
-                            </span>
+                            <div className="flex flex-col">
+                                <span className="text-sm font-semibold text-gray-900">
+                                    {request.email}
+                                </span>
+                                {request.folder && (
+                                    <span className="text-xs text-gray-500 font-medium flex items-center">
+                                        <FolderOpen className="h-3 w-3 mr-1" />
+                                        {request.folder.name}
+                                    </span>
+                                )}
+                            </div>
                         </div>
 
                         {/* Documents Count */}
@@ -126,6 +134,15 @@ export const RequestAccordion = ({ request, getRequestStatus }: RequestAccordion
                                         <span className="text-gray-500">Email:</span>
                                         <span className="font-medium">{request.email}</span>
                                     </div>
+                                    {request.folder && (
+                                        <div className="flex justify-between">
+                                            <span className="text-gray-500">Dossier:</span>
+                                            <span className="font-medium flex items-center">
+                                                <FolderOpen className="h-3 w-3 mr-1" />
+                                                {request.folder.name}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="flex justify-between">
                                         <span className="text-gray-500">Créée le:</span>
                                         <span>{formatDateTime(request.createdAt)}</span>

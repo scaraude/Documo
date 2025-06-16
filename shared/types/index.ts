@@ -24,6 +24,10 @@ export interface DocumentRequest {
     firstDocumentUploadedAt?: Date;
 
     folderId?: string;
+    folder?: {
+        id: string;
+        name: string;
+    };
 }
 
 export interface DocumentRequestWithStatue extends DocumentRequest {

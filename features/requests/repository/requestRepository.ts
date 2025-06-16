@@ -5,6 +5,9 @@ import { AppDocumentType } from '@/shared/constants';
 
 // Mapper entre le type Prisma et le type App
 type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<null>;
+type PrismaDocumentRequestWithFolder = Prisma.DocumentRequestGetPayload<{
+    include: { folder: true }
+}>;
 
 /**
  * Convertir un modèle Prisma en modèle d'application
@@ -26,12 +29,39 @@ export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest 
 }
 
 /**
+ * Convertir un modèle Prisma avec folder en modèle d'application
+ */
+export function toAppModelWithFolder(prismaModel: PrismaDocumentRequestWithFolder): DocumentRequest {
+    return {
+        id: prismaModel.id,
+        email: prismaModel.email,
+        requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
+        createdAt: prismaModel.createdAt,
+        expiresAt: prismaModel.expiresAt,
+        updatedAt: prismaModel.updatedAt,
+        acceptedAt: prismaModel.acceptedAt || undefined,
+        rejectedAt: prismaModel.rejectedAt || undefined,
+        completedAt: prismaModel.completedAt || undefined,
+        firstDocumentUploadedAt: prismaModel.firstDocumentUploadedAt || undefined,
+        folderId: prismaModel.folderId,
+        folder: prismaModel.folder ? {
+            id: prismaModel.folder.id,
+            name: prismaModel.folder.name
+        } : undefined,
+    };
+}
+
+/**
  * Get all document requests
  */
 export async function getRequests(): Promise<DocumentRequest[]> {
     try {
-        const requests = await prisma.documentRequest.findMany();
-        return requests.map(toAppModel);
+        const requests = await prisma.documentRequest.findMany({
+            include: {
+                folder: true
+            }
+        });
+        return requests.map(toAppModelWithFolder);
     } catch (error) {
         console.error('Error fetching requests from database:', error);
         throw new Error('Failed to fetch requests');
