@@ -3,6 +3,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Application Information
+- **Application Name**: Documo
+- **Slogan**: l'échange de document à l'ère moderne
+- **Description**: A modern document transfer and exchange platform
+
 ## Build & Development Commands
 - `yarn dev`: Start dev server with database setup
 - `yarn build`: Build for production
