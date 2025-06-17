@@ -39,7 +39,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
       setSuccess(result.message);
       onSuccess?.(data.email);
     } catch (err) {
-      setError((err as Error)?.message || 'Signup failed. Please try again.');
+      setError((err as Error)?.message || 'Inscription échouée. Veuillez réessayer.');
     }
   };
 
@@ -47,22 +47,22 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
     <Card className="w-full max-w-md p-6">
       <div className="space-y-4">
         <div className="text-center">
-          <h2 className="text-2xl font-bold">Create Account</h2>
-          <p className="text-gray-600 mt-2">Join us today! Create your account to get started.</p>
+          <h2 className="text-2xl font-bold">Créer un compte</h2>
+          <p className="text-gray-600 mt-2">Rejoignez-nous ! Créez votre compte pour commencer.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                First Name
+                Prénom
               </label>
               <input
                 {...register('firstName')}
                 type="text"
                 id="firstName"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="John"
+                placeholder="Jean"
               />
               {errors.firstName && (
                 <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
@@ -71,14 +71,14 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
 
             <div>
               <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                Last Name
+                Nom
               </label>
               <input
                 {...register('lastName')}
                 type="text"
                 id="lastName"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Doe"
+                placeholder="Dupont"
               />
               {errors.lastName && (
                 <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
@@ -95,7 +95,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
               type="email"
               id="email"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="john@example.com"
+              placeholder="jean@exemple.com"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -104,7 +104,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              Mot de passe
             </label>
             <div className="relative">
               <input
@@ -112,7 +112,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Create a strong password"
+                placeholder="Créez un mot de passe fort"
               />
               <button
                 type="button"
@@ -129,7 +129,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
 
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
+              Confirmer le mot de passe
             </label>
             <div className="relative">
               <input
@@ -137,7 +137,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
                 type={showConfirmPassword ? 'text' : 'password'}
                 id="confirmPassword"
                 className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Confirm your password"
+                placeholder="Confirmez votre mot de passe"
               />
               <button
                 type="button"
@@ -169,20 +169,20 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
             disabled={isLoading}
             className="w-full"
           >
-            {isLoading ? 'Creating Account...' : 'Create Account'}
+            {isLoading ? 'Création du compte...' : 'Créer un compte'}
           </Button>
         </form>
 
         {onSwitchToLogin && (
           <div className="text-center">
             <p className="text-gray-600">
-              Already have an account?{' '}
+              Déjà un compte ?{' '}
               <button
                 type="button"
                 onClick={onSwitchToLogin}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                Sign in
+                Se connecter
               </button>
             </p>
           </div>

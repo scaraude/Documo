@@ -45,7 +45,7 @@ export const UserMenu: React.FC = () => {
         onClick={() => router.push(ROUTES.AUTH.LOGIN)}
         className="text-blue-600 border-blue-600 hover:bg-blue-50"
       >
-        Sign In
+        Connexion
       </Button>
     );
   }
@@ -83,7 +83,7 @@ export const UserMenu: React.FC = () => {
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             >
-              Sign Out
+              Déconnexion
             </button>
           </div>
         </div>

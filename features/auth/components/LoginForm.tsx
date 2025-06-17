@@ -36,7 +36,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
       await login(data.email, data.password);
       onSuccess?.();
     } catch (err) {
-      const errorMessage = (err as Error)?.message || 'Login failed. Please try again.';
+      const errorMessage = (err as Error)?.message || 'Connexion échouée. Veuillez réessayer.';
       console.log('errorMessage', errorMessage);
 
       // Check if error is about email verification
@@ -55,8 +55,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
     <Card className="w-full max-w-md p-6">
       <div className="space-y-4">
         <div className="text-center">
-          <h2 className="text-2xl font-bold">Sign In</h2>
-          <p className="text-gray-600 mt-2">Welcome back! Please sign in to your account.</p>
+          <h2 className="text-2xl font-bold">Connexion</h2>
+          <p className="text-gray-600 mt-2">Bon retour ! Connectez-vous à votre compte.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -69,7 +69,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
               type="email"
               id="email"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter your email"
+              placeholder="Entrez votre email"
             />
             {errors.email && (
               <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
@@ -78,7 +78,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
+              Mot de passe
             </label>
             <div className="relative">
               <input
@@ -86,7 +86,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Enter your password"
+                placeholder="Entrez votre mot de passe"
               />
               <button
                 type="button"
@@ -112,20 +112,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
             disabled={isLoading}
             className="w-full"
           >
-            {isLoading ? 'Signing In...' : 'Sign In'}
+            {isLoading ? 'Connexion...' : 'Se connecter'}
           </Button>
         </form>
 
         {onSwitchToSignup && (
           <div className="text-center">
             <p className="text-gray-600">
-              Don&apos;t have an account?{' '}
+              Pas encore de compte ?{' '}
               <button
                 type="button"
                 onClick={onSwitchToSignup}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                Sign up
+                S&apos;inscrire
               </button>
             </p>
           </div>
