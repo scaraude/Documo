@@ -1,5 +1,4 @@
-import { PrismaClient } from '@prisma/client';
-import { ProviderType } from '@/lib/prisma/generated/client';
+import { PrismaClient, ProviderType } from '@/lib/prisma/generated/client';
 import logger from '@/lib/logger';
 import { hashPassword, verifyPassword } from '../utils/password';
 import {
@@ -113,7 +112,7 @@ export class AuthRepository {
       if ((error as Error).message === 'UNVERIFIED_EMAIL') {
         throw error;
       }
-      
+
       logger.error({ email, error: (error as Error).message }, 'Authentication error');
       return null;
     }
@@ -150,13 +149,10 @@ export class AuthRepository {
         where: {
           token,
           revokedAt: null,
+          user: { deletedAt: null }
         },
         include: {
-          user: {
-            where: {
-              deletedAt: null,
-            },
-          },
+          user: true,
         },
       });
 
@@ -424,12 +420,16 @@ export class AuthRepository {
       const resetToken = await this.prisma.passwordResetToken.findFirst({
         where: {
           token,
-          usedAt: null,
         },
       });
 
       if (!resetToken) {
         logger.warn({ token: token.substring(0, 8) + '...', operation: 'password_reset.token_not_found' }, 'Reset token not found');
+        return false;
+      }
+
+      if (resetToken.usedAt) {
+        logger.warn({ token: token.substring(0, 8) + '...', operation: 'password_reset.token_used' }, 'Reset token already used');
         return false;
       }
 
