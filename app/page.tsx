@@ -18,6 +18,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../shared/components/ui/hover-card'
 import { Button } from '@/shared/components'
+import DocumoIcon from './../public/documo-icon.svg';
 
 export default function HomePage() {
   const router = useRouter();
@@ -37,6 +38,7 @@ export default function HomePage() {
             {/* Main title */}
             <h1 className="text-6xl font-bold tracking-tight text-gray-900 sm:text-8xl mb-8 animate-fadeInUp delay-200">
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                <DocumoIcon />
                 Documo
               </span>
             </h1>
