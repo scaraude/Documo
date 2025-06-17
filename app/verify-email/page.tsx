@@ -15,6 +15,7 @@ function VerifyEmailContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
+  const [hasVerified, setHasVerified] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const { verifyEmail, resendVerification } = useAuth();
@@ -34,9 +35,10 @@ function VerifyEmailContent() {
 
 
   useEffect(() => {
-    if (!token) {
+    // Only run verification once per token
+    if (!token || hasVerified) {
       // If no token but we have a session, that's handled in the component return
-      if (!hasSession) {
+      if (!hasSession && !token) {
         setStatus('error');
         setMessage('Aucun token de vérification fourni. Veuillez réessayer de vous connecter.');
       }
@@ -45,6 +47,7 @@ function VerifyEmailContent() {
 
     const verify = async () => {
       try {
+        setHasVerified(true); // Prevent multiple calls
         await verifyEmail(token);
         setStatus('success');
         setMessage('Email vérifié avec succès. Vous pouvez maintenant vous connecter.');
@@ -60,7 +63,9 @@ function VerifyEmailContent() {
     };
 
     verify();
-  }, [token, verifyEmail, router, hasSession]);
+    // ESLint disable for this specific case to prevent infinite loops
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, hasSession, hasVerified]);
 
   // If email is available in session but no token, show custom resend UI
   if (hasSession && sessionEmail && !token) {
