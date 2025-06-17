@@ -14,7 +14,6 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<UserSession | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
 
   // tRPC mutations
   const signupMutation = trpc.auth.signup.useMutation();
@@ -40,9 +39,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(null);
         setSession(null);
       }
-      setIsLoading(false);
-    } else {
-      setIsLoading(true);
     }
   }, [isLoadingUser, currentUser, error]);
 
@@ -131,13 +127,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const value: AuthContextValue = React.useMemo(() => ({
     user,
     session,
-    isLoading: isLoading || signupMutation.isPending || loginMutation.isPending || logoutMutation.isPending,
+    isLoading: isLoadingUser || signupMutation.isPending || loginMutation.isPending || logoutMutation.isPending,
     login,
     signup,
     logout,
     verifyEmail,
     resendVerification,
-  }), [user, session, isLoading, signupMutation.isPending, loginMutation.isPending, logoutMutation.isPending, login, signup, logout, verifyEmail, resendVerification]);
+  }), [user, session, isLoadingUser, signupMutation.isPending, loginMutation.isPending, logoutMutation.isPending, login, signup, logout, verifyEmail, resendVerification]);
 
   return (
     <AuthContext.Provider value={value}>
