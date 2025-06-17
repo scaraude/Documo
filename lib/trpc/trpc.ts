@@ -1,5 +1,5 @@
 import { initTRPC, TRPCError } from '@trpc/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import superjson from 'superjson';
 import { AuthRepository } from '@/features/auth/repository/authRepository';
 import { prisma } from '@/lib/prisma';
@@ -7,7 +7,7 @@ import type { User, UserSession } from '@/features/auth/types';
 
 interface Context {
   req?: NextRequest;
-  res?: NextResponse;
+  resHeaders?: Headers;
   user?: User;
   session?: UserSession;
 }

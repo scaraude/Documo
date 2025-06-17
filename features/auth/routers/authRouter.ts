@@ -100,13 +100,10 @@ export const authRouter = createTRPCRouter({
         );
 
         // Set session cookie
-        ctx.res?.cookies.set('session', session.token, {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 7 * 24 * 60 * 60, // 7 days
-        });
+        if (ctx.resHeaders) {
+          const cookieValue = `session=${session.token}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; ${process.env.NODE_ENV === 'production' ? 'Secure; ' : ''}SameSite=lax`;
+          ctx.resHeaders.set('Set-Cookie', cookieValue);
+        }
 
         return {
           success: true,
@@ -142,15 +139,13 @@ export const authRouter = createTRPCRouter({
           await authRepository.revokeSession(ctx.session.id);
         }
 
-        // Clear session cookie
-        ctx.res?.cookies.set('session', '', {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          sameSite: 'lax',
-          path: '/',
-          maxAge: 0,
-        });
+        // Clear session cookie using resHeaders
+        if (ctx.resHeaders) {
+          const cookieValue = `session=; Path=/; Max-Age=0; HttpOnly; ${process.env.NODE_ENV === 'production' ? 'Secure; ' : ''}SameSite=lax`;
+          ctx.resHeaders.set('Set-Cookie', cookieValue);
+        }
 
+        logger.info({ userId: ctx.user?.id, operation: 'auth.logout.success' }, 'User logged out successfully');
         return { success: true };
       } catch (error) {
         logger.error({ userId: ctx.user?.id, error: (error as Error).message }, 'Logout failed');
