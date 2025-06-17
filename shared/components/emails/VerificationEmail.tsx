@@ -30,11 +30,11 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
         <Section style={logoSection}>
           <Heading style={h1}>Documo</Heading>
         </Section>
-        
+
         <Section style={heroSection}>
           <Heading style={h2}>Welcome, {firstName}!</Heading>
           <Text style={text}>
-            Merci d'avoir créé un compte avec Documo. Pour finaliser votre inscription et commencer à utiliser notre plateforme sécurisée de partage de documents, veuillez vérifier votre adresse email.
+            Merci d&apos;avoir créé un compte avec Documo. Pour finaliser votre inscription et commencer à utiliser notre plateforme sécurisée de partage de documents, veuillez vérifier votre adresse email.
           </Text>
         </Section>
 
@@ -57,11 +57,11 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
 
         <Section style={footerSection}>
           <Text style={footerText}>
-            Ce lien de vérification expire dans 24 heures. Si vous n'avez pas créé de compte chez nous, vous pouvez ignorer cet email en toute sécurité.
+            Ce lien de vérification expire dans 24 heures. Si vous n&apos;avez pas créé de compte chez nous, vous pouvez ignorer cet email en toute sécurité.
           </Text>
           <Text style={footerText}>
             Cordialement,<br />
-            L'équipe Documo
+            L&apos;équipe Documo
           </Text>
         </Section>
       </Container>
