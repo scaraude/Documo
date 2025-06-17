@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
+import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
 import { useAuth } from '../hooks/useAuth';
 import { signupSchema, type SignupInput } from '../types/zod';
 import { toast } from 'sonner';
@@ -24,10 +25,13 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<SignupInput>({
     resolver: zodResolver(signupSchema),
   });
+
+  const watchedPassword = watch('password', '');
 
   const onSubmit = async (data: SignupInput) => {
     try {
@@ -111,7 +115,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Créez un mot de passe fort"
+                placeholder="Créez un mot de passe sécurisé (8+ caractères)"
               />
               <button
                 type="button"
@@ -123,6 +127,11 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
             </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
+            {watchedPassword && (
+              <div className="mt-3">
+                <PasswordStrengthIndicator password={watchedPassword} />
+              </div>
             )}
           </div>
 

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
+import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
 import { useAuth } from '../hooks/useAuth';
 import { resetPasswordSchema, type ResetPasswordInput } from '../types/zod';
 
@@ -29,6 +30,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<ResetPasswordInput>({
     resolver: zodResolver(resetPasswordSchema),
@@ -36,6 +38,8 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       token,
     },
   });
+
+  const watchedPassword = watch('password', '');
 
   const onSubmit = async (data: ResetPasswordInput) => {
     try {
@@ -73,7 +77,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
                 type={showPassword ? 'text' : 'password'}
                 id="password"
                 className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Entrez votre nouveau mot de passe"
+                placeholder="Entrez un mot de passe sécurisé (8+ caractères)"
               />
               <button
                 type="button"
@@ -85,6 +89,11 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
             </div>
             {errors.password && (
               <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+            )}
+            {watchedPassword && (
+              <div className="mt-3">
+                <PasswordStrengthIndicator password={watchedPassword} />
+              </div>
             )}
           </div>
 
