@@ -50,12 +50,35 @@ export const TEST_USERS = {
         firstName: 'Unverified',
         lastName: 'User',
         initials: 'UU'
+    },
+    admin: {
+        email: 'admin@documo.com',
+        password: 'SecureAdmin123!',
+        firstName: 'Admin',
+        lastName: 'User',
+        initials: 'AU'
+    },
+    activeSession: {
+        email: 'active@example.com',
+        password: 'SecurePass123!',
+        firstName: 'Active',
+        lastName: 'Session',
+        initials: 'AS'
+    },
+    multipleSession: {
+        email: 'multi@example.com',
+        password: 'SecurePass123!',
+        firstName: 'Multiple',
+        lastName: 'Sessions',
+        initials: 'MS'
     }
 } as const;
 
 // Create test users for authentication testing
 async function createTestUsers() {
     console.log('👤 Creating test users...');
+    
+    const users = [];
     
     // Create a verified test user
     const testUser = await prisma.user.create({
@@ -76,8 +99,10 @@ async function createTestUsers() {
             passwordHash: await hashPassword(TEST_USERS.verified.password),
             isVerified: true,
             emailVerifiedAt: new Date(),
+            providerData: {},
         }
     });
+    users.push(testUser);
 
     // Create an unverified test user
     const unverifiedUser = await prisma.user.create({
@@ -98,11 +123,266 @@ async function createTestUsers() {
             passwordHash: await hashPassword(TEST_USERS.unverified.password),
             isVerified: false,
             emailVerifiedAt: null,
+            providerData: {},
+        }
+    });
+    users.push(unverifiedUser);
+
+    // Create admin user
+    const adminUser = await prisma.user.create({
+        data: {
+            email: TEST_USERS.admin.email,
+            firstName: TEST_USERS.admin.firstName,
+            lastName: TEST_USERS.admin.lastName,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         }
     });
 
+    await prisma.authProvider.create({
+        data: {
+            userId: adminUser.id,
+            providerType: ProviderType.EMAIL_PASSWORD,
+            providerId: TEST_USERS.admin.email,
+            passwordHash: await hashPassword(TEST_USERS.admin.password),
+            isVerified: true,
+            emailVerifiedAt: new Date(),
+            providerData: {},
+        }
+    });
+    users.push(adminUser);
+
+    // Create user with active session
+    const activeSessionUser = await prisma.user.create({
+        data: {
+            email: TEST_USERS.activeSession.email,
+            firstName: TEST_USERS.activeSession.firstName,
+            lastName: TEST_USERS.activeSession.lastName,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
+
+    await prisma.authProvider.create({
+        data: {
+            userId: activeSessionUser.id,
+            providerType: ProviderType.EMAIL_PASSWORD,
+            providerId: TEST_USERS.activeSession.email,
+            passwordHash: await hashPassword(TEST_USERS.activeSession.password),
+            isVerified: true,
+            emailVerifiedAt: new Date(),
+            providerData: {},
+        }
+    });
+    users.push(activeSessionUser);
+
+    // Create user with multiple sessions
+    const multipleSessionUser = await prisma.user.create({
+        data: {
+            email: TEST_USERS.multipleSession.email,
+            firstName: TEST_USERS.multipleSession.firstName,
+            lastName: TEST_USERS.multipleSession.lastName,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        }
+    });
+
+    await prisma.authProvider.create({
+        data: {
+            userId: multipleSessionUser.id,
+            providerType: ProviderType.EMAIL_PASSWORD,
+            providerId: TEST_USERS.multipleSession.email,
+            passwordHash: await hashPassword(TEST_USERS.multipleSession.password),
+            isVerified: true,
+            emailVerifiedAt: new Date(),
+            providerData: {},
+        }
+    });
+    users.push(multipleSessionUser);
+
     console.log('✅ Test users created successfully');
-    return { testUser, unverifiedUser };
+    return { testUser, unverifiedUser, adminUser, activeSessionUser, multipleSessionUser, users };
+}
+
+// Create test sessions for testing session management
+async function createTestSessions(users: any[]) {
+    console.log('🔑 Creating test sessions...');
+    
+    const sessions = [];
+    
+    // Create active session for activeSessionUser
+    const activeSession = await prisma.userSession.create({
+        data: {
+            userId: users.find(u => u.email === TEST_USERS.activeSession.email)?.id,
+            token: `session_${crypto.randomBytes(32).toString('hex')}`,
+            expiresAt: addDays(new Date(), 7),
+            userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            ipAddress: '192.168.1.100',
+            createdAt: new Date(),
+            revokedAt: null,
+        }
+    });
+    sessions.push(activeSession);
+
+    // Create multiple sessions for multipleSessionUser
+    const multipleSessionUser = users.find(u => u.email === TEST_USERS.multipleSession.email);
+    if (multipleSessionUser) {
+        const sessionData = [
+            {
+                userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                ipAddress: '192.168.1.101',
+                createdAt: new Date(),
+            },
+            {
+                userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+                ipAddress: '192.168.1.102',
+                createdAt: addHours(new Date(), -2),
+            },
+            {
+                userAgent: 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+                ipAddress: '192.168.1.103',
+                createdAt: addHours(new Date(), -4),
+            }
+        ];
+
+        for (const data of sessionData) {
+            const session = await prisma.userSession.create({
+                data: {
+                    userId: multipleSessionUser.id,
+                    token: `session_${crypto.randomBytes(32).toString('hex')}`,
+                    expiresAt: addDays(data.createdAt, 7),
+                    userAgent: data.userAgent,
+                    ipAddress: data.ipAddress,
+                    createdAt: data.createdAt,
+                    revokedAt: null,
+                }
+            });
+            sessions.push(session);
+        }
+    }
+
+    // Create expired session for testing
+    const expiredSession = await prisma.userSession.create({
+        data: {
+            userId: users.find(u => u.email === TEST_USERS.verified.email)?.id,
+            token: `expired_session_${crypto.randomBytes(32).toString('hex')}`,
+            expiresAt: addDays(new Date(), -1), // Expired yesterday
+            userAgent: 'Mozilla/5.0 (Test Browser)',
+            ipAddress: '192.168.1.200',
+            createdAt: addDays(new Date(), -8),
+            revokedAt: null,
+        }
+    });
+    sessions.push(expiredSession);
+
+    // Create revoked session for testing
+    const revokedSession = await prisma.userSession.create({
+        data: {
+            userId: users.find(u => u.email === TEST_USERS.verified.email)?.id,
+            token: `revoked_session_${crypto.randomBytes(32).toString('hex')}`,
+            expiresAt: addDays(new Date(), 7),
+            userAgent: 'Mozilla/5.0 (Revoked Browser)',
+            ipAddress: '192.168.1.201',
+            createdAt: addHours(new Date(), -1),
+            revokedAt: new Date(), // Already revoked
+        }
+    });
+    sessions.push(revokedSession);
+
+    console.log('✅ Test sessions created successfully');
+    return sessions;
+}
+
+// Create test email verification tokens
+async function createTestEmailVerificationTokens(users: any[]) {
+    console.log('📧 Creating test email verification tokens...');
+    
+    const tokens = [];
+    
+    // Create valid verification token for unverified user
+    const validToken = await prisma.emailVerificationToken.create({
+        data: {
+            email: TEST_USERS.unverified.email,
+            token: `verify_${crypto.randomBytes(16).toString('hex')}`,
+            expiresAt: addHours(new Date(), 24),
+            createdAt: new Date(),
+            usedAt: null,
+        }
+    });
+    tokens.push(validToken);
+
+    // Create expired verification token
+    const expiredToken = await prisma.emailVerificationToken.create({
+        data: {
+            email: TEST_USERS.unverified.email,
+            token: `expired_verify_${crypto.randomBytes(16).toString('hex')}`,
+            expiresAt: addHours(new Date(), -1), // Expired 1 hour ago
+            createdAt: addHours(new Date(), -25),
+            usedAt: null,
+        }
+    });
+    tokens.push(expiredToken);
+
+    // Create used verification token
+    const usedToken = await prisma.emailVerificationToken.create({
+        data: {
+            email: TEST_USERS.verified.email,
+            token: `used_verify_${crypto.randomBytes(16).toString('hex')}`,
+            expiresAt: addHours(new Date(), 24),
+            createdAt: addHours(new Date(), -1),
+            usedAt: new Date(), // Already used
+        }
+    });
+    tokens.push(usedToken);
+
+    console.log('✅ Test email verification tokens created successfully');
+    return tokens;
+}
+
+// Create test password reset tokens
+async function createTestPasswordResetTokens(users: any[]) {
+    console.log('🔐 Creating test password reset tokens...');
+    
+    const tokens = [];
+    
+    // Create valid reset token
+    const validResetToken = await prisma.passwordResetToken.create({
+        data: {
+            email: TEST_USERS.verified.email,
+            token: `reset_${crypto.randomBytes(16).toString('hex')}`,
+            expiresAt: addHours(new Date(), 1),
+            createdAt: new Date(),
+            usedAt: null,
+        }
+    });
+    tokens.push(validResetToken);
+
+    // Create expired reset token
+    const expiredResetToken = await prisma.passwordResetToken.create({
+        data: {
+            email: TEST_USERS.verified.email,
+            token: `expired_reset_${crypto.randomBytes(16).toString('hex')}`,
+            expiresAt: addHours(new Date(), -1), // Expired 1 hour ago
+            createdAt: addHours(new Date(), -2),
+            usedAt: null,
+        }
+    });
+    tokens.push(expiredResetToken);
+
+    // Create used reset token
+    const usedResetToken = await prisma.passwordResetToken.create({
+        data: {
+            email: TEST_USERS.verified.email,
+            token: `used_reset_${crypto.randomBytes(16).toString('hex')}`,
+            expiresAt: addHours(new Date(), 1),
+            createdAt: addHours(new Date(), -1),
+            usedAt: new Date(), // Already used
+        }
+    });
+    tokens.push(usedResetToken);
+
+    console.log('✅ Test password reset tokens created successfully');
+    return tokens;
 }
 
 // Generate random folder type
@@ -293,13 +573,19 @@ async function seedDatabase(options: {
     await prisma.documentRequest.deleteMany({});
     await prisma.folder.deleteMany({});
     await prisma.folderType.deleteMany({});
+    await prisma.passwordResetToken.deleteMany({});
     await prisma.emailVerificationToken.deleteMany({});
     await prisma.userSession.deleteMany({});
     await prisma.authProvider.deleteMany({});
     await prisma.user.deleteMany({});
 
     // Create test users for authentication
-    await createTestUsers();
+    const { users } = await createTestUsers();
+
+    // Create auth test data
+    await createTestSessions(users);
+    await createTestEmailVerificationTokens(users);
+    await createTestPasswordResetTokens(users);
 
     console.log('🏗️ Creating folder types...');
     const folderTypes = [];
@@ -346,6 +632,9 @@ async function seedDatabase(options: {
     const stats = {
         users: await prisma.user.count(),
         authProviders: await prisma.authProvider.count(),
+        userSessions: await prisma.userSession.count(),
+        emailVerificationTokens: await prisma.emailVerificationToken.count(),
+        passwordResetTokens: await prisma.passwordResetToken.count(),
         folderTypes: await prisma.folderType.count(),
         folders: await prisma.folder.count(),
         requests: await prisma.documentRequest.count(),
@@ -362,6 +651,9 @@ async function seedDatabase(options: {
 // Export functions for use in tests
 export {
     createTestUsers,
+    createTestSessions,
+    createTestEmailVerificationTokens,
+    createTestPasswordResetTokens,
     createRandomFolderType,
     createRandomFolder,
     createRandomDocumentRequest,

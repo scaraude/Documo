@@ -1,10 +1,15 @@
 import { PrismaClient } from '../lib/prisma/generated/client';
 import {
+    createTestUsers,
+    createTestSessions,
+    createTestEmailVerificationTokens,
+    createTestPasswordResetTokens,
     createRandomFolderType,
     createRandomFolder,
     createRandomDocumentRequest,
     createRandomShareLink,
-    createRandomDocument
+    createRandomDocument,
+    TEST_USERS
 } from './seed';
 
 const prisma = new PrismaClient();
@@ -16,7 +21,13 @@ export async function seedTestData() {
 
     console.log('🏗️ Creating test data...');
 
-    // Create minimal test data
+    // Create auth test data
+    const { users } = await createTestUsers();
+    const sessions = await createTestSessions(users);
+    const emailTokens = await createTestEmailVerificationTokens(users);
+    const resetTokens = await createTestPasswordResetTokens(users);
+
+    // Create minimal business data
     const folderType = await createRandomFolderType();
     const folder = await createRandomFolder(folderType.id, folderType.requiredDocuments);
     const request = await createRandomDocumentRequest(folder.id, folderType.requiredDocuments);
@@ -30,12 +41,21 @@ export async function seedTestData() {
     }
 
     const testData = {
+        users,
+        sessions,
+        emailTokens,
+        resetTokens,
         folderType,
         folder,
         request,
         shareLink,
         documents,
+        testUsers: TEST_USERS,
         stats: {
+            users: users.length,
+            sessions: sessions.length,
+            emailTokens: emailTokens.length,
+            resetTokens: resetTokens.length,
             folderTypes: 1,
             folders: 1,
             requests: 1,
@@ -55,6 +75,11 @@ async function cleanTestData() {
     await prisma.documentRequest.deleteMany({});
     await prisma.folder.deleteMany({});
     await prisma.folderType.deleteMany({});
+    await prisma.passwordResetToken.deleteMany({});
+    await prisma.emailVerificationToken.deleteMany({});
+    await prisma.userSession.deleteMany({});
+    await prisma.authProvider.deleteMany({});
+    await prisma.user.deleteMany({});
 }
 
 // Main execution for direct running
