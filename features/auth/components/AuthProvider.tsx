@@ -21,6 +21,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const logoutMutation = trpc.auth.logout.useMutation();
   const verifyEmailMutation = trpc.auth.verifyEmail.useMutation();
   const resendVerificationMutation = trpc.auth.resendVerification.useMutation();
+  const forgotPasswordMutation = trpc.auth.forgotPassword.useMutation();
+  const resetPasswordMutation = trpc.auth.resetPassword.useMutation();
 
   // tRPC query for current user
   const { data: currentUser, isLoading: isLoadingUser, error } = trpc.auth.me.useQuery(
@@ -124,16 +126,46 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [resendVerificationMutation]
   );
 
+  const forgotPassword = useCallback(
+    async (email: string) => {
+      try {
+        const result = await forgotPasswordMutation.mutateAsync({ email });
+        logger.info({ email, operation: 'auth.forgotPassword.success' }, 'Password reset email sent');
+        return result;
+      } catch (error) {
+        logger.error({ email, error: (error as Error).message }, 'Forgot password failed');
+        throw error;
+      }
+    },
+    [forgotPasswordMutation]
+  );
+
+  const resetPassword = useCallback(
+    async (token: string, password: string) => {
+      try {
+        const result = await resetPasswordMutation.mutateAsync({ token, password });
+        logger.info({ token: token.substring(0, 8) + '...', operation: 'auth.resetPassword.success' }, 'Password reset successfully');
+        return result;
+      } catch (error) {
+        logger.error({ token: token.substring(0, 8) + '...', error: (error as Error).message }, 'Reset password failed');
+        throw error;
+      }
+    },
+    [resetPasswordMutation]
+  );
+
   const value: AuthContextValue = React.useMemo(() => ({
     user,
     session,
-    isLoading: isLoadingUser || signupMutation.isPending || loginMutation.isPending || logoutMutation.isPending,
+    isLoading: isLoadingUser || signupMutation.isPending || loginMutation.isPending || logoutMutation.isPending || forgotPasswordMutation.isPending || resetPasswordMutation.isPending,
     login,
     signup,
     logout,
     verifyEmail,
     resendVerification,
-  }), [user, session, isLoadingUser, signupMutation.isPending, loginMutation.isPending, logoutMutation.isPending, login, signup, logout, verifyEmail, resendVerification]);
+    forgotPassword,
+    resetPassword,
+  }), [user, session, isLoadingUser, signupMutation.isPending, loginMutation.isPending, logoutMutation.isPending, forgotPasswordMutation.isPending, resetPasswordMutation.isPending, login, signup, logout, verifyEmail, resendVerification, forgotPassword, resetPassword]);
 
   return (
     <AuthContext.Provider value={value}>

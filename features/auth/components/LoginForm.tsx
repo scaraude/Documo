@@ -14,11 +14,13 @@ import { ROUTES } from '@/shared/constants/routes/paths';
 interface LoginFormProps {
   onSuccess?: () => void;
   onSwitchToSignup?: () => void;
+  onSwitchToForgotPassword?: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup, onSwitchToForgotPassword }) => {
   const [error, setError] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [failedAttempts, setFailedAttempts] = useState<number>(0);
   const { login, isLoading } = useAuth();
   const router = useRouter();
 
@@ -34,6 +36,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
     try {
       setError('');
       await login(data.email, data.password);
+      // Reset failed attempts on successful login
+      setFailedAttempts(0);
       onSuccess?.();
     } catch (err) {
       const errorMessage = (err as Error)?.message || 'Connexion échouée. Veuillez réessayer.';
@@ -45,6 +49,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
         sessionStorage.setItem('unverified_email', data.email);
         router.push(ROUTES.AUTH.VERIFY_EMAIL);
       } else {
+        // Increment failed attempts for authentication errors
+        if (errorMessage.includes('Invalid credentials') || errorMessage.includes('mot de passe')) {
+          setFailedAttempts(prev => prev + 1);
+        }
         setError(errorMessage);
       }
     }
@@ -77,9 +85,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Mot de passe
-            </label>
+            <div className="flex justify-between items-center mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                Mot de passe
+              </label>
+              {onSwitchToForgotPassword && (
+                <button
+                  type="button"
+                  onClick={onSwitchToForgotPassword}
+                  className="text-xs text-blue-600 hover:text-blue-800"
+                >
+                  Mot de passe oublié ?
+                </button>
+              )}
+            </div>
             <div className="relative">
               <input
                 {...register('password')}
@@ -104,6 +123,20 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
+              {failedAttempts >= 2 && onSwitchToForgotPassword && (
+                <div className="mt-2 pt-2 border-t border-red-300">
+                  <p className="text-sm">
+                    Vous avez des difficultés à vous connecter ?{' '}
+                    <button
+                      type="button"
+                      onClick={onSwitchToForgotPassword}
+                      className="font-medium underline hover:no-underline"
+                    >
+                      Réinitialisez votre mot de passe
+                    </button>
+                  </p>
+                </div>
+              )}
             </div>
           )}
 

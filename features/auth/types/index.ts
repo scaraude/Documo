@@ -65,6 +65,14 @@ export interface AuthContextValue {
     message: string;
     verificationToken?: string;
   }>;
+  forgotPassword: (email: string) => Promise<{
+    success: boolean;
+    message: string;
+  }>;
+  resetPassword: (token: string, password: string) => Promise<{
+    success: boolean;
+    message: string;
+  }>;
 }
 
 export interface LoginCredentials {

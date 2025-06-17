@@ -7,7 +7,9 @@ import {
   loginSchema,
   signupApiSchema,
   verifyEmailSchema,
-  resendVerificationSchema
+  resendVerificationSchema,
+  forgotPasswordSchema,
+  resetPasswordApiSchema
 } from '../types/zod';
 import logger from '@/lib/logger';
 import { sendVerificationEmail } from '@/lib/email';
@@ -88,7 +90,7 @@ export const authRouter = createTRPCRouter({
           console.log('Login failed: User not found or password mismatch');
           throw new TRPCError({
             code: 'UNAUTHORIZED',
-            message: 'Invalid email or password',
+            message: 'email ou mot de passe incorrect',
           });
         }
 
@@ -357,6 +359,75 @@ export const authRouter = createTRPCRouter({
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
           message: 'Failed to check verification status',
+        });
+      }
+    }),
+
+  forgotPassword: publicProcedure
+    .input(forgotPasswordSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const { token } = await authRepository.createPasswordResetToken(input.email);
+
+        // Only send email if it's a real token (not fake)
+        if (token !== 'fake-token') {
+          // TODO: Send password reset email
+          // const emailResult = await sendPasswordResetEmail({
+          //   to: input.email,
+          //   resetToken: token,
+          // });
+
+          logger.info({ email: input.email, operation: 'auth.forgotPassword' }, 'Password reset token created');
+        }
+
+        return {
+          success: true,
+          message: 'If an account with this email exists, a password reset link has been sent.',
+        };
+      } catch (error) {
+        if (error instanceof Error && error.message.includes('Too many')) {
+          throw new TRPCError({
+            code: 'TOO_MANY_REQUESTS',
+            message: error.message,
+          });
+        }
+
+        logger.error({ email: input.email, error: (error as Error).message }, 'Forgot password failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to process password reset request',
+        });
+      }
+    }),
+
+  resetPassword: publicProcedure
+    .input(resetPasswordApiSchema)
+    .mutation(async ({ input }) => {
+      try {
+        const success = await authRepository.resetPassword(input.token, input.password);
+
+        if (!success) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Invalid or expired reset token',
+          });
+        }
+
+        logger.info({ token: input.token.substring(0, 8) + '...', operation: 'auth.resetPassword' }, 'Password reset successful');
+
+        return {
+          success: true,
+          message: 'Password has been reset successfully. You can now log in with your new password.',
+        };
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        logger.error({ token: input.token.substring(0, 8) + '...', error: (error as Error).message }, 'Reset password failed');
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to reset password',
         });
       }
     }),

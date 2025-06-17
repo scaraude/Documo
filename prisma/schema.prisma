@@ -75,6 +75,17 @@ model EmailVerificationToken {
   @@map("email_verification_tokens")
 }
 
+model PasswordResetToken {
+  id        String    @id @default(uuid())
+  email     String
+  token     String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  @@map("password_reset_tokens")
+}
+
 model Folder {
   id          String  @id @default(uuid())
   name        String

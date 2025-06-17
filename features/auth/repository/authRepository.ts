@@ -347,4 +347,132 @@ export class AuthRepository {
       return false;
     }
   }
+
+  async createPasswordResetToken(email: string): Promise<{ token: string }> {
+    logger.info({ email, operation: 'password_reset.create_token' }, 'Creating password reset token');
+
+    try {
+      // Check if user exists and has email provider
+      const user = await this.findUserByEmail(email);
+      if (!user) {
+        // Don't reveal if email exists - return success anyway for security
+        logger.info({ email, operation: 'password_reset.email_not_found' }, 'Email not found for password reset');
+        return { token: 'fake-token' }; // Return fake token to avoid email enumeration
+      }
+
+      const authProvider = await this.prisma.authProvider.findFirst({
+        where: {
+          providerType: ProviderType.EMAIL_PASSWORD,
+          providerId: email,
+        },
+      });
+
+      if (!authProvider) {
+        logger.info({ email, operation: 'password_reset.no_email_provider' }, 'No email provider found');
+        return { token: 'fake-token' };
+      }
+
+      // Rate limiting: max 3 reset attempts per 15 minutes
+      const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+      const recentAttempts = await this.prisma.passwordResetToken.count({
+        where: {
+          email,
+          createdAt: {
+            gte: fifteenMinutesAgo,
+          },
+        },
+      });
+
+      if (recentAttempts >= 3) {
+        logger.warn({ email, attempts: recentAttempts, operation: 'password_reset.rate_limited' }, 'Too many reset attempts');
+        throw new Error('Too many password reset attempts. Please wait 15 minutes before trying again.');
+      }
+
+      // Clean up any existing unused tokens for this email
+      await this.prisma.passwordResetToken.deleteMany({
+        where: {
+          email,
+          usedAt: null
+        },
+      });
+
+      const token = generateVerificationToken();
+      const expiresAt = getVerificationExpiryDate();
+
+      await this.prisma.passwordResetToken.create({
+        data: {
+          email,
+          token,
+          expiresAt,
+        },
+      });
+
+      logger.info({ email, operation: 'password_reset.token_created' }, 'Password reset token created');
+      return { token };
+    } catch (error) {
+      logger.error({ email, error: (error as Error).message }, 'Failed to create password reset token');
+      throw error;
+    }
+  }
+
+  async resetPassword(token: string, newPassword: string): Promise<boolean> {
+    logger.info({ token: token.substring(0, 8) + '...', operation: 'password_reset.reset' }, 'Resetting password');
+
+    try {
+      const resetToken = await this.prisma.passwordResetToken.findFirst({
+        where: {
+          token,
+          usedAt: null,
+        },
+      });
+
+      if (!resetToken) {
+        logger.warn({ token: token.substring(0, 8) + '...', operation: 'password_reset.token_not_found' }, 'Reset token not found');
+        return false;
+      }
+
+      if (isTokenExpired(resetToken.expiresAt)) {
+        logger.warn({ token: token.substring(0, 8) + '...', operation: 'password_reset.token_expired' }, 'Reset token expired');
+        return false;
+      }
+
+      // Mark token as used
+      await this.prisma.passwordResetToken.update({
+        where: { id: resetToken.id },
+        data: { usedAt: new Date() },
+      });
+
+      // Update password
+      const hashedPassword = await hashPassword(newPassword);
+      await this.prisma.authProvider.updateMany({
+        where: {
+          providerType: ProviderType.EMAIL_PASSWORD,
+          providerId: resetToken.email,
+        },
+        data: {
+          passwordHash: hashedPassword,
+          updatedAt: new Date(),
+        },
+      });
+
+      // Revoke all existing sessions for security
+      await this.prisma.userSession.updateMany({
+        where: {
+          user: {
+            email: resetToken.email,
+          },
+          revokedAt: null,
+        },
+        data: {
+          revokedAt: new Date(),
+        },
+      });
+
+      logger.info({ email: resetToken.email, operation: 'password_reset.success' }, 'Password reset successfully');
+      return true;
+    } catch (error) {
+      logger.error({ token: token.substring(0, 8) + '...', error: (error as Error).message }, 'Password reset failed');
+      return false;
+    }
+  }
 }
