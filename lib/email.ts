@@ -2,6 +2,7 @@ import * as React from 'react';
 import { resend } from '@/lib/resend';
 import { VerificationEmail } from '@/shared/components/emails/VerificationEmail';
 import { DocumentRequestEmail } from '@/shared/components/emails/DocumentRequestEmail';
+import { PasswordResetEmail } from '@/shared/components/emails/PasswordResetEmail';
 import logger from '@/lib/logger';
 
 interface EmailVerificationOptions {
@@ -57,6 +58,66 @@ export async function sendVerificationEmail({
         error: errorMessage
       },
       'Failed to send verification email'
+    );
+    return { success: false, error: errorMessage };
+  }
+}
+
+interface PasswordResetEmailOptions {
+  to: string;
+  firstName?: string;
+  resetToken: string;
+}
+
+export async function sendPasswordResetEmail({
+  to,
+  firstName,
+  resetToken,
+}: PasswordResetEmailOptions): Promise<{ success: boolean; error?: string }> {
+  try {
+    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/login?token=${resetToken}`;
+
+    const { data, error } = await resend.emails.send({
+      from: `Documo <${process.env.FROM_EMAIL}>`,
+      to: [to.toLowerCase()],
+      subject: 'Réinitialisation de votre mot de passe Documo',
+      react: PasswordResetEmail({
+        firstName,
+        resetUrl,
+      }) as React.ReactElement,
+    });
+
+    if (error) {
+      logger.error(
+        {
+          to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
+          error: error.message,
+          operation: 'email.password_reset.failed'
+        },
+        'Failed to send password reset email'
+      );
+      return { success: false, error: error.message };
+    }
+
+    logger.info(
+      {
+        to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
+        messageId: data?.id,
+        operation: 'email.password_reset.sent'
+      },
+      'Password reset email sent successfully'
+    );
+
+    return { success: true };
+  } catch (error) {
+    const errorMessage = (error as Error).message;
+    logger.error(
+      {
+        to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
+        error: errorMessage,
+        operation: 'email.password_reset.failed'
+      },
+      'Failed to send password reset email'
     );
     return { success: false, error: errorMessage };
   }
@@ -135,3 +196,4 @@ export async function sendDocumentRequestEmail({
 export { resend };
 export { VerificationEmail };
 export { DocumentRequestEmail };
+export { PasswordResetEmail };

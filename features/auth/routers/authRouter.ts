@@ -12,7 +12,7 @@ import {
   resetPasswordApiSchema
 } from '../types/zod';
 import logger from '@/lib/logger';
-import { sendVerificationEmail } from '@/lib/email';
+import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 
 const authRepository = new AuthRepository(prisma);
 
@@ -371,18 +371,38 @@ export const authRouter = createTRPCRouter({
 
         // Only send email if it's a real token (not fake)
         if (token !== 'fake-token') {
-          // TODO: Send password reset email
-          // const emailResult = await sendPasswordResetEmail({
-          //   to: input.email,
-          //   resetToken: token,
-          // });
+          // Get user's first name for personalized email
+          const user = await authRepository.findUserByEmail(input.email);
+          
+          const emailResult = await sendPasswordResetEmail({
+            to: input.email,
+            firstName: user?.firstName || undefined,
+            resetToken: token,
+          });
 
-          logger.info({ email: input.email, operation: 'auth.forgotPassword' }, 'Password reset token created');
+          if (!emailResult.success) {
+            logger.error(
+              {
+                email: input.email,
+                error: emailResult.error,
+                operation: 'auth.forgotPassword.email_failed'
+              },
+              'Failed to send password reset email'
+            );
+          }
+          
+          logger.info({ 
+            email: input.email, 
+            emailSent: emailResult.success,
+            operation: 'auth.forgotPassword' 
+          }, 'Password reset token created');
+        } else {
+          logger.info({ email: input.email, operation: 'auth.forgotPassword.fake_token' }, 'Fake token returned for non-existent email');
         }
 
         return {
           success: true,
-          message: 'If an account with this email exists, a password reset link has been sent.',
+          message: 'Si un compte avec cette adresse email existe, un lien de réinitialisation a été envoyé.',
         };
       } catch (error) {
         if (error instanceof Error && error.message.includes('Too many')) {

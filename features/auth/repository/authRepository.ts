@@ -5,8 +5,10 @@ import { hashPassword, verifyPassword } from '../utils/password';
 import {
   generateSessionToken,
   generateVerificationToken,
+  generatePasswordResetToken,
   getSessionExpiryDate,
   getVerificationExpiryDate,
+  getPasswordResetExpiryDate,
   isTokenExpired,
 } from '../utils/tokens';
 import type {
@@ -396,8 +398,8 @@ export class AuthRepository {
         },
       });
 
-      const token = generateVerificationToken();
-      const expiresAt = getVerificationExpiryDate();
+      const token = generatePasswordResetToken();
+      const expiresAt = getPasswordResetExpiryDate();
 
       await this.prisma.passwordResetToken.create({
         data: {
