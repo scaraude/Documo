@@ -12,8 +12,8 @@ export const useEmailVerification = ({
   password,
   onVerificationComplete,
 }: UseEmailVerificationProps) => {
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [canResend, setCanResend] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [canResend, setCanResend] = useState(false);
   const [isResending, setIsResending] = useState(false);
   const [resendSuccess, setResendSuccess] = useState(false);
 
