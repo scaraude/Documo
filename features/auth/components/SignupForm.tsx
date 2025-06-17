@@ -33,9 +33,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
     try {
       setError('');
       setSuccess('');
-      
+
       const result = await signup(data.email, data.password, data.firstName, data.lastName);
-      
+      sessionStorage.setItem('unverified_email', data.email);
       setSuccess(result.message);
       onSuccess?.(data.email);
     } catch (err) {
