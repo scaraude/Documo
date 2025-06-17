@@ -8,6 +8,7 @@ import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { useAuth } from '../hooks/useAuth';
 import { signupSchema, type SignupInput } from '../types/zod';
+import { toast } from 'sonner';
 
 interface SignupFormProps {
   onSuccess?: (email?: string) => void;
@@ -16,7 +17,6 @@ interface SignupFormProps {
 
 export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLogin }) => {
   const [error, setError] = useState<string>('');
-  const [success, setSuccess] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const { signup, isLoading } = useAuth();
@@ -32,11 +32,10 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
   const onSubmit = async (data: SignupInput) => {
     try {
       setError('');
-      setSuccess('');
 
       const result = await signup(data.email, data.password, data.firstName, data.lastName);
       sessionStorage.setItem('unverified_email', data.email);
-      setSuccess(result.message);
+      toast.success(result.message);
       onSuccess?.(data.email);
     } catch (err) {
       setError((err as Error)?.message || 'Inscription échouée. Veuillez réessayer.');
@@ -155,12 +154,6 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
               {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded">
-              {success}
             </div>
           )}
 
