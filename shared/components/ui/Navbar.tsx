@@ -3,8 +3,9 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { ROUTES } from '@/shared/constants'
+import { APP_ICON_PATH, ROUTES } from '@/shared/constants'
 import { UserMenu } from '@/features/auth'
+import Image from 'next/image'
 
 const navLinks = [
     { href: ROUTES.HOME, label: 'Accueil' },
@@ -24,6 +25,7 @@ export const Navbar = () => {
                 <div className="h-16 flex justify-between">
                     {/* Logo */}
                     <Link href="/" className="flex items-center">
+                        <Image src={APP_ICON_PATH} alt="Documo Logo" width={30} height={30} className="rounded-lg mr-1" />
                         <span className="text-2xl font-bold text-blue-600">Documo</span>
                     </Link>
 

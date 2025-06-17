@@ -5,3 +5,5 @@ export type { AppDocumentType, } from './documents/types'
 export { APP_DOCUMENT_TYPES } from './documents/types'
 
 export { DOCUMENT_VALIDATION_RULES } from './documents/types'
+
+export const APP_ICON_PATH = '/documo-icon.webp';

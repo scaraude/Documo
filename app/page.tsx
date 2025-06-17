@@ -1,6 +1,6 @@
 'use client'
 import { useFolderTypes } from '@/features/folder-types'
-import { ROUTES } from '@/shared/constants'
+import { APP_ICON_PATH, ROUTES } from '@/shared/constants'
 import {
   Plus,
   FileText,
@@ -18,7 +18,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '../shared/components/ui/hover-card'
 import { Button } from '@/shared/components'
-import DocumoIcon from './../public/documo-icon.svg';
+import Image from 'next/image'
 
 export default function HomePage() {
   const router = useRouter();
@@ -36,9 +36,15 @@ export default function HomePage() {
           <div className="mx-auto max-w-5xl text-center">
 
             {/* Main title */}
-            <h1 className="text-6xl font-bold tracking-tight text-gray-900 sm:text-8xl mb-8 animate-fadeInUp delay-200">
+            <h1 className="text-6xl font-bold tracking-tight text-gray-900 sm:text-8xl mb-8 animate-fadeInUp delay-200 flex items-center justify-center gap-4">
+              <Image
+                src={APP_ICON_PATH}
+                alt="Documo Logo"
+                width={100}
+                height={100}
+                className="rounded-lg mr-4"
+              />
               <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
-                <DocumoIcon />
                 Documo
               </span>
             </h1>
