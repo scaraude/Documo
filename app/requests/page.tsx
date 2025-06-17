@@ -116,55 +116,50 @@ export default function RequestsPage() {
                         <div className="hidden sm:flex items-center space-x-2">
                             <button
                                 onClick={() => setStatusFilter('COMPLETED')}
-                                className={`text-center p-3 rounded-lg transition-all duration-200 ${
-                                    statusFilter === 'COMPLETED'
-                                        ? 'bg-blue-50 border-2 border-blue-200 shadow-sm'
-                                        : 'hover:bg-gray-50 border-2 border-transparent'
-                                }`}
+                                className={`text-center p-3 rounded-lg transition-all duration-200 ${statusFilter === 'COMPLETED'
+                                    ? 'bg-blue-50 border-2 border-blue-100 shadow-sm'
+                                    : 'hover:bg-gray-50 border-2 border-transparent'
+                                    }`}
                             >
                                 <div className="text-2xl font-bold text-blue-600">{statusCounts.COMPLETED}</div>
                                 <div className="text-sm text-gray-500 font-medium">Terminées</div>
                             </button>
                             <button
                                 onClick={() => setStatusFilter('ACCEPTED')}
-                                className={`text-center p-3 rounded-lg transition-all duration-200 ${
-                                    statusFilter === 'ACCEPTED'
-                                        ? 'bg-green-50 border-2 border-green-200 shadow-sm'
-                                        : 'hover:bg-gray-50 border-2 border-transparent'
-                                }`}
+                                className={`text-center p-3 rounded-lg transition-all duration-200 ${statusFilter === 'ACCEPTED'
+                                    ? 'bg-green-50 border-2 border-green-100 shadow-sm'
+                                    : 'hover:bg-gray-50 border-2 border-transparent'
+                                    }`}
                             >
                                 <div className="text-2xl font-bold text-green-600">{statusCounts.ACCEPTED}</div>
                                 <div className="text-sm text-gray-500 font-medium">Acceptées</div>
                             </button>
                             <button
                                 onClick={() => setStatusFilter('PENDING')}
-                                className={`text-center p-3 rounded-lg transition-all duration-200 ${
-                                    statusFilter === 'PENDING'
-                                        ? 'bg-yellow-50 border-2 border-yellow-200 shadow-sm'
-                                        : 'hover:bg-gray-50 border-2 border-transparent'
-                                }`}
+                                className={`text-center p-3 rounded-lg transition-all duration-200 ${statusFilter === 'PENDING'
+                                    ? 'bg-yellow-50 border-2 border-yellow-100 shadow-sm'
+                                    : 'hover:bg-gray-50 border-2 border-transparent'
+                                    }`}
                             >
                                 <div className="text-2xl font-bold text-yellow-600">{statusCounts.PENDING}</div>
                                 <div className="text-sm text-gray-500 font-medium">En attente</div>
                             </button>
                             <button
                                 onClick={() => setStatusFilter('REJECTED')}
-                                className={`text-center p-3 rounded-lg transition-all duration-200 ${
-                                    statusFilter === 'REJECTED'
-                                        ? 'bg-red-50 border-2 border-red-200 shadow-sm'
-                                        : 'hover:bg-gray-50 border-2 border-transparent'
-                                }`}
+                                className={`text-center p-3 rounded-lg transition-all duration-200 ${statusFilter === 'REJECTED'
+                                    ? 'bg-red-50 border-2 border-red-100 shadow-sm'
+                                    : 'hover:bg-gray-50 border-2 border-transparent'
+                                    }`}
                             >
                                 <div className="text-2xl font-bold text-red-600">{statusCounts.REJECTED}</div>
                                 <div className="text-sm text-gray-500 font-medium">Refusées</div>
                             </button>
                             <button
                                 onClick={() => setStatusFilter('ALL')}
-                                className={`text-center p-3 rounded-lg transition-all duration-200 ${
-                                    statusFilter === 'ALL'
-                                        ? 'bg-gray-50 border-2 border-gray-200 shadow-sm'
-                                        : 'hover:bg-gray-50 border-2 border-transparent'
-                                }`}
+                                className={`text-center p-3 rounded-lg transition-all duration-200 ${statusFilter === 'ALL'
+                                    ? 'bg-gray-50 border-2 border-gray-100 shadow-sm'
+                                    : 'hover:bg-gray-50 border-2 border-transparent'
+                                    }`}
                             >
                                 <div className="text-2xl font-bold text-gray-600">{requests.length}</div>
                                 <div className="text-sm text-gray-500 font-medium">Toutes</div>
