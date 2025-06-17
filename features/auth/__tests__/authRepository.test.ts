@@ -194,5 +194,291 @@ describe('AuthRepository', () => {
         data: { revokedAt: expect.any(Date) }
       });
     });
+
+    it('should find valid session by token', async () => {
+      const token = 'valid-session-token';
+      const userId = 'user-id';
+      const futureDate = new Date(Date.now() + 60000);
+
+      const mockSession = {
+        id: 'session-id',
+        userId,
+        token,
+        expiresAt: futureDate,
+        createdAt: new Date(),
+        revokedAt: null,
+        userAgent: 'Mozilla/5.0...',
+        ipAddress: '192.168.1.1',
+        user: {
+          id: userId,
+          email: 'test@example.com',
+          firstName: 'Test',
+          lastName: 'User',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          civilId: null
+        }
+      };
+
+      mockPrisma.userSession.findFirst.mockResolvedValue(mockSession);
+
+      const result = await authRepository.findSessionByToken(token);
+
+      expect(result).toEqual(mockSession);
+      expect(mockPrisma.userSession.findFirst).toHaveBeenCalledWith({
+        where: {
+          token,
+          revokedAt: null,
+          user: { deletedAt: null }
+        },
+        include: {
+          user: true,
+        },
+      });
+    });
+
+    it('should return null for expired session', async () => {
+      const token = 'expired-session-token';
+      const expiredDate = new Date(Date.now() - 60000);
+
+      type UseSessionWithUser = Prisma.UserSessionGetPayload<{
+        include: { user: true }
+      }>;
+
+      mockPrisma.userSession.findFirst.mockResolvedValue({
+        id: 'session-id',
+        userId: 'user-id',
+        token,
+        expiresAt: expiredDate,
+        createdAt: new Date(),
+        revokedAt: null,
+        userAgent: 'Mozilla/5.0...',
+        ipAddress: '192.168.1.1',
+        user: {
+          id: 'user-id',
+          email: 'test@example.com',
+          firstName: 'Test',
+          lastName: 'User',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          deletedAt: null,
+          civilId: null
+        }
+      } as UseSessionWithUser);
+
+      const result = await authRepository.findSessionByToken(token);
+
+      expect(result).toBeNull();
+      expect(mockPrisma.userSession.update).toHaveBeenCalledWith({
+        where: { id: 'session-id' },
+        data: { revokedAt: expect.any(Date) }
+      });
+    });
+
+    it('should revoke all user sessions', async () => {
+      const userId = 'user-id';
+
+      await authRepository.revokeAllUserSessions(userId);
+
+      expect(mockPrisma.userSession.updateMany).toHaveBeenCalledWith({
+        where: {
+          userId,
+          revokedAt: null,
+        },
+        data: { revokedAt: expect.any(Date) },
+      });
+    });
+  });
+
+  describe('Email Verification', () => {
+    it('should verify email with valid token', async () => {
+      const token = 'valid-verification-token';
+      const email = 'test@example.com';
+      const futureDate = new Date(Date.now() + 60000);
+
+      mockPrisma.emailVerificationToken.findFirst.mockResolvedValue({
+        id: 'token-id',
+        email,
+        token,
+        expiresAt: futureDate,
+        createdAt: new Date(),
+        usedAt: null
+      });
+
+      const result = await authRepository.verifyEmail(token);
+
+      expect(result).toBe(true);
+      expect(mockPrisma.emailVerificationToken.update).toHaveBeenCalledWith({
+        where: { id: 'token-id' },
+        data: { usedAt: expect.any(Date) }
+      });
+      expect(mockPrisma.authProvider.updateMany).toHaveBeenCalledWith({
+        where: {
+          providerType: 'EMAIL_PASSWORD',
+          providerId: email,
+        },
+        data: {
+          isVerified: true,
+          emailVerifiedAt: expect.any(Date),
+        },
+      });
+    });
+
+    it('should reject expired verification token', async () => {
+      const token = 'expired-verification-token';
+      const expiredDate = new Date(Date.now() - 60000);
+
+      mockPrisma.emailVerificationToken.findFirst.mockResolvedValue({
+        id: 'token-id',
+        email: 'test@example.com',
+        token,
+        expiresAt: expiredDate,
+        createdAt: new Date(),
+        usedAt: null
+      });
+
+      const result = await authRepository.verifyEmail(token);
+
+      expect(result).toBe(false);
+    });
+
+    it('should reject invalid verification token', async () => {
+      const token = 'invalid-token';
+
+      mockPrisma.emailVerificationToken.findFirst.mockResolvedValue(null);
+
+      const result = await authRepository.verifyEmail(token);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('User Management', () => {
+    it('should find user by email', async () => {
+      const email = 'test@example.com';
+      const mockUser = {
+        id: 'user-id',
+        email,
+        firstName: 'Test',
+        lastName: 'User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        civilId: null
+      };
+
+      mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+
+      const result = await authRepository.findUserByEmail(email);
+
+      expect(result).toEqual(mockUser);
+      expect(mockPrisma.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          email,
+          deletedAt: null,
+        },
+      });
+    });
+
+    it('should find user by id', async () => {
+      const userId = 'user-id';
+      const mockUser = {
+        id: userId,
+        email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+        civilId: null
+      };
+
+      mockPrisma.user.findFirst.mockResolvedValue(mockUser);
+
+      const result = await authRepository.findUserById(userId);
+
+      expect(result).toEqual(mockUser);
+      expect(mockPrisma.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          id: userId,
+          deletedAt: null,
+        },
+      });
+    });
+
+    it('should check email verification status', async () => {
+      const email = 'test@example.com';
+
+      mockPrisma.authProvider.findFirst.mockResolvedValue({
+        id: 'provider-id',
+        userId: 'user-id',
+        providerType: 'EMAIL_PASSWORD',
+        providerId: email,
+        passwordHash: 'hash',
+        providerData: {},
+        isVerified: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerifiedAt: new Date()
+      });
+
+      const result = await authRepository.isEmailVerified(email);
+
+      expect(result).toBe(true);
+    });
+
+    it('should return false for unverified email', async () => {
+      const email = 'unverified@example.com';
+
+      mockPrisma.authProvider.findFirst.mockResolvedValue({
+        id: 'provider-id',
+        userId: 'user-id',
+        providerType: 'EMAIL_PASSWORD',
+        providerId: email,
+        passwordHash: 'hash',
+        providerData: {},
+        isVerified: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        emailVerifiedAt: null
+      });
+
+      const result = await authRepository.isEmailVerified(email);
+
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('Error Handling', () => {
+    it('should handle database errors gracefully in findUserByEmail', async () => {
+      const email = 'test@example.com';
+
+      mockPrisma.user.findFirst.mockRejectedValue(new Error('Database connection failed'));
+
+      const result = await authRepository.findUserByEmail(email);
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle database errors gracefully in findUserById', async () => {
+      const userId = 'user-id';
+
+      mockPrisma.user.findFirst.mockRejectedValue(new Error('Database connection failed'));
+
+      const result = await authRepository.findUserById(userId);
+
+      expect(result).toBeNull();
+    });
+
+    it('should handle database errors gracefully in isEmailVerified', async () => {
+      const email = 'test@example.com';
+
+      mockPrisma.authProvider.findFirst.mockRejectedValue(new Error('Database connection failed'));
+
+      const result = await authRepository.isEmailVerified(email);
+
+      expect(result).toBe(false);
+    });
   });
 });
