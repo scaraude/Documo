@@ -11,7 +11,7 @@ export default function SignupPage() {
   const handleSignupSuccess = () => {
     // Could show a verification message or redirect to verification page
     // For now, redirect to login with success message
-    router.push(ROUTES.AUTH.LOGIN);
+    router.push(ROUTES.AUTH.VERIFY_EMAIL);
   };
 
   const handleSwitchToLogin = () => {
