@@ -1,6 +1,10 @@
 'use client';
 import { useState } from 'react';
-import { DocumentRequest, ComputedRequestStatus } from '@/shared/types';
+import {
+  DocumentRequest,
+  ComputedRequestStatus,
+  DocumentRequestWithFolder,
+} from '@/shared/types';
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 import { Badge, Button } from '@/shared/components';
 import {
@@ -11,7 +15,6 @@ import {
   FileText,
   Clock,
   User,
-  ExternalLink,
   FolderOpen,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
@@ -21,7 +24,7 @@ import { ROUTES } from '../../../shared/constants';
 import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
 
 interface RequestAccordionProps {
-  request: DocumentRequest;
+  request: DocumentRequestWithFolder;
   getRequestStatus: (request: DocumentRequest) => ComputedRequestStatus;
 }
 
@@ -234,60 +237,44 @@ export const RequestAccordion = ({
             </div>
 
             {/* Right Column */}
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Documents */}
               <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Documents demandés
-                </h4>
-                <div className="space-y-2">
+                <div className="text-xs text-gray-500 mb-2">
+                  {request.requestedDocuments.length} documents
+                </div>
+                <div className="space-y-1">
                   {request.requestedDocuments.map((doc, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center p-2 bg-white rounded border border-gray-200"
-                    >
-                      <div className="w-2 h-2 bg-gray-400 rounded-full mr-3"></div>
-                      <span className="text-sm font-medium">
-                        {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
-                      </span>
+                    <div key={index} className="text-sm text-gray-700">
+                      • {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Actions */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3">
-                  Actions
-                </h4>
-                <div className="space-y-2 flex justify-evenly">
-                  <Link href={ROUTES.REQUESTS.DETAIL(request.id)}>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="justify-start"
-                    >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Voir les détails
+              <div className="flex gap-2">
+                <Link href={ROUTES.REQUESTS.DETAIL(request.id)}>
+                  <Button variant="outline" size="sm">
+                    Détails
+                  </Button>
+                </Link>
+
+                <ShareLinkButton
+                  requestId={request.id}
+                  variant="outline"
+                  size="sm"
+                />
+
+                {status === 'ACCEPTED' && (
+                  <Link
+                    href={`${ROUTES.REQUESTS.DETAIL(request.id)}?tab=documents`}
+                  >
+                    <Button variant="outline" size="sm">
+                      Documents
                     </Button>
                   </Link>
-                  <ShareLinkButton
-                    requestId={request.id}
-                    variant="outline"
-                    size="sm"
-                  />
-                  {status === 'ACCEPTED' && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="justify-start"
-                    >
-                      <FileText className="h-4 w-4 mr-2" />
-                      Voir les documents
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </div>
           </div>
