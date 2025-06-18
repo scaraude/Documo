@@ -2,7 +2,11 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { LoginForm, ForgotPasswordForm, ResetPasswordForm } from '@/features/auth';
+import {
+  LoginForm,
+  ForgotPasswordForm,
+  ResetPasswordForm,
+} from '@/features/auth';
 import { ROUTES } from '@/shared/constants/routes/paths';
 
 type AuthView = 'login' | 'forgot-password' | 'reset-password';
@@ -87,24 +91,24 @@ function LoginContent() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {renderCurrentView()}
-      </div>
+      <div className="max-w-md w-full space-y-8">{renderCurrentView()}</div>
     </div>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-md w-full space-y-8">
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
           </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

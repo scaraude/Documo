@@ -6,8 +6,5 @@
     "noImplicitReturns": false,
     "noImplicitThis": false
   },
-  "include": [
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "include": ["**/*.ts", "**/*.tsx"]
 }

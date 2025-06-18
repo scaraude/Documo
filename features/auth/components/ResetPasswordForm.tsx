@@ -16,15 +16,16 @@ interface ResetPasswordFormProps {
   onBackToLogin?: () => void;
 }
 
-export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({ 
+export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
   token,
-  onSuccess, 
-  onBackToLogin 
+  onSuccess,
+  onBackToLogin,
 }) => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const { resetPassword, isLoading } = useAuth();
 
   const {
@@ -50,7 +51,10 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
       setSuccess(result.message);
       onSuccess?.();
     } catch (err) {
-      setError((err as Error)?.message || 'Échec de la réinitialisation. Veuillez réessayer.');
+      setError(
+        (err as Error)?.message ||
+          'Échec de la réinitialisation. Veuillez réessayer.'
+      );
     }
   };
 
@@ -66,9 +70,12 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <input {...register('token')} type="hidden" />
-          
+
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Nouveau mot de passe
             </label>
             <div className="relative">
@@ -88,7 +95,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
             {watchedPassword && (
               <div className="mt-3">
@@ -98,7 +107,10 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Confirmer le nouveau mot de passe
             </label>
             <div className="relative">
@@ -118,7 +130,9 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -134,12 +148,10 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Réinitialisation en cours...' : 'Réinitialiser le mot de passe'}
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading
+              ? 'Réinitialisation en cours...'
+              : 'Réinitialiser le mot de passe'}
           </Button>
         </form>
 

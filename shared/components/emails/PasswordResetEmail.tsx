@@ -37,8 +37,9 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
             {firstName ? `Bonjour ${firstName}, ` : 'Bonjour, '}
           </Text>
           <Text style={text}>
-            Nous avons reçu une demande de réinitialisation de mot de passe pour votre compte Documo. 
-            Si vous êtes à l&apos;origine de cette demande, cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe.
+            Nous avons reçu une demande de réinitialisation de mot de passe pour
+            votre compte Documo. Si vous êtes à l&apos;origine de cette demande,
+            cliquez sur le bouton ci-dessous pour créer un nouveau mot de passe.
           </Text>
         </Section>
 
@@ -50,7 +51,8 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
 
         <Section style={linkSection}>
           <Text style={smallText}>
-            Si le bouton ci-dessus ne fonctionne pas, vous pouvez copier et coller ce lien dans votre navigateur :
+            Si le bouton ci-dessus ne fonctionne pas, vous pouvez copier et
+            coller ce lien dans votre navigateur :
           </Text>
           <Link style={link} href={resetUrl}>
             {resetUrl}
@@ -61,14 +63,16 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
 
         <Section style={footerSection}>
           <Text style={footerText}>
-            Ce lien de réinitialisation expire dans 1 heure. Si vous n&apos;avez pas demandé de réinitialisation de mot de passe, 
-            vous pouvez ignorer cet email en toute sécurité. Votre mot de passe ne sera pas modifié.
+            Ce lien de réinitialisation expire dans 1 heure. Si vous n&apos;avez
+            pas demandé de réinitialisation de mot de passe, vous pouvez ignorer
+            cet email en toute sécurité. Votre mot de passe ne sera pas modifié.
           </Text>
           <Text style={footerText}>
             Pour votre sécurité, ne partagez jamais ce lien avec personne.
           </Text>
           <Text style={footerText}>
-            Cordialement,<br />
+            Cordialement,
+            <br />
             L&apos;équipe Documo
           </Text>
         </Section>

@@ -23,11 +23,13 @@ docker-compose ps
 ```
 
 PostgreSQL will be available at `localhost:5432` with the following credentials:
+
 - Username: postgres
 - Password: postgres
 - Database: document_transfer_db
 
 pgAdmin will be available at http://localhost:5050 with:
+
 - Email: admin@admin.com
 - Password: pgadmin
 

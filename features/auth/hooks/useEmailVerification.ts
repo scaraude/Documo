@@ -58,7 +58,13 @@ export const useEmailVerification = ({
         onVerificationComplete?.();
       }
     }
-  }, [checkVerificationQuery.data?.isVerified, email, password, loginMutation, onVerificationComplete]);
+  }, [
+    checkVerificationQuery.data?.isVerified,
+    email,
+    password,
+    loginMutation,
+    onVerificationComplete,
+  ]);
 
   const handleResendEmail = async () => {
     if (!canResend || isResending) return;

@@ -7,7 +7,7 @@ services:
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=documo_test
     ports:
-      - '5433:5432'  # Use different port to avoid conflicts
+      - '5433:5432' # Use different port to avoid conflicts
     # Use tmpfs for faster test database (in-memory)
     tmpfs:
       - /var/lib/postgresql/data:rw,noexec,nosuid,size=200m

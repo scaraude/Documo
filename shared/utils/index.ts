@@ -1,1 +1,5 @@
-export { computeFolderStatus, computeRequestStatus, computeDocumentStatus } from './computedStatus';
+export {
+  computeFolderStatus,
+  computeRequestStatus,
+  computeDocumentStatus,
+} from './computedStatus';

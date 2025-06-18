@@ -9,5 +9,5 @@ Object.defineProperty(window, 'localStorage', {
     removeItem: jest.fn(),
     clear: jest.fn(),
   },
-  writable: true
+  writable: true,
 });

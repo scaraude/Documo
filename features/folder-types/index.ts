@@ -1,8 +1,8 @@
 // Export types
 export type {
-    FolderType,
-    CreateFolderTypeParams,
-    UpdateFolderTypeParams
+  FolderType,
+  CreateFolderTypeParams,
+  UpdateFolderTypeParams,
 } from './types';
 
 // Export hooks

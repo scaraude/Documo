@@ -49,7 +49,12 @@ export interface AuthContextValue {
   session: UserSession | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  signup: (email: string, password: string, firstName?: string, lastName?: string) => Promise<{
+  signup: (
+    email: string,
+    password: string,
+    firstName?: string,
+    lastName?: string
+  ) => Promise<{
     success: boolean;
     message: string;
     userId: string;
@@ -69,7 +74,10 @@ export interface AuthContextValue {
     success: boolean;
     message: string;
   }>;
-  resetPassword: (token: string, password: string) => Promise<{
+  resetPassword: (
+    token: string,
+    password: string
+  ) => Promise<{
     success: boolean;
     message: string;
   }>;

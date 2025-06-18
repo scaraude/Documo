@@ -75,8 +75,14 @@ describe('Password Utils', () => {
       const password = 'CaseSensitive123!';
       const hashedPassword = await hashPassword(password);
 
-      const isValidLower = await verifyPassword('casesensitive123!', hashedPassword);
-      const isValidUpper = await verifyPassword('CASESENSITIVE123!', hashedPassword);
+      const isValidLower = await verifyPassword(
+        'casesensitive123!',
+        hashedPassword
+      );
+      const isValidUpper = await verifyPassword(
+        'CASESENSITIVE123!',
+        hashedPassword
+      );
 
       expect(isValidLower).toBe(false);
       expect(isValidUpper).toBe(false);

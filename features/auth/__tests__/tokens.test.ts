@@ -13,14 +13,14 @@ describe('Token Utils', () => {
   describe('generateSecureToken', () => {
     it('should generate token with default length', () => {
       const token = generateSecureToken();
-      
+
       expect(token).toHaveLength(64); // 32 bytes * 2 (hex)
       expect(token).toMatch(/^[a-f0-9]+$/);
     });
 
     it('should generate token with custom length', () => {
       const token = generateSecureToken(16);
-      
+
       expect(token).toHaveLength(32); // 16 bytes * 2 (hex)
       expect(token).toMatch(/^[a-f0-9]+$/);
     });
@@ -28,7 +28,7 @@ describe('Token Utils', () => {
     it('should generate unique tokens', () => {
       const token1 = generateSecureToken();
       const token2 = generateSecureToken();
-      
+
       expect(token1).not.toBe(token2);
     });
   });
@@ -36,7 +36,7 @@ describe('Token Utils', () => {
   describe('generateSessionToken', () => {
     it('should generate session token with correct length', () => {
       const token = generateSessionToken();
-      
+
       expect(token).toHaveLength(128); // 64 bytes * 2 (hex)
       expect(token).toMatch(/^[a-f0-9]+$/);
     });
@@ -44,7 +44,7 @@ describe('Token Utils', () => {
     it('should generate unique session tokens', () => {
       const token1 = generateSessionToken();
       const token2 = generateSessionToken();
-      
+
       expect(token1).not.toBe(token2);
     });
   });
@@ -52,7 +52,7 @@ describe('Token Utils', () => {
   describe('generateVerificationToken', () => {
     it('should generate verification token with correct length', () => {
       const token = generateVerificationToken();
-      
+
       expect(token).toHaveLength(64); // 32 bytes * 2 (hex)
       expect(token).toMatch(/^[a-f0-9]+$/);
     });
@@ -60,7 +60,7 @@ describe('Token Utils', () => {
     it('should generate unique verification tokens', () => {
       const token1 = generateVerificationToken();
       const token2 = generateVerificationToken();
-      
+
       expect(token1).not.toBe(token2);
     });
   });
@@ -68,7 +68,7 @@ describe('Token Utils', () => {
   describe('generatePasswordResetToken', () => {
     it('should generate password reset token with correct length', () => {
       const token = generatePasswordResetToken();
-      
+
       expect(token).toHaveLength(64); // 32 bytes * 2 (hex)
       expect(token).toMatch(/^[a-f0-9]+$/);
     });
@@ -76,7 +76,7 @@ describe('Token Utils', () => {
     it('should generate unique password reset tokens', () => {
       const token1 = generatePasswordResetToken();
       const token2 = generatePasswordResetToken();
-      
+
       expect(token1).not.toBe(token2);
     });
   });
@@ -84,19 +84,19 @@ describe('Token Utils', () => {
   describe('isTokenExpired', () => {
     it('should return false for future date', () => {
       const futureDate = new Date(Date.now() + 60000); // 1 minute from now
-      
+
       expect(isTokenExpired(futureDate)).toBe(false);
     });
 
     it('should return true for past date', () => {
       const pastDate = new Date(Date.now() - 60000); // 1 minute ago
-      
+
       expect(isTokenExpired(pastDate)).toBe(true);
     });
 
     it('should return true for current time', () => {
       const now = new Date();
-      
+
       // Small delay to ensure current time has passed
       setTimeout(() => {
         expect(isTokenExpired(now)).toBe(true);

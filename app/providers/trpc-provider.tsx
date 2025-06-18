@@ -1,8 +1,10 @@
-'use client'
-import { trpc } from '@/lib/trpc/client'
+'use client';
+import { trpc } from '@/lib/trpc/client';
 
 function TRPCProviderComponent({ children }: { children: React.ReactNode }) {
-    return <>{children}</>
+  return <>{children}</>;
 }
 
-export default trpc.withTRPC(TRPCProviderComponent) as typeof TRPCProviderComponent
+export default trpc.withTRPC(
+  TRPCProviderComponent
+) as typeof TRPCProviderComponent;

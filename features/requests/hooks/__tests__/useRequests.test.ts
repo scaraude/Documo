@@ -6,25 +6,25 @@ jest.mock('@/lib/trpc/client', () => ({
   trpc: {
     requests: {
       getAll: {
-        useQuery: jest.fn(() => ({ data: [], isLoading: false }))
+        useQuery: jest.fn(() => ({ data: [], isLoading: false })),
       },
       getById: {
-        useQuery: jest.fn(() => ({ data: null, isLoading: false }))
+        useQuery: jest.fn(() => ({ data: null, isLoading: false })),
       },
       create: {
         useMutation: jest.fn(() => ({
-          mutateAsync: jest.fn()
-        }))
-      }
+          mutateAsync: jest.fn(),
+        })),
+      },
     },
     useUtils: jest.fn(() => ({
       requests: {
         getAll: {
-          invalidate: jest.fn()
-        }
-      }
-    }))
-  }
+          invalidate: jest.fn(),
+        },
+      },
+    })),
+  },
 }));
 
 describe('useRequests Hook', () => {

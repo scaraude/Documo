@@ -7,124 +7,141 @@ import ExternalRequestPage from '@/app/external/requests/[token]/page';
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
-    useRouter: jest.fn(),
-    useParams: () => ({ token: 'test-token' })
+  useRouter: jest.fn(),
+  useParams: () => ({ token: 'test-token' }),
 }));
 
 jest.mock('../../repository/externalRequestsRepository');
 jest.mock('@/features/documents/repository/documentsRepository');
 
 describe('External Document Upload Flow', () => {
-    const mockRouter = {
-        push: jest.fn(),
-        refresh: jest.fn()
-    };
+  const mockRouter = {
+    push: jest.fn(),
+    refresh: jest.fn(),
+  };
 
-    const mockRequest = {
-        id: 'req-123',
-        civilId: 'civ-123',
-        requestedDocuments: ['ID_CARD'],
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 86400000) // 24 hours from now
-    };
+  const mockRequest = {
+    id: 'req-123',
+    civilId: 'civ-123',
+    requestedDocuments: ['ID_CARD'],
+    createdAt: new Date(),
+    expiresAt: new Date(Date.now() + 86400000), // 24 hours from now
+  };
 
-    beforeEach(() => {
-        jest.clearAllMocks();
-        (useRouter as jest.Mock).mockReturnValue(mockRouter);
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (useRouter as jest.Mock).mockReturnValue(mockRouter);
+  });
+
+  describe('Share Link Generation', () => {
+    const mockToken = 'test-token';
+
+    it('should complete full share link generation flow', async () => {
+      (
+        externalRequestsRepository.createShareLink as jest.Mock
+      ).mockResolvedValue({
+        token: mockToken,
+      });
+
+      render(<ShareLinkButton requestId={mockRequest.id} />);
+
+      const button = screen.getByRole('button');
+      await act(async () => {
+        fireEvent.click(button);
+      });
+
+      expect(externalRequestsRepository.createShareLink).toHaveBeenCalledWith({
+        requestId: mockRequest.id,
+        token: expect.any(String),
+        expiresAt: expect.any(Date),
+      });
+    });
+  });
+
+  describe('External Access Flow', () => {
+    it('should handle complete external user journey', async () => {
+      // Mock share link lookup
+      (
+        externalRequestsRepository.getShareLinkByToken as jest.Mock
+      ).mockResolvedValue({
+        request: mockRequest,
+      });
+
+      render(<ExternalRequestPage />);
+
+      // Wait for the request to load
+      await screen.findByText(/Demande de documents/i);
+
+      // Verify request details are displayed
+      expect(
+        screen.getByText(/Continuer avec FranceConnect/i)
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Continuer avec un email/i)).toBeInTheDocument();
+
+      // Verify document list
+      mockRequest.requestedDocuments.forEach(doc => {
+        expect(screen.getByText(new RegExp(doc, 'i'))).toBeInTheDocument();
+      });
     });
 
-    describe('Share Link Generation', () => {
-        const mockToken = 'test-token';
+    it('should maintain session state during upload', async () => {
+      // Implementation depends on your session management
+      // This is a basic example
+      const mockSession = { user: { id: 'user-123' } };
+      jest
+        .spyOn(Storage.prototype, 'getItem')
+        .mockImplementation(key =>
+          key === 'session' ? JSON.stringify(mockSession) : null
+        );
 
-        it('should complete full share link generation flow', async () => {
-            (externalRequestsRepository.createShareLink as jest.Mock).mockResolvedValue({
-                token: mockToken
-            });
+      (
+        externalRequestsRepository.getShareLinkByToken as jest.Mock
+      ).mockResolvedValue({
+        request: mockRequest,
+      });
 
-            render(<ShareLinkButton requestId={mockRequest.id} />);
+      render(<ExternalRequestPage />);
 
-            const button = screen.getByRole('button');
-            await act(async () => {
-                fireEvent.click(button);
-            });
+      await screen.findByText(/Demande de documents/i);
 
-            expect(externalRequestsRepository.createShareLink).toHaveBeenCalledWith({
-                requestId: mockRequest.id,
-                token: expect.any(String),
-                expiresAt: expect.any(Date)
-            });
-        });
+      // Verify session is maintained
+      expect(localStorage.getItem('session')).toBeTruthy();
+    });
+  });
+
+  describe('Security Aspects', () => {
+    it('should prevent access with expired tokens', async () => {
+      // Mock expired share link
+      (
+        externalRequestsRepository.getShareLinkByToken as jest.Mock
+      ).mockResolvedValue(null);
+
+      render(<ExternalRequestPage />);
+
+      await screen.findByText(/Demande non trouvée/i);
+      expect(
+        screen.getByText(/La demande n'existe pas ou a expiré/i)
+      ).toBeInTheDocument();
     });
 
-    describe('External Access Flow', () => {
-        it('should handle complete external user journey', async () => {
-            // Mock share link lookup
-            (externalRequestsRepository.getShareLinkByToken as jest.Mock).mockResolvedValue({
-                request: mockRequest
-            });
+    it('should validate document upload permissions', async () => {
+      const mockUpload = jest.fn().mockRejectedValue(new Error('Unauthorized'));
 
-            render(<ExternalRequestPage />);
+      (
+        externalRequestsRepository.getShareLinkByToken as jest.Mock
+      ).mockResolvedValue({
+        request: mockRequest,
+      });
 
-            // Wait for the request to load
-            await screen.findByText(/Demande de documents/i);
+      (documentsRepository.uploadDocument as jest.Mock) = mockUpload;
 
-            // Verify request details are displayed
-            expect(screen.getByText(/Continuer avec FranceConnect/i)).toBeInTheDocument();
-            expect(screen.getByText(/Continuer avec un email/i)).toBeInTheDocument();
+      render(<ExternalRequestPage />);
 
-            // Verify document list
-            mockRequest.requestedDocuments.forEach(doc => {
-                expect(screen.getByText(new RegExp(doc, 'i'))).toBeInTheDocument();
-            });
-        });
+      await screen.findByText(/Demande de documents/i);
 
-        it('should maintain session state during upload', async () => {
-            // Implementation depends on your session management
-            // This is a basic example
-            const mockSession = { user: { id: 'user-123' } };
-            jest.spyOn(Storage.prototype, 'getItem')
-                .mockImplementation(key => key === 'session' ? JSON.stringify(mockSession) : null);
-
-            (externalRequestsRepository.getShareLinkByToken as jest.Mock).mockResolvedValue({
-                request: mockRequest
-            });
-
-            render(<ExternalRequestPage />);
-
-            await screen.findByText(/Demande de documents/i);
-
-            // Verify session is maintained
-            expect(localStorage.getItem('session')).toBeTruthy();
-        });
+      // Attempt unauthorized upload
+      // Note: Actual implementation would depend on your upload component
+      expect(mockUpload).toHaveBeenCalledTimes(0);
     });
-
-    describe('Security Aspects', () => {
-        it('should prevent access with expired tokens', async () => {
-            // Mock expired share link
-            (externalRequestsRepository.getShareLinkByToken as jest.Mock).mockResolvedValue(null);
-
-            render(<ExternalRequestPage />);
-
-            await screen.findByText(/Demande non trouvée/i);
-            expect(screen.getByText(/La demande n'existe pas ou a expiré/i)).toBeInTheDocument();
-        });
-
-        it('should validate document upload permissions', async () => {
-            const mockUpload = jest.fn().mockRejectedValue(new Error('Unauthorized'));
-
-            (externalRequestsRepository.getShareLinkByToken as jest.Mock).mockResolvedValue({
-                request: mockRequest
-            });
-
-            (documentsRepository.uploadDocument as jest.Mock) = mockUpload;
-
-            render(<ExternalRequestPage />);
-
-            await screen.findByText(/Demande de documents/i);
-
-            // Attempt unauthorized upload
-            // Note: Actual implementation would depend on your upload component
-            expect(mockUpload).toHaveBeenCalledTimes(0);
-        });
-    });
+  });
 });

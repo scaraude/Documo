@@ -15,7 +15,7 @@ interface Context {
 const authRepository = new AuthRepository(prisma);
 
 export const t = initTRPC.context<Context>().create({
-    transformer: superjson,
+  transformer: superjson,
 });
 
 export const router = t.router;
@@ -24,7 +24,7 @@ export const publicProcedure = t.procedure;
 const isAuthenticated = t.middleware(async ({ ctx, next }) => {
   // Get session token from cookie
   const sessionToken = ctx.req?.cookies.get('session')?.value;
-  
+
   if (!sessionToken) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
@@ -34,7 +34,7 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
 
   // Validate session
   const sessionWithUser = await authRepository.findSessionByToken(sessionToken);
-  
+
   if (!sessionWithUser) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',

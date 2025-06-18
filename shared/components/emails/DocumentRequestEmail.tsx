@@ -37,20 +37,19 @@ export const DocumentRequestEmail = ({
           <Section style={header}>
             <Heading style={title}>📄 Documo</Heading>
           </Section>
-          
+
           <Section style={content}>
             <Heading as="h2" style={greeting}>
               Bonjour,
             </Heading>
-            
+
             <Text style={paragraph}>
-              {requesterName} vous demande de fournir des documents pour le dossier <strong>&ldquo;{folderName}&rdquo;</strong>.
+              {requesterName} vous demande de fournir des documents pour le
+              dossier <strong>&ldquo;{folderName}&rdquo;</strong>.
             </Text>
-            
-            <Text style={paragraph}>
-              Voici la liste des documents requis :
-            </Text>
-            
+
+            <Text style={paragraph}>Voici la liste des documents requis :</Text>
+
             <Section style={documentList}>
               {requestedDocuments.map((document, index) => (
                 <Text key={index} style={documentItem}>
@@ -58,24 +57,26 @@ export const DocumentRequestEmail = ({
                 </Text>
               ))}
             </Section>
-            
+
             <Text style={paragraph}>
-              Pour télécharger vos documents de manière sécurisée, cliquez sur le bouton ci-dessous :
+              Pour télécharger vos documents de manière sécurisée, cliquez sur
+              le bouton ci-dessous :
             </Text>
-            
+
             <Section style={buttonContainer}>
               <Button style={button} href={uploadUrl}>
                 Télécharger mes documents
               </Button>
             </Section>
-            
+
             <Text style={paragraph}>
-              Si le bouton ne fonctionne pas, vous pouvez également copier et coller ce lien dans votre navigateur :
+              Si le bouton ne fonctionne pas, vous pouvez également copier et
+              coller ce lien dans votre navigateur :
             </Text>
             <Text style={linkText}>{uploadUrl}</Text>
-            
+
             <Hr style={divider} />
-            
+
             <Section style={infoBox}>
               <Text style={infoTitle}>ℹ️ Informations importantes :</Text>
               <Text style={infoText}>
@@ -85,23 +86,26 @@ export const DocumentRequestEmail = ({
                 • Vos documents seront chiffrés et sécurisés
               </Text>
               <Text style={infoText}>
-                • Une fois téléchargés, vous n&apos;aurez plus jamais à les envoyer
+                • Une fois téléchargés, vous n&apos;aurez plus jamais à les
+                envoyer
               </Text>
               <Text style={infoText}>
-                • Seules les personnes autorisées pourront accéder à vos documents
+                • Seules les personnes autorisées pourront accéder à vos
+                documents
               </Text>
             </Section>
-            
+
             <Hr style={divider} />
-            
+
             <Text style={footer}>
-              Merci pour votre confiance,<br />
+              Merci pour votre confiance,
+              <br />
               L&apos;équipe Documo
             </Text>
-            
+
             <Text style={disclaimer}>
-              Cet email a été envoyé à <strong>{recipientEmail}</strong>. 
-              Si vous avez reçu cet email par erreur, veuillez l&apos;ignorer.
+              Cet email a été envoyé à <strong>{recipientEmail}</strong>. Si
+              vous avez reçu cet email par erreur, veuillez l&apos;ignorer.
             </Text>
           </Section>
         </Container>
@@ -112,7 +116,8 @@ export const DocumentRequestEmail = ({
 
 const main = {
   backgroundColor: '#f9fafb',
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 };
 
 const container = {

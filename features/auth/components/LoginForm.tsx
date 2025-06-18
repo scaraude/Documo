@@ -17,7 +17,11 @@ interface LoginFormProps {
   onSwitchToForgotPassword?: () => void;
 }
 
-export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignup, onSwitchToForgotPassword }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({
+  onSuccess,
+  onSwitchToSignup,
+  onSwitchToForgotPassword,
+}) => {
   const [error, setError] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [failedAttempts, setFailedAttempts] = useState<number>(0);
@@ -40,7 +44,8 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
       setFailedAttempts(0);
       onSuccess?.();
     } catch (err) {
-      const errorMessage = (err as Error)?.message || 'Connexion échouée. Veuillez réessayer.';
+      const errorMessage =
+        (err as Error)?.message || 'Connexion échouée. Veuillez réessayer.';
       console.log('errorMessage', errorMessage);
 
       // Check if error is about email verification
@@ -50,7 +55,10 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
         router.push(ROUTES.AUTH.VERIFY_EMAIL);
       } else {
         // Increment failed attempts for authentication errors
-        if (errorMessage.includes('Invalid credentials') || errorMessage.includes('mot de passe')) {
+        if (
+          errorMessage.includes('Invalid credentials') ||
+          errorMessage.includes('mot de passe')
+        ) {
           setFailedAttempts(prev => prev + 1);
         }
         setError(errorMessage);
@@ -58,18 +66,22 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
     }
   };
 
-
   return (
     <Card className="w-full max-w-md p-6">
       <div className="space-y-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Connexion</h2>
-          <p className="text-gray-600 mt-2">Bon retour ! Connectez-vous à votre compte.</p>
+          <p className="text-gray-600 mt-2">
+            Bon retour ! Connectez-vous à votre compte.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
             <input
@@ -80,13 +92,18 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
               placeholder="Entrez votre email"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div>
             <div className="flex justify-between items-center mb-1">
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label
+                htmlFor="password"
+                className="block text-sm font-medium text-gray-700"
+              >
                 Mot de passe
               </label>
               {onSwitchToForgotPassword && (
@@ -116,7 +133,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 
@@ -140,11 +159,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSuccess, onSwitchToSignu
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-          >
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? 'Connexion...' : 'Se connecter'}
           </Button>
         </form>

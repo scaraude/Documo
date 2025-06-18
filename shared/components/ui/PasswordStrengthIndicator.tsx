@@ -2,17 +2,19 @@
 
 import React from 'react';
 import { Check, X } from 'lucide-react';
-import { validatePassword, passwordRequirements } from '@/features/auth/types/zod';
+import {
+  validatePassword,
+  passwordRequirements,
+} from '@/features/auth/types/zod';
 
 interface PasswordStrengthIndicatorProps {
   password: string;
   showRequirements?: boolean;
 }
 
-export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps> = ({
-  password,
-  showRequirements = true,
-}) => {
+export const PasswordStrengthIndicator: React.FC<
+  PasswordStrengthIndicatorProps
+> = ({ password, showRequirements = true }) => {
   const validation = validatePassword(password);
 
   // Calculate strength score (0-5 based on requirements met)
@@ -20,12 +22,37 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
 
   // Get strength level and color
   const getStrengthInfo = (score: number) => {
-    if (score === 0) return { label: '', color: 'bg-gray-200', textColor: 'text-gray-400' };
-    if (score <= 1) return { label: 'Très faible', color: 'bg-red-500', textColor: 'text-red-600' };
-    if (score <= 2) return { label: 'Faible', color: 'bg-orange-500', textColor: 'text-orange-600' };
-    if (score <= 3) return { label: 'Moyen', color: 'bg-yellow-500', textColor: 'text-yellow-600' };
-    if (score <= 4) return { label: 'Fort', color: 'bg-blue-500', textColor: 'text-blue-600' };
-    return { label: 'Très fort', color: 'bg-green-500', textColor: 'text-green-600' };
+    if (score === 0)
+      return { label: '', color: 'bg-gray-200', textColor: 'text-gray-400' };
+    if (score <= 1)
+      return {
+        label: 'Très faible',
+        color: 'bg-red-500',
+        textColor: 'text-red-600',
+      };
+    if (score <= 2)
+      return {
+        label: 'Faible',
+        color: 'bg-orange-500',
+        textColor: 'text-orange-600',
+      };
+    if (score <= 3)
+      return {
+        label: 'Moyen',
+        color: 'bg-yellow-500',
+        textColor: 'text-yellow-600',
+      };
+    if (score <= 4)
+      return {
+        label: 'Fort',
+        color: 'bg-blue-500',
+        textColor: 'text-blue-600',
+      };
+    return {
+      label: 'Très fort',
+      color: 'bg-green-500',
+      textColor: 'text-green-600',
+    };
   };
 
   const strength = getStrengthInfo(score);
@@ -37,7 +64,9 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
       {/* Strength bar */}
       <div className="space-y-1">
         <div className="flex justify-between items-center">
-          <span className="text-xs font-medium text-gray-700">Force du mot de passe</span>
+          <span className="text-xs font-medium text-gray-700">
+            Force du mot de passe
+          </span>
           <span className={`text-xs font-medium ${strength.textColor}`}>
             {strength.label}
           </span>
@@ -77,7 +106,9 @@ export const PasswordStrengthIndicator: React.FC<PasswordStrengthIndicatorProps>
                   ) : (
                     <X className="w-3 h-3 text-gray-500" />
                   )}
-                  <span className={`text-xs ${requirementMet ? 'text-green-600' : 'text-gray-600'}`}>
+                  <span
+                    className={`text-xs ${requirementMet ? 'text-green-600' : 'text-gray-600'}`}
+                  >
                     {requirement}
                   </span>
                 </li>

@@ -8,13 +8,13 @@ The enhanced seed files now include comprehensive authentication test data to su
 
 ### Available Test Users
 
-| User Type | Email | Password | Status | Purpose |
-|-----------|-------|----------|--------|---------|
-| **Verified** | `test@example.com` | `password123` | ✅ Verified | Basic auth testing |
-| **Unverified** | `unverified@example.com` | `password123` | ❌ Unverified | Email verification testing |
-| **Admin** | `admin@documo.com` | `SecureAdmin123!` | ✅ Verified | Admin/privileged operations |
-| **Active Session** | `active@example.com` | `SecurePass123!` | ✅ Verified | Session management testing |
-| **Multiple Sessions** | `multi@example.com` | `SecurePass123!` | ✅ Verified | Multi-device session testing |
+| User Type             | Email                    | Password          | Status        | Purpose                      |
+| --------------------- | ------------------------ | ----------------- | ------------- | ---------------------------- |
+| **Verified**          | `test@example.com`       | `password123`     | ✅ Verified   | Basic auth testing           |
+| **Unverified**        | `unverified@example.com` | `password123`     | ❌ Unverified | Email verification testing   |
+| **Admin**             | `admin@documo.com`       | `SecureAdmin123!` | ✅ Verified   | Admin/privileged operations  |
+| **Active Session**    | `active@example.com`     | `SecurePass123!`  | ✅ Verified   | Session management testing   |
+| **Multiple Sessions** | `multi@example.com`      | `SecurePass123!`  | ✅ Verified   | Multi-device session testing |
 
 ### Usage in Tests
 
@@ -24,7 +24,7 @@ import { TEST_USERS } from '../../../prisma/seed';
 // Use predefined test users
 await authRepository.authenticateUser({
   email: TEST_USERS.verified.email,
-  password: TEST_USERS.verified.password
+  password: TEST_USERS.verified.password,
 });
 ```
 
@@ -80,7 +80,7 @@ await authRepository.verifyEmail('used_verify_def456...');
 ### Token Types Created
 
 1. **Valid Reset Token** - Active token (1h expiry)
-2. **Expired Reset Token** - Token that expired 1 hour ago  
+2. **Expired Reset Token** - Token that expired 1 hour ago
 3. **Used Reset Token** - Token that was already consumed
 
 ### Reset Testing Scenarios
@@ -90,7 +90,10 @@ await authRepository.verifyEmail('used_verify_def456...');
 await authRepository.resetPassword('reset_abc123...', 'NewPassword123!');
 
 // Expired token handling
-await authRepository.resetPassword('expired_reset_xyz789...', 'NewPassword123!');
+await authRepository.resetPassword(
+  'expired_reset_xyz789...',
+  'NewPassword123!'
+);
 
 // Already used token
 await authRepository.resetPassword('used_reset_def456...', 'NewPassword123!');
@@ -121,6 +124,7 @@ TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/documo_test yarn
 ## Seed Statistics
 
 ### Test Seed Output
+
 ```
 ✅ Test data created: {
   users: 5,              // All test user types
@@ -136,6 +140,7 @@ TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/documo_test yarn
 ```
 
 ### Full Seed Output
+
 ```
 📊 Statistics: {
   users: 5,                     // Test users
@@ -159,13 +164,18 @@ The seed data provides comprehensive scenarios for testing:
 
 ```typescript
 // Test with verified user
-const verifiedUser = await authRepository.findUserByEmail(TEST_USERS.verified.email);
+const verifiedUser = await authRepository.findUserByEmail(
+  TEST_USERS.verified.email
+);
 
 // Test session validation
-const activeSession = await authRepository.findSessionByToken('session_abc123...');
+const activeSession =
+  await authRepository.findSessionByToken('session_abc123...');
 
 // Test token expiration
-const expiredToken = await authRepository.verifyEmail('expired_verify_xyz789...');
+const expiredToken = await authRepository.verifyEmail(
+  'expired_verify_xyz789...'
+);
 ```
 
 ### Integration Tests
@@ -174,7 +184,7 @@ const expiredToken = await authRepository.verifyEmail('expired_verify_xyz789...'
 // Test complete auth flows
 const loginResult = await trpc.auth.login.mutate({
   email: TEST_USERS.verified.email,
-  password: TEST_USERS.verified.password
+  password: TEST_USERS.verified.password,
 });
 
 // Test session management
@@ -184,15 +194,18 @@ const sessions = await trpc.auth.sessions.query();
 ## Security Considerations
 
 ### Password Hashing
+
 - All test passwords are properly hashed using bcrypt with 12 rounds
 - No plaintext passwords stored in database
 
 ### Token Generation
+
 - Uses `crypto.randomBytes()` for secure token generation
 - Tokens are properly prefixed for identification
 - Realistic expiration times for testing scenarios
 
 ### Session Security
+
 - Realistic user agent strings and IP addresses
 - Proper expiration and revocation handling
 - Multiple device simulation
@@ -200,6 +213,7 @@ const sessions = await trpc.auth.sessions.query();
 ## Best Practices
 
 ### Test Isolation
+
 ```typescript
 beforeEach(async () => {
   // Clean and reseed for each test
@@ -208,12 +222,14 @@ beforeEach(async () => {
 ```
 
 ### Environment Separation
+
 ```typescript
 // Always use test database for tests
 process.env.TEST_DATABASE_URL = 'postgresql://localhost:5433/documo_test';
 ```
 
 ### Data Cleanup
+
 ```typescript
 afterAll(async () => {
   // Clean up test data

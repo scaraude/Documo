@@ -16,10 +16,14 @@ interface SignupFormProps {
   onSwitchToLogin?: () => void;
 }
 
-export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLogin }) => {
+export const SignupForm: React.FC<SignupFormProps> = ({
+  onSuccess,
+  onSwitchToLogin,
+}) => {
   const [error, setError] = useState<string>('');
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const { signup, isLoading } = useAuth();
 
   const {
@@ -37,12 +41,19 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
     try {
       setError('');
 
-      const result = await signup(data.email, data.password, data.firstName, data.lastName);
+      const result = await signup(
+        data.email,
+        data.password,
+        data.firstName,
+        data.lastName
+      );
       sessionStorage.setItem('unverified_email', data.email);
       toast.success(result.message);
       onSuccess?.(data.email);
     } catch (err) {
-      setError((err as Error)?.message || 'Inscription échouée. Veuillez réessayer.');
+      setError(
+        (err as Error)?.message || 'Inscription échouée. Veuillez réessayer.'
+      );
     }
   };
 
@@ -51,13 +62,18 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
       <div className="space-y-4">
         <div className="text-center">
           <h2 className="text-2xl font-bold">Créer un compte</h2>
-          <p className="text-gray-600 mt-2">Rejoignez-nous ! Créez votre compte pour commencer.</p>
+          <p className="text-gray-600 mt-2">
+            Rejoignez-nous ! Créez votre compte pour commencer.
+          </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="firstName"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Prénom
               </label>
               <input
@@ -68,12 +84,17 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
                 placeholder="Jean"
               />
               {errors.firstName && (
-                <p className="text-red-500 text-sm mt-1">{errors.firstName.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
 
             <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="lastName"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Nom
               </label>
               <input
@@ -84,13 +105,18 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
                 placeholder="Dupont"
               />
               {errors.lastName && (
-                <p className="text-red-500 text-sm mt-1">{errors.lastName.message}</p>
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
             <input
@@ -101,12 +127,17 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
               placeholder="jean@exemple.com"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Mot de passe
             </label>
             <div className="relative">
@@ -126,7 +157,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
               </button>
             </div>
             {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.password.message}
+              </p>
             )}
             {watchedPassword && (
               <div className="mt-3">
@@ -136,7 +169,10 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="confirmPassword"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Confirmer le mot de passe
             </label>
             <div className="relative">
@@ -156,7 +192,9 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
 
@@ -166,11 +204,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({ onSuccess, onSwitchToLog
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-          >
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? 'Création du compte...' : 'Créer un compte'}
           </Button>
         </form>

@@ -1,9 +1,12 @@
 import { AuthRepository } from '../repository/authRepository';
 import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
-import { AuthProvider, Prisma, PrismaClient } from '../../../lib/prisma/generated/client';
+import {
+  AuthProvider,
+  Prisma,
+  PrismaClient,
+} from '../../../lib/prisma/generated/client';
 import { verifyPassword } from '../utils/password'; // assuming it's imported here
 jest.mock('../utils/password'); // mock the whole module
-
 
 jest.mock('@/lib/prisma', () => ({
   prisma: mockDeep<PrismaClient>(),
@@ -12,7 +15,9 @@ jest.mock('@/lib/prisma', () => ({
 describe('AuthRepository', () => {
   let authRepository: AuthRepository;
   let mockPrisma: DeepMockProxy<PrismaClient>;
-  const mockedVerifyPassword = verifyPassword as jest.MockedFunction<typeof verifyPassword>;
+  const mockedVerifyPassword = verifyPassword as jest.MockedFunction<
+    typeof verifyPassword
+  >;
 
   beforeEach(() => {
     mockPrisma = mockDeep<PrismaClient>();
@@ -26,7 +31,7 @@ describe('AuthRepository', () => {
         email: 'test@example.com',
         password: 'SecurePass123!',
         firstName: 'Test',
-        lastName: 'User'
+        lastName: 'User',
       };
 
       mockPrisma.user.findFirst.mockResolvedValue(null); // No existing user
@@ -38,7 +43,7 @@ describe('AuthRepository', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
-        civilId: null
+        civilId: null,
       });
 
       const user = await authRepository.createUser(credentials);
@@ -50,13 +55,12 @@ describe('AuthRepository', () => {
           data: expect.objectContaining({
             authProviders: expect.objectContaining({
               create: expect.objectContaining({
-                passwordHash: expect.not.stringMatching(credentials.password)
-              })
-            })
-          })
+                passwordHash: expect.not.stringMatching(credentials.password),
+              }),
+            }),
+          }),
         })
       );
-
     });
 
     it('should validate correct passwords', async () => {
@@ -64,7 +68,7 @@ describe('AuthRepository', () => {
       const password = 'SecurePass123!';
 
       type UserWithAuthProviders = Prisma.UserGetPayload<{
-        include: { authProviders: true }
+        include: { authProviders: true };
       }>;
       // Mock user with hashed password
       const hashedPassword = '$2b$12$hashedpassword...';
@@ -77,29 +81,33 @@ describe('AuthRepository', () => {
         updatedAt: new Date(),
         deletedAt: null,
         civilId: null,
-        authProviders: [{
-          passwordHash: hashedPassword,
-          id: 'provider-id',
-          userId: 'user-id',
-          providerType: 'EMAIL_PASSWORD',
-          providerId: email,
-          isVerified: true,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          emailVerifiedAt: new Date()
-        }]
+        authProviders: [
+          {
+            passwordHash: hashedPassword,
+            id: 'provider-id',
+            userId: 'user-id',
+            providerType: 'EMAIL_PASSWORD',
+            providerId: email,
+            isVerified: true,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            emailVerifiedAt: new Date(),
+          },
+        ],
       } as UserWithAuthProviders;
 
       mockPrisma.user.findFirst.mockResolvedValue(mockedReturnUser);
 
       mockedVerifyPassword.mockResolvedValue(true);
 
-      const user = await authRepository.authenticateUser({ email, password }) as UserWithAuthProviders;
+      const user = (await authRepository.authenticateUser({
+        email,
+        password,
+      })) as UserWithAuthProviders;
       expect(user).toBeTruthy();
       expect(user?.email).toBe(email);
       expect(user?.authProviders[0].isVerified).toBe(true);
     });
-
   });
 
   describe('Rate Limiting', () => {
@@ -108,11 +116,14 @@ describe('AuthRepository', () => {
 
       // Mock 3 recent reset attempts
       authRepository.findUserByEmail = jest.fn().mockResolvedValue('user');
-      mockPrisma.authProvider.findFirst.mockResolvedValue('authProvider' as unknown as AuthProvider);
+      mockPrisma.authProvider.findFirst.mockResolvedValue(
+        'authProvider' as unknown as AuthProvider
+      );
       mockPrisma.passwordResetToken.count.mockResolvedValue(3);
 
-      await expect(authRepository.createPasswordResetToken(email))
-        .rejects.toThrow('Too many password reset attempts');
+      await expect(
+        authRepository.createPasswordResetToken(email)
+      ).rejects.toThrow('Too many password reset attempts');
     });
 
     it('should enforce email verification rate limits', async () => {
@@ -121,8 +132,9 @@ describe('AuthRepository', () => {
       // Mock 3 recent verification attempts
       mockPrisma.emailVerificationToken.count.mockResolvedValue(3);
 
-      await expect(authRepository.createEmailVerificationToken(email))
-        .rejects.toThrow('Too many verification attempts');
+      await expect(
+        authRepository.createEmailVerificationToken(email)
+      ).rejects.toThrow('Too many verification attempts');
     });
   });
 
@@ -136,10 +148,13 @@ describe('AuthRepository', () => {
         token: 'expired-token',
         expiresAt: expiredDate,
         createdAt: new Date(),
-        usedAt: null
+        usedAt: null,
       });
 
-      const result = await authRepository.resetPassword('expired-token', 'NewPass123!');
+      const result = await authRepository.resetPassword(
+        'expired-token',
+        'NewPass123!'
+      );
       expect(result).toBe(false);
     });
 
@@ -152,10 +167,13 @@ describe('AuthRepository', () => {
         token: 'used-token',
         expiresAt: new Date(Date.now() + 60000),
         createdAt: new Date(),
-        usedAt: usedDate // Already used
+        usedAt: usedDate, // Already used
       });
 
-      const result = await authRepository.resetPassword('used-token', 'NewPass123!');
+      const result = await authRepository.resetPassword(
+        'used-token',
+        'NewPass123!'
+      );
       expect(result).toBe(false);
     });
   });
@@ -174,10 +192,14 @@ describe('AuthRepository', () => {
         createdAt: new Date(),
         revokedAt: null,
         userAgent,
-        ipAddress
+        ipAddress,
       });
 
-      const session = await authRepository.createSession(userId, userAgent, ipAddress);
+      const session = await authRepository.createSession(
+        userId,
+        userAgent,
+        ipAddress
+      );
 
       expect(session.userId).toBe(userId);
       expect(session.userAgent).toBe(userAgent);
@@ -191,7 +213,7 @@ describe('AuthRepository', () => {
 
       expect(mockPrisma.userSession.update).toHaveBeenCalledWith({
         where: { id: sessionId },
-        data: { revokedAt: expect.any(Date) }
+        data: { revokedAt: expect.any(Date) },
       });
     });
 
@@ -217,8 +239,8 @@ describe('AuthRepository', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           deletedAt: null,
-          civilId: null
-        }
+          civilId: null,
+        },
       };
 
       mockPrisma.userSession.findFirst.mockResolvedValue(mockSession);
@@ -230,7 +252,7 @@ describe('AuthRepository', () => {
         where: {
           token,
           revokedAt: null,
-          user: { deletedAt: null }
+          user: { deletedAt: null },
         },
         include: {
           user: true,
@@ -243,7 +265,7 @@ describe('AuthRepository', () => {
       const expiredDate = new Date(Date.now() - 60000);
 
       type UseSessionWithUser = Prisma.UserSessionGetPayload<{
-        include: { user: true }
+        include: { user: true };
       }>;
 
       mockPrisma.userSession.findFirst.mockResolvedValue({
@@ -263,8 +285,8 @@ describe('AuthRepository', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           deletedAt: null,
-          civilId: null
-        }
+          civilId: null,
+        },
       } as UseSessionWithUser);
 
       const result = await authRepository.findSessionByToken(token);
@@ -272,7 +294,7 @@ describe('AuthRepository', () => {
       expect(result).toBeNull();
       expect(mockPrisma.userSession.update).toHaveBeenCalledWith({
         where: { id: 'session-id' },
-        data: { revokedAt: expect.any(Date) }
+        data: { revokedAt: expect.any(Date) },
       });
     });
 
@@ -303,7 +325,7 @@ describe('AuthRepository', () => {
         token,
         expiresAt: futureDate,
         createdAt: new Date(),
-        usedAt: null
+        usedAt: null,
       });
 
       const result = await authRepository.verifyEmail(token);
@@ -311,7 +333,7 @@ describe('AuthRepository', () => {
       expect(result).toBe(true);
       expect(mockPrisma.emailVerificationToken.update).toHaveBeenCalledWith({
         where: { id: 'token-id' },
-        data: { usedAt: expect.any(Date) }
+        data: { usedAt: expect.any(Date) },
       });
       expect(mockPrisma.authProvider.updateMany).toHaveBeenCalledWith({
         where: {
@@ -335,7 +357,7 @@ describe('AuthRepository', () => {
         token,
         expiresAt: expiredDate,
         createdAt: new Date(),
-        usedAt: null
+        usedAt: null,
       });
 
       const result = await authRepository.verifyEmail(token);
@@ -365,7 +387,7 @@ describe('AuthRepository', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
-        civilId: null
+        civilId: null,
       };
 
       mockPrisma.user.findFirst.mockResolvedValue(mockUser);
@@ -391,7 +413,7 @@ describe('AuthRepository', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         deletedAt: null,
-        civilId: null
+        civilId: null,
       };
 
       mockPrisma.user.findFirst.mockResolvedValue(mockUser);
@@ -420,7 +442,7 @@ describe('AuthRepository', () => {
         isVerified: true,
         createdAt: new Date(),
         updatedAt: new Date(),
-        emailVerifiedAt: new Date()
+        emailVerifiedAt: new Date(),
       });
 
       const result = await authRepository.isEmailVerified(email);
@@ -441,7 +463,7 @@ describe('AuthRepository', () => {
         isVerified: false,
         createdAt: new Date(),
         updatedAt: new Date(),
-        emailVerifiedAt: null
+        emailVerifiedAt: null,
       });
 
       const result = await authRepository.isEmailVerified(email);
@@ -454,7 +476,9 @@ describe('AuthRepository', () => {
     it('should handle database errors gracefully in findUserByEmail', async () => {
       const email = 'test@example.com';
 
-      mockPrisma.user.findFirst.mockRejectedValue(new Error('Database connection failed'));
+      mockPrisma.user.findFirst.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
       const result = await authRepository.findUserByEmail(email);
 
@@ -464,7 +488,9 @@ describe('AuthRepository', () => {
     it('should handle database errors gracefully in findUserById', async () => {
       const userId = 'user-id';
 
-      mockPrisma.user.findFirst.mockRejectedValue(new Error('Database connection failed'));
+      mockPrisma.user.findFirst.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
       const result = await authRepository.findUserById(userId);
 
@@ -474,7 +500,9 @@ describe('AuthRepository', () => {
     it('should handle database errors gracefully in isEmailVerified', async () => {
       const email = 'test@example.com';
 
-      mockPrisma.authProvider.findFirst.mockRejectedValue(new Error('Database connection failed'));
+      mockPrisma.authProvider.findFirst.mockRejectedValue(
+        new Error('Database connection failed')
+      );
 
       const result = await authRepository.isEmailVerified(email);
 

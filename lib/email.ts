@@ -33,7 +33,7 @@ export async function sendVerificationEmail({
       logger.error(
         {
           to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
-          error: error.message
+          error: error.message,
         },
         'Failed to send verification email'
       );
@@ -44,7 +44,7 @@ export async function sendVerificationEmail({
       {
         to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
         messageId: data?.id,
-        operation: sendVerificationEmail.name
+        operation: sendVerificationEmail.name,
       },
       'Verification email sent successfully'
     );
@@ -55,7 +55,7 @@ export async function sendVerificationEmail({
     logger.error(
       {
         to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
-        error: errorMessage
+        error: errorMessage,
       },
       'Failed to send verification email'
     );
@@ -92,7 +92,7 @@ export async function sendPasswordResetEmail({
         {
           to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
           error: error.message,
-          operation: 'email.password_reset.failed'
+          operation: 'email.password_reset.failed',
         },
         'Failed to send password reset email'
       );
@@ -103,7 +103,7 @@ export async function sendPasswordResetEmail({
       {
         to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
         messageId: data?.id,
-        operation: 'email.password_reset.sent'
+        operation: 'email.password_reset.sent',
       },
       'Password reset email sent successfully'
     );
@@ -115,7 +115,7 @@ export async function sendPasswordResetEmail({
       {
         to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
         error: errorMessage,
-        operation: 'email.password_reset.failed'
+        operation: 'email.password_reset.failed',
       },
       'Failed to send password reset email'
     );
@@ -160,7 +160,7 @@ export async function sendDocumentRequestEmail({
         {
           to: to.replace(/(.{3}).*(@.*)/, '$1...$2'),
           error: error.message,
-          operation: 'email.document_request.failed'
+          operation: 'email.document_request.failed',
         },
         'Failed to send document request email'
       );
@@ -173,7 +173,7 @@ export async function sendDocumentRequestEmail({
         messageId: data?.id,
         folderName,
         documentsCount: requestedDocuments.length,
-        operation: 'email.document_request.sent'
+        operation: 'email.document_request.sent',
       },
       'Document request email sent successfully'
     );
@@ -185,7 +185,7 @@ export async function sendDocumentRequestEmail({
       {
         to: to.replace(/(.{3}).*(@.*)/, '$1...$2'),
         error: errorMessage,
-        operation: 'email.document_request.failed'
+        operation: 'email.document_request.failed',
       },
       'Failed to send document request email'
     );

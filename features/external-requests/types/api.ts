@@ -1,17 +1,17 @@
 export interface ShareLinkParams {
-    params: { id: string };
+  params: { id: string };
 }
 
 export interface ShareLinkResponse {
-    token: string;
+  token: string;
 }
 
 export interface ErrorResponse {
-    error: string;
+  error: string;
 }
 
 export interface CreateShareLinkParams {
-    requestId: string;
-    token: string;
-    expiresAt: Date;
+  requestId: string;
+  token: string;
+  expiresAt: Date;
 }

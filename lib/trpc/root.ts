@@ -7,12 +7,12 @@ import { routerDocument } from '../../features/documents/routers/routerDocument'
 import { authRouter } from '../../features/auth/routers/authRouter';
 
 export const appRouter = router({
-    requests: requestsRouter,
-    external: externalRouter,
-    folderTypes: folderTypesRouter,
-    folder: folderRouter,
-    documents: routerDocument,
-    auth: authRouter,
+  requests: requestsRouter,
+  external: externalRouter,
+  folderTypes: folderTypesRouter,
+  folder: folderRouter,
+  documents: routerDocument,
+  auth: authRouter,
 });
 
 export type AppRouter = typeof appRouter;

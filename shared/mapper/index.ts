@@ -1,1 +1,1 @@
-export { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from './mapper'
+export { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from './mapper';

@@ -5,7 +5,9 @@ import { trpc } from '@/lib/trpc/client';
 import type { AuthContextValue, User, UserSession } from '../types';
 import logger from '@/lib/logger';
 
-export const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | undefined>(
+  undefined
+);
 
 interface AuthProviderProps {
   children: React.ReactNode;
@@ -25,13 +27,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const resetPasswordMutation = trpc.auth.resetPassword.useMutation();
 
   // tRPC query for current user
-  const { data: currentUser, isLoading: isLoadingUser, error } = trpc.auth.me.useQuery(
-    undefined,
-    {
-      enabled: true,
-      retry: false,
-    }
-  );
+  const {
+    data: currentUser,
+    isLoading: isLoadingUser,
+    error,
+  } = trpc.auth.me.useQuery(undefined, {
+    enabled: true,
+    retry: false,
+  });
 
   useEffect(() => {
     if (!isLoadingUser) {
@@ -45,7 +48,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [isLoadingUser, currentUser, error]);
 
   const signup = useCallback(
-    async (email: string, password: string, firstName?: string, lastName?: string) => {
+    async (
+      email: string,
+      password: string,
+      firstName?: string,
+      lastName?: string
+    ) => {
       try {
         const result = await signupMutation.mutateAsync({
           email,
@@ -54,10 +62,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           lastName: lastName || '',
         });
 
-        logger.info({ email, operation: 'auth.signup.success' }, 'User signed up successfully');
+        logger.info(
+          { email, operation: 'auth.signup.success' },
+          'User signed up successfully'
+        );
         return result;
       } catch (error) {
-        logger.error({ email, error: (error as Error).message }, 'Signup failed');
+        logger.error(
+          { email, error: (error as Error).message },
+          'Signup failed'
+        );
         throw error;
       }
     },
@@ -73,9 +87,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(result.user);
         }
 
-        logger.info({ email, operation: 'auth.login.success' }, 'User logged in successfully');
+        logger.info(
+          { email, operation: 'auth.login.success' },
+          'User logged in successfully'
+        );
       } catch (error) {
-        logger.error({ email, error: (error as Error).message }, 'Login failed');
+        logger.error(
+          { email, error: (error as Error).message },
+          'Login failed'
+        );
         throw error;
       }
     },
@@ -89,7 +109,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(null);
       setSession(null);
 
-      logger.info({ operation: 'auth.logout.success' }, 'User logged out successfully');
+      logger.info(
+        { operation: 'auth.logout.success' },
+        'User logged out successfully'
+      );
     } catch (error) {
       logger.error({ error: (error as Error).message }, 'Logout failed');
       // Even if logout fails, clear local state
@@ -102,10 +125,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (token: string) => {
       try {
         const result = await verifyEmailMutation.mutateAsync({ token });
-        logger.info({ operation: 'auth.verifyEmail.success' }, 'Email verified successfully');
+        logger.info(
+          { operation: 'auth.verifyEmail.success' },
+          'Email verified successfully'
+        );
         return result;
       } catch (error) {
-        logger.error({ error: (error as Error).message }, 'Email verification failed');
+        logger.error(
+          { error: (error as Error).message },
+          'Email verification failed'
+        );
         throw error;
       }
     },
@@ -116,10 +145,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (email: string) => {
       try {
         const result = await resendVerificationMutation.mutateAsync({ email });
-        logger.info({ email, operation: 'auth.resendVerification.success' }, 'Verification email resent');
+        logger.info(
+          { email, operation: 'auth.resendVerification.success' },
+          'Verification email resent'
+        );
         return result;
       } catch (error) {
-        logger.error({ email, error: (error as Error).message }, 'Resend verification failed');
+        logger.error(
+          { email, error: (error as Error).message },
+          'Resend verification failed'
+        );
         throw error;
       }
     },
@@ -130,10 +165,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (email: string) => {
       try {
         const result = await forgotPasswordMutation.mutateAsync({ email });
-        logger.info({ email, operation: 'auth.forgotPassword.success' }, 'Password reset email sent');
+        logger.info(
+          { email, operation: 'auth.forgotPassword.success' },
+          'Password reset email sent'
+        );
         return result;
       } catch (error) {
-        logger.error({ email, error: (error as Error).message }, 'Forgot password failed');
+        logger.error(
+          { email, error: (error as Error).message },
+          'Forgot password failed'
+        );
         throw error;
       }
     },
@@ -143,33 +184,69 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const resetPassword = useCallback(
     async (token: string, password: string) => {
       try {
-        const result = await resetPasswordMutation.mutateAsync({ token, password });
-        logger.info({ token: token.substring(0, 8) + '...', operation: 'auth.resetPassword.success' }, 'Password reset successfully');
+        const result = await resetPasswordMutation.mutateAsync({
+          token,
+          password,
+        });
+        logger.info(
+          {
+            token: token.substring(0, 8) + '...',
+            operation: 'auth.resetPassword.success',
+          },
+          'Password reset successfully'
+        );
         return result;
       } catch (error) {
-        logger.error({ token: token.substring(0, 8) + '...', error: (error as Error).message }, 'Reset password failed');
+        logger.error(
+          {
+            token: token.substring(0, 8) + '...',
+            error: (error as Error).message,
+          },
+          'Reset password failed'
+        );
         throw error;
       }
     },
     [resetPasswordMutation]
   );
 
-  const value: AuthContextValue = React.useMemo(() => ({
-    user,
-    session,
-    isLoading: isLoadingUser || signupMutation.isPending || loginMutation.isPending || logoutMutation.isPending || forgotPasswordMutation.isPending || resetPasswordMutation.isPending,
-    login,
-    signup,
-    logout,
-    verifyEmail,
-    resendVerification,
-    forgotPassword,
-    resetPassword,
-  }), [user, session, isLoadingUser, signupMutation.isPending, loginMutation.isPending, logoutMutation.isPending, forgotPasswordMutation.isPending, resetPasswordMutation.isPending, login, signup, logout, verifyEmail, resendVerification, forgotPassword, resetPassword]);
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
+  const value: AuthContextValue = React.useMemo(
+    () => ({
+      user,
+      session,
+      isLoading:
+        isLoadingUser ||
+        signupMutation.isPending ||
+        loginMutation.isPending ||
+        logoutMutation.isPending ||
+        forgotPasswordMutation.isPending ||
+        resetPasswordMutation.isPending,
+      login,
+      signup,
+      logout,
+      verifyEmail,
+      resendVerification,
+      forgotPassword,
+      resetPassword,
+    }),
+    [
+      user,
+      session,
+      isLoadingUser,
+      signupMutation.isPending,
+      loginMutation.isPending,
+      logoutMutation.isPending,
+      forgotPasswordMutation.isPending,
+      resetPasswordMutation.isPending,
+      login,
+      signup,
+      logout,
+      verifyEmail,
+      resendVerification,
+      forgotPassword,
+      resetPassword,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

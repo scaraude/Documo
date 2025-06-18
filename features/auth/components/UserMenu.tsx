@@ -32,9 +32,7 @@ export const UserMenu: React.FC = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />
-    );
+    return <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />;
   }
 
   if (!user) {
@@ -50,7 +48,9 @@ export const UserMenu: React.FC = () => {
     );
   }
 
-  const initials = `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() || 'U';
+  const initials =
+    `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() ||
+    'U';
 
   return (
     <div className="relative" ref={menuRef}>
@@ -72,9 +72,7 @@ export const UserMenu: React.FC = () => {
             <p className="text-sm font-medium text-gray-900">
               {user.firstName} {user.lastName}
             </p>
-            <p className="text-sm text-gray-500 truncate">
-              {user.email}
-            </p>
+            <p className="text-sm text-gray-500 truncate">{user.email}</p>
           </div>
 
           {/* Menu Items */}

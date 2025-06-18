@@ -13,9 +13,9 @@ interface ForgotPasswordFormProps {
   onBackToLogin?: () => void;
 }
 
-export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({ 
-  onSuccess, 
-  onBackToLogin 
+export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
+  onSuccess,
+  onBackToLogin,
 }) => {
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<string>('');
@@ -38,7 +38,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
       setSuccess(result.message);
       onSuccess?.();
     } catch (err) {
-      setError((err as Error)?.message || 'Échec de la demande de réinitialisation. Veuillez réessayer.');
+      setError(
+        (err as Error)?.message ||
+          'Échec de la demande de réinitialisation. Veuillez réessayer.'
+      );
     }
   };
 
@@ -48,13 +51,17 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
         <div className="text-center">
           <h2 className="text-2xl font-bold">Mot de passe oublié</h2>
           <p className="text-gray-600 mt-2">
-            Entrez votre adresse email et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+            Entrez votre adresse email et nous vous enverrons un lien pour
+            réinitialiser votre mot de passe.
           </p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
             <input
@@ -65,7 +72,9 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
               placeholder="jean@exemple.com"
             />
             {errors.email && (
-              <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-sm mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
@@ -81,12 +90,10 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
             </div>
           )}
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? 'Envoi en cours...' : 'Envoyer le lien de réinitialisation'}
+          <Button type="submit" disabled={isLoading} className="w-full">
+            {isLoading
+              ? 'Envoi en cours...'
+              : 'Envoyer le lien de réinitialisation'}
           </Button>
         </form>
 

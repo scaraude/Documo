@@ -1,15 +1,15 @@
-'use client'
+'use client';
 
-import { trpc } from '../../../lib/trpc/client'
+import { trpc } from '../../../lib/trpc/client';
 
 export const useExternalRequest = () => {
+  const getRequestByToken = (token: string) =>
+    trpc.external.getRequestByToken.useQuery({ token });
 
-    const getRequestByToken = (token: string) => trpc.external.getRequestByToken.useQuery({ token });
+  const generateShareLink = trpc.external.generateShareLink.useMutation();
 
-    const generateShareLink = trpc.external.generateShareLink.useMutation();
-
-    return {
-        generateShareLink,
-        getRequestByToken
-    }
-}
+  return {
+    generateShareLink,
+    getRequestByToken,
+  };
+};

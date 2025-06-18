@@ -8,21 +8,21 @@ export const TEST_DATA = {
   // Invalid credentials for testing error cases
   invalidUser: {
     email: 'nonexistent@example.com',
-    password: 'wrongpassword'
+    password: 'wrongpassword',
   },
-  
+
   // Invalid email formats for validation testing
   invalidEmails: [
     'invalid-email',
     'invalid@',
     '@invalid.com',
-    'invalid..email@test.com'
+    'invalid..email@test.com',
   ],
-  
+
   // Common test passwords
   passwords: {
     tooShort: '123',
     valid: 'password123',
-    strong: 'StrongPassword123!'
-  }
+    strong: 'StrongPassword123!',
+  },
 } as const;

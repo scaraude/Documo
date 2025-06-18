@@ -1,13 +1,17 @@
 import { z } from 'zod';
 
 // Strong password validation
-const passwordSchema = z.string()
+const passwordSchema = z
+  .string()
   .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
   .max(128, 'Le mot de passe ne peut pas dépasser 128 caractères')
   .regex(/[a-z]/, 'Le mot de passe doit contenir au moins une lettre minuscule')
   .regex(/[A-Z]/, 'Le mot de passe doit contenir au moins une lettre majuscule')
   .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre')
-  .regex(/[^A-Za-z0-9]/, 'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)');
+  .regex(
+    /[^A-Za-z0-9]/,
+    'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)'
+  );
 
 // Export password requirements for UI display
 export const passwordRequirements = [
@@ -21,7 +25,7 @@ export const passwordRequirements = [
 // Helper function to validate password and return specific errors
 export const validatePassword = (password: string) => {
   const errors: string[] = [];
-  
+
   if (password.length < 8) {
     errors.push('Le mot de passe doit contenir au moins 8 caractères');
   }
@@ -38,9 +42,11 @@ export const validatePassword = (password: string) => {
     errors.push('Le mot de passe doit contenir au moins un chiffre');
   }
   if (!/[^A-Za-z0-9]/.test(password)) {
-    errors.push('Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)');
+    errors.push(
+      'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)'
+    );
   }
-  
+
   return {
     isValid: errors.length === 0,
     errors,
@@ -48,25 +54,36 @@ export const validatePassword = (password: string) => {
 };
 
 export const loginSchema = z.object({
-  email: z.string().email('Adresse email invalide').transform(email => email.toLowerCase()),
+  email: z
+    .string()
+    .email('Adresse email invalide')
+    .transform(email => email.toLowerCase()),
   password: z.string().min(1, 'Le mot de passe est requis'),
 });
 
 // Frontend form schema with password confirmation
-export const signupSchema = z.object({
-  email: z.string().email('Adresse email invalide').transform(email => email.toLowerCase()),
-  password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
-  firstName: z.string().min(1, 'Le prénom est requis').max(50),
-  lastName: z.string().min(1, 'Le nom est requis').max(50),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
-});
+export const signupSchema = z
+  .object({
+    email: z
+      .string()
+      .email('Adresse email invalide')
+      .transform(email => email.toLowerCase()),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
+    firstName: z.string().min(1, 'Le prénom est requis').max(50),
+    lastName: z.string().min(1, 'Le nom est requis').max(50),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword'],
+  });
 
 // Backend API schema without password confirmation
 export const signupApiSchema = z.object({
-  email: z.string().email('Adresse email invalide').transform(email => email.toLowerCase()),
+  email: z
+    .string()
+    .email('Adresse email invalide')
+    .transform(email => email.toLowerCase()),
   password: passwordSchema,
   firstName: z.string().min(1, 'Le prénom est requis').max(50),
   lastName: z.string().min(1, 'Le nom est requis').max(50),
@@ -77,21 +94,29 @@ export const verifyEmailSchema = z.object({
 });
 
 export const resendVerificationSchema = z.object({
-  email: z.string().email('Adresse email invalide').transform(email => email.toLowerCase()),
+  email: z
+    .string()
+    .email('Adresse email invalide')
+    .transform(email => email.toLowerCase()),
 });
 
 export const forgotPasswordSchema = z.object({
-  email: z.string().email('Adresse email invalide').transform(email => email.toLowerCase()),
+  email: z
+    .string()
+    .email('Adresse email invalide')
+    .transform(email => email.toLowerCase()),
 });
 
-export const resetPasswordSchema = z.object({
-  token: z.string().min(1, 'Le token est requis'),
-  password: passwordSchema,
-  confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Les mots de passe ne correspondent pas",
-  path: ["confirmPassword"],
-});
+export const resetPasswordSchema = z
+  .object({
+    token: z.string().min(1, 'Le token est requis'),
+    password: passwordSchema,
+    confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
+  })
+  .refine(data => data.password === data.confirmPassword, {
+    message: 'Les mots de passe ne correspondent pas',
+    path: ['confirmPassword'],
+  });
 
 export const resetPasswordApiSchema = z.object({
   token: z.string().min(1, 'Le token est requis'),

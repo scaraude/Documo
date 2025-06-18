@@ -17,47 +17,47 @@ const EXPECTED_ENV_KEYS: EnvConfig[] = [
     key: 'DATABASE_URL',
     required: true,
     description: 'URL de connexion à la base de données PostgreSQL',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'TEST_DATABASE_URL',
     required: true,
     description: 'URL de connexion à la base de données de test',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'NODE_ENV',
     required: true,
-    description: 'Environnement d\'exécution (development, production, test)'
+    description: "Environnement d'exécution (development, production, test)",
   },
   {
     key: 'FROM_EMAIL',
     required: true,
-    description: 'Adresse email d\'expéditeur pour les notifications'
+    description: "Adresse email d'expéditeur pour les notifications",
   },
   {
     key: 'BLOB_READ_WRITE_TOKEN',
     required: true,
     description: 'Token Vercel Blob pour le stockage des fichiers',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'VERCEL_OIDC_TOKEN',
     required: false,
     description: 'Token OIDC Vercel (généré automatiquement)',
-    sensitive: true
+    sensitive: true,
   },
   {
     key: 'RESEND_API_KEY',
     required: true,
-    description: 'Clé API Resend pour l\'envoi d\'emails',
-    sensitive: true
+    description: "Clé API Resend pour l'envoi d'emails",
+    sensitive: true,
   },
   {
     key: 'NEXT_PUBLIC_APP_URL',
     required: true,
-    description: 'URL publique de l\'application'
-  }
+    description: "URL publique de l'application",
+  },
 ];
 
 /**
@@ -80,7 +80,10 @@ function parseEnvFile(filePath: string): Record<string, string> {
 
     return env;
   } catch (error) {
-    logger.error({ error: (error as Error).message, filePath }, 'Erreur lors de la lecture du fichier .env');
+    logger.error(
+      { error: (error as Error).message, filePath },
+      'Erreur lors de la lecture du fichier .env'
+    );
     throw error;
   }
 }
@@ -100,13 +103,13 @@ function maskSensitiveValue(value: string, isSensitive = true): string {
 function checkEnvKeys(envPath: string = '.env'): void {
   const fullPath = join(process.cwd(), envPath);
 
-  logger.info({ envPath: fullPath }, 'Vérification du fichier d\'environnement');
+  logger.info({ envPath: fullPath }, "Vérification du fichier d'environnement");
 
   try {
     const envVars = parseEnvFile(fullPath);
     const foundKeys = Object.keys(envVars);
 
-    console.log('\n🔍 VÉRIFICATION DES VARIABLES D\'ENVIRONNEMENT\n');
+    console.log("\n🔍 VÉRIFICATION DES VARIABLES D'ENVIRONNEMENT\n");
     console.log(`📁 Fichier: ${fullPath}\n`);
 
     // Vérification des clés requises
@@ -164,22 +167,34 @@ function checkEnvKeys(envPath: string = '.env'): void {
     // Résumé
     console.log('\n📊 RÉSUMÉ:');
     console.log(`   Total de clés trouvées: ${foundKeys.length}`);
-    console.log(`   Clés obligatoires présentes: ${presentKeys.filter(c => c.required).length}/${EXPECTED_ENV_KEYS.filter(c => c.required).length}`);
-    console.log(`   Clés optionnelles présentes: ${presentKeys.filter(c => !c.required).length}/${EXPECTED_ENV_KEYS.filter(c => !c.required).length}`);
+    console.log(
+      `   Clés obligatoires présentes: ${presentKeys.filter(c => c.required).length}/${EXPECTED_ENV_KEYS.filter(c => c.required).length}`
+    );
+    console.log(
+      `   Clés optionnelles présentes: ${presentKeys.filter(c => !c.required).length}/${EXPECTED_ENV_KEYS.filter(c => !c.required).length}`
+    );
     console.log(`   Clés supplémentaires: ${extraKeys.length}`);
 
     // Validation finale
     if (missingRequired.length > 0) {
       console.log('\n❌ ÉCHEC: Des clés obligatoires sont manquantes');
-      logger.error({ missingKeys: missingRequired }, 'Clés d\'environnement manquantes');
+      logger.error(
+        { missingKeys: missingRequired },
+        "Clés d'environnement manquantes"
+      );
       process.exit(1);
     } else {
       console.log('\n✅ SUCCÈS: Toutes les clés obligatoires sont présentes');
-      logger.info({ presentKeys: presentKeys.length, extraKeys: extraKeys.length }, 'Vérification des variables d\'environnement terminée');
+      logger.info(
+        { presentKeys: presentKeys.length, extraKeys: extraKeys.length },
+        "Vérification des variables d'environnement terminée"
+      );
     }
-
   } catch (error) {
-    console.error('❌ Erreur lors de la vérification:', (error as Error).message);
+    console.error(
+      '❌ Erreur lors de la vérification:',
+      (error as Error).message
+    );
     process.exit(1);
   }
 }

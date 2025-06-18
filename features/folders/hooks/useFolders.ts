@@ -1,32 +1,52 @@
-'use client'
+'use client';
 
 import { trpc } from '../../../lib/trpc/client';
-import { computeFolderStatus, computeRequestStatus } from '@/shared/utils/computedStatus';
+import {
+  computeFolderStatus,
+  computeRequestStatus,
+} from '@/shared/utils/computedStatus';
 
 export function useFolders() {
-    const getAllFolders = () => trpc.folder.getAll.useQuery(undefined, {
-        select(data) {
-            return data.map((folder) => { return { ...folder, status: computeFolderStatus(folder) } })
-        }
+  const getAllFolders = () =>
+    trpc.folder.getAll.useQuery(undefined, {
+      select(data) {
+        return data.map(folder => {
+          return { ...folder, status: computeFolderStatus(folder) };
+        });
+      },
     });
 
-    const getFolderById = (id: string) => trpc.folder.getByIdWithRelations.useQuery({ id }, {
+  const getFolderById = (id: string) =>
+    trpc.folder.getByIdWithRelations.useQuery(
+      { id },
+      {
         select(folder) {
-            return folder === null ? null : { ...folder, status: computeFolderStatus(folder), requests: folder.requests?.map(request => ({ ...request, status: computeRequestStatus(request) })) }
+          return folder === null
+            ? null
+            : {
+                ...folder,
+                status: computeFolderStatus(folder),
+                requests: folder.requests?.map(request => ({
+                  ...request,
+                  status: computeRequestStatus(request),
+                })),
+              };
         },
-    });
+      }
+    );
 
-    const createFolderMutation = trpc.folder.create.useMutation();
+  const createFolderMutation = trpc.folder.create.useMutation();
 
-    const deleteFolderMutation = trpc.folder.delete.useMutation();
+  const deleteFolderMutation = trpc.folder.delete.useMutation();
 
-    const removeRequestFromFolderMutation = trpc.folder.removeRequestFromFolder.useMutation();
+  const removeRequestFromFolderMutation =
+    trpc.folder.removeRequestFromFolder.useMutation();
 
-    return {
-        getAllFolders,
-        getFolderById,
-        createFolderMutation,
-        deleteFolderMutation,
-        removeRequestFromFolderMutation
-    };
+  return {
+    getAllFolders,
+    getFolderById,
+    createFolderMutation,
+    deleteFolderMutation,
+    removeRequestFromFolderMutation,
+  };
 }

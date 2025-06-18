@@ -15,7 +15,7 @@ export const useVerificationSession = () => {
     // Only run on client side
     if (typeof window !== 'undefined') {
       const email = sessionStorage.getItem('unverified_email');
-      
+
       setSession({
         email,
       });

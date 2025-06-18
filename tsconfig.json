@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -22,39 +18,16 @@
       }
     ],
     "paths": {
-      "@/hooks/*": [
-        "./hooks/*"
-      ],
-      "@/components/*": [
-        "./components/*"
-      ],
-      "@/lib/*": [
-        "./lib/*"
-      ],
-      "@/*": [
-        "./*"
-      ],
-      "@/shared/*": [
-        "./shared/*"
-      ],
-      "@/features/*": [
-        "./features/*"
-      ]
+      "@/hooks/*": ["./hooks/*"],
+      "@/components/*": ["./components/*"],
+      "@/lib/*": ["./lib/*"],
+      "@/*": ["./*"],
+      "@/shared/*": ["./shared/*"],
+      "@/features/*": ["./features/*"]
     },
     "allowJs": true,
-    "types": [
-      "jest",
-      "node"
-    ]
+    "types": ["jest", "node"]
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
-    ".next/types/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "lib/prisma/generated"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules", "lib/prisma/generated"]
 }

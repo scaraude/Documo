@@ -1,6 +1,6 @@
-'use client'
-import { useFolderTypes } from '@/features/folder-types'
-import { APP_ICON_PATH, ROUTES } from '@/shared/constants'
+'use client';
+import { useFolderTypes } from '@/features/folder-types';
+import { APP_ICON_PATH, ROUTES } from '@/shared/constants';
 import {
   Plus,
   FileText,
@@ -14,27 +14,28 @@ import {
   Zap,
   ArrowRight,
   Star,
-} from 'lucide-react'
-import { useRouter } from 'next/navigation'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '../shared/components/ui/hover-card'
-import { Button } from '@/shared/components'
-import Image from 'next/image'
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '../shared/components/ui/hover-card';
+import { Button } from '@/shared/components';
+import Image from 'next/image';
 
 export default function HomePage() {
   const router = useRouter();
-  const { getAllFolderTypes } = useFolderTypes()
-  const { data: folderTypes, isLoading } = getAllFolderTypes()
-  const hasFolderTypes = !isLoading && folderTypes && folderTypes.length > 0
+  const { getAllFolderTypes } = useFolderTypes();
+  const { data: folderTypes, isLoading } = getAllFolderTypes();
+  const hasFolderTypes = !isLoading && folderTypes && folderTypes.length > 0;
 
   return (
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-
-
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8 pt-20 pb-32">
           <div className="mx-auto max-w-5xl text-center">
-
             {/* Main title */}
             <h1 className="text-6xl font-bold tracking-tight text-gray-900 sm:text-8xl mb-8 animate-fadeInUp delay-200 flex items-center justify-center gap-4">
               <Image
@@ -56,8 +57,13 @@ export default function HomePage() {
 
             {/* Description */}
             <p className="mt-8 text-xl leading-relaxed text-gray-600 max-w-4xl mx-auto mb-12 animate-fadeInUp delay-700">
-              La plateforme sécurisée qui révolutionne la gestion documentaire entre organisations et citoyens.
-              <span className="font-semibold text-gray-800"> Fini les envois d&apos;emails non sécurisés</span> et les processus complexes.
+              La plateforme sécurisée qui révolutionne la gestion documentaire
+              entre organisations et citoyens.
+              <span className="font-semibold text-gray-800">
+                {' '}
+                Fini les envois d&apos;emails non sécurisés
+              </span>{' '}
+              et les processus complexes.
             </p>
 
             {/* CTA Buttons */}
@@ -100,7 +106,10 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-24 bg-white relative overflow-hidden">
+      <section
+        id="features"
+        className="py-24 bg-white relative overflow-hidden"
+      >
         <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white"></div>
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="mx-auto max-w-3xl text-center mb-20">
@@ -108,10 +117,12 @@ export default function HomePage() {
               Pourquoi choisir{' '}
               <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Documo
-              </span>{' '}?
+              </span>{' '}
+              ?
             </h2>
             <p className="text-xl text-gray-600 leading-relaxed">
-              Une solution complète qui simplifie la gestion documentaire tout en garantissant la sécurité maximale
+              Une solution complète qui simplifie la gestion documentaire tout
+              en garantissant la sécurité maximale
             </p>
           </div>
 
@@ -127,7 +138,8 @@ export default function HomePage() {
                   Sécurité maximale
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Chiffrement end-to-end, authentification sécurisée et conformité RGPD pour protéger vos données sensibles.
+                  Chiffrement end-to-end, authentification sécurisée et
+                  conformité RGPD pour protéger vos données sensibles.
                 </p>
               </div>
             </div>
@@ -142,7 +154,8 @@ export default function HomePage() {
                   Demandes par email
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Envoyez des demandes de documents personnalisées par email avec des liens sécurisés pour le téléchargement.
+                  Envoyez des demandes de documents personnalisées par email
+                  avec des liens sécurisés pour le téléchargement.
                 </p>
               </div>
             </div>
@@ -157,7 +170,8 @@ export default function HomePage() {
                   Organisation intelligente
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Créez des types de dossiers personnalisés et organisez vos documents selon vos processus métier.
+                  Créez des types de dossiers personnalisés et organisez vos
+                  documents selon vos processus métier.
                 </p>
               </div>
             </div>
@@ -172,7 +186,8 @@ export default function HomePage() {
                   Gain de temps
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Automatisez vos processus de collecte de documents et réduisez le temps de traitement de 80%.
+                  Automatisez vos processus de collecte de documents et réduisez
+                  le temps de traitement de 80%.
                 </p>
               </div>
             </div>
@@ -187,7 +202,8 @@ export default function HomePage() {
                   Collaboration fluide
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Facilitez les échanges entre équipes et avec vos usagers grâce à une interface intuitive.
+                  Facilitez les échanges entre équipes et avec vos usagers grâce
+                  à une interface intuitive.
                 </p>
               </div>
             </div>
@@ -202,7 +218,8 @@ export default function HomePage() {
                   Déploiement rapide
                 </h3>
                 <p className="text-gray-600 leading-relaxed">
-                  Mettez en place votre solution en quelques minutes. Aucune infrastructure complexe requise.
+                  Mettez en place votre solution en quelques minutes. Aucune
+                  infrastructure complexe requise.
                 </p>
               </div>
             </div>
@@ -223,7 +240,8 @@ export default function HomePage() {
               Comment ça marche ?
             </h2>
             <p className="text-xl text-gray-600 leading-relaxed">
-              Un processus simple en 3 étapes pour révolutionner votre gestion documentaire
+              Un processus simple en 3 étapes pour révolutionner votre gestion
+              documentaire
             </p>
           </div>
 
@@ -236,10 +254,14 @@ export default function HomePage() {
               <div className="absolute top-12 left-full w-12 h-0.5 bg-gradient-to-r from-blue-300 to-purple-300 hidden lg:block transform translate-x-6"></div>
               <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">1.</span> Configurez vos types de dossiers
+                  <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                    1.
+                  </span>{' '}
+                  Configurez vos types de dossiers
                 </h3>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  Définissez quels documents sont nécessaires pour chaque processus de votre organisation.
+                  Définissez quels documents sont nécessaires pour chaque
+                  processus de votre organisation.
                 </p>
               </div>
             </div>
@@ -252,10 +274,14 @@ export default function HomePage() {
               <div className="absolute top-12 left-full w-12 h-0.5 bg-gradient-to-r from-green-300 to-purple-300 hidden lg:block transform translate-x-6"></div>
               <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">2.</span> Envoyez des demandes sécurisées
+                  <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
+                    2.
+                  </span>{' '}
+                  Envoyez des demandes sécurisées
                 </h3>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  Créez un dossier et envoyez des emails personnalisés avec des liens de téléchargement sécurisés.
+                  Créez un dossier et envoyez des emails personnalisés avec des
+                  liens de téléchargement sécurisés.
                 </p>
               </div>
             </div>
@@ -266,10 +292,14 @@ export default function HomePage() {
               </div>
               <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
                 <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">3.</span> Recevez et organisez
+                  <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
+                    3.
+                  </span>{' '}
+                  Recevez et organisez
                 </h3>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  Les documents arrivent automatiquement organisés et sécurisés dans votre tableau de bord.
+                  Les documents arrivent automatiquement organisés et sécurisés
+                  dans votre tableau de bord.
                 </p>
               </div>
             </div>
@@ -290,7 +320,8 @@ export default function HomePage() {
               Prêt à moderniser votre gestion documentaire ?
             </h2>
             <p className="text-xl text-blue-100 mb-16 max-w-3xl mx-auto leading-relaxed">
-              Rejoignez les organisations qui ont choisi Documo pour simplifier leurs processus et sécuriser leurs échanges.
+              Rejoignez les organisations qui ont choisi Documo pour simplifier
+              leurs processus et sécuriser leurs échanges.
             </p>
 
             <div className="flex items-center justify-center gap-8 flex-wrap mb-20">
@@ -309,7 +340,8 @@ export default function HomePage() {
                   </HoverCardTrigger>
                   <HoverCardContent className="w-80">
                     <p className="text-sm text-gray-500">
-                      Commencez par créer un type de dossier pour définir vos processus
+                      Commencez par créer un type de dossier pour définir vos
+                      processus
                     </p>
                   </HoverCardContent>
                 </HoverCard>
@@ -337,15 +369,23 @@ export default function HomePage() {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div className="group">
-                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">100%</div>
+                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
+                  100%
+                </div>
                 <div className="text-blue-100 font-medium">Sécurisé</div>
               </div>
               <div className="group">
-                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">-80%</div>
-                <div className="text-blue-100 font-medium">Temps de traitement</div>
+                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
+                  -80%
+                </div>
+                <div className="text-blue-100 font-medium">
+                  Temps de traitement
+                </div>
               </div>
               <div className="group">
-                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">0€</div>
+                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
+                  0€
+                </div>
                 <div className="text-blue-100 font-medium">Pour commencer</div>
               </div>
             </div>
@@ -359,32 +399,41 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
           <div className="text-center mb-16">
             <p className="text-lg font-medium text-gray-500 mb-12">
-              Ils nous font confiance pour sécuriser leurs échanges documentaires
+              Ils nous font confiance pour sécuriser leurs échanges
+              documentaires
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
               <div className="flex flex-col items-center group">
                 <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
                   <Shield className="h-8 w-8 text-white" />
                 </div>
-                <span className="font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">RGPD Compliant</span>
+                <span className="font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
+                  RGPD Compliant
+                </span>
               </div>
               <div className="flex flex-col items-center group">
                 <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
                   <Lock className="h-8 w-8 text-white" />
                 </div>
-                <span className="font-semibold text-gray-700 group-hover:text-green-600 transition-colors">Chiffrement SSL</span>
+                <span className="font-semibold text-gray-700 group-hover:text-green-600 transition-colors">
+                  Chiffrement SSL
+                </span>
               </div>
               <div className="flex flex-col items-center group">
                 <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
                   <CheckCircle className="h-8 w-8 text-white" />
                 </div>
-                <span className="font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">ISO 27001</span>
+                <span className="font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">
+                  ISO 27001
+                </span>
               </div>
               <div className="flex flex-col items-center group">
                 <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
                   <Star className="h-8 w-8 text-white" />
                 </div>
-                <span className="font-semibold text-gray-700 group-hover:text-orange-600 transition-colors">99.9% Uptime</span>
+                <span className="font-semibold text-gray-700 group-hover:text-orange-600 transition-colors">
+                  99.9% Uptime
+                </span>
               </div>
             </div>
           </div>
@@ -397,5 +446,5 @@ export default function HomePage() {
         </div>
       )}
     </div>
-  )
+  );
 }
