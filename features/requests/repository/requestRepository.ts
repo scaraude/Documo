@@ -2,11 +2,15 @@ import prisma, { Prisma } from '@/lib/prisma';
 import { CreateRequestParams } from '../types';
 import { DocumentRequest } from '@/shared/types';
 import { AppDocumentType } from '@/shared/constants';
+import { prismaDocumentToAppDocument } from '../../documents/mappers';
 
 // Mapper entre le type Prisma et le type App
 type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<null>;
 type PrismaDocumentRequestWithFolder = Prisma.DocumentRequestGetPayload<{
     include: { folder: true }
+}>;
+type PrismaDocumentRequestWithDocuments = Prisma.DocumentRequestGetPayload<{
+    include: { folder: true, documents: true }
 }>;
 
 /**
@@ -33,6 +37,19 @@ export function toAppModel(prismaModel: PrismaDocumentRequest): DocumentRequest 
  */
 export function toAppModelWithFolder(prismaModel: PrismaDocumentRequestWithFolder): DocumentRequest {
     return {
+        ...toAppModel(prismaModel),
+        folder: prismaModel.folder ? {
+            id: prismaModel.folder.id,
+            name: prismaModel.folder.name
+        } : undefined,
+    };
+}
+
+/**
+ * Convertir un modèle Prisma avec folder et documents en modèle d'application
+ */
+export function toAppModelWithDocuments(prismaModel: PrismaDocumentRequestWithDocuments): DocumentRequest {
+    return {
         id: prismaModel.id,
         email: prismaModel.email,
         requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
@@ -48,6 +65,7 @@ export function toAppModelWithFolder(prismaModel: PrismaDocumentRequestWithFolde
             id: prismaModel.folder.id,
             name: prismaModel.folder.name
         } : undefined,
+        documents: prismaModel.documents?.map(prismaDocumentToAppDocument) || []
     };
 }
 
@@ -114,10 +132,17 @@ export async function deleteRequest(id: string): Promise<void> {
 export async function getRequestById(id: string): Promise<DocumentRequest | null> {
     try {
         const request = await prisma.documentRequest.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                folder: true,
+                documents: {
+                    where: { deletedAt: null },
+                    orderBy: { uploadedAt: 'desc' }
+                }
+            }
         });
 
-        return request ? toAppModel(request) : null;
+        return request ? toAppModelWithDocuments(request) : null;
     } catch (error) {
         console.error('Error fetching request from database:', error);
         throw new Error('Failed to fetch request');

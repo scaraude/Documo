@@ -4,12 +4,12 @@ import { useRequests } from '@/features/requests'
 import { Badge } from '@/shared/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs'
-import { DOCUMENT_VALIDATION_RULES } from '@/shared/constants'
 import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper'
-import { ComputedRequestStatus, DocumentRequest } from '@/shared/types'
+import { ComputedRequestStatus, DocumentRequest, ComputedDocumentStatus } from '@/shared/types'
+import { computeDocumentStatus } from '@/shared/utils/computedStatus'
 import { format, formatDistanceToNow } from 'date-fns'
 import { fr } from 'date-fns/locale'
-import { CheckCircle, Clock, FileCheck, FileText, History, XCircle } from 'lucide-react'
+import { CheckCircle, Clock, FileCheck, FileText, History, XCircle, AlertTriangle } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton'
 
@@ -43,6 +43,45 @@ export default function RequestDetailPage() {
             case 'REJECTED': return 'Refusée'
             case 'COMPLETED': return 'Terminée'
             default: return status
+        }
+    }
+
+    const getDocumentStatusColor = (status: ComputedDocumentStatus) => {
+        switch (status) {
+            case 'PENDING': return 'bg-gray-50 text-gray-700 border-gray-200'
+            case 'UPLOADING': return 'bg-blue-50 text-blue-700 border-blue-200'
+            case 'UPLOADED': return 'bg-yellow-50 text-yellow-700 border-yellow-200'
+            case 'VALIDATING': return 'bg-indigo-50 text-indigo-700 border-indigo-200'
+            case 'VALID': return 'bg-green-50 text-green-700 border-green-200'
+            case 'INVALID': return 'bg-red-50 text-red-700 border-red-200'
+            case 'ERROR': return 'bg-red-50 text-red-700 border-red-200'
+            default: return 'bg-gray-50 text-gray-700 border-gray-200'
+        }
+    }
+
+    const getDocumentStatusLabel = (status: ComputedDocumentStatus) => {
+        switch (status) {
+            case 'PENDING': return 'En attente'
+            case 'UPLOADING': return 'Téléchargement'
+            case 'UPLOADED': return 'Téléchargé'
+            case 'VALIDATING': return 'Validation'
+            case 'VALID': return 'Validé'
+            case 'INVALID': return 'Refusé'
+            case 'ERROR': return 'Erreur'
+            default: return status
+        }
+    }
+
+    const getDocumentStatusIcon = (status: ComputedDocumentStatus) => {
+        switch (status) {
+            case 'PENDING': return <Clock className="h-4 w-4" />
+            case 'UPLOADING': return <FileText className="h-4 w-4" />
+            case 'UPLOADED': return <FileCheck className="h-4 w-4" />
+            case 'VALIDATING': return <Clock className="h-4 w-4" />
+            case 'VALID': return <CheckCircle className="h-4 w-4" />
+            case 'INVALID': return <XCircle className="h-4 w-4" />
+            case 'ERROR': return <AlertTriangle className="h-4 w-4" />
+            default: return <FileText className="h-4 w-4" />
         }
     }
 
@@ -193,36 +232,51 @@ export default function RequestDetailPage() {
                     </TabsContent>
 
                     <TabsContent value="documents">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="text-base flex items-center">
-                                    <FileText className="h-4 w-4 mr-2" />
-                                    Documents requis
-                                </CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    {request.requestedDocuments.map((documentType) => (
-                                        <div key={documentType} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                                            <div className="flex items-center gap-3">
-                                                <FileText className="h-5 w-5 text-gray-600" />
-                                                <div>
-                                                    <p className="font-medium text-gray-900">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[documentType]}</p>
-                                                    <p className="text-sm text-gray-500">
-                                                        Format: {DOCUMENT_VALIDATION_RULES[documentType].allowedTypes
-                                                            .map(type => type.split('/')[1].toUpperCase())
-                                                            .join(', ')}
-                                                    </p>
+                        <div className="space-y-6">
+
+                            {/* Requested Documents */}
+                            <Card>
+                                <CardHeader>
+                                    <CardTitle className="text-base flex items-center">
+                                        <FileText className="h-4 w-4 mr-2" />
+                                        Documents requis
+                                    </CardTitle>
+                                </CardHeader>
+                                <CardContent>
+                                    <div className="space-y-4">
+                                        {request.requestedDocuments.map((documentType) => {
+                                            const uploadedDocs = request.documents?.filter(doc => doc.type === documentType) || []
+                                            const hasUploadedDoc = uploadedDocs.length > 0
+                                            const latestDoc = uploadedDocs[0] // Already sorted by uploadedAt desc
+
+                                            return (
+                                                <div key={documentType} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                                    <div className="flex items-center gap-3">
+                                                        <FileText className="h-5 w-5 text-gray-600" />
+                                                        <div>
+                                                            <p className="font-medium text-gray-900">{APP_DOCUMENT_TYPE_TO_LABEL_MAP[documentType]}</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex items-center gap-2">
+                                                        {hasUploadedDoc ? (
+                                                            <Badge className={`text-xs font-medium border ${getDocumentStatusColor(computeDocumentStatus(latestDoc))}`}>
+                                                                {getDocumentStatusIcon(computeDocumentStatus(latestDoc))}
+                                                                <span className="ml-1">{getDocumentStatusLabel(computeDocumentStatus(latestDoc))}</span>
+                                                            </Badge>
+                                                        ) : (
+                                                            <Badge variant="outline" className="text-xs text-gray-500">
+                                                                <Clock className="h-3 w-3 mr-1" />
+                                                                En attente
+                                                            </Badge>
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <Badge variant="outline" className="text-xs">
-                                                Max {DOCUMENT_VALIDATION_RULES[documentType].maxSize / 1024 / 1024}MB
-                                            </Badge>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardContent>
-                        </Card>
+                                            )
+                                        })}
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
                     </TabsContent>
 
                     <TabsContent value="history">

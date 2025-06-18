@@ -28,6 +28,7 @@ export interface DocumentRequest {
         id: string;
         name: string;
     };
+    documents?: AppDocument[];
 }
 
 export interface DocumentRequestWithStatue extends DocumentRequest {
