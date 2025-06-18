@@ -11,7 +11,7 @@ interface ShareLinkButtonProps {
     size?: 'default' | 'sm' | 'lg' | 'icon';
 }
 
-export function ShareLinkButton({ requestId, variant = 'default', size = 'default' }: ShareLinkButtonProps) {
+export function ShareLinkButton({ requestId, variant = 'outline', size = 'default' }: ShareLinkButtonProps) {
     const [isCopied, setIsCopied] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const { generateShareLink } = useExternalRequest();
@@ -48,7 +48,7 @@ export function ShareLinkButton({ requestId, variant = 'default', size = 'defaul
             size={size}
             onClick={handleShare}
             disabled={isLoading}
-            className="gap-2"
+            className="gap-2 hover:border-gray-400"
         >
             {isCopied ? (
                 <>
