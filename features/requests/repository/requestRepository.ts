@@ -2,7 +2,7 @@ import prisma, { Prisma } from '@/lib/prisma';
 import { CreateRequestParams } from '../types';
 import {
   DocumentRequest,
-  DocumentRequestWithDocuments,
+  DocumentRequestWithFolder,
   DocumentRequestWithFolderAndDocuments,
 } from '@/shared/types';
 import { AppDocumentType } from '@/shared/constants';
@@ -43,22 +43,20 @@ export function toAppModel(
  */
 export function toAppModelWithFolder(
   prismaModel: PrismaDocumentRequestWithFolder
-): DocumentRequest {
+): DocumentRequestWithFolder {
   return {
     ...toAppModel(prismaModel),
-    folder: prismaModel.folder
-      ? {
+    folder: {
           id: prismaModel.folder.id,
           name: prismaModel.folder.name,
-        }
-      : undefined,
+        },
   };
 }
 
 /**
  * Convertir un modèle Prisma avec folder et documents en modèle d'application
  */
-export function toAppModelWithfolderAndDocuments(
+export function toAppModelWithFolderAndDocuments(
   prismaModel: PrismaDocumentRequestWithDocuments
 ): DocumentRequestWithFolderAndDocuments {
   return {
@@ -146,7 +144,7 @@ export async function getRequestById(
       },
     });
 
-    return request ? toAppModelWithDocuments(request) : null;
+    return request ? toAppModelWithFolderAndDocuments(request) : null;
   } catch (error) {
     console.error('Error fetching request from database:', error);
     throw new Error('Failed to fetch request');
