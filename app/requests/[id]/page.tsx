@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, Suspense } from 'react';
 import { useRequests } from '@/features/requests';
 import { Badge } from '@/shared/components/ui/badge';
 import {
@@ -32,13 +33,23 @@ import {
   XCircle,
   AlertTriangle,
 } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
 
-export default function RequestDetailPage() {
+function RequestDetailContent() {
   const params: { id: string } = useParams();
+  const searchParams = useSearchParams();
   const { getById } = useRequests();
   const { data: request, isLoading, error } = getById(params.id);
+  const [activeTab, setActiveTab] = useState('overview');
+
+  // Handle tab parameter from URL
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['overview', 'documents', 'history'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   const getRequestStatus = (
     request: DocumentRequest
@@ -197,7 +208,11 @@ export default function RequestDetailPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <Tabs defaultValue="overview" className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           <TabsList>
             <TabsTrigger value="overview">Vue d&apos;ensemble</TabsTrigger>
             <TabsTrigger value="documents">Documents</TabsTrigger>
@@ -395,5 +410,19 @@ export default function RequestDetailPage() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+export default function RequestDetailPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <RequestDetailContent />
+    </Suspense>
   );
 }

@@ -47,9 +47,9 @@ export function toAppModelWithFolder(
   return {
     ...toAppModel(prismaModel),
     folder: {
-          id: prismaModel.folder.id,
-          name: prismaModel.folder.name,
-        },
+      id: prismaModel.folder.id,
+      name: prismaModel.folder.name,
+    },
   };
 }
 
@@ -68,7 +68,7 @@ export function toAppModelWithFolderAndDocuments(
 /**
  * Get all document requests
  */
-export async function getRequests(): Promise<DocumentRequest[]> {
+export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
   try {
     const requests = await prisma.documentRequest.findMany({
       include: {
