@@ -50,9 +50,12 @@ export default function RequestsPage() {
 
     // Filter requests
     const filtered = requests.filter(request => {
-      const matchesSearch = request.email
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
+      const searchLower = searchTerm.toLowerCase();
+      const matchesEmail = request.email.toLowerCase().includes(searchLower);
+      const matchesFolder =
+        request.folder?.name.toLowerCase().includes(searchLower) || false;
+
+      const matchesSearch = matchesEmail || matchesFolder;
       const matchesStatus =
         statusFilter === 'ALL' || getRequestStatus(request) === statusFilter;
       return matchesSearch && matchesStatus;
