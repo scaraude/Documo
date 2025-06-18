@@ -54,7 +54,7 @@ export function ShareLinkButton({
       size={size}
       onClick={handleShare}
       disabled={isLoading}
-      className="gap-2 hover:border-gray-400"
+      className="gap-2"
     >
       {isCopied ? (
         <>

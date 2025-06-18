@@ -16,6 +16,7 @@ import {
   Clock,
   User,
   FolderOpen,
+  Eye,
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -253,10 +254,11 @@ export const RequestAccordion = ({
               </div>
 
               {/* Actions */}
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 ">
                 <Link href={ROUTES.REQUESTS.DETAIL(request.id)}>
-                  <Button variant="outline" size="sm">
-                    Détails
+                  <Button className="w-full" variant="outline" size="sm">
+                    <Eye className="h-4 w-4" />
+                    Voir les détails
                   </Button>
                 </Link>
 
@@ -270,8 +272,9 @@ export const RequestAccordion = ({
                   <Link
                     href={`${ROUTES.REQUESTS.DETAIL(request.id)}?tab=documents`}
                   >
-                    <Button variant="outline" size="sm">
-                      Documents
+                    <Button className="w-full" variant="outline" size="sm">
+                      <FileText className="h-4 w-4" />
+                      Voir les documents
                     </Button>
                   </Link>
                 )}
