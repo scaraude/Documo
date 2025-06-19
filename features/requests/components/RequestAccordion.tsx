@@ -140,7 +140,7 @@ export const RequestAccordion = ({
 
           {/* Status Badge */}
           <Badge
-            className={`px-4 py-2 text-sm font-semibold border-2 ${getStatusColor(status)} shadow-sm`}
+            className={`text-sm font-semibold border-1 ${getStatusColor(status)} shadow-sm`}
           >
             {getStatusLabel(status)}
           </Badge>
