@@ -51,8 +51,8 @@ export interface AppDocumentWithStatus extends AppDocument {
 
 export const AppDocumentSchema = z.object({
   id: z.string().uuid(),
-  requestId: z.string(),
-  folderId: z.string().optional(),
+  requestId: z.string().uuid(),
+  folderId: z.string().uuid().optional(),
   type: documentTypeIdSchema,
   fileName: z.string(),
   mimeType: z.string(),
@@ -75,6 +75,9 @@ export const AppDocumentSchema = z.object({
 });
 
 export type AppDocument = z.infer<typeof AppDocumentSchema>;
+export type AppDocumentToUpload = Omit<AppDocument, 'type'> & {
+  typeId: string; // DocumentTypeId
+};
 // Computed status type
 export type ComputedDocumentStatus =
   | 'PENDING'

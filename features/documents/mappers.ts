@@ -1,5 +1,5 @@
 import { Prisma } from '@/lib/prisma';
-import { AppDocument } from '../../shared/types';
+import { AppDocument, AppDocumentToUpload } from '../../shared/types';
 import { documentTypeToAppDocumentType } from '../../shared/mapper/prismaMapper';
 
 // Type du modèle Document de Prisma
@@ -34,7 +34,7 @@ export function prismaDocumentToAppDocument(
  * Convertir un document d'application en objet de création Prisma
  */
 export function inputToPrismaCreateInput(
-  appDocument: AppDocument
+  appDocument: AppDocumentToUpload
 ): Prisma.DocumentCreateInput {
   return {
     id: appDocument.id,
@@ -42,7 +42,7 @@ export function inputToPrismaCreateInput(
       connect: { id: appDocument.requestId },
     },
     type: {
-      connect: { id: appDocument.type },
+      connect: { id: appDocument.typeId },
     },
     url: appDocument.url,
     hash: appDocument.hash,

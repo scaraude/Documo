@@ -6,20 +6,20 @@ import {
   exportedKeyBase64,
   computeFileHash,
 } from '@/features/documents/utils/encryption';
-import { AppDocumentType } from '@/shared/constants';
 import { AppDocumentToUpload } from '../types';
 import { trpcVanilla } from '@/lib/trpc/client';
+import { DocumentTypeId } from '../../document-types';
 
 interface UploadDocumentOptions {
   file: File;
-  documentType: AppDocumentType;
+  documentTypeId: DocumentTypeId;
   token: string;
   onProgress?: (progress: number) => void;
 }
 
 export const uploadDocument = async ({
   file,
-  documentType,
+  documentTypeId,
   token,
   onProgress,
 }: UploadDocumentOptions): Promise<void> => {
@@ -29,7 +29,7 @@ export const uploadDocument = async ({
     const fileHash = await computeFileHash(file);
     const document: AppDocumentToUpload = {
       id: documentId,
-      type: documentType,
+      typeId: documentTypeId,
       createdAt: new Date(),
       updatedAt: new Date(),
       fileName: file.name,

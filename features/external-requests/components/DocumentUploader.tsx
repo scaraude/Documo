@@ -4,13 +4,14 @@ import { useRouter } from 'next/navigation';
 import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
-import { AppDocumentType, ROUTES } from '@/shared/constants';
+import { ROUTES } from '@/shared/constants';
 import { uploadDocument } from '../api/uploadDocument';
 import { useDocumentTypes } from '../../document-types/hooks/useDocumentTypes';
+import { DocumentTypeId } from '../../document-types';
 
 interface DocumentUploaderProps {
   token: string;
-  documentTypesMissing: AppDocumentType[];
+  documentTypesMissing: DocumentTypeId[];
   setDocumentTypeMissing: Dispatch<SetStateAction<string[]>>;
 }
 
@@ -48,32 +49,32 @@ export const DocumentUploader = ({
 
   const handleFileUpload = async (
     file: File,
-    documentType: AppDocumentType
+    documentTypeId: DocumentTypeId
   ) => {
     try {
       setUploadStatus(prev => ({
         ...prev,
-        [documentType]: { progress: 0, status: 'uploading', file },
+        [documentTypeId]: { progress: 0, status: 'uploading', file },
       }));
 
       await uploadDocument({
         file,
-        documentType,
+        documentTypeId,
         token,
         onProgress: progress => {
           setUploadStatus(prev => ({
             ...prev,
-            [documentType]: { ...prev[documentType], progress },
+            [documentTypeId]: { ...prev[documentTypeId], progress },
           }));
         },
       });
 
       setDocumentTypeMissing(documentTypes =>
-        documentTypes.filter(dt => dt !== documentType)
+        documentTypes.filter(dt => dt !== documentTypeId)
       );
       setUploadStatus(prev => ({
         ...prev,
-        [documentType]: { progress: 100, status: 'completed', file },
+        [documentTypeId]: { progress: 100, status: 'completed', file },
       }));
 
       // Check if all documents are uploaded - use current state
@@ -91,7 +92,7 @@ export const DocumentUploader = ({
     } catch (error) {
       setUploadStatus(prev => ({
         ...prev,
-        [documentType]: {
+        [documentTypeId]: {
           progress: 0,
           status: 'error',
           error: error instanceof Error ? error.message : 'Upload failed',

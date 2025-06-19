@@ -82,7 +82,7 @@ export const externalRouter = router({
         logger.info(
           {
             token: token.substring(0, 8) + '...',
-            documentType: documentData.type,
+            documentType: documentData.typeId,
             fileName: documentData.fileName,
           },
           'Creating external document'
@@ -123,7 +123,7 @@ export const externalRouter = router({
         });
 
         logger.info(
-          { requestId, documentType: documentData.type, url },
+          { requestId, documentType: documentData.typeId, url },
           'Document blob uploaded, saving to database'
         );
         // Sauvegarder le document dans la base de données
@@ -132,6 +132,7 @@ export const externalRouter = router({
           requestId,
           url,
           dek,
+          typeId: documentData.typeId, // Ensure typeId is set correctly
         });
         logger.info(
           { documentId: result.id, requestId },

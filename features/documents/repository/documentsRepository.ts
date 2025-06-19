@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { AppDocument } from '@/shared/types';
+import { AppDocument, AppDocumentToUpload } from '@/shared/types';
 import {
   inputToPrismaCreateInput,
   prismaDocumentToAppDocument,
@@ -24,7 +24,7 @@ export async function getDocuments(): Promise<AppDocument[]> {
  * Upload a new document
  */
 export async function uploadDocument(
-  document: AppDocument
+  document: AppDocumentToUpload
 ): Promise<AppDocument> {
   try {
     // Créer l'entrée en base de données

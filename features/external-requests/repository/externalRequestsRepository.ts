@@ -27,7 +27,11 @@ export async function getShareLinkByToken(token: string) {
       },
     },
     include: {
-      request: true,
+      request: {
+        include: {
+          requestedDocuments: true, // <-- Ensure this line is present
+        },
+      },
     },
   });
 }
