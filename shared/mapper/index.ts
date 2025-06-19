@@ -1,1 +1,5 @@
-export { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from './mapper';
+export { 
+  getDocumentTypeLabel,
+  getDocumentTypeDescription,
+  createDocumentTypeLabelMap 
+} from './mapper';

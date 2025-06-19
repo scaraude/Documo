@@ -1,13 +1,23 @@
-export enum APP_DOCUMENT_TYPES {
-  IDENTITY_CARD = 'IDENTITY_CARD',
-  PASSPORT = 'PASSPORT',
-  DRIVERS_LICENSE = 'DRIVERS_LICENSE',
-  BANK_STATEMENT = 'BANK_STATEMENT',
-  UTILITY_BILL = 'UTILITY_BILL',
-  OTHER = 'OTHER',
-}
+// Document Type IDs that match the seeded DocumentType records
+export const APP_DOCUMENT_TYPES = {
+  IDENTITY_PROOF: 'IDENTITY_PROOF',
+  DRIVERS_LICENSE: 'DRIVERS_LICENSE',
+  BANK_STATEMENT: 'BANK_STATEMENT',
+  RESIDENCY_PROOF: 'RESIDENCY_PROOF',
+  TAX_RETURN: 'TAX_RETURN',
+  EMPLOYMENT_CONTRACT: 'EMPLOYMENT_CONTRACT',
+  SALARY_SLIP: 'SALARY_SLIP',
+  BIRTH_CERTIFICATE: 'BIRTH_CERTIFICATE',
+  MARRIAGE_CERTIFICATE: 'MARRIAGE_CERTIFICATE',
+  DIPLOMA: 'DIPLOMA',
+  MEDICAL_CERTIFICATE: 'MEDICAL_CERTIFICATE',
+  LEASE_AGREEMENT: 'LEASE_AGREEMENT',
+  INSURANCE_CERTIFICATE: 'INSURANCE_CERTIFICATE',
+  OTHER: 'OTHER',
+} as const;
 
-export type AppDocumentType = APP_DOCUMENT_TYPES;
+export type AppDocumentType =
+  (typeof APP_DOCUMENT_TYPES)[keyof typeof APP_DOCUMENT_TYPES];
 
 export const ALLOWED_FILE_TYPES = {
   PDF: 'application/pdf',
@@ -22,47 +32,5 @@ export interface DocumentValidationResult {
   errors: string[];
 }
 
-export interface DocumentValidationRules {
-  allowedTypes: (typeof ALLOWED_FILE_TYPES)[keyof typeof ALLOWED_FILE_TYPES][];
-  maxSize: number;
-  requiredFields?: string[];
-}
-
-export const DOCUMENT_VALIDATION_RULES: Record<
-  APP_DOCUMENT_TYPES,
-  DocumentValidationRules
-> = {
-  [APP_DOCUMENT_TYPES.IDENTITY_CARD]: {
-    allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
-    maxSize: MAX_FILE_SIZE, // 5MB
-    requiredFields: ['expiryDate', 'documentNumber'],
-  },
-  [APP_DOCUMENT_TYPES.PASSPORT]: {
-    allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
-    maxSize: MAX_FILE_SIZE,
-    requiredFields: ['expiryDate', 'passportNumber'],
-  },
-  [APP_DOCUMENT_TYPES.DRIVERS_LICENSE]: {
-    allowedTypes: [ALLOWED_FILE_TYPES.JPEG, ALLOWED_FILE_TYPES.PNG],
-    maxSize: MAX_FILE_SIZE,
-    requiredFields: ['expiryDate', 'licenseNumber'],
-  },
-  [APP_DOCUMENT_TYPES.UTILITY_BILL]: {
-    allowedTypes: [ALLOWED_FILE_TYPES.PDF],
-    maxSize: MAX_FILE_SIZE,
-    requiredFields: ['issueDate', 'accountNumber'],
-  },
-  [APP_DOCUMENT_TYPES.BANK_STATEMENT]: {
-    allowedTypes: [ALLOWED_FILE_TYPES.PDF],
-    maxSize: MAX_FILE_SIZE,
-    requiredFields: ['issueDate', 'accountNumber'],
-  },
-  [APP_DOCUMENT_TYPES.OTHER]: {
-    allowedTypes: [
-      ALLOWED_FILE_TYPES.PDF,
-      ALLOWED_FILE_TYPES.JPEG,
-      ALLOWED_FILE_TYPES.PNG,
-    ],
-    maxSize: MAX_FILE_SIZE,
-  },
-};
+// Validation will now be handled by the DocumentType repository
+// which will fetch rules from the database

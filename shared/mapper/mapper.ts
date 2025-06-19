@@ -1,13 +1,19 @@
-import { APP_DOCUMENT_TYPES } from '../constants';
+import { DocumentType } from '@/lib/prisma/generated/client';
 
-export const APP_DOCUMENT_TYPE_TO_LABEL_MAP: Record<
-  APP_DOCUMENT_TYPES,
-  string
-> = {
-  [APP_DOCUMENT_TYPES.IDENTITY_CARD]: "Carte d'identité",
-  [APP_DOCUMENT_TYPES.PASSPORT]: 'Passeport',
-  [APP_DOCUMENT_TYPES.DRIVERS_LICENSE]: 'Permis de conduire',
-  [APP_DOCUMENT_TYPES.BANK_STATEMENT]: "RIB: Relevé d'identité bancaire",
-  [APP_DOCUMENT_TYPES.UTILITY_BILL]: 'Justificatif de domicile',
-  [APP_DOCUMENT_TYPES.OTHER]: 'Autre',
+// Legacy mapping - this will be replaced by database-driven labels
+// Use the DocumentType repository for dynamic labels
+export const getDocumentTypeLabel = (documentType: DocumentType): string => {
+  return documentType.label;
+};
+
+export const getDocumentTypeDescription = (documentType: DocumentType): string | undefined => {
+  return documentType.description;
+};
+
+// Helper to create a map from an array of DocumentType
+export const createDocumentTypeLabelMap = (documentTypes: DocumentType[]): Record<string, string> => {
+  return documentTypes.reduce((acc, docType) => {
+    acc[docType.id] = docType.label;
+    return acc;
+  }, {} as Record<string, string>);
 };

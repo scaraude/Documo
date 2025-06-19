@@ -44,11 +44,28 @@ describe('Request Repository', () => {
   const mockPrismaRequest = {
     id: '1',
     email: 'test@example.com',
-    requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+    requestedDocuments: [
+      {
+        id: APP_DOCUMENT_TYPES.IDENTITY_PROOF,
+        label: "Pièce d'identité",
+        description: "Document officiel d'identité",
+        acceptedFormats: ['pdf', 'jpg', 'png'],
+        maxSizeMB: 5,
+        createdAt: mockDate,
+      },
+    ],
     createdAt: mockDate,
     expiresAt: expiryDate,
     updatedAt: mockDate,
+    acceptedAt: null,
+    rejectedAt: null,
+    completedAt: null,
+    firstDocumentUploadedAt: null,
     folderId: 'test-folder-id',
+    folder: {
+      id: 'test-folder-id',
+      name: 'Test Folder',
+    },
   };
 
   const mockRequests = [mockPrismaRequest];
@@ -105,7 +122,7 @@ describe('Request Repository', () => {
       // GIVEN
       const requestData: CreateRequestParams = {
         email: 'test@example.com',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
         folderId: 'test-folder-id',
       };
 
@@ -118,13 +135,18 @@ describe('Request Repository', () => {
       expect(result.id).toBe('1');
       expect(result.email).toBe('test@example.com');
       expect(result.requestedDocuments).toEqual([
-        APP_DOCUMENT_TYPES.IDENTITY_CARD,
+        APP_DOCUMENT_TYPES.IDENTITY_PROOF,
       ]);
       expect(mockPrisma.documentRequest.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           email: 'test@example.com',
-          requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+          requestedDocuments: {
+            connect: [{ id: APP_DOCUMENT_TYPES.IDENTITY_PROOF }],
+          },
         }),
+        include: {
+          requestedDocuments: true,
+        },
       });
     });
 
@@ -132,7 +154,7 @@ describe('Request Repository', () => {
       // GIVEN
       const requestData: CreateRequestParams = {
         email: 'test@example.com',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
         folderId: 'test-folder-id',
         expirationDays: 14,
       };
@@ -157,7 +179,7 @@ describe('Request Repository', () => {
       // GIVEN
       const requestData: CreateRequestParams = {
         email: 'test@example.com',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_CARD],
+        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
         folderId: 'test-folder-id',
       };
 
@@ -214,6 +236,15 @@ describe('Request Repository', () => {
       expect(result?.id).toBe('1');
       expect(mockPrisma.documentRequest.findUnique).toHaveBeenCalledWith({
         where: { id: '1' },
+        include: {
+          folder: true,
+          requestedDocuments: true,
+          documents: {
+            where: { deletedAt: null },
+            orderBy: { uploadedAt: 'desc' },
+            include: { type: true },
+          },
+        },
       });
     });
 

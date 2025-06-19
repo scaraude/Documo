@@ -10,7 +10,9 @@ import {
  */
 export async function getDocuments(): Promise<AppDocument[]> {
   try {
-    const documents = await prisma.document.findMany();
+    const documents = await prisma.document.findMany({
+      include: { type: true },
+    });
     return documents.map(prismaDocumentToAppDocument);
   } catch (error) {
     console.error('Error fetching documents from database:', error);
@@ -28,6 +30,7 @@ export async function uploadDocument(
     // Créer l'entrée en base de données
     const createdDocument = await prisma.document.create({
       data: inputToPrismaCreateInput(document),
+      include: { type: true },
     });
 
     return prismaDocumentToAppDocument(createdDocument);
@@ -67,6 +70,7 @@ export async function getDocument(
   try {
     const document = await prisma.document.findUnique({
       where: { id: documentId, deletedAt: null },
+      include: { type: true },
     });
 
     return document ? prismaDocumentToAppDocument(document) : null;
@@ -85,6 +89,7 @@ export async function getValidDocumentsByRequestId(
   try {
     const documents = await prisma.document.findMany({
       where: { requestId, deletedAt: null, invalidatedAt: null },
+      include: { type: true },
     });
 
     return documents.map(prismaDocumentToAppDocument);
@@ -111,6 +116,7 @@ export async function getValidDocumentsByRequestIds(
         deletedAt: null,
         invalidatedAt: null,
       },
+      include: { type: true },
     });
 
     return documents.map(prismaDocumentToAppDocument);

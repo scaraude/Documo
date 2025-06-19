@@ -4,10 +4,12 @@ import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 import { AppDocumentType } from '@/shared/constants';
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
-import { prismaDocumentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
+import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
 
 // Type mapper between Prisma and App
-type PrismaFolder = Prisma.FolderGetPayload<null>;
+type PrismaFolder = Prisma.FolderGetPayload<{
+  include: { requestedDocuments: true }
+}>;
 
 // Convert Prisma model to App model
 function toAppModel(prismaModel: PrismaFolder): Folder {
@@ -16,7 +18,7 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
     name: prismaModel.name,
     description: prismaModel.description || '',
     requestedDocuments: prismaModel.requestedDocuments.map(
-      prismaDocumentTypeToAppDocumentType
+      documentTypeToAppDocumentType
     ),
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
@@ -32,6 +34,7 @@ export async function getFolders(): Promise<Folder[]> {
   try {
     const folders = await prisma.folder.findMany({
       where: { archivedAt: null },
+      include: { requestedDocuments: true },
     });
     return folders.map(toAppModel);
   } catch (error) {
@@ -45,6 +48,7 @@ export async function getFolderById(id: string): Promise<Folder | null> {
   try {
     const folder = await prisma.folder.findUnique({
       where: { id, archivedAt: null },
+      include: { requestedDocuments: true },
     });
 
     if (!folder) return null;
@@ -64,6 +68,7 @@ export async function getFolderByIdWithRelations(
     const folder = await prisma.folder.findUnique({
       where: { id, archivedAt: null },
       include: {
+        requestedDocuments: true,
         requests: true,
         folderType: true,
       },
@@ -179,6 +184,7 @@ export async function getFoldersWithStats(): Promise<
         archivedAt: null,
       },
       include: {
+        requestedDocuments: true,
         _count: {
           select: { requests: true },
         },

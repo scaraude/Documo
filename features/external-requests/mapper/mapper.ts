@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { Prisma } from '../../../lib/prisma';
-import { prismaDocumentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
+import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
 import { externalRequestSchema } from '../types/zod';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const shareLinkWithRequest =
   Prisma.validator<Prisma.RequestShareLinkDefaultArgs>()({
-    include: { request: true },
+    include: { request: { include: { requestedDocuments: true } } },
   });
 
 export const prismaShareLinkToExternalRequest = (
@@ -17,7 +17,7 @@ export const prismaShareLinkToExternalRequest = (
     id: request.id,
     email: request.email,
     requestedDocuments: request.requestedDocuments.map(
-      prismaDocumentTypeToAppDocumentType
+      documentTypeToAppDocumentType
     ),
     createdAt: request.createdAt,
     expiresAt: request.expiresAt,

@@ -1,9 +1,11 @@
 import { Prisma } from '@/lib/prisma';
 import { AppDocument } from '../../shared/types';
-import { prismaDocumentTypeToAppDocumentType } from '../../shared/mapper/prismaMapper';
+import { documentTypeToAppDocumentType } from '../../shared/mapper/prismaMapper';
 
 // Type du modèle Document de Prisma
-type PrismaDocument = Prisma.DocumentGetPayload<null>;
+type PrismaDocument = Prisma.DocumentGetPayload<{
+  include: { type: true };
+}>;
 
 /**
  * Convertir un document Prisma en document d'application
@@ -14,7 +16,7 @@ export function prismaDocumentToAppDocument(
   return {
     id: prismaModel.id,
     requestId: prismaModel.requestId,
-    type: prismaDocumentTypeToAppDocumentType(prismaModel.type),
+    type: documentTypeToAppDocumentType(prismaModel.type),
     fileName: prismaModel.fileName,
     mimeType: prismaModel.mimeType,
     originalSize: prismaModel.originalSize,
@@ -39,7 +41,9 @@ export function inputToPrismaCreateInput(
     request: {
       connect: { id: appDocument.requestId },
     },
-    type: appDocument.type,
+    type: {
+      connect: { id: appDocument.type },
+    },
     url: appDocument.url,
     hash: appDocument.hash,
     validationErrors: appDocument.validationErrors || [],

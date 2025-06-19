@@ -7,7 +7,9 @@ import {
 import { AppDocumentType } from '@/shared/constants';
 
 // Type mapper entre Prisma et App
-type PrismaFolderType = Prisma.FolderTypeGetPayload<null>;
+type PrismaFolderType = Prisma.FolderTypeGetPayload<{
+  include: { requiredDocuments: true };
+}>;
 
 /**
  * Convertir un modèle Prisma en modèle d'application
@@ -17,7 +19,9 @@ export function toAppModel(prismaModel: PrismaFolderType): FolderType {
     id: prismaModel.id,
     name: prismaModel.name,
     description: prismaModel.description || '',
-    requiredDocuments: prismaModel.requiredDocuments as AppDocumentType[],
+    requiredDocuments: prismaModel.requiredDocuments.map(
+      dt => dt.id as AppDocumentType
+    ),
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
     deletedAt: prismaModel.deletedAt || undefined,
@@ -33,6 +37,9 @@ export async function getFolderTypes(): Promise<FolderType[]> {
     const folderTypes = await prisma.folderType.findMany({
       where: {
         deletedAt: null, // Soft delete
+      },
+      include: {
+        requiredDocuments: true,
       },
       orderBy: {
         createdAt: 'desc',
@@ -58,6 +65,9 @@ export async function getFolderTypeById(
         id,
         deletedAt: null,
       },
+      include: {
+        requiredDocuments: true,
+      },
     });
 
     return folderType ? toAppModel(folderType) : null;
@@ -80,8 +90,13 @@ export async function createFolderType(
       data: {
         name,
         description,
-        requiredDocuments,
-        createdById,
+        requiredDocuments: {
+          connect: requiredDocuments.map(id => ({ id })),
+        },
+        createdById: createdById || '',
+      },
+      include: {
+        requiredDocuments: true,
       },
     });
 
@@ -107,7 +122,14 @@ export async function updateFolderType(
       data: {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
-        ...(requiredDocuments !== undefined && { requiredDocuments }),
+        ...(requiredDocuments !== undefined && {
+          requiredDocuments: {
+            set: requiredDocuments.map(id => ({ id })),
+          },
+        }),
+      },
+      include: {
+        requiredDocuments: true,
       },
     });
 
@@ -152,6 +174,7 @@ export async function getFolderTypesWithStats(): Promise<
         deletedAt: null,
       },
       include: {
+        requiredDocuments: true,
         _count: {
           select: { folders: true },
         },

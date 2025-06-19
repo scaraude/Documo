@@ -15,7 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/shared/components/ui/tabs';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import {
   ComputedRequestStatus,
   DocumentRequest,
@@ -41,6 +41,7 @@ function RequestDetailContent() {
   const searchParams = useSearchParams();
   const { getById } = useRequests();
   const { data: request, isLoading, error } = getById(params.id);
+  const { getLabel } = useDocumentTypes();
   const [activeTab, setActiveTab] = useState('overview');
 
   // Handle tab parameter from URL
@@ -352,7 +353,7 @@ function RequestDetailContent() {
                             <FileText className="h-5 w-5 text-gray-600" />
                             <div>
                               <p className="font-medium text-gray-900">
-                                {APP_DOCUMENT_TYPE_TO_LABEL_MAP[documentType]}
+                                {getLabel(documentType)}
                               </p>
                             </div>
                           </div>

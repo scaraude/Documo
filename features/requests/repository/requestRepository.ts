@@ -9,12 +9,18 @@ import { AppDocumentType } from '@/shared/constants';
 import { prismaDocumentToAppDocument } from '../../documents/mappers';
 
 // Mapper entre le type Prisma et le type App
-type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<null>;
+type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<{
+  include: { requestedDocuments: true };
+}>;
 type PrismaDocumentRequestWithFolder = Prisma.DocumentRequestGetPayload<{
-  include: { folder: true };
+  include: { folder: true; requestedDocuments: true };
 }>;
 type PrismaDocumentRequestWithDocuments = Prisma.DocumentRequestGetPayload<{
-  include: { folder: true; documents: true };
+  include: {
+    folder: true;
+    requestedDocuments: true;
+    documents: { include: { type: true } };
+  };
 }>;
 
 /**
@@ -26,7 +32,9 @@ export function toAppModel(
   return {
     id: prismaModel.id,
     email: prismaModel.email,
-    requestedDocuments: prismaModel.requestedDocuments as AppDocumentType[],
+    requestedDocuments: prismaModel.requestedDocuments.map(
+      dt => dt.id as AppDocumentType
+    ),
     createdAt: prismaModel.createdAt,
     expiresAt: prismaModel.expiresAt,
     updatedAt: prismaModel.updatedAt,
@@ -73,6 +81,7 @@ export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
     const requests = await prisma.documentRequest.findMany({
       include: {
         folder: true,
+        requestedDocuments: true,
       },
     });
     return requests.map(toAppModelWithFolder);
@@ -99,9 +108,14 @@ export async function createRequest(
     const newRequest = await prisma.documentRequest.create({
       data: {
         email,
-        requestedDocuments,
+        requestedDocuments: {
+          connect: requestedDocuments.map(id => ({ id })),
+        },
         expiresAt,
         folderId,
+      },
+      include: {
+        requestedDocuments: true,
       },
     });
 
@@ -137,9 +151,11 @@ export async function getRequestById(
       where: { id },
       include: {
         folder: true,
+        requestedDocuments: true,
         documents: {
           where: { deletedAt: null },
           orderBy: { uploadedAt: 'desc' },
+          include: { type: true },
         },
       },
     });

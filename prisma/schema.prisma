@@ -135,7 +135,7 @@ model DocumentRequest {
   completedAt             DateTime?
   firstDocumentUploadedAt DateTime?
 
-  requestDocuments DocumentType[] @relation("RequestDocuments")
+  requestedDocuments DocumentType[] @relation("RequestDocuments")
   documents  Document[]
   folderId   String
   folder     Folder             @relation(fields: [folderId], references: [id])
@@ -191,10 +191,10 @@ model DocumentType {
   maxSizeMB         Int      @default(5)
   createdAt          DateTime @default(now())
 
-  Document Document[] 
-  DocumentRequest DocumentRequest[] @relation("RequestDocuments")
-  Folder Folder[] @relation("FolderDocuments")
-  FolderType FolderType[] @relation("FolderTypeDocuments")
+  documents Document[] 
+  requestedByRequests DocumentRequest[] @relation("RequestDocuments")
+  requestedByFolders Folder[] @relation("FolderDocuments")
+  requiredByFolderTypes FolderType[] @relation("FolderTypeDocuments")
   @@map("document_types")
 }
 
