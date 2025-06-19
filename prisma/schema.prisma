@@ -91,7 +91,7 @@ model Folder {
   name        String
   description String?
 
-  requestedDocuments DocumentType[]
+  requestedDocuments DocumentType[] @relation("FolderDocuments")
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
 
@@ -116,7 +116,7 @@ model FolderType {
   id                String         @id @default(uuid())
   name              String
   description       String?
-  requiredDocuments DocumentType[]
+  requiredDocuments DocumentType[] @relation("FolderTypeDocuments")
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
   deletedAt         DateTime? // Soft delete
@@ -131,7 +131,7 @@ model FolderType {
 model DocumentRequest {
   id                 String         @id @default(uuid())
   email              String
-  requestedDocuments DocumentType[]
+  requestedDocuments DocumentType[] @relation("RequestDocuments")
   // SUPPRIMER: status     RequestStatus
   createdAt          DateTime       @default(now())
   expiresAt          DateTime
@@ -156,7 +156,8 @@ model Document {
   id           String          @id @default(uuid())
   requestId    String
   request      DocumentRequest @relation(fields: [requestId], references: [id])
-  type         DocumentType
+  type         DocumentType @relation(fields: [typeId], references: [id])
+  typeId       String
   fileName     String
   mimeType     String
   originalSize Int
@@ -192,13 +193,31 @@ model RequestShareLink {
   @@map("request_share_links")
 }
 
-enum DocumentType {
-  IDENTITY_CARD
-  PASSPORT
-  DRIVERS_LICENSE
-  BANK_STATEMENT
-  UTILITY_BILL
-  OTHER
+// enum DocumentType {
+//   IDENTITY_CARD
+//   PASSPORT
+//   DRIVERS_LICENSE
+//   BANK_STATEMENT
+//   UTILITY_BILL
+//   OTHER
+// }
+
+model DocumentType {
+  id                String   @id
+  label             String
+  description       String?
+  acceptedFormats   String[] // ['pdf', 'jpg']
+  maxSizeMB         Int      @default(5)
+
+  createdAt          DateTime @default(now())
+
+  // Relations
+  documents         Document[]
+  folderTypes       FolderType[] @relation("FolderTypeDocuments")
+  folders           Folder[] @relation("FolderDocuments") 
+  documentRequests  DocumentRequest[] @relation("RequestDocuments")
+
+  @@map("document_types")
 }
 
 enum ProviderType {
