@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { APP_DOCUMENT_TYPES } from '../../../shared/constants';
+import { documentTypeIdsSchema } from '../../document-types/types/zod';
 import { AppDocumentSchema } from '../../../shared/types';
 
 // Schema for external request response
 export const externalRequestSchema = z.object({
   id: z.string(),
   email: z.string(),
-  requestedDocuments: z.nativeEnum(APP_DOCUMENT_TYPES).array(),
+  requestedDocuments: documentTypeIdsSchema,
   createdAt: z.date(),
   expiresAt: z.date(),
 });

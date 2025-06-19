@@ -1,13 +1,6 @@
 import z from 'zod';
-import { APP_DOCUMENT_TYPES, AppDocumentType } from '../constants';
-
-// Create folder type validation schema
-export const createFolderTypeSchema = z.object({
-  name: z.string().min(1).max(255),
-  description: z.string().min(1),
-  requiredDocuments: z.array(z.nativeEnum(APP_DOCUMENT_TYPES)),
-  createdById: z.string().optional(),
-});
+import { AppDocumentType } from '../constants';
+import { documentTypeIdSchema } from '../../features/document-types/types/zod';
 
 export interface DocumentRequest {
   id: string;
@@ -57,10 +50,10 @@ export interface AppDocumentWithStatus extends AppDocument {
 }
 
 export const AppDocumentSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   requestId: z.string(),
   folderId: z.string().optional(),
-  type: z.nativeEnum(APP_DOCUMENT_TYPES),
+  type: documentTypeIdSchema,
   fileName: z.string(),
   mimeType: z.string(),
   originalSize: z.number(),
