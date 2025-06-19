@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { Card, CardContent } from '@/shared/components/ui/card';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { Badge } from '@/shared/components/ui/badge';
 import { FileText } from 'lucide-react';
 import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
@@ -11,6 +11,7 @@ export default function ExternalRequestPage() {
   const { token }: { token: string } = useParams();
   const { getRequestByToken } = useExternalRequest();
   const { data: request, isLoading, error } = getRequestByToken(token);
+  const { getLabel } = useDocumentTypes();
 
   if (isLoading) {
     return (
@@ -78,7 +79,7 @@ export default function ExternalRequestPage() {
                     <div className="flex items-center space-x-3">
                       <FileText className="h-5 w-5 text-gray-500" />
                       <span className="text-gray-700 font-medium">
-                        {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                        {getLabel(doc)}
                       </span>
                     </div>
                     <Badge variant="outline" className="text-xs">

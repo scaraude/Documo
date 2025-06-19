@@ -33,10 +33,13 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
     fetchDocumentTypes();
   }, []);
 
-  const labelMap = documentTypes.reduce((acc, docType) => {
-    acc[docType.id] = docType.label;
-    return acc;
-  }, {} as Record<string, string>);
+  const labelMap = documentTypes.reduce(
+    (acc, docType) => {
+      acc[docType.id] = docType.label;
+      return acc;
+    },
+    {} as Record<string, string>
+  );
 
   const getLabel = (id: string): string => {
     return labelMap[id] || id;

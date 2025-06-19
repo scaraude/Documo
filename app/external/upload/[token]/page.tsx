@@ -12,7 +12,7 @@ import { DocumentUploader } from '../../../../features/external-requests/compone
 import { Loader } from 'lucide-react';
 import * as React from 'react';
 import { useParams } from 'next/navigation';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../../shared/mapper';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { useDocument } from '@/features/documents/hooks/useDocument';
 import { AppDocumentType } from '../../../../shared/constants';
 
@@ -20,9 +20,10 @@ export default function ExternalUploadPage() {
   const { token }: { token: string } = useParams();
   const { getRequestByToken } = useExternalRequest();
   const { getDocumentsByRequestId } = useDocument();
+  const { getLabel } = useDocumentTypes();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [documentTypesMissing, setDocumentTypesMissing] = useState<
-    AppDocumentType[]
+    string[]
   >([]);
   const { data: request, isLoading, error } = getRequestByToken(token);
   const { data: documents } = getDocumentsByRequestId(request?.id);
@@ -122,7 +123,7 @@ export default function ExternalUploadPage() {
                   {documentTypesMissing.includes(requestedDocument)
                     ? '⏳  '
                     : '✅  '}
-                  {APP_DOCUMENT_TYPE_TO_LABEL_MAP[requestedDocument]}
+                  {getLabel(requestedDocument)}
                 </li>
               ))}
             </ul>

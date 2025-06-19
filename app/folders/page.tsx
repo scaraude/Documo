@@ -20,7 +20,7 @@ import {
   FolderWithStatus,
 } from '../../features/folders/types';
 import { useRouter } from 'next/navigation';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 
 export default function FoldersPage() {
   const { getAllFolderTypes } = useFolderTypes();
@@ -28,6 +28,7 @@ export default function FoldersPage() {
     getAllFolderTypes();
   const { getAllFolders } = useFolders();
   const { data: folders, isLoading } = getAllFolders();
+  const { getLabel } = useDocumentTypes();
 
   const router = useRouter();
 
@@ -143,7 +144,7 @@ export default function FoldersPage() {
                           variant="outline"
                           className="text-xs px-2 py-0.5"
                         >
-                          {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                          {getLabel(doc)}
                         </Badge>
                       ))}
                     {folderType.requiredDocuments.length > 2 && (

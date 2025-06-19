@@ -6,12 +6,12 @@ import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { AppDocumentType, ROUTES } from '@/shared/constants';
 import { uploadDocument } from '../api/uploadDocument';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
+import { useDocumentTypes } from '../../document-types/hooks/useDocumentTypes';
 
 interface DocumentUploaderProps {
   token: string;
-  documentTypesMissing: AppDocumentType[];
-  setDocumentTypeMissing: Dispatch<SetStateAction<AppDocumentType[]>>;
+  documentTypesMissing: string[];
+  setDocumentTypeMissing: Dispatch<SetStateAction<string[]>>;
 }
 
 interface UploadStatus {
@@ -29,6 +29,7 @@ export const DocumentUploader = ({
   setDocumentTypeMissing,
 }: DocumentUploaderProps) => {
   const router = useRouter();
+  const { getLabel } = useDocumentTypes();
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
 
   // Update uploadStatus when requiredDocuments changes
@@ -47,7 +48,7 @@ export const DocumentUploader = ({
 
   const handleFileUpload = async (
     file: File,
-    documentType: AppDocumentType
+    documentType: string
   ) => {
     try {
       setUploadStatus(prev => ({
@@ -123,7 +124,7 @@ export const DocumentUploader = ({
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-medium">
-                  {APP_DOCUMENT_TYPE_TO_LABEL_MAP[documentType]}
+                  {getLabel(documentType)}
                 </h3>
                 <p className="text-sm text-gray-500">
                   {status.status === 'idle' && 'En attente du document'}
