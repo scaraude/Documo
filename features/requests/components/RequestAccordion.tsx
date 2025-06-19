@@ -247,7 +247,7 @@ export const RequestAccordion = ({
                 <div className="space-y-1">
                   {request.requestedDocuments.map((doc, index) => (
                     <div key={index} className="text-sm text-gray-700">
-                      • {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                      • {doc.label}
                     </div>
                   ))}
                 </div>

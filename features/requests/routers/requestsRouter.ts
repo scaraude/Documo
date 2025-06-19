@@ -70,7 +70,7 @@ export const requestsRouter = router({
 
         // Prepare email data
         const documentLabels = input.requestedDocuments.map(
-          doc => APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]
+          doc => doc.label
         );
         const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/requests/${result.id}/upload`;
         const expirationDate = new Intl.DateTimeFormat('fr-FR', {

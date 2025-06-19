@@ -182,7 +182,7 @@ export const FolderRequestManager = ({
                     variant="outline"
                     className="text-blue-700 border-blue-300"
                   >
-                    {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                    {doc.label}
                   </Badge>
                 ))}
               </div>

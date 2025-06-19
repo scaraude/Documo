@@ -3,7 +3,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { FolderType } from '../types';
 import { ROUTES } from '@/shared/constants';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
 import {
   Button,
   Card,
@@ -148,9 +147,7 @@ export const FolderTypeDetail = ({
                       className="flex items-center p-2 bg-gray-50 rounded-md"
                     >
                       <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
-                      <span className="text-sm font-medium">
-                        {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
-                      </span>
+                      <span className="text-sm font-medium">{doc.label}</span>
                     </div>
                   ))}
                 </div>

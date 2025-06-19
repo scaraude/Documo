@@ -1,4 +1,4 @@
-import { AppDocumentType } from '@/shared/constants';
+import { AppDocumentType, DocumentTypeId } from '../../document-types';
 
 export interface FolderType {
   id: string;
@@ -14,12 +14,12 @@ export interface FolderType {
 export interface CreateFolderTypeParams {
   name: string;
   description: string;
-  requiredDocuments: AppDocumentType[];
+  requiredDocuments: DocumentTypeId[];
   createdById?: string;
 }
 
 export interface UpdateFolderTypeParams {
   name?: string;
   description?: string;
-  requiredDocuments?: AppDocumentType[];
+  requiredDocuments?: DocumentTypeId[];
 }

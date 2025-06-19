@@ -2,14 +2,10 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  ROUTES,
-  APP_DOCUMENT_TYPES,
-  AppDocumentType,
-} from '@/shared/constants';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import { ROUTES } from '@/shared/constants';
 import { CreateFolderTypeParams } from '../types';
 import { Button } from '@/shared/components';
+import { DocumentTypeId, useDocumentTypes } from '../../document-types';
 
 interface FolderTypeFormProps {
   onSubmit: (data: CreateFolderTypeParams) => Promise<void>;
@@ -22,9 +18,10 @@ export const FolderTypeForm = ({
 }: FolderTypeFormProps) => {
   const router = useRouter();
 
+  const { documentTypes } = useDocumentTypes();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [requiredDocuments, setRequiredDocuments] = useState<AppDocumentType[]>(
+  const [requiredDocuments, setRequiredDocuments] = useState<DocumentTypeId[]>(
     []
   );
 
@@ -45,11 +42,11 @@ export const FolderTypeForm = ({
     }
   };
 
-  const toggleDocumentType = (docType: AppDocumentType) => {
+  const toggleDocumentType = (docTypeId: DocumentTypeId) => {
     setRequiredDocuments(prev =>
-      prev.includes(docType)
-        ? prev.filter(dt => dt !== docType)
-        : [...prev, docType]
+      prev.includes(docTypeId)
+        ? prev.filter(dt => dt !== docTypeId)
+        : [...prev, docTypeId]
     );
   };
 
@@ -106,16 +103,16 @@ export const FolderTypeForm = ({
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 border border-gray-300 rounded-md p-4 max-h-60 overflow-y-auto">
-          {Object.values(APP_DOCUMENT_TYPES).map(docType => (
-            <label key={docType} className="flex items-center">
+          {documentTypes.map(docType => (
+            <label key={docType.id} className="flex items-center">
               <input
                 type="checkbox"
-                checked={requiredDocuments.includes(docType)}
-                onChange={() => toggleDocumentType(docType)}
+                checked={requiredDocuments.includes(docType.id)}
+                onChange={() => toggleDocumentType(docType.id)}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
               <span className="ml-2 text-sm text-gray-700">
-                {APP_DOCUMENT_TYPE_TO_LABEL_MAP[docType]}
+                {docType.label}
               </span>
             </label>
           ))}

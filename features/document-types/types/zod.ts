@@ -56,7 +56,7 @@ export const documentValidationResultSchema = z.object({
 });
 
 // Type exports
-export type DocumentType = z.infer<typeof documentTypeSchema>;
+export type AppDocumentType = z.infer<typeof documentTypeSchema>;
 export type CreateDocumentType = z.infer<typeof createDocumentTypeSchema>;
 export type UpdateDocumentType = z.infer<typeof updateDocumentTypeSchema>;
 export type DocumentTypeId = z.infer<typeof documentTypeIdSchema>;

@@ -314,7 +314,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
               <div className="flex flex-wrap gap-2">
                 {selectedType.requiredDocuments.map((doc, index) => (
                   <Badge key={index} variant="outline">
-                    {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                    {doc.label}
                   </Badge>
                 ))}
               </div>
@@ -423,7 +423,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
                       variant="outline"
                       className="text-blue-700 border-blue-300"
                     >
-                      {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                      {doc.label}
                     </Badge>
                   ))}
                 </div>

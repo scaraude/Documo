@@ -10,7 +10,6 @@ import {
   Badge,
 } from '@/shared/components';
 import { FileText, Plus, TrendingUp } from 'lucide-react';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 import { useRouter } from 'next/navigation';
 
 interface FolderTypeCarouselProps {
@@ -69,7 +68,7 @@ export const FolderTypeCarousel = ({
                     .slice(0, 3)
                     .map((doc, index) => (
                       <Badge key={index} variant="outline" className="text-xs">
-                        {APP_DOCUMENT_TYPE_TO_LABEL_MAP[doc]}
+                        {doc.label}
                       </Badge>
                     ))}
                   {folderType.requiredDocuments.length > 3 && (
