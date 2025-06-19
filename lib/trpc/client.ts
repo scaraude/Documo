@@ -12,6 +12,15 @@ export const trpc = createTRPCNext<AppRouter>({
           transformer: superjson,
         }),
       ],
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            // Simple caching - document types are static
+            staleTime: 30 * 60 * 1000, // 30 minutes
+            refetchOnWindowFocus: false,
+          },
+        },
+      },
     };
   },
   ssr: false,

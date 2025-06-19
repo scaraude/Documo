@@ -5,6 +5,7 @@ import { folderTypesRouter } from '../../features/folder-types/routers/folderTyp
 import { folderRouter } from '../../features/folders/routers/folderRouter';
 import { routerDocument } from '../../features/documents/routers/routerDocument';
 import { authRouter } from '../../features/auth/routers/authRouter';
+import { documentTypesRouter } from '../../features/document-types/routers/documentTypesRouter';
 
 export const appRouter = router({
   requests: requestsRouter,
@@ -12,6 +13,7 @@ export const appRouter = router({
   folderTypes: folderTypesRouter,
   folder: folderRouter,
   documents: routerDocument,
+  documentTypes: documentTypesRouter,
   auth: authRouter,
 });
 

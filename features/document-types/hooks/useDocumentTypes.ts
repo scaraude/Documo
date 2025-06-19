@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { trpc } from '@/lib/trpc/client';
 import { DocumentType } from '@/lib/prisma/generated/client';
-import { getAllDocumentTypesCached } from '../repository/documentTypesRepository';
 
 interface UseDocumentTypesReturn {
   documentTypes: DocumentType[];
@@ -11,29 +10,22 @@ interface UseDocumentTypesReturn {
   getDocumentType: (id: string) => DocumentType | undefined;
 }
 
+/**
+ * Simple hook for document types with basic caching
+ * Document types don't change often, so we cache for 1 hour
+ */
 export const useDocumentTypes = (): UseDocumentTypesReturn => {
-  const [documentTypes, setDocumentTypes] = useState<DocumentType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+  const {
+    data: documentTypes,
+    isLoading,
+    error,
+  } = trpc.documentTypes.getAll.useQuery(undefined, {
+    staleTime: 60 * 60 * 1000, // 1 hour - document types rarely change
+    refetchOnWindowFocus: false,
+  });
 
-  useEffect(() => {
-    const fetchDocumentTypes = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const types = await getAllDocumentTypesCached();
-        setDocumentTypes(types);
-      } catch (err) {
-        setError(err as Error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDocumentTypes();
-  }, []);
-
-  const labelMap = documentTypes.reduce(
+  // Create label map from document types
+  const labelMap = (documentTypes || []).reduce(
     (acc, docType) => {
       acc[docType.id] = docType.label;
       return acc;
@@ -46,14 +38,14 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
   };
 
   const getDocumentType = (id: string): DocumentType | undefined => {
-    return documentTypes.find(dt => dt.id === id);
+    return documentTypes?.find((dt: DocumentType) => dt.id === id);
   };
 
   return {
-    documentTypes,
+    documentTypes: documentTypes || [],
     labelMap,
     isLoading,
-    error,
+    error: error as Error | null,
     getLabel,
     getDocumentType,
   };

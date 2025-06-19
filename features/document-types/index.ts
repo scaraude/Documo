@@ -1,6 +1,10 @@
 // Export hooks
 export { useDocumentTypes } from './hooks/useDocumentTypes';
 
+// Export router
+export { documentTypesRouter } from './routers/documentTypesRouter';
+export type { DocumentTypesRouter } from './routers/documentTypesRouter';
+
 // Export repository functions
 export * from './repository/documentTypesRepository';
 

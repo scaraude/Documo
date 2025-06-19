@@ -10,7 +10,7 @@ import { useDocumentTypes } from '../../document-types/hooks/useDocumentTypes';
 
 interface DocumentUploaderProps {
   token: string;
-  documentTypesMissing: string[];
+  documentTypesMissing: AppDocumentType[];
   setDocumentTypeMissing: Dispatch<SetStateAction<string[]>>;
 }
 
@@ -48,7 +48,7 @@ export const DocumentUploader = ({
 
   const handleFileUpload = async (
     file: File,
-    documentType: string
+    documentType: AppDocumentType
   ) => {
     try {
       setUploadStatus(prev => ({
