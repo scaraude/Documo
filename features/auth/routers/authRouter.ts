@@ -383,7 +383,14 @@ export const authRouter = createTRPCRouter({
     }),
 
   checkEmailVerification: publicProcedure
-    .input(z.object({ email: z.string().email() }))
+    .input(
+      z.object({
+        email: z
+          .string()
+          .email()
+          .transform(email => email.toLowerCase()),
+      })
+    )
     .query(async ({ input }) => {
       try {
         const isVerified = await authRepository.isEmailVerified(input.email);

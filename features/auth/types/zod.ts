@@ -62,21 +62,15 @@ export const loginSchema = z.object({
 });
 
 // Frontend form schema with password confirmation
-export const signupSchema = z
-  .object({
-    email: z
-      .string()
-      .email('Adresse email invalide')
-      .transform(email => email.toLowerCase()),
-    password: passwordSchema,
-    confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
-    firstName: z.string().min(1, 'Le prénom est requis').max(50),
-    lastName: z.string().min(1, 'Le nom est requis').max(50),
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    message: 'Les mots de passe ne correspondent pas',
-    path: ['confirmPassword'],
-  });
+export const signupSchema = z.object({
+  email: z
+    .string()
+    .email('Adresse email invalide')
+    .transform(email => email.toLowerCase()),
+  password: passwordSchema,
+  firstName: z.string().min(1, 'Le prénom est requis').max(50),
+  lastName: z.string().min(1, 'Le nom est requis').max(50),
+});
 
 // Backend API schema without password confirmation
 export const signupApiSchema = z.object({
