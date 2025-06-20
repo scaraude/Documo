@@ -3,6 +3,7 @@ import { publicProcedure, router } from '../../../lib/trpc/trpc';
 import * as folderRepository from '../repository/foldersRepository';
 import { CreateFolderSchema } from '../types/zod';
 import logger from '@/lib/logger';
+import { AppDocumentType } from '@/shared/constants';
 
 export const folderRouter = router({
   getAll: publicProcedure.query(async () => {
@@ -54,7 +55,10 @@ export const folderRouter = router({
           { folderName: input.name, folderTypeId: input.folderTypeId },
           'Creating folder'
         );
-        const result = await folderRepository.createFolder(input);
+        const result = await folderRepository.createFolder({
+          ...input,
+          requestedDocuments: input.requestedDocuments as AppDocumentType[],
+        });
         logger.info(
           { folderId: result.id, folderName: result.name },
           'Folder created successfully'

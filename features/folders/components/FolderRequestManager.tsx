@@ -31,7 +31,7 @@ import {
 } from '@/shared/types';
 import Link from 'next/link';
 import { ROUTES } from '../../../shared/constants';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 
 interface FolderRequestManagerProps {
   folder: FolderWithRelationsAndStatus;
@@ -43,6 +43,7 @@ export const FolderRequestManager = ({
   onRemoveRequest,
 }: FolderRequestManagerProps) => {
   const { createRequestMutation } = useRequests();
+  const { getLabel } = useDocumentTypes();
   const [isCreatingRequest, setIsCreatingRequest] = useState(false);
   const [newEmails, setNewEmails] = useState<string[]>(['']);
   const [isLoading, setIsLoading] = useState(false);
@@ -176,13 +177,13 @@ export const FolderRequestManager = ({
                 Documents qui seront demandés :
               </h4>
               <div className="flex flex-wrap gap-2">
-                {folder.requestedDocuments.map((doc, index) => (
+                {folder.requestedDocuments.map((docType, index) => (
                   <Badge
                     key={index}
                     variant="outline"
                     className="text-blue-700 border-blue-300"
                   >
-                    {doc.label}
+                    {getLabel(docType)}
                   </Badge>
                 ))}
               </div>

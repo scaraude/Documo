@@ -1,4 +1,7 @@
-import { AppDocumentType, DocumentTypeId } from '../../document-types';
+import {
+  AppDocumentType,
+  DocumentTypeId,
+} from '../../document-types/types/zod';
 
 export interface FolderType {
   id: string;
@@ -13,7 +16,7 @@ export interface FolderType {
 
 export interface CreateFolderTypeParams {
   name: string;
-  description: string;
+  description?: string;
   requiredDocuments: DocumentTypeId[];
   createdById?: string;
 }

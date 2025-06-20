@@ -69,8 +69,16 @@ export async function getFolderByIdWithRelations(
       where: { id, archivedAt: null },
       include: {
         requestedDocuments: true,
-        requests: true,
-        folderType: true,
+        requests: {
+          include: {
+            requestedDocuments: true,
+          },
+        },
+        folderType: {
+          include: {
+            requiredDocuments: true,
+          },
+        },
       },
     });
 
@@ -90,8 +98,18 @@ export async function getFolderByIdWithRelations(
 // Create a new folder
 export async function createFolder(data: CreateFolderParams): Promise<Folder> {
   try {
+    const { requestedDocuments, ...folderData } = data;
     const newFolder = await prisma.folder.create({
-      data,
+      data: {
+        ...folderData,
+        createdById: folderData.createdById || '', // Ensure string is provided
+        requestedDocuments: {
+          connect: requestedDocuments.map(id => ({ id })),
+        },
+      },
+      include: {
+        requestedDocuments: true,
+      },
     });
 
     return toAppModel(newFolder);
@@ -113,9 +131,20 @@ export async function updateFolder(
   }>
 ): Promise<Folder> {
   try {
+    const { requestedDocuments, ...updateData } = data;
     const updatedFolder = await prisma.folder.update({
       where: { id },
-      data,
+      data: {
+        ...updateData,
+        ...(requestedDocuments && {
+          requestedDocuments: {
+            set: requestedDocuments.map(id => ({ id })),
+          },
+        }),
+      },
+      include: {
+        requestedDocuments: true,
+      },
     });
 
     return toAppModel(updatedFolder);

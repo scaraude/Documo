@@ -10,7 +10,9 @@ describe('ExternalRequestsRepository Integration Tests', () => {
 
   beforeEach(async () => {
     // Get a test request and share link from seeded data
-    const testRequest = await prisma.documentRequest.findFirst();
+    const testRequest = await prisma.documentRequest.findFirst({
+      include: { requestedDocuments: true },
+    });
     const testShareLink = await prisma.requestShareLink.findFirst();
 
     if (!testRequest || !testShareLink) {
@@ -20,7 +22,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
     testRequestId = testRequest.id;
     testShareLinkToken = testShareLink.token;
     testCivilId = testRequest.email;
-    testRequestedDocuments = testRequest.requestedDocuments;
+    testRequestedDocuments = testRequest.requestedDocuments.map(dt => dt.id);
   });
 
   describe('createShareLink', () => {

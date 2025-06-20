@@ -1,5 +1,1 @@
-export { 
-  getDocumentTypeLabel,
-  getDocumentTypeDescription,
-  createDocumentTypeLabelMap 
-} from './mapper';
+export { createDocumentTypeLabelMap } from './mapper';

@@ -144,7 +144,7 @@ export default function FoldersPage() {
                           variant="outline"
                           className="text-xs px-2 py-0.5"
                         >
-                          {getLabel(doc)}
+                          {getLabel(doc.id)}
                         </Badge>
                       ))}
                     {folderType.requiredDocuments.length > 2 && (

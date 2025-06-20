@@ -5,7 +5,7 @@ import {
   ComputedRequestStatus,
   DocumentRequestWithFolder,
 } from '@/shared/types';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { Badge, Button } from '@/shared/components';
 import {
   ChevronDown,
@@ -34,6 +34,7 @@ export const RequestAccordion = ({
   getRequestStatus,
 }: RequestAccordionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const { getLabel } = useDocumentTypes();
   const status = getRequestStatus(request);
 
   const getStatusColor = (status: ComputedRequestStatus) => {
@@ -245,9 +246,9 @@ export const RequestAccordion = ({
                   {request.requestedDocuments.length} documents
                 </div>
                 <div className="space-y-1">
-                  {request.requestedDocuments.map((doc, index) => (
+                  {request.requestedDocuments.map((docType, index) => (
                     <div key={index} className="text-sm text-gray-700">
-                      • {doc.label}
+                      • {getLabel(docType)}
                     </div>
                   ))}
                 </div>

@@ -2,7 +2,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ROUTES } from '@/shared/constants';
+import { ROUTES, AppDocumentType } from '@/shared/constants';
 import { CreateFolderParams, Folder } from '../types';
 import { useFolderTypes } from '@/features/folder-types';
 import { useRequests } from '@/features/requests/hooks/useRequests';
@@ -26,7 +26,6 @@ import {
   Trash2,
 } from 'lucide-react';
 import Link from 'next/link';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '../../../shared/mapper';
 import { useFolders } from '../hooks/useFolders';
 import { toast } from 'sonner';
 
@@ -100,7 +99,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         name,
         description,
         folderTypeId: selectedType.id,
-        requestedDocuments: selectedType.requiredDocuments,
+        requestedDocuments: selectedType.requiredDocuments.map(doc => doc.id as AppDocumentType),
         expiresAt: expirationDate ? new Date(expirationDate) : null,
       };
 
@@ -141,7 +140,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         validEmails.map(email =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
-            requestedDocuments: selectedType.requiredDocuments,
+            requestedDocuments: selectedType.requiredDocuments.map(doc => doc.id as AppDocumentType),
             folderId: createdFolder.id,
           })
         )

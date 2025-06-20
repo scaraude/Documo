@@ -3,7 +3,7 @@ import * as requestRepository from './../repository/requestRepository';
 import * as foldersRepository from '@/features/folders/repository/foldersRepository';
 import { publicProcedure, router } from '@/lib/trpc/trpc';
 import { sendDocumentRequestEmail } from '@/lib/email';
-import { APP_DOCUMENT_TYPE_TO_LABEL_MAP } from '@/shared/mapper';
+import * as documentTypesRepository from '@/features/document-types/repository/documentTypesRepository';
 import logger from '@/lib/logger';
 import { createRequestSchema } from '../types/zod';
 
@@ -68,9 +68,16 @@ export const requestsRouter = router({
           throw new Error('Folder not found');
         }
 
+        // Get document types for labels
+        const documentTypes = await documentTypesRepository.getAllDocumentTypes();
+        const documentTypeMap = documentTypes.reduce((acc: Record<string, string>, dt) => {
+          acc[dt.id] = dt.label;
+          return acc;
+        }, {} as Record<string, string>);
+
         // Prepare email data
         const documentLabels = input.requestedDocuments.map(
-          doc => doc.label
+          docTypeId => documentTypeMap[docTypeId] || docTypeId
         );
         const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/requests/${result.id}/upload`;
         const expirationDate = new Intl.DateTimeFormat('fr-FR', {

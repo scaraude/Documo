@@ -4,7 +4,6 @@ import {
   CreateFolderTypeParams,
   UpdateFolderTypeParams,
 } from '../types';
-import { AppDocumentType } from '@/shared/constants';
 
 // Type mapper entre Prisma et App
 type PrismaFolderType = Prisma.FolderTypeGetPayload<{
@@ -19,9 +18,7 @@ export function toAppModel(prismaModel: PrismaFolderType): FolderType {
     id: prismaModel.id,
     name: prismaModel.name,
     description: prismaModel.description || '',
-    requiredDocuments: prismaModel.requiredDocuments.map(
-      dt => dt.id as AppDocumentType
-    ),
+    requiredDocuments: prismaModel.requiredDocuments,
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
     deletedAt: prismaModel.deletedAt || undefined,
@@ -89,7 +86,7 @@ export async function createFolderType(
     const newFolderType = await prisma.folderType.create({
       data: {
         name,
-        description,
+        description: description || null,
         requiredDocuments: {
           connect: requiredDocuments.map(id => ({ id })),
         },
