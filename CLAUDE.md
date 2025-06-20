@@ -150,3 +150,113 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Error Handling**: Always log errors with context before throwing
 - **Development**: Run `yarn dev` for pretty-formatted logs in development
 - **Production**: Logs output as JSON for structured parsing in production
+
+## Toast Notifications Guidelines
+
+- **Toast System**: Use Sonner toast system (imported as `import { toast } from 'sonner'`)
+- **Toast Setup**: Toaster component is already configured in app/layout.tsx with `<Toaster richColors />`
+- **Toast Methods**: Use `toast.success()`, `toast.error()`, `toast.info()`, `toast.warning()`
+- **Example Usage**:
+  ```typescript
+  import { toast } from 'sonner';
+  
+  // Success notification
+  toast.success('Dossier créé avec succès');
+  
+  // Error notification
+  toast.error('Une erreur est survenue');
+  ```
+
+## tRPC Authentication Error Handling
+
+- **Authentication Errors**: When `protectedProcedure` fails, it throws `UNAUTHORIZED` TRPCError
+- **Error Handling Pattern**: Handle authentication errors in tRPC client using error callbacks
+- **Redirect Pattern**: On authentication failure, show toast and redirect to login page
+- **Implementation**: Use tRPC mutation/query `onError` callbacks to handle auth errors
+- **Login Redirect**: Use `router.push(ROUTES.AUTH.LOGIN)` from Next.js navigation
+
+### Usage Examples
+
+#### Method 1: Using the useAuthErrorHandler hook (Recommended)
+```typescript
+import { useAuthErrorHandler } from '@/shared/utils';
+
+export default function MyComponent() {
+  const { createErrorHandler } = useAuthErrorHandler();
+  const myMutation = trpc.myRouter.myMutation.useMutation();
+
+  const handleAction = () => {
+    myMutation.mutate(data, {
+      onError: createErrorHandler(), // Automatically handles auth errors
+      onSuccess: (result) => {
+        toast.success('Action completed successfully');
+      },
+    });
+  };
+}
+```
+
+#### Method 2: Manual error handling
+```typescript
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import { ROUTES } from '@/shared/constants';
+import { isAuthError } from '@/shared/utils';
+
+export default function MyComponent() {
+  const router = useRouter();
+  const myMutation = trpc.myRouter.myMutation.useMutation();
+
+  const handleAction = () => {
+    myMutation.mutate(data, {
+      onError: (error) => {
+        if (isAuthError(error)) {
+          toast.error('Votre session a expiré. Veuillez vous reconnecter.');
+          router.push(ROUTES.AUTH.LOGIN);
+          return;
+        }
+        // Handle other errors
+        toast.error('Une erreur est survenue');
+      },
+    });
+  };
+}
+```
+
+#### Method 3: Custom hook with built-in error handling
+```typescript
+// In your custom hook
+export function useMyFeature() {
+  const { createErrorHandler } = useAuthErrorHandler();
+  
+  const myMutation = trpc.myRouter.myMutation.useMutation({
+    onError: createErrorHandler(),
+  });
+
+  return { myMutation };
+}
+```
+
+### Query Error Handling
+
+For queries, authentication errors should be handled at the component level since tRPC queries don't support `onError` in the hook definition:
+
+```typescript
+export default function MyComponent() {
+  const { handleAuthError } = useAuthErrorHandler();
+  
+  const { data, error } = trpc.myRouter.myQuery.useQuery();
+  
+  // Handle errors in useEffect
+  useEffect(() => {
+    if (error && !handleAuthError(error)) {
+      // Handle other types of errors
+      toast.error('Failed to load data');
+    }
+  }, [error, handleAuthError]);
+}
+```
+
+### Global Error Handling
+
+For comprehensive error handling, you can also set up global error handling in the tRPC client configuration by adding error links to handle authentication errors across all queries and mutations.
