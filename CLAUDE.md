@@ -260,3 +260,115 @@ export default function MyComponent() {
 ### Global Error Handling
 
 For comprehensive error handling, you can also set up global error handling in the tRPC client configuration by adding error links to handle authentication errors across all queries and mutations.
+
+## tRPC Cache Invalidation Guidelines
+
+- **Cache Management**: Use `trpc.useUtils()` to access invalidation utilities
+- **Mutation Success**: Always invalidate related queries after successful mutations
+- **Invalidation Patterns**: Choose between specific query invalidation vs router-wide invalidation
+- **Toast Notifications**: Combine cache invalidation with success toast messages
+
+### Cache Invalidation Patterns
+
+#### Method 1: Specific Query Invalidation (Recommended)
+```typescript
+export function useMyFeature() {
+  const { createErrorHandler } = useAuthErrorHandler();
+  const utils = trpc.useUtils();
+
+  const createMutation = trpc.myRouter.create.useMutation({
+    onError: createErrorHandler(),
+    onSuccess: () => {
+      // Invalidate specific queries
+      utils.myRouter.getAll.invalidate();
+      toast.success('Créé avec succès');
+    },
+  });
+
+  const updateMutation = trpc.myRouter.update.useMutation({
+    onError: createErrorHandler(),
+    onSuccess: updatedItem => {
+      // Invalidate both list and specific item queries
+      utils.myRouter.getAll.invalidate();
+      utils.myRouter.getById.invalidate({ id: updatedItem.id });
+      toast.success('Mis à jour avec succès');
+    },
+  });
+
+  const deleteMutation = trpc.myRouter.delete.useMutation({
+    onError: createErrorHandler(),
+    onSuccess: () => {
+      // Invalidate list queries
+      utils.myRouter.getAll.invalidate();
+      toast.success('Supprimé avec succès');
+    },
+  });
+}
+```
+
+#### Method 2: Router-wide Invalidation
+```typescript
+const createMutation = trpc.myRouter.create.useMutation({
+  onSuccess: () => {
+    // Invalidate all queries in the router
+    utils.myRouter.invalidate();
+    toast.success('Créé avec succès');
+  },
+});
+```
+
+#### Method 3: Global Cache Invalidation
+```typescript
+const createMutation = trpc.myRouter.create.useMutation({
+  onSuccess: () => {
+    // Invalidate ALL queries across all routers (use sparingly)
+    utils.invalidate();
+    toast.success('Créé avec succès');
+  },
+});
+```
+
+### Best Practices
+
+- **Granular Invalidation**: Prefer specific query invalidation over broad invalidation for better performance
+- **Related Data**: Always invalidate queries that display related data (e.g., lists, counts, dependent entities)
+- **User Feedback**: Combine invalidation with toast notifications for better UX
+- **Optimistic Updates**: Consider optimistic updates for immediate UI feedback before server response
+
+### Real-World Example: Related Data Invalidation
+
+```typescript
+export function useFolders() {
+  const { createErrorHandler } = useAuthErrorHandler();
+  const utils = trpc.useUtils();
+
+  const createFolderMutation = trpc.folder.create.useMutation({
+    onError: createErrorHandler(),
+    onSuccess: () => {
+      // Invalidate folders list since we added a new folder
+      utils.folder.getAll.invalidate();
+      // Also invalidate folder types if they show count of folders
+      utils.folderTypes.getAll.invalidate();
+      toast.success('Dossier créé avec succès');
+    },
+  });
+
+  const removeRequestFromFolderMutation = trpc.folder.removeRequestFromFolder.useMutation({
+    onError: createErrorHandler(),
+    onSuccess: () => {
+      // Multiple invalidations for related data
+      utils.folder.getAll.invalidate(); // Update folder list
+      utils.requests.getAll.invalidate(); // Update requests list
+      utils.folder.getByIdWithRelations.invalidate(); // Update folder details
+      toast.success('Demande retirée du dossier avec succès');
+    },
+  });
+}
+```
+
+### Common Invalidation Patterns by Operation
+
+- **Create**: Invalidate list queries (`getAll`)
+- **Update**: Invalidate both list (`getAll`) and specific item (`getById`) queries
+- **Delete**: Invalidate list queries and any dependent counts/statistics
+- **Bulk Operations**: Consider invalidating entire router or using `utils.invalidate()`
