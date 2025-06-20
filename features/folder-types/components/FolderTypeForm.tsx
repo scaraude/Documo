@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
 import { CreateFolderTypeParams } from '../types';
 import { Button } from '@/shared/components';
-import { DocumentTypeId, useDocumentTypes } from '../../document-types';
+import { DocumentTypeId, useDocumentTypes } from '../../document-types/client';
 
 interface FolderTypeFormProps {
   onSubmit: (data: CreateFolderTypeParams) => Promise<void>;

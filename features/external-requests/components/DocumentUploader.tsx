@@ -7,7 +7,7 @@ import { Card } from '@/shared/components/ui/card';
 import { ROUTES } from '@/shared/constants';
 import { uploadDocument } from '../api/uploadDocument';
 import { useDocumentTypes } from '../../document-types/hooks/useDocumentTypes';
-import { DocumentTypeId } from '../../document-types';
+import { DocumentTypeId } from '../../document-types/client';
 
 interface DocumentUploaderProps {
   token: string;

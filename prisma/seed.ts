@@ -15,19 +15,20 @@
 
 import {
   PrismaClient,
-  DocumentType,
+  type DocumentType,
   ProviderType,
 } from '../lib/prisma/generated/client';
 import { addDays, addHours } from 'date-fns';
 import { faker } from '@faker-js/faker';
 import * as crypto from 'crypto';
 import { hashPassword } from '../features/auth/utils/password';
+import { APP_DOCUMENT_TYPES } from '../shared/constants/documents/types';
 
 const prisma = new PrismaClient();
 
 // Helper function to get random subset of document types
-function getRandomDocumentTypes(min = 1, max = 4): DocumentType[] {
-  const allTypes = Object.values(DocumentType);
+function getRandomDocumentTypes(min = 1, max = 4): string[] {
+  const allTypes = Object.values(APP_DOCUMENT_TYPES) as string[];
   const count = Math.floor(Math.random() * (max - min + 1)) + min;
   const shuffled = [...allTypes].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);

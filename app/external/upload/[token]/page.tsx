@@ -14,7 +14,6 @@ import * as React from 'react';
 import { useParams } from 'next/navigation';
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { useDocument } from '@/features/documents/hooks/useDocument';
-import { AppDocumentType } from '../../../../shared/constants';
 
 export default function ExternalUploadPage() {
   const { token }: { token: string } = useParams();
@@ -22,9 +21,9 @@ export default function ExternalUploadPage() {
   const { getDocumentsByRequestId } = useDocument();
   const { getLabel } = useDocumentTypes();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [documentTypesMissing, setDocumentTypesMissing] = useState<
-    string[]
-  >([]);
+  const [documentTypesMissing, setDocumentTypesMissing] = useState<string[]>(
+    []
+  );
   const { data: request, isLoading, error } = getRequestByToken(token);
   const { data: documents } = getDocumentsByRequestId(request?.id);
 

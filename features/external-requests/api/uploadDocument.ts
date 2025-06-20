@@ -8,7 +8,7 @@ import {
 } from '@/features/documents/utils/encryption';
 import { AppDocumentToUpload } from '../types';
 import { trpcVanilla } from '@/lib/trpc/client';
-import { DocumentTypeId } from '../../document-types';
+import { DocumentTypeId } from '../../document-types/client';
 
 interface UploadDocumentOptions {
   file: File;

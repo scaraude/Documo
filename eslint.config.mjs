@@ -14,7 +14,11 @@ const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   ...compat.extends('prettier'),
   {
-    ignores: ['lib/prisma/generated/**/*'],
+    ignores: [
+      'lib/prisma/generated/**/*',
+      'prisma/seed.ts',
+      'prisma/seed-test.ts',
+    ],
   },
   {
     plugins: {

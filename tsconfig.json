@@ -29,5 +29,5 @@
     "types": ["jest", "node"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules", "lib/prisma/generated"]
+  "exclude": ["node_modules", "lib/prisma/generated", "prisma/seed.ts", "prisma/seed-test.ts"]
 }
