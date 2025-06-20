@@ -104,7 +104,7 @@ function VerifyEmailContent() {
 
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <p className="text-amber-800 text-sm">
-                Cliquez sur le bouton ci-dessous pour envoyer un email de
+                Cliquez sur le bouton ci-dessous pour renvoyer un email de
                 vérification, puis vérifiez votre boîte de réception.
                 N&apos;oubliez pas de vérifier votre dossier spam !
               </p>
@@ -135,7 +135,7 @@ function VerifyEmailContent() {
                 {emailVerificationHook.isResending ? (
                   'Envoi en cours...'
                 ) : emailVerificationHook.canResend ? (
-                  "Envoyer l'email de vérification"
+                  "Renvoyer l'email de vérification"
                 ) : (
                   <div className="flex items-center space-x-2">
                     <Clock className="w-4 h-4" />
