@@ -22,15 +22,25 @@ import { addDays, addHours } from 'date-fns';
 import { faker } from '@faker-js/faker';
 import * as crypto from 'crypto';
 import { hashPassword } from '../features/auth/utils/password';
-import { APP_DOCUMENT_TYPES } from '../shared/constants/documents/types';
-
 const prisma = new PrismaClient();
+
+// Document type IDs from seed-document-types.ts
+const DOCUMENT_TYPE_IDS = [
+  'IDENTITY_PROOF',
+  'DRIVERS_LICENSE', 
+  'BANK_STATEMENT',
+  'RESIDENCY_PROOF',
+  'TAX_RETURN',
+  'EMPLOYMENT_CONTRACT',
+  'SALARY_SLIP',
+  'INSURANCE_CERTIFICATE',
+  'OTHER'
+];
 
 // Helper function to get random subset of document types
 function getRandomDocumentTypes(min = 1, max = 4): string[] {
-  const allTypes = Object.values(APP_DOCUMENT_TYPES) as string[];
-  const count = Math.floor(Math.random() * (max - min + 1)) + min;
-  const shuffled = [...allTypes].sort(() => 0.5 - Math.random());
+  const count = faker.number.int({ min, max });
+  const shuffled = [...DOCUMENT_TYPE_IDS].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, count);
 }
 
@@ -402,7 +412,7 @@ async function createTestPasswordResetTokens(users: any[]) {
 }
 
 // Generate random folder type
-async function createRandomFolderType() {
+async function createRandomFolderType(createdById: string) {
   const folderTypeNames = [
     'Dossier Location Résidence Principale',
     'Dossier Location Commercial',
@@ -437,8 +447,10 @@ async function createRandomFolderType() {
     data: {
       name,
       description,
-      requiredDocuments,
-      createdById: null, // Skip user creation for seeding
+      requiredDocuments: {
+        connect: requiredDocuments.map(doc => ({ id: doc }))
+      },
+      createdById,
       deletedAt: Math.random() < 0.1 ? faker.date.past() : null, // 10% chance of soft delete
     },
   });
@@ -447,7 +459,8 @@ async function createRandomFolderType() {
 // Generate random folder
 async function createRandomFolder(
   folderTypeId: string,
-  folderTypeRequiredDocs: DocumentType[]
+  folderTypeRequiredDocs: DocumentType[],
+  createdById: string
 ) {
   const cities = [
     'Paris',
@@ -489,8 +502,10 @@ async function createRandomFolder(
       name,
       description,
       folderTypeId,
-      requestedDocuments: folderTypeRequiredDocs,
-      createdById: null, // Skip user creation for seeding
+      requestedDocuments: {
+        connect: folderTypeRequiredDocs.map(doc => ({ id: doc.id }))
+      },
+      createdById,
       expiresAt:
         Math.random() < 0.7
           ? addDays(new Date(), faker.number.int({ min: 7, max: 90 }))
@@ -542,7 +557,9 @@ async function createRandomDocumentRequest(
   return prisma.documentRequest.create({
     data: {
       email: email,
-      requestedDocuments,
+      requestedDocuments: {
+        connect: requestedDocuments.map(doc => ({ id: doc.id }))
+      },
       folderId,
       expiresAt: addDays(createdAt, faker.number.int({ min: 14, max: 60 })),
       acceptedAt: isAccepted
@@ -615,8 +632,8 @@ async function createRandomDocument(
   return prisma.document.create({
     data: {
       requestId,
-      type: documentType,
-      fileName: `${documentType.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
+      typeId: documentType.id,
+      fileName: `${documentType.label.toLowerCase()}_${faker.string.alphanumeric(8)}.pdf`,
       mimeType: 'application/pdf',
       url: `https://storage.example.com/documents/${faker.string.uuid()}.pdf`,
       originalSize: faker.number.int({ min: 50000, max: 5000000 }),
@@ -677,11 +694,24 @@ async function seedDatabase(
   await createTestPasswordResetTokens(users);
 
   console.log('🏗️ Creating folder types...');
-  const folderTypes = [];
+  const folderTypeIds = [];
+  // Use the first user for all folder types
+  const defaultUserId = users[0].id;
   for (let i = 0; i < folderTypesCount; i++) {
-    const folderType = await createRandomFolderType();
-    folderTypes.push(folderType);
+    const folderType = await createRandomFolderType(defaultUserId);
+    folderTypeIds.push(folderType.id);
   }
+
+  // Fetch folder types with their relations
+  const folderTypes = await prisma.folderType.findMany({
+    where: { 
+      id: { in: folderTypeIds },
+      deletedAt: null 
+    },
+    include: {
+      requiredDocuments: true
+    }
+  });
 
   console.log('📁 Creating folders...');
   const folders = [];
@@ -691,7 +721,8 @@ async function seedDatabase(
     for (let i = 0; i < foldersPerType; i++) {
       const folder = await createRandomFolder(
         folderType.id,
-        folderType.requiredDocuments
+        folderType.requiredDocuments,
+        defaultUserId
       );
       folders.push({ folder, folderType });
     }
