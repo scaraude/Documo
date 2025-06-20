@@ -1,10 +1,10 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../../../lib/trpc/trpc';
+import { protectedProcedure, router } from '../../../lib/trpc/trpc';
 import * as repository from '../repository/documentsRepository';
 import logger from '@/lib/logger';
 
 export const routerDocument = router({
-  getValidDocumentsByRequestId: publicProcedure
+  getValidDocumentsByRequestId: protectedProcedure
     .input(z.object({ requestId: z.string().uuid() }))
     .query(async ({ input }) => {
       try {
@@ -27,7 +27,7 @@ export const routerDocument = router({
         throw new Error('Failed to fetch documents');
       }
     }),
-  getValidDocumentsByRequestIds: publicProcedure
+  getValidDocumentsByRequestIds: protectedProcedure
     .input(z.object({ requestIds: z.array(z.string().uuid()) }))
     .query(async ({ input }) => {
       try {

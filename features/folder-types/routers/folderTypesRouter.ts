@@ -1,4 +1,4 @@
-import { publicProcedure, router } from '@/lib/trpc/trpc';
+import { publicProcedure, protectedProcedure, router } from '@/lib/trpc/trpc';
 import * as folderTypesRepository from '@/features/folder-types/repository/folderTypesRepository';
 import { z } from 'zod';
 import { CreateFolderTypeSchema, UpdateFolderTypeSchema } from '../types/zod';
@@ -44,12 +44,15 @@ export const folderTypesRouter = router({
         throw new Error('Failed to fetch folder type');
       }
     }),
-  create: publicProcedure
+  create: protectedProcedure
     .input(CreateFolderTypeSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         logger.info({ folderTypeName: input.name }, 'Creating folder type');
-        const result = await folderTypesRepository.createFolderType(input);
+        const result = await folderTypesRepository.createFolderType({
+          ...input,
+          createdById: ctx.user.id, // Use authenticated user's ID
+        });
         logger.info(
           { folderTypeId: result.id, folderTypeName: result.name },
           'Folder type created successfully'
@@ -66,7 +69,7 @@ export const folderTypesRouter = router({
         throw new Error('Failed to create folder type');
       }
     }),
-  isInUsed: publicProcedure
+  isInUsed: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
       try {
@@ -88,7 +91,7 @@ export const folderTypesRouter = router({
         throw new Error('Failed to check folder type usage');
       }
     }),
-  update: publicProcedure
+  update: protectedProcedure
     .input(z.object({ id: z.string().uuid(), params: UpdateFolderTypeSchema }))
     .mutation(async ({ input }) => {
       try {
@@ -116,7 +119,7 @@ export const folderTypesRouter = router({
         throw new Error('Failed to update folder type');
       }
     }),
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input }) => {
       try {

@@ -1,12 +1,12 @@
 import { z } from 'zod';
-import { publicProcedure, router } from '../../../lib/trpc/trpc';
+import { protectedProcedure, router } from '../../../lib/trpc/trpc';
 import * as folderRepository from '../repository/foldersRepository';
 import { CreateFolderSchema } from '../types/zod';
 import logger from '@/lib/logger';
 import { AppDocumentType } from '@/shared/constants';
 
 export const folderRouter = router({
-  getAll: publicProcedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     try {
       logger.info('Fetching all folders');
       const result = await folderRepository.getFolders();
@@ -20,7 +20,7 @@ export const folderRouter = router({
       throw new Error('Failed to fetch folders');
     }
   }),
-  getByIdWithRelations: publicProcedure
+  getByIdWithRelations: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
       try {
@@ -47,9 +47,9 @@ export const folderRouter = router({
         throw new Error('Failed to fetch folder');
       }
     }),
-  create: publicProcedure
+  create: protectedProcedure
     .input(CreateFolderSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
           { folderName: input.name, folderTypeId: input.folderTypeId },
@@ -58,6 +58,7 @@ export const folderRouter = router({
         const result = await folderRepository.createFolder({
           ...input,
           requestedDocuments: input.requestedDocuments as AppDocumentType[],
+          createdById: ctx.user.id, // Use authenticated user's ID
         });
         logger.info(
           { folderId: result.id, folderName: result.name },
@@ -75,7 +76,7 @@ export const folderRouter = router({
         throw new Error('Failed to create folder');
       }
     }),
-  delete: publicProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .mutation(async ({ input }) => {
       try {
@@ -93,7 +94,7 @@ export const folderRouter = router({
         throw new Error('Failed to delete folder');
       }
     }),
-  removeRequestFromFolder: publicProcedure
+  removeRequestFromFolder: protectedProcedure
     .input(z.object({ requestId: z.string().uuid() }))
     .mutation(async ({ input }) => {
       try {

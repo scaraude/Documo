@@ -3,7 +3,7 @@ import { router } from './trpc';
 import { externalRouter } from '../../features/external-requests/routers/externalRequestsRouter';
 import { folderTypesRouter } from '../../features/folder-types/routers/folderTypesRouter';
 import { folderRouter } from '../../features/folders/routers/folderRouter';
-import { routerDocument } from '../../features/documents/routers/routerDocument';
+import { routerDocument } from '../../features/documents/routers/documentRouter';
 import { authRouter } from '../../features/auth/routers/authRouter';
 import { documentTypesRouter } from '../../features/document-types/routers/documentTypesRouter';
 

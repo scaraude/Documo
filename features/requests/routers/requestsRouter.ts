@@ -1,14 +1,14 @@
 import { z } from 'zod';
 import * as requestRepository from './../repository/requestRepository';
 import * as foldersRepository from '@/features/folders/repository/foldersRepository';
-import { publicProcedure, router } from '@/lib/trpc/trpc';
+import { protectedProcedure, router } from '@/lib/trpc/trpc';
 import { sendDocumentRequestEmail } from '@/lib/email';
 import * as documentTypesRepository from '@/features/document-types/repository/documentTypesRepository';
 import logger from '@/lib/logger';
 import { createRequestSchema } from '../types/zod';
 
 export const requestsRouter = router({
-  getAll: publicProcedure.query(async () => {
+  getAll: protectedProcedure.query(async () => {
     try {
       logger.info('Fetching all requests');
       const result = await requestRepository.getRequests();
@@ -23,7 +23,7 @@ export const requestsRouter = router({
     }
   }),
 
-  getById: publicProcedure
+  getById: protectedProcedure
     .input(z.object({ id: z.string().uuid() }))
     .query(async ({ input }) => {
       try {
@@ -46,7 +46,7 @@ export const requestsRouter = router({
       }
     }),
 
-  create: publicProcedure
+  create: protectedProcedure
     .input(createRequestSchema)
     .mutation(async ({ input }) => {
       try {
@@ -69,11 +69,15 @@ export const requestsRouter = router({
         }
 
         // Get document types for labels
-        const documentTypes = await documentTypesRepository.getAllDocumentTypes();
-        const documentTypeMap = documentTypes.reduce((acc: Record<string, string>, dt) => {
-          acc[dt.id] = dt.label;
-          return acc;
-        }, {} as Record<string, string>);
+        const documentTypes =
+          await documentTypesRepository.getAllDocumentTypes();
+        const documentTypeMap = documentTypes.reduce(
+          (acc: Record<string, string>, dt) => {
+            acc[dt.id] = dt.label;
+            return acc;
+          },
+          {} as Record<string, string>
+        );
 
         // Prepare email data
         const documentLabels = input.requestedDocuments.map(
