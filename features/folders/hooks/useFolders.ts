@@ -5,8 +5,10 @@ import {
   computeFolderStatus,
   computeRequestStatus,
 } from '@/shared/utils/computedStatus';
+import { useAuthErrorHandler } from '../../../shared/utils';
 
 export function useFolders() {
+  const { createErrorHandler } = useAuthErrorHandler();
   const getAllFolders = () =>
     trpc.folder.getAll.useQuery(undefined, {
       select(data) {
@@ -35,12 +37,18 @@ export function useFolders() {
       }
     );
 
-  const createFolderMutation = trpc.folder.create.useMutation();
+  const createFolderMutation = trpc.folder.create.useMutation({
+    onError: createErrorHandler(),
+  });
 
-  const deleteFolderMutation = trpc.folder.delete.useMutation();
+  const deleteFolderMutation = trpc.folder.delete.useMutation({
+    onError: createErrorHandler(),
+  });
 
   const removeRequestFromFolderMutation =
-    trpc.folder.removeRequestFromFolder.useMutation();
+    trpc.folder.removeRequestFromFolder.useMutation({
+      onError: createErrorHandler(),
+    });
 
   return {
     getAllFolders,
