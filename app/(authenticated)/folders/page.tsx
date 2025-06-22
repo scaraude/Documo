@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { Search, Plus, FileText, FolderOpen } from 'lucide-react';
-import { FolderType, useFolderTypes } from '../../features/folder-types';
-import { useFolders } from '../../features/folders/hooks/useFolders';
+import { FolderType, useFolderTypes } from '../../../features/folder-types';
+import { useFolders } from '../../../features/folders/hooks/useFolders';
 import {
   Button,
   Card,
@@ -18,7 +18,7 @@ import { fr } from 'date-fns/locale';
 import {
   ComputedFolderStatus,
   FolderWithStatus,
-} from '../../features/folders/types';
+} from '../../../features/folders/types';
 import { useRouter } from 'next/navigation';
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 
