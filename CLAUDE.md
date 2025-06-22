@@ -372,3 +372,75 @@ export function useFolders() {
 - **Update**: Invalidate both list (`getAll`) and specific item (`getById`) queries
 - **Delete**: Invalidate list queries and any dependent counts/statistics
 - **Bulk Operations**: Consider invalidating entire router or using `utils.invalidate()`
+
+## Next.js Authorization in Routing Guidelines
+
+- **Route Groups**: Use route groups like `(authenticated)` to organize protected routes
+- **Layout-Based Auth**: Implement authentication layouts for route-level protection
+- **Client-Side Protection**: Use authentication layouts for UX but always validate server-side
+- **Redirect Pattern**: Redirect unauthenticated users to login page
+- **Loading States**: Show loading indicators while checking authentication status
+
+### Authorization Implementation
+
+#### Route Group Structure
+```
+app/
+├── (authenticated)/          # Protected routes
+│   ├── layout.tsx           # Authentication layout
+│   ├── folder-types/        # Protected feature
+│   └── folders/             # Protected feature
+├── (public)/                # Public routes (optional)
+│   ├── about/
+│   └── contact/
+├── login/                   # Auth pages (outside groups)
+├── signup/
+└── layout.tsx              # Root layout
+```
+
+#### Authentication Layout Pattern
+```typescript
+'use client';
+
+import { useAuth } from '@/features/auth';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { ROUTES } from '@/shared/constants';
+
+export default function AuthenticatedLayout({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push(ROUTES.AUTH.LOGIN);
+    }
+  }, [user, isLoading, router]);
+
+  if (isLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!user) {
+    return null; // Will redirect
+  }
+
+  return <>{children}</>;
+}
+```
+
+#### Route Protection Best Practices
+
+- **Server-Side Validation**: Always validate authentication server-side with `protectedProcedure`
+- **URL Structure**: Route groups don't affect URLs - `/folder-types` works the same
+- **Loading UX**: Show loading states while checking authentication
+- **Graceful Redirects**: Redirect to login without showing protected content
+- **Multiple Auth Levels**: Use different route groups for different permission levels
+
+#### Security Considerations
+
+⚠️ **Important**: Layout-based authentication is for UX only. Always implement:
+- Server-side authentication in tRPC procedures
+- API route protection
+- Database-level authorization
+- Proper session management
