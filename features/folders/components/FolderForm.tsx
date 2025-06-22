@@ -57,7 +57,6 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
 
   // Requests data
   const [emails, setEmails] = useState<string[]>(['']);
-  const [sendNotifications, setSendNotifications] = useState(true);
 
   const onSubmit = async (data: CreateFolderParams) => {
     try {
@@ -99,7 +98,9 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         name,
         description,
         folderTypeId: selectedType.id,
-        requestedDocuments: selectedType.requiredDocuments.map(doc => doc.id as AppDocumentType),
+        requestedDocuments: selectedType.requiredDocuments.map(
+          doc => doc.id as AppDocumentType
+        ),
         expiresAt: expirationDate ? new Date(expirationDate) : null,
       };
 
@@ -140,7 +141,9 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         validEmails.map(email =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
-            requestedDocuments: selectedType.requiredDocuments.map(doc => doc.id as AppDocumentType),
+            requestedDocuments: selectedType.requiredDocuments.map(
+              doc => doc.id as AppDocumentType
+            ),
             folderId: createdFolder.id,
           })
         )
@@ -471,22 +474,6 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
                     )}
                   </div>
                 ))}
-              </div>
-
-              <div className="flex items-center pt-4">
-                <input
-                  type="checkbox"
-                  id="sendNotifications"
-                  checked={sendNotifications}
-                  onChange={e => setSendNotifications(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label
-                  htmlFor="sendNotifications"
-                  className="ml-2 text-sm text-gray-700"
-                >
-                  Envoyer des notifications aux personnes concernées
-                </label>
               </div>
             </CardContent>
           </Card>

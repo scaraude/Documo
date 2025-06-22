@@ -8,7 +8,7 @@ import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapp
 
 // Type mapper between Prisma and App
 type PrismaFolder = Prisma.FolderGetPayload<{
-  include: { requestedDocuments: true }
+  include: { requestedDocuments: true };
 }>;
 
 // Convert Prisma model to App model

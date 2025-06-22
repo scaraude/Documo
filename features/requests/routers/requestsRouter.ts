@@ -1,11 +1,13 @@
 import { z } from 'zod';
 import * as requestRepository from './../repository/requestRepository';
 import * as foldersRepository from '@/features/folders/repository/foldersRepository';
+import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
 import { protectedProcedure, router } from '@/lib/trpc/trpc';
 import { sendDocumentRequestEmail } from '@/lib/email';
 import * as documentTypesRepository from '@/features/document-types/repository/documentTypesRepository';
 import logger from '@/lib/logger';
 import { createRequestSchema } from '../types/zod';
+import { ROUTES } from '../../../shared/constants';
 
 export const requestsRouter = router({
   getAll: protectedProcedure.query(async () => {
@@ -60,7 +62,7 @@ export const requestsRouter = router({
         );
 
         // Create the request
-        const result = await requestRepository.createRequest(input);
+        const documentRequest = await requestRepository.createRequest(input);
 
         // Get folder information for the email
         const folder = await foldersRepository.getFolderById(input.folderId);
@@ -78,12 +80,17 @@ export const requestsRouter = router({
           },
           {} as Record<string, string>
         );
-
+        // Store the share token with expiration
+        const result = await externalRequestsRepository.createShareLink({
+          requestId: documentRequest.id,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry by default
+        });
         // Prepare email data
         const documentLabels = input.requestedDocuments.map(
           docTypeId => documentTypeMap[docTypeId] || docTypeId
         );
-        const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}/requests/${result.id}/upload`;
+
+        const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.EXTERNAL.REQUEST(result.token)}`;
         const expirationDate = new Intl.DateTimeFormat('fr-FR', {
           year: 'numeric',
           month: 'long',

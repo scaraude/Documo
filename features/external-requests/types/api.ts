@@ -12,6 +12,5 @@ export interface ErrorResponse {
 
 export interface CreateShareLinkParams {
   requestId: string;
-  token: string;
   expiresAt: Date;
 }

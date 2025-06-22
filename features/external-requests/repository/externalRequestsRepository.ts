@@ -1,15 +1,18 @@
 // features/external-requests/repository/externalRequestsRepository.ts
 import prisma from '@/lib/prisma';
 import { CreateShareLinkParams } from '../types/api';
+import { generateSecureToken } from '../../../lib/utils';
 
 /**
  * Create a new share link for a request
  */
 export async function createShareLink(params: CreateShareLinkParams) {
+  const token = await generateSecureToken();
+
   return await prisma.requestShareLink.create({
     data: {
       requestId: params.requestId,
-      token: params.token,
+      token,
       expiresAt: params.expiresAt,
     },
   });

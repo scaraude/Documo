@@ -8,7 +8,6 @@ import {
   externalRequestSchema,
 } from '../types/zod';
 import { prismaShareLinkToExternalRequest } from '../mapper/mapper';
-import { generateSecureToken } from '../../../lib/utils';
 import { put } from '@vercel/blob';
 import logger from '@/lib/logger';
 
@@ -169,20 +168,13 @@ export const externalRouter = router({
       const { requestId } = input;
       logger.info({ requestId }, 'Generating share link for request');
 
-      // Generate a secure token that will be used to identify this shared request
-      const token = await generateSecureToken();
-
       // Store the share token with expiration
       const result = await externalRequestsRepository.createShareLink({
         requestId,
-        token,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry by default
       });
 
-      logger.info(
-        { requestId, token: token.substring(0, 8) + '...' },
-        'Share link generated successfully'
-      );
+      logger.info({ requestId }, 'Share link generated successfully');
       return result;
     }),
 });
