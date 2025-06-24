@@ -50,7 +50,7 @@ export const requestsRouter = router({
 
   create: protectedProcedure
     .input(createRequestSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
           {
@@ -64,10 +64,13 @@ export const requestsRouter = router({
         // Create the request
         const documentRequest = await requestRepository.createRequest(input);
 
-        // Get folder information for the email
-        const folder = await foldersRepository.getFolderById(input.folderId);
+        // Get folder information for the email (verify ownership)
+        const folder = await foldersRepository.getFolderByIdForUser(
+          input.folderId,
+          ctx.user.id
+        );
         if (!folder) {
-          throw new Error('Folder not found');
+          throw new Error('Folder not found or access denied');
         }
 
         // Get document types for labels

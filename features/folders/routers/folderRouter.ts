@@ -1,38 +1,59 @@
-import { z } from 'zod';
 import { protectedProcedure, router } from '../../../lib/trpc/trpc';
 import * as folderRepository from '../repository/foldersRepository';
-import { CreateFolderSchema } from '../types/zod';
+import {
+  CreateFolderSchema,
+  UpdateFolderInputSchema,
+  AddRequestToFolderSchema,
+  FolderIdSchema,
+  RequestIdSchema,
+} from '../types/zod';
 import logger from '@/lib/logger';
 import { AppDocumentType } from '@/shared/constants';
 
 export const folderRouter = router({
-  getAll: protectedProcedure.query(async () => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info('Fetching all folders');
-      const result = await folderRepository.getFolders();
-      logger.info({ count: result.length }, 'Folders fetched successfully');
+      logger.info({ userId: ctx.user.id }, 'Fetching user folders');
+      const result = await folderRepository.getFoldersByUserId(ctx.user.id);
+      logger.info(
+        { userId: ctx.user.id, count: result.length },
+        'User folders fetched successfully'
+      );
       return result;
     } catch (error) {
       logger.error(
-        { error: error instanceof Error ? error.message : error },
-        'Error fetching folders'
+        {
+          userId: ctx.user.id,
+          error: error instanceof Error ? error.message : error,
+        },
+        'Error fetching user folders'
       );
       throw new Error('Failed to fetch folders');
     }
   }),
   getByIdWithRelations: protectedProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ input }) => {
+    .input(FolderIdSchema)
+    .query(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderId: input.id },
+          { folderId: input.id, userId: ctx.user.id },
           'Fetching folder by ID with relations'
         );
-        const result = await folderRepository.getFolderByIdWithRelations(
-          input.id
+        const result = await folderRepository.getFolderByIdWithRelationsForUser(
+          input.id,
+          ctx.user.id
         );
+
+        if (!result) {
+          logger.warn(
+            { folderId: input.id, userId: ctx.user.id },
+            'Folder not found or user not authorized'
+          );
+          throw new Error('Folder not found or access denied');
+        }
+
         logger.info(
-          { folderId: input.id, found: !!result },
+          { folderId: input.id, userId: ctx.user.id },
           'Folder fetch completed'
         );
         return result;
@@ -40,11 +61,12 @@ export const folderRouter = router({
         logger.error(
           {
             folderId: input.id,
+            userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error fetching folder'
         );
-        throw new Error('Failed to fetch folder');
+        throw error;
       }
     }),
   create: protectedProcedure
@@ -76,46 +98,180 @@ export const folderRouter = router({
         throw new Error('Failed to create folder');
       }
     }),
-  delete: protectedProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .mutation(async ({ input }) => {
+  update: protectedProcedure
+    .input(UpdateFolderInputSchema)
+    .mutation(async ({ input, ctx }) => {
       try {
-        logger.info({ folderId: input.id }, 'Deleting folder');
-        await folderRepository.deleteFolder(input.id);
-        logger.info({ folderId: input.id }, 'Folder deleted successfully');
+        logger.info(
+          { folderId: input.id, userId: ctx.user.id },
+          'Updating folder'
+        );
+
+        const result = await folderRepository.updateFolderForUser(
+          input.id,
+          ctx.user.id,
+          {
+            ...input.data,
+            requestedDocuments: input.data
+              .requestedDocuments as AppDocumentType[],
+          }
+        );
+
+        logger.info(
+          { folderId: input.id, userId: ctx.user.id },
+          'Folder updated successfully'
+        );
+        return result;
       } catch (error) {
         logger.error(
           {
             folderId: input.id,
+            userId: ctx.user.id,
+            error: error instanceof Error ? error.message : error,
+          },
+          'Error updating folder'
+        );
+        throw error;
+      }
+    }),
+  addRequestToFolder: protectedProcedure
+    .input(AddRequestToFolderSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        logger.info(
+          {
+            folderId: input.folderId,
+            requestId: input.requestId,
+            userId: ctx.user.id,
+          },
+          'Adding request to folder'
+        );
+
+        await folderRepository.addRequestToFolderForUser(
+          input.folderId,
+          input.requestId,
+          ctx.user.id
+        );
+
+        logger.info(
+          {
+            folderId: input.folderId,
+            requestId: input.requestId,
+            userId: ctx.user.id,
+          },
+          'Request added to folder successfully'
+        );
+      } catch (error) {
+        logger.error(
+          {
+            folderId: input.folderId,
+            requestId: input.requestId,
+            userId: ctx.user.id,
+            error: error instanceof Error ? error.message : error,
+          },
+          'Error adding request to folder'
+        );
+        throw error;
+      }
+    }),
+  getWithStats: protectedProcedure.query(async ({ ctx }) => {
+    try {
+      logger.info({ userId: ctx.user.id }, 'Fetching user folders with stats');
+      const result = await folderRepository.getFoldersWithStatsForUser(
+        ctx.user.id
+      );
+      logger.info(
+        { userId: ctx.user.id, count: result.length },
+        'User folders with stats fetched successfully'
+      );
+      return result;
+    } catch (error) {
+      logger.error(
+        {
+          userId: ctx.user.id,
+          error: error instanceof Error ? error.message : error,
+        },
+        'Error fetching user folders with stats'
+      );
+      throw new Error('Failed to fetch folders with stats');
+    }
+  }),
+  delete: protectedProcedure
+    .input(FolderIdSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        logger.info(
+          { folderId: input.id, userId: ctx.user.id },
+          'Deleting folder'
+        );
+
+        // Check ownership before deletion
+        const folder = await folderRepository.getFolderByIdForUser(
+          input.id,
+          ctx.user.id
+        );
+        if (!folder) {
+          logger.warn(
+            { folderId: input.id, userId: ctx.user.id },
+            'Folder not found or user not authorized to delete'
+          );
+          throw new Error('Folder not found or access denied');
+        }
+
+        await folderRepository.deleteFolder(input.id);
+        logger.info(
+          { folderId: input.id, userId: ctx.user.id },
+          'Folder deleted successfully'
+        );
+      } catch (error) {
+        logger.error(
+          {
+            folderId: input.id,
+            userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error deleting folder'
         );
-        throw new Error('Failed to delete folder');
+        throw error;
       }
     }),
   removeRequestFromFolder: protectedProcedure
-    .input(z.object({ requestId: z.string().uuid() }))
-    .mutation(async ({ input }) => {
+    .input(RequestIdSchema)
+    .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { requestId: input.requestId },
+          { requestId: input.requestId, userId: ctx.user.id },
           'Removing request from folder'
         );
+
+        // Check if user owns the folder containing this request
+        const hasAccess = await folderRepository.userOwnsRequestFolder(
+          input.requestId,
+          ctx.user.id
+        );
+        if (!hasAccess) {
+          logger.warn(
+            { requestId: input.requestId, userId: ctx.user.id },
+            'User not authorized to remove request from folder'
+          );
+          throw new Error('Request not found or access denied');
+        }
+
         await folderRepository.removeRequestFromFolder(input.requestId);
         logger.info(
-          { requestId: input.requestId },
+          { requestId: input.requestId, userId: ctx.user.id },
           'Request removed from folder successfully'
         );
       } catch (error) {
         logger.error(
           {
             requestId: input.requestId,
+            userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error removing request from folder'
         );
-        throw new Error('Failed to remove request from folder');
+        throw error;
       }
     }),
 });

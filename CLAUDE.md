@@ -444,3 +444,191 @@ export default function AuthenticatedLayout({ children }: { children: React.Reac
 - API route protection
 - Database-level authorization
 - Proper session management
+
+## Ownership-Based Access Control Guidelines
+
+- **Multi-Layer Security**: Implement defense in depth with authentication, authorization, and ownership checks
+- **Repository-Level Security**: Create security-aware repository functions for data access control
+- **User Context**: Always pass authenticated user context to enforce ownership rules
+- **Logging**: Log all security events (access attempts, ownership violations, etc.)
+
+### Security Architecture Layers
+
+1. **Middleware Layer**: Route-level authentication (Next.js middleware)
+2. **Layout Layer**: Client-side authentication UX (`(authenticated)` route groups)
+3. **tRPC Layer**: Server-side authentication (`protectedProcedure`)
+4. **Repository Layer**: Data access control with ownership validation
+
+### Repository-Level Security Implementation
+
+#### Security-Aware Repository Functions
+
+Create parallel repository functions that enforce ownership:
+
+```typescript
+// Standard function (use only for admin or system operations)
+export async function getFolderById(id: string): Promise<Folder | null> {
+  // Returns any folder by ID
+}
+
+// Security-aware function (use for user operations)
+export async function getFolderByIdForUser(
+  id: string, 
+  userId: string
+): Promise<Folder | null> {
+  const folder = await prisma.folder.findUnique({
+    where: { 
+      id,
+      archivedAt: null,
+      createdById: userId  // Ownership check
+    },
+    include: { requestedDocuments: true },
+  });
+  return folder ? toAppModel(folder) : null;
+}
+```
+
+#### Ownership Validation Functions
+
+Create utility functions to check ownership:
+
+```typescript
+export async function userOwnsRequestFolder(
+  requestId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const request = await prisma.documentRequest.findUnique({
+      where: { id: requestId },
+      include: { folder: true },
+    });
+    
+    return request?.folder?.createdById === userId;
+  } catch (error) {
+    logger.error({ requestId, userId, error }, 'Error checking folder ownership');
+    return false; // Fail secure
+  }
+}
+```
+
+### tRPC Router Security Patterns
+
+#### Standard Security Pattern
+
+```typescript
+export const folderRouter = router({
+  getAll: protectedProcedure.query(async ({ ctx }) => {
+    // Use user-scoped repository function
+    return await folderRepository.getFoldersByUserId(ctx.user.id);
+  }),
+  
+  getByIdWithRelations: protectedProcedure
+    .input(z.object({ id: z.string().uuid() }))
+    .query(async ({ input, ctx }) => {
+      // Check ownership before returning data
+      const result = await folderRepository.getFolderByIdWithRelationsForUser(
+        input.id,
+        ctx.user.id
+      );
+      
+      if (!result) {
+        throw new Error('Folder not found or access denied');
+      }
+      
+      return result;
+    }),
+});
+```
+
+#### Ownership Validation in Mutations
+
+```typescript
+delete: protectedProcedure
+  .input(z.object({ id: z.string().uuid() }))
+  .mutation(async ({ input, ctx }) => {
+    // Verify ownership before allowing operation
+    const folder = await folderRepository.getFolderByIdForUser(
+      input.id, 
+      ctx.user.id
+    );
+    
+    if (!folder) {
+      logger.warn(
+        { folderId: input.id, userId: ctx.user.id },
+        'Unauthorized delete attempt'
+      );
+      throw new Error('Folder not found or access denied');
+    }
+    
+    await folderRepository.deleteFolder(input.id);
+  }),
+```
+
+### Security Logging Best Practices
+
+Log security events with structured data:
+
+```typescript
+// Successful operation
+logger.info(
+  { folderId: input.id, userId: ctx.user.id },
+  'User accessed folder'
+);
+
+// Access denied
+logger.warn(
+  { folderId: input.id, userId: ctx.user.id },
+  'Unauthorized folder access attempt'
+);
+
+// Security violation
+logger.error(
+  { requestId, userId, suspiciousActivity: true },
+  'Potential security violation detected'
+);
+```
+
+### Repository Function Naming Conventions
+
+- **Standard functions**: `getEntityById()`, `getEntities()`
+- **User-scoped functions**: `getEntityByIdForUser()`, `getEntitiesByUserId()`
+- **Ownership checks**: `userOwnsEntity()`, `userCanAccessEntity()`
+- **Security validators**: `validateEntityAccess()`, `checkEntityPermission()`
+
+### Security Best Practices
+
+- **Fail Secure**: Return `null` or `false` when ownership checks fail
+- **Input Validation**: Always validate user input with Zod schemas
+- **User Context**: Pass authenticated user ID to all data access functions
+- **Audit Trail**: Log all access attempts and authorization failures
+- **Error Handling**: Don't leak information in error messages
+- **Database Constraints**: Use database-level constraints for data integrity
+
+### Common Security Patterns
+
+#### 1. User-Scoped Data Access
+```typescript
+// Always filter by user ID at database level
+where: { 
+  createdById: userId,
+  archivedAt: null 
+}
+```
+
+#### 2. Ownership Validation Before Operations
+```typescript
+// Check ownership before any modification
+const entity = await repository.getEntityByIdForUser(id, userId);
+if (!entity) {
+  throw new Error('Entity not found or access denied');
+}
+```
+
+#### 3. Related Entity Access Control
+```typescript
+// Check ownership through relationships
+const hasAccess = await repository.userOwnsRequestFolder(requestId, userId);
+if (!hasAccess) {
+  throw new Error('Access denied');
+}
+```
