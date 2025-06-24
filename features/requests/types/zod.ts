@@ -26,9 +26,26 @@ export const updateRequestSchema = z.object({
   expirationDays: z.number().positive().optional(),
 });
 
+// Router input schemas
+export const RequestIdSchema = z.object({
+  id: z.string().uuid('ID de demande invalide'),
+});
+
+export const DeleteRequestSchema = z.object({
+  id: z.string().uuid('ID de demande invalide'),
+});
+
+export const UpdateRequestInputSchema = z.object({
+  id: z.string().uuid('ID de demande invalide'),
+  data: updateRequestSchema,
+});
+
 // Schéma pour un seul type de document
 export const requestDocumentTypeSchema = documentTypeIdSchema;
 
 // Type exports
 export type CreateRequest = z.infer<typeof createRequestSchema>;
 export type UpdateRequest = z.infer<typeof updateRequestSchema>;
+export type RequestId = z.infer<typeof RequestIdSchema>;
+export type DeleteRequest = z.infer<typeof DeleteRequestSchema>;
+export type UpdateRequestInput = z.infer<typeof UpdateRequestInputSchema>;

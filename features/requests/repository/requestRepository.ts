@@ -7,6 +7,7 @@ import {
 } from '@/shared/types';
 import { AppDocumentType } from '@/shared/constants';
 import { prismaDocumentToAppDocument } from '../../documents/mappers';
+import logger from '@/lib/logger';
 
 // Mapper entre le type Prisma et le type App
 type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<{
@@ -74,10 +75,47 @@ export function toAppModelWithFolderAndDocuments(
 }
 
 /**
- * Get all document requests
+ * Get all document requests for a specific user (security-aware)
+ */
+export async function getRequestsForUser(
+  userId: string
+): Promise<DocumentRequestWithFolder[]> {
+  try {
+    logger.info({ userId }, 'Fetching requests for user');
+    
+    const requests = await prisma.documentRequest.findMany({
+      where: {
+        folder: {
+          createdById: userId, // Only get requests from user's folders
+        },
+      },
+      include: {
+        folder: true,
+        requestedDocuments: true,
+      },
+    });
+    
+    logger.info(
+      { userId, count: requests.length },
+      'User requests fetched successfully'
+    );
+    return requests.map(toAppModelWithFolder);
+  } catch (error) {
+    logger.error(
+      { userId, error: error instanceof Error ? error.message : error },
+      'Error fetching requests for user'
+    );
+    throw new Error('Failed to fetch requests');
+  }
+}
+
+/**
+ * Get all document requests (⚠️ DEPRECATED: Not security-aware - use getRequestsForUser instead)
  */
 export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
   try {
+    logger.warn('Using deprecated getRequests - use getRequestsForUser instead');
+    
     const requests = await prisma.documentRequest.findMany({
       include: {
         folder: true,
@@ -86,18 +124,97 @@ export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
     });
     return requests.map(toAppModelWithFolder);
   } catch (error) {
-    console.error('Error fetching requests from database:', error);
+    logger.error(
+      { error: error instanceof Error ? error.message : error },
+      'Error fetching requests from database'
+    );
     throw new Error('Failed to fetch requests');
   }
 }
 
 /**
- * Create a new document request
+ * Create a new document request for a specific user (security-aware)
+ */
+export async function createRequestForUser(
+  params: CreateRequestParams,
+  userId: string
+): Promise<DocumentRequest> {
+  try {
+    const { email, requestedDocuments, expirationDays = 7, folderId } = params;
+    
+    logger.info(
+      {
+        userId,
+        email: email.replace(/(.{3}).*(@.*)/, '$1...$2'),
+        folderId,
+        requestedDocumentsCount: requestedDocuments.length,
+      },
+      'Creating request for user'
+    );
+
+    // First verify user owns the target folder
+    const folder = await prisma.folder.findUnique({
+      where: {
+        id: folderId,
+        createdById: userId,
+        archivedAt: null,
+      },
+    });
+
+    if (!folder) {
+      logger.warn(
+        { userId, folderId },
+        'User attempted to create request for folder they do not own'
+      );
+      throw new Error('Folder not found or access denied');
+    }
+
+    const now = new Date();
+    const expiresAt = new Date(
+      now.getTime() + expirationDays * 24 * 60 * 60 * 1000
+    );
+
+    const newRequest = await prisma.documentRequest.create({
+      data: {
+        email,
+        requestedDocuments: {
+          connect: requestedDocuments.map(id => ({ id })),
+        },
+        expiresAt,
+        folderId,
+      },
+      include: {
+        requestedDocuments: true,
+      },
+    });
+
+    logger.info(
+      { userId, requestId: newRequest.id, folderId },
+      'Request created successfully for user'
+    );
+    return toAppModel(newRequest);
+  } catch (error) {
+    logger.error(
+      {
+        userId,
+        folderId: params.folderId,
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error creating request for user'
+    );
+    throw error;
+  }
+}
+
+/**
+ * Create a new document request (⚠️ DEPRECATED: Not security-aware - use createRequestForUser instead)
  */
 export async function createRequest(
   params: CreateRequestParams
 ): Promise<DocumentRequest> {
   try {
+    logger.warn('Using deprecated createRequest - use createRequestForUser instead');
+    
     const { email, requestedDocuments, expirationDays = 7, folderId } = params;
     const now = new Date();
 
@@ -121,32 +238,161 @@ export async function createRequest(
 
     return toAppModel(newRequest);
   } catch (error) {
-    console.error('Error creating request in database:', error);
+    logger.error(
+      { error: error instanceof Error ? error.message : error },
+      'Error creating request in database'
+    );
     throw new Error('Failed to create request');
   }
 }
 
 /**
- * Delete a request
+ * Delete a request for a specific user (security-aware)
+ */
+export async function deleteRequestForUser(
+  id: string,
+  userId: string
+): Promise<void> {
+  try {
+    logger.info({ requestId: id, userId }, 'Deleting request for user');
+
+    // First verify user owns the folder containing this request
+    const request = await prisma.documentRequest.findUnique({
+      where: { id },
+      include: { folder: true },
+    });
+
+    if (!request || !request.folder || request.folder.createdById !== userId) {
+      logger.warn(
+        { requestId: id, userId },
+        'User attempted to delete request they do not own'
+      );
+      throw new Error('Request not found or access denied');
+    }
+
+    // Perform the deletion with ownership constraint
+    const result = await prisma.documentRequest.deleteMany({
+      where: {
+        id,
+        folder: {
+          createdById: userId, // Double-check ownership at DB level
+        },
+      },
+    });
+
+    if (result.count === 0) {
+      logger.warn(
+        { requestId: id, userId },
+        'No request was deleted - ownership mismatch'
+      );
+      throw new Error('Request not found or access denied');
+    }
+
+    logger.info(
+      { requestId: id, userId },
+      'Request deleted successfully for user'
+    );
+  } catch (error) {
+    logger.error(
+      {
+        requestId: id,
+        userId,
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error deleting request for user'
+    );
+    throw error;
+  }
+}
+
+/**
+ * Delete a request (⚠️ DEPRECATED: Not security-aware - use deleteRequestForUser instead)
  */
 export async function deleteRequest(id: string): Promise<void> {
   try {
+    logger.warn(
+      { requestId: id },
+      'Using deprecated deleteRequest - use deleteRequestForUser instead'
+    );
+    
     await prisma.documentRequest.delete({
       where: { id },
     });
   } catch (error) {
-    console.error('Error deleting request from database:', error);
+    logger.error(
+      { requestId: id, error: error instanceof Error ? error.message : error },
+      'Error deleting request from database'
+    );
     throw new Error('Failed to delete request');
   }
 }
 
 /**
- * Get a single request by ID
+ * Get a single request by ID for a specific user (security-aware)
+ */
+export async function getRequestByIdForUser(
+  id: string,
+  userId: string
+): Promise<DocumentRequestWithFolderAndDocuments | null> {
+  try {
+    logger.info({ requestId: id, userId }, 'Fetching request by ID for user');
+    
+    const request = await prisma.documentRequest.findUnique({
+      where: {
+        id,
+        folder: {
+          createdById: userId, // Only get request if user owns the folder
+        },
+      },
+      include: {
+        folder: true,
+        requestedDocuments: true,
+        documents: {
+          where: { deletedAt: null },
+          orderBy: { uploadedAt: 'desc' },
+          include: { type: true },
+        },
+      },
+    });
+
+    if (request) {
+      logger.info(
+        { requestId: id, userId },
+        'Request fetched successfully for user'
+      );
+    } else {
+      logger.warn(
+        { requestId: id, userId },
+        'Request not found or user not authorized'
+      );
+    }
+
+    return request ? toAppModelWithFolderAndDocuments(request) : null;
+  } catch (error) {
+    logger.error(
+      {
+        requestId: id,
+        userId,
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error fetching request for user'
+    );
+    throw new Error('Failed to fetch request');
+  }
+}
+
+/**
+ * Get a single request by ID (⚠️ DEPRECATED: Not security-aware - use getRequestByIdForUser instead)
  */
 export async function getRequestById(
   id: string
 ): Promise<DocumentRequestWithFolderAndDocuments | null> {
   try {
+    logger.warn(
+      { requestId: id },
+      'Using deprecated getRequestById - use getRequestByIdForUser instead'
+    );
+    
     const request = await prisma.documentRequest.findUnique({
       where: { id },
       include: {
@@ -162,7 +408,10 @@ export async function getRequestById(
 
     return request ? toAppModelWithFolderAndDocuments(request) : null;
   } catch (error) {
-    console.error('Error fetching request from database:', error);
+    logger.error(
+      { requestId: id, error: error instanceof Error ? error.message : error },
+      'Error fetching request from database'
+    );
     throw new Error('Failed to fetch request');
   }
 }

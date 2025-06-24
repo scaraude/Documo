@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import * as requestRepository from './../repository/requestRepository';
 import * as foldersRepository from '@/features/folders/repository/foldersRepository';
 import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
@@ -6,45 +5,71 @@ import { protectedProcedure, router } from '@/lib/trpc/trpc';
 import { sendDocumentRequestEmail } from '@/lib/email';
 import * as documentTypesRepository from '@/features/document-types/repository/documentTypesRepository';
 import logger from '@/lib/logger';
-import { createRequestSchema } from '../types/zod';
+import {
+  createRequestSchema,
+  RequestIdSchema,
+  DeleteRequestSchema,
+} from '../types/zod';
 import { ROUTES } from '../../../shared/constants';
 
 export const requestsRouter = router({
-  getAll: protectedProcedure.query(async () => {
+  getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info('Fetching all requests');
-      const result = await requestRepository.getRequests();
-      logger.info({ count: result.length }, 'Requests fetched successfully');
+      logger.info({ userId: ctx.user.id }, 'Fetching all requests for user');
+      const result = await requestRepository.getRequestsForUser(ctx.user.id);
+      logger.info(
+        { userId: ctx.user.id, count: result.length },
+        'User requests fetched successfully'
+      );
       return result;
     } catch (error) {
       logger.error(
-        { error: error instanceof Error ? error.message : error },
-        'Error fetching requests'
+        {
+          userId: ctx.user.id,
+          error: error instanceof Error ? error.message : error,
+        },
+        'Error fetching requests for user'
       );
       throw new Error('Failed to fetch requests');
     }
   }),
 
   getById: protectedProcedure
-    .input(z.object({ id: z.string().uuid() }))
-    .query(async ({ input }) => {
+    .input(RequestIdSchema)
+    .query(async ({ input, ctx }) => {
       try {
-        logger.info({ requestId: input.id }, 'Fetching request by ID');
-        const result = await requestRepository.getRequestById(input.id);
         logger.info(
-          { requestId: input.id, found: !!result },
-          'Request fetch completed'
+          { requestId: input.id, userId: ctx.user.id },
+          'Fetching request by ID for user'
+        );
+        const result = await requestRepository.getRequestByIdForUser(
+          input.id,
+          ctx.user.id
+        );
+
+        if (!result) {
+          logger.warn(
+            { requestId: input.id, userId: ctx.user.id },
+            'Request not found or user not authorized'
+          );
+          throw new Error('Request not found or access denied');
+        }
+
+        logger.info(
+          { requestId: input.id, userId: ctx.user.id },
+          'Request fetch completed for user'
         );
         return result;
       } catch (error) {
         logger.error(
           {
             requestId: input.id,
+            userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error fetching request'
+          'Error fetching request for user'
         );
-        throw new Error('Failed to fetch request');
+        throw error;
       }
     }),
 
@@ -61,16 +86,19 @@ export const requestsRouter = router({
           'Creating request'
         );
 
-        // Create the request
-        const documentRequest = await requestRepository.createRequest(input);
+        // Create the request with ownership validation
+        const documentRequest = await requestRepository.createRequestForUser(
+          input,
+          ctx.user.id
+        );
 
-        // Get folder information for the email (verify ownership)
+        // Get folder information for the email (ownership already validated in createRequestForUser)
         const folder = await foldersRepository.getFolderByIdForUser(
           input.folderId,
           ctx.user.id
         );
         if (!folder) {
-          throw new Error('Folder not found or access denied');
+          throw new Error('Folder not found');
         }
 
         // Get document types for labels
@@ -141,6 +169,35 @@ export const requestsRouter = router({
           'Error creating request'
         );
         throw new Error('Failed to create request');
+      }
+    }),
+
+  delete: protectedProcedure
+    .input(DeleteRequestSchema)
+    .mutation(async ({ input, ctx }) => {
+      try {
+        logger.info(
+          { requestId: input.id, userId: ctx.user.id },
+          'Deleting request for user'
+        );
+
+        // Use security-aware delete function
+        await requestRepository.deleteRequestForUser(input.id, ctx.user.id);
+
+        logger.info(
+          { requestId: input.id, userId: ctx.user.id },
+          'Request deleted successfully for user'
+        );
+      } catch (error) {
+        logger.error(
+          {
+            requestId: input.id,
+            userId: ctx.user.id,
+            error: error instanceof Error ? error.message : error,
+          },
+          'Error deleting request for user'
+        );
+        throw error;
       }
     }),
 });
