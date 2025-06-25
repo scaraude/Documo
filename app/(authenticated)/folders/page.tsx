@@ -74,7 +74,7 @@ export default function FoldersPage() {
     }
   };
 
-  const FolderGridItem = ({
+  const FolderTypeGridItem = ({
     folderType,
   }: {
     folderType: FolderType & {
@@ -248,7 +248,7 @@ export default function FoldersPage() {
                 <ScrollArea className="w-full rounded-md whitespace-nowrap">
                   <div className="flex w-max space-x-6 p-4 pt-7">
                     {folderTypes.map(folderType => (
-                      <FolderGridItem
+                      <FolderTypeGridItem
                         key={folderType.id}
                         folderType={folderType}
                       />
@@ -261,7 +261,7 @@ export default function FoldersPage() {
               <div className="md:hidden">
                 <div className="grid grid-cols-1 gap-4 p-6">
                   {folderTypes.map(folderType => (
-                    <FolderGridItem
+                    <FolderTypeGridItem
                       key={folderType.id}
                       folderType={folderType}
                     />
@@ -271,86 +271,90 @@ export default function FoldersPage() {
             </>
           )}
         </div>
-        <div className="border-t border-gray-200 my-12"></div>
         {/* Dossiers en cours Section */}
         <div>
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900">
-              Dossiers en cours
-            </h2>
-            <Button
-              asChild
-              size="lg"
-              className="font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Link href={ROUTES.FOLDERS.NEW}>
-                <Plus className="h-4 w-4 mr-2" />
-                Nouveau dossier
-              </Link>
-            </Button>
-          </div>
-
-          {/* Search Bar et Filtres */}
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Rechercher un dossier..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+          {/* Sticky Header and Controls */}
+          <div className="sticky top-0 z-10 bg-gray-50 p-4 -mt-2 mb-2 shadow-sm border-b border-gray-200/50 backdrop-blur-sm">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-semibold text-gray-900">
+                Dossiers en cours
+              </h2>
+              <Button
+                asChild
+                size="lg"
+                className="font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <Link href={ROUTES.FOLDERS.NEW}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Nouveau dossier
+                </Link>
+              </Button>
             </div>
 
-            <div className="flex gap-2 items-center">
-              <Badge
-                variant={
-                  selectedFilters.includes('PENDING') ? 'default' : 'outline'
-                }
-                className={`h-8 cursor-pointer transition-colors ${
-                  selectedFilters.includes('PENDING')
-                    ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
-                    : 'hover:bg-yellow-50'
-                }`}
-                onClick={() => toggleFilter('PENDING')}
-              >
-                🕐 En attente
-              </Badge>
-              <Badge
-                variant={
-                  selectedFilters.includes('COMPLETED') ? 'default' : 'outline'
-                }
-                className={`h-8 cursor-pointer transition-colors ${
-                  selectedFilters.includes('COMPLETED')
-                    ? 'bg-green-500 hover:bg-green-600 text-white'
-                    : 'hover:bg-green-50'
-                }`}
-                onClick={() => toggleFilter('COMPLETED')}
-              >
-                ✅ Terminé
-              </Badge>
-              <Badge
-                variant={
-                  selectedFilters.includes('ARCHIVED') ? 'default' : 'outline'
-                }
-                className={`h-8 cursor-pointer transition-colors ${
-                  selectedFilters.includes('ARCHIVED')
-                    ? 'bg-red-500 hover:bg-red-600 text-white'
-                    : 'hover:bg-red-50'
-                }`}
-                onClick={() => toggleFilter('ARCHIVED')}
-              >
-                ❌ Refusé
-              </Badge>
-              {selectedFilters.length > 0 && (
-                <button
-                  onClick={() => setSelectedFilters([])}
-                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+            {/* Search Bar et Filtres */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-6">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un dossier..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                />
+              </div>
+
+              <div className="flex gap-2 items-center">
+                <Badge
+                  variant={
+                    selectedFilters.includes('PENDING') ? 'default' : 'outline'
+                  }
+                  className={`h-8 cursor-pointer transition-colors ${
+                    selectedFilters.includes('PENDING')
+                      ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
+                      : 'hover:bg-yellow-50 bg-white'
+                  }`}
+                  onClick={() => toggleFilter('PENDING')}
                 >
-                  Effacer les filtres ({selectedFilters.length})
-                </button>
-              )}
+                  🕐 En attente
+                </Badge>
+                <Badge
+                  variant={
+                    selectedFilters.includes('COMPLETED')
+                      ? 'default'
+                      : 'outline'
+                  }
+                  className={`h-8 cursor-pointer transition-colors ${
+                    selectedFilters.includes('COMPLETED')
+                      ? 'bg-green-500 hover:bg-green-600 text-white'
+                      : 'hover:bg-green-50 bg-white'
+                  }`}
+                  onClick={() => toggleFilter('COMPLETED')}
+                >
+                  ✅ Terminé
+                </Badge>
+                <Badge
+                  variant={
+                    selectedFilters.includes('ARCHIVED') ? 'default' : 'outline'
+                  }
+                  className={`h-8 cursor-pointer transition-colors ${
+                    selectedFilters.includes('ARCHIVED')
+                      ? 'bg-red-500 hover:bg-red-600 text-white'
+                      : 'hover:bg-red-50 bg-white'
+                  }`}
+                  onClick={() => toggleFilter('ARCHIVED')}
+                >
+                  ❌ Refusé
+                </Badge>
+                {selectedFilters.length > 0 && (
+                  <button
+                    onClick={() => setSelectedFilters([])}
+                    className="text-sm text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Effacer les filtres ({selectedFilters.length})
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 
