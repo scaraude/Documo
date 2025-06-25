@@ -8,7 +8,6 @@ import { UserMenu } from '@/features/auth';
 import Image from 'next/image';
 
 const navLinks = [
-  { href: ROUTES.HOME, label: 'Accueil' },
   { href: ROUTES.FOLDERS.HOME, label: 'Dossiers' },
   { href: ROUTES.REQUESTS.HOME, label: 'Demandes' },
 ];
@@ -24,7 +23,7 @@ export const Navbar = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="h-16 flex justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <div className="flex items-center">
             <Image
               src={APP_ICON_PATH}
               alt="Documo Logo"
@@ -33,7 +32,7 @@ export const Navbar = () => {
               className="rounded-lg mr-1"
             />
             <span className="text-2xl font-bold text-blue-600">Documo</span>
-          </Link>
+          </div>
 
           {/* Desktop navigation */}
           <div className="hidden md:flex items-center space-x-8">

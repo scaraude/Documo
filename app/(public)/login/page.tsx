@@ -27,7 +27,7 @@ function LoginContent() {
   }, [searchParams]);
 
   const handleLoginSuccess = () => {
-    router.push(ROUTES.HOME);
+    router.push(ROUTES.FOLDERS.HOME);
   };
 
   const handleSwitchToSignup = () => {

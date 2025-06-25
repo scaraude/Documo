@@ -16,6 +16,7 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<UserSession | null>(null);
+  const [authInitialized, setAuthInitialized] = useState(false);
 
   // tRPC mutations
   const signupMutation = trpc.auth.signup.useMutation();
@@ -34,16 +35,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   } = trpc.auth.me.useQuery(undefined, {
     enabled: true,
     retry: false,
+    // Don't throw on UNAUTHORIZED - treat it as "not authenticated"
+    throwOnError: error => {
+      // Only throw on unexpected errors, not auth errors
+      return error.data?.code !== 'UNAUTHORIZED';
+    },
   });
 
   useEffect(() => {
     if (!isLoadingUser) {
+      // Auth check is complete, set the final state
       if (currentUser) {
         setUser(currentUser);
-      } else if (error) {
+      } else {
         setUser(null);
         setSession(null);
       }
+      setAuthInitialized(true);
     }
   }, [isLoadingUser, currentUser, error]);
 
@@ -214,13 +222,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     () => ({
       user,
       session,
-      isLoading:
-        isLoadingUser ||
-        signupMutation.isPending ||
-        loginMutation.isPending ||
-        logoutMutation.isPending ||
-        forgotPasswordMutation.isPending ||
-        resetPasswordMutation.isPending,
+      isLoading: !authInitialized, // Only false when auth check is completely done
       login,
       signup,
       logout,
@@ -232,12 +234,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     [
       user,
       session,
-      isLoadingUser,
-      signupMutation.isPending,
-      loginMutation.isPending,
-      logoutMutation.isPending,
-      forgotPasswordMutation.isPending,
-      resetPasswordMutation.isPending,
+      authInitialized,
       login,
       signup,
       logout,

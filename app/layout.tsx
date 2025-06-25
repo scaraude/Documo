@@ -1,10 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-import { Navbar } from '@/shared/components';
-import { Toaster } from 'sonner';
-import TRPCProvider from './providers/trpc-provider';
-import { AuthProvider } from '@/features/auth';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -21,15 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
-        <TRPCProvider>
-          <AuthProvider>
-            <Navbar />
-            {children}
-            <Toaster richColors />
-          </AuthProvider>
-        </TRPCProvider>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   );
 }

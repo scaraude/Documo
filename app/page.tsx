@@ -1,8 +1,5 @@
-'use client';
-import { useFolderTypes } from '@/features/folder-types';
 import { APP_ICON_PATH, ROUTES } from '@/shared/constants';
 import {
-  Plus,
   FileText,
   FolderOpen,
   Shield,
@@ -15,21 +12,10 @@ import {
   ArrowRight,
   Star,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '../shared/components/ui/hover-card';
-import { Button } from '@/shared/components';
+import Link from 'next/link';
 import Image from 'next/image';
 
-export default function HomePage() {
-  const router = useRouter();
-  const { getAllFolderTypes } = useFolderTypes();
-  const { data: folderTypes, isLoading } = getAllFolderTypes();
-  const hasFolderTypes = !isLoading && folderTypes && folderTypes.length > 0;
-
+export default function LandingPage() {
   return (
     <div className="min-h-screen overflow-hidden">
       {/* Hero Section */}
@@ -68,22 +54,19 @@ export default function HomePage() {
 
             {/* CTA Buttons */}
             <div className="flex items-center justify-center gap-6 flex-wrap mb-16 animate-fadeInUp delay-1000">
-              <Button
-                size="lg"
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
-                onClick={() => router.push(ROUTES.AUTH.SIGNUP)}
+              <Link
+                href={ROUTES.AUTH.SIGNUP}
+                className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-md"
               >
                 Commencer gratuitement
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="px-10 py-4 text-lg border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                onClick={() => router.push('#features')}
+              </Link>
+              <a
+                href="#features"
+                className="inline-flex items-center justify-center px-10 py-4 text-lg border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transform hover:scale-105 transition-all duration-200 rounded-md text-gray-700 hover:text-gray-900"
               >
                 Découvrir les fonctionnalités
-              </Button>
+              </a>
             </div>
 
             {/* Trust indicators */}
@@ -325,46 +308,20 @@ export default function HomePage() {
             </p>
 
             <div className="flex items-center justify-center gap-8 flex-wrap mb-20">
-              {!hasFolderTypes ? (
-                <HoverCard>
-                  <HoverCardTrigger>
-                    <Button
-                      size="lg"
-                      disabled={!hasFolderTypes}
-                      className="bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
-                      onClick={() => router.push(ROUTES.FOLDERS.NEW)}
-                    >
-                      <Plus className="mr-2 h-5 w-5" />
-                      Créer votre premier dossier
-                    </Button>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-80">
-                    <p className="text-sm text-gray-500">
-                      Commencez par créer un type de dossier pour définir vos
-                      processus
-                    </p>
-                  </HoverCardContent>
-                </HoverCard>
-              ) : (
-                <Button
-                  size="lg"
-                  className="bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
-                  onClick={() => router.push(ROUTES.FOLDERS.NEW)}
-                >
-                  <Plus className="mr-2 h-5 w-5" />
-                  Créer votre premier dossier
-                </Button>
-              )}
-
-              <Button
-                size="lg"
-                variant="outline"
-                className="border-2 border-white text-white hover:bg-white hover:text-blue-600 px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
-                onClick={() => router.push(ROUTES.FOLDER_TYPES.NEW)}
+              <Link
+                href={ROUTES.AUTH.SIGNUP}
+                className="inline-flex items-center justify-center bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-md"
               >
-                <FolderOpen className="mr-2 h-5 w-5" />
-                Configurer vos types de dossiers
-              </Button>
+                Commencer maintenant
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+
+              <Link
+                href={ROUTES.AUTH.LOGIN}
+                className="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-blue-600 px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-md"
+              >
+                Se connecter
+              </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
@@ -439,12 +396,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {isLoading && (
-        <div className="flex justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
-      )}
     </div>
   );
 }
