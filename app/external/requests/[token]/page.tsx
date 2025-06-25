@@ -9,6 +9,7 @@ import { FileText, CheckCircle, XCircle } from 'lucide-react';
 import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { ROUTES } from '@/shared/constants/routes/paths';
 
 export default function ExternalRequestPage() {
   const { token }: { token: string } = useParams();
@@ -18,38 +19,25 @@ export default function ExternalRequestPage() {
   const { data: request, isLoading, error } = getRequestByToken(token);
   const { getLabel } = useDocumentTypes();
 
-  const [showAcceptForm, setShowAcceptForm] = useState(false);
   const [showDeclineForm, setShowDeclineForm] = useState(false);
-  const [email, setEmail] = useState('');
   const [declineMessage, setDeclineMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const handleAcceptClick = () => {
-    setShowAcceptForm(true);
-    setShowDeclineForm(false);
-  };
-
-  const handleDeclineClick = () => {
-    setShowDeclineForm(true);
-    setShowAcceptForm(false);
-  };
-
   const handleAccept = async () => {
-    if (!email.trim()) {
-      toast.error('Veuillez saisir votre adresse email');
-      return;
-    }
-
     setIsProcessing(true);
     try {
-      await acceptRequest.mutateAsync({ token, email });
+      await acceptRequest.mutateAsync({ token });
       toast.success('Demande acceptée avec succès');
-      router.push(`/external/upload/${token}`);
+      router.push(ROUTES.EXTERNAL.UPLOAD(token));
     } catch {
       toast.error("Erreur lors de l'acceptation de la demande");
     } finally {
       setIsProcessing(false);
     }
+  };
+
+  const handleDeclineClick = () => {
+    setShowDeclineForm(true);
   };
 
   const handleDecline = async () => {
@@ -110,7 +98,7 @@ export default function ExternalRequestPage() {
 
   if (isAccepted) {
     // If already accepted, redirect to upload page
-    router.push(`/external/upload/${token}`);
+    router.push(ROUTES.EXTERNAL.UPLOAD(token));
     return null;
   }
 
@@ -183,15 +171,15 @@ export default function ExternalRequestPage() {
               </div>
             </div>
 
-            {!showAcceptForm && !showDeclineForm && (
+            {!showDeclineForm && (
               <div className="flex gap-4 mb-6">
                 <Button
-                  onClick={handleAcceptClick}
+                  onClick={handleAccept}
                   className="flex-1 bg-green-600 hover:bg-green-700"
                   disabled={isProcessing}
                 >
                   <CheckCircle className="h-4 w-4 mr-2" />
-                  Accepter
+                  {isProcessing ? 'Traitement...' : 'Accepter'}
                 </Button>
                 <Button
                   onClick={handleDeclineClick}
@@ -202,55 +190,6 @@ export default function ExternalRequestPage() {
                   <XCircle className="h-4 w-4 mr-2" />
                   Refuser
                 </Button>
-              </div>
-            )}
-
-            {showAcceptForm && (
-              <div className="border-t pt-6 mb-6">
-                <h3 className="text-lg font-semibold mb-4">
-                  Accepter la demande
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-1"
-                    >
-                      Votre adresse email *
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      placeholder="votre.email@exemple.com"
-                      required
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Cette adresse sera utilisée pour vous contacter si
-                      nécessaire.
-                    </p>
-                  </div>
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={handleAccept}
-                      disabled={isProcessing || !email.trim()}
-                      className="bg-green-600 hover:bg-green-700"
-                    >
-                      {isProcessing
-                        ? 'Traitement...'
-                        : "Confirmer l'acceptation"}
-                    </Button>
-                    <Button
-                      onClick={() => setShowAcceptForm(false)}
-                      variant="outline"
-                      disabled={isProcessing}
-                    >
-                      Annuler
-                    </Button>
-                  </div>
-                </div>
               </div>
             )}
 

@@ -182,14 +182,13 @@ export const externalRouter = router({
     .input(
       z.object({
         token: z.string().min(1, 'Token is required'),
-        email: z.string().email('Valid email is required').optional(),
       })
     )
     .mutation(async ({ input }) => {
       try {
-        const { token, email } = input;
+        const { token } = input;
         logger.info(
-          { token: token.substring(0, 8) + '...', email },
+          { token: token.substring(0, 8) + '...' },
           'Accepting external request'
         );
 
@@ -208,12 +207,11 @@ export const externalRouter = router({
         }
 
         const result = await externalRequestsRepository.acceptRequest(
-          shareLink.requestId,
-          email
+          shareLink.requestId
         );
 
         logger.info(
-          { requestId: shareLink.requestId, email },
+          { requestId: shareLink.requestId },
           'External request accepted successfully'
         );
         return result;

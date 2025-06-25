@@ -55,12 +55,12 @@ export async function deleteExpiredShareLinks() {
 /**
  * Accept a document request
  */
-export async function acceptRequest(requestId: string, email?: string) {
+export async function acceptRequest(requestId: string) {
   return await prisma.documentRequest.update({
     where: { id: requestId },
     data: {
       acceptedAt: new Date(),
-      email: email || undefined,
+      // Keep existing email from the request - no need to update
     },
   });
 }
