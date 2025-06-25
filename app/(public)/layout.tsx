@@ -1,6 +1,7 @@
 import { Toaster } from 'sonner';
 import TRPCProvider from '../providers/trpc-provider';
 import { AuthProvider } from '@/features/auth';
+import PublicGuard from './PublicGuard';
 
 export default function PublicLayout({
   children,
@@ -10,8 +11,7 @@ export default function PublicLayout({
   return (
     <TRPCProvider>
       <AuthProvider>
-        {/* No Navbar - clean public experience */}
-        {children}
+        <PublicGuard>{children}</PublicGuard>
         <Toaster richColors />
       </AuthProvider>
     </TRPCProvider>
