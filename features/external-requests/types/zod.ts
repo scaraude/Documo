@@ -9,6 +9,9 @@ export const externalRequestSchema = z.object({
   requestedDocuments: documentTypeIdsSchema,
   createdAt: z.date(),
   expiresAt: z.date(),
+  acceptedAt: z.date().nullable().optional(),
+  rejectedAt: z.date().nullable().optional(),
+  declineMessage: z.string().nullable().optional(),
 });
 
 export const externalCreateDocumentSchema = z.object({

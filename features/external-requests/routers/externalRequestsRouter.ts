@@ -177,6 +177,122 @@ export const externalRouter = router({
       logger.info({ requestId }, 'Share link generated successfully');
       return result;
     }),
+
+  acceptRequest: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1, 'Token is required'),
+        email: z.string().email('Valid email is required').optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { token, email } = input;
+        logger.info(
+          { token: token.substring(0, 8) + '...', email },
+          'Accepting external request'
+        );
+
+        const shareLink =
+          await externalRequestsRepository.getShareLinkByToken(token);
+
+        if (!shareLink) {
+          logger.warn(
+            { token: token.substring(0, 8) + '...' },
+            'Share link not found for accept request'
+          );
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        const result = await externalRequestsRepository.acceptRequest(
+          shareLink.requestId,
+          email
+        );
+
+        logger.info(
+          { requestId: shareLink.requestId, email },
+          'External request accepted successfully'
+        );
+        return result;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        logger.error(
+          {
+            token: input.token.substring(0, 8) + '...',
+            error: error instanceof Error ? error.message : error,
+          },
+          'Error accepting external request'
+        );
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to accept request',
+        });
+      }
+    }),
+
+  declineRequest: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1, 'Token is required'),
+        message: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      try {
+        const { token, message } = input;
+        logger.info(
+          { token: token.substring(0, 8) + '...', hasMessage: !!message },
+          'Declining external request'
+        );
+
+        const shareLink =
+          await externalRequestsRepository.getShareLinkByToken(token);
+
+        if (!shareLink) {
+          logger.warn(
+            { token: token.substring(0, 8) + '...' },
+            'Share link not found for decline request'
+          );
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        const result = await externalRequestsRepository.declineRequest(
+          shareLink.requestId,
+          message
+        );
+
+        logger.info(
+          { requestId: shareLink.requestId },
+          'External request declined successfully'
+        );
+        return result;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        logger.error(
+          {
+            token: input.token.substring(0, 8) + '...',
+            error: error instanceof Error ? error.message : error,
+          },
+          'Error declining external request'
+        );
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to decline request',
+        });
+      }
+    }),
 });
 
 export type ExternalRouter = typeof externalRouter;

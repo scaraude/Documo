@@ -21,5 +21,8 @@ export const prismaShareLinkToExternalRequest = (
     ),
     createdAt: request.createdAt,
     expiresAt: request.expiresAt,
+    acceptedAt: request.acceptedAt,
+    rejectedAt: request.rejectedAt,
+    declineMessage: request.declineMessage,
   };
 };

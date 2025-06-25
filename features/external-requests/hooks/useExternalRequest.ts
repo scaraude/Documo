@@ -7,9 +7,13 @@ export const useExternalRequest = () => {
     trpc.external.getRequestByToken.useQuery({ token });
 
   const generateShareLink = trpc.external.generateShareLink.useMutation();
+  const acceptRequest = trpc.external.acceptRequest.useMutation();
+  const declineRequest = trpc.external.declineRequest.useMutation();
 
   return {
     generateShareLink,
     getRequestByToken,
+    acceptRequest,
+    declineRequest,
   };
 };

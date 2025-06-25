@@ -132,6 +132,7 @@ model DocumentRequest {
   updatedAt          DateTime       @updatedAt
   acceptedAt              DateTime?
   rejectedAt              DateTime?
+  declineMessage          String?
   completedAt             DateTime?
   firstDocumentUploadedAt DateTime?
 

@@ -51,3 +51,29 @@ export async function deleteExpiredShareLinks() {
     },
   });
 }
+
+/**
+ * Accept a document request
+ */
+export async function acceptRequest(requestId: string, email?: string) {
+  return await prisma.documentRequest.update({
+    where: { id: requestId },
+    data: {
+      acceptedAt: new Date(),
+      email: email || undefined,
+    },
+  });
+}
+
+/**
+ * Decline a document request
+ */
+export async function declineRequest(requestId: string, message?: string) {
+  return await prisma.documentRequest.update({
+    where: { id: requestId },
+    data: {
+      rejectedAt: new Date(),
+      declineMessage: message,
+    },
+  });
+}
