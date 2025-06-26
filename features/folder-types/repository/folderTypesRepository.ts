@@ -4,6 +4,7 @@ import {
   CreateFolderTypeParams,
   UpdateFolderTypeParams,
 } from '../types';
+import logger from '@/lib/logger';
 
 // Type mapper entre Prisma et App
 type PrismaFolderType = Prisma.FolderTypeGetPayload<{
@@ -27,13 +28,20 @@ export function toAppModel(prismaModel: PrismaFolderType): FolderType {
 }
 
 /**
- * Get all active folder types
+ * Get folder types by user ID (user-scoped) - SECURE
  */
-export async function getFolderTypes(): Promise<FolderType[]> {
+export async function getFolderTypesByUserId(
+  userId: string
+): Promise<FolderType[]> {
   try {
+    logger.info(
+      { userId, operation: 'getFolderTypesByUserId' },
+      'Fetching folder types for user'
+    );
     const folderTypes = await prisma.folderType.findMany({
       where: {
-        deletedAt: null, // Soft delete
+        deletedAt: null,
+        createdById: userId, // Filter by owner
       },
       include: {
         requiredDocuments: true,
@@ -43,45 +51,84 @@ export async function getFolderTypes(): Promise<FolderType[]> {
       },
     });
 
+    logger.info(
+      { userId, count: folderTypes.length },
+      'Folder types fetched successfully'
+    );
     return folderTypes.map(toAppModel);
   } catch (error) {
-    console.error('Error fetching folder types from database:', error);
+    logger.error(
+      {
+        userId,
+        operation: 'getFolderTypesByUserId',
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error fetching folder types for user'
+    );
     throw new Error('Failed to fetch folder types');
   }
 }
 
 /**
- * Get folder type by ID
+ * Get folder type by ID for specific user (ownership check) - SECURE
  */
-export async function getFolderTypeById(
-  id: string
+export async function getFolderTypeByIdForUser(
+  id: string,
+  userId: string
 ): Promise<FolderType | null> {
   try {
+    logger.info(
+      { folderTypeId: id, userId, operation: 'getFolderTypeByIdForUser' },
+      'Fetching folder type with ownership check'
+    );
     const folderType = await prisma.folderType.findFirst({
       where: {
         id,
         deletedAt: null,
+        createdById: userId, // Ownership check
       },
       include: {
         requiredDocuments: true,
       },
     });
 
-    return folderType ? toAppModel(folderType) : null;
+    const result = folderType ? toAppModel(folderType) : null;
+    logger.info(
+      { folderTypeId: id, userId, found: !!result },
+      'Folder type fetch completed'
+    );
+    return result;
   } catch (error) {
-    console.error(`Error fetching folder type with ID ${id}:`, error);
+    logger.error(
+      {
+        folderTypeId: id,
+        userId,
+        operation: 'getFolderTypeByIdForUser',
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error fetching folder type with ownership check'
+    );
     throw new Error('Failed to fetch folder type');
   }
 }
 
 /**
- * Create a new folder type
+ * Create a new folder type - SECURE (requires user ID)
  */
 export async function createFolderType(
   params: CreateFolderTypeParams
 ): Promise<FolderType> {
   try {
     const { name, description, requiredDocuments, createdById } = params;
+
+    if (!createdById) {
+      throw new Error('User ID is required to create folder type');
+    }
+
+    logger.info(
+      { name, userId: createdById, operation: 'createFolderType' },
+      'Creating folder type'
+    );
 
     const newFolderType = await prisma.folderType.create({
       data: {
@@ -90,22 +137,35 @@ export async function createFolderType(
         requiredDocuments: {
           connect: requiredDocuments.map(id => ({ id })),
         },
-        createdById: createdById || '',
+        createdById,
       },
       include: {
         requiredDocuments: true,
       },
     });
 
-    return toAppModel(newFolderType);
+    const result = toAppModel(newFolderType);
+    logger.info(
+      { folderTypeId: result.id, name: result.name, userId: createdById },
+      'Folder type created successfully'
+    );
+    return result;
   } catch (error) {
-    console.error('Error creating folder type in database:', error);
+    logger.error(
+      {
+        name: params.name,
+        userId: params.createdById,
+        operation: 'createFolderType',
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error creating folder type'
+    );
     throw new Error('Failed to create folder type');
   }
 }
 
 /**
- * Update a folder type
+ * Update a folder type - SECURE (ownership should be verified by caller)
  */
 export async function updateFolderType(
   id: string,
@@ -113,6 +173,11 @@ export async function updateFolderType(
 ): Promise<FolderType> {
   try {
     const { name, description, requiredDocuments } = params;
+
+    logger.info(
+      { folderTypeId: id, updateParams: params, operation: 'updateFolderType' },
+      'Updating folder type'
+    );
 
     const updatedFolderType = await prisma.folderType.update({
       where: { id },
@@ -130,78 +195,66 @@ export async function updateFolderType(
       },
     });
 
-    return toAppModel(updatedFolderType);
+    const result = toAppModel(updatedFolderType);
+    logger.info(
+      { folderTypeId: id, name: result.name },
+      'Folder type updated successfully'
+    );
+    return result;
   } catch (error) {
-    console.error(`Error updating folder type with ID ${id}:`, error);
+    logger.error(
+      {
+        folderTypeId: id,
+        operation: 'updateFolderType',
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error updating folder type'
+    );
     throw new Error('Failed to update folder type');
   }
 }
 
 /**
- * Soft delete a folder type
+ * Soft delete a folder type - SECURE (ownership should be verified by caller)
  */
 export async function deleteFolderType(id: string): Promise<void> {
   try {
+    logger.info(
+      { folderTypeId: id, operation: 'deleteFolderType' },
+      'Deleting folder type'
+    );
+
     await prisma.folderType.update({
       where: { id },
       data: {
         deletedAt: new Date(),
       },
     });
+
+    logger.info({ folderTypeId: id }, 'Folder type deleted successfully');
   } catch (error) {
-    console.error(`Error deleting folder type with ID ${id}:`, error);
+    logger.error(
+      {
+        folderTypeId: id,
+        operation: 'deleteFolderType',
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error deleting folder type'
+    );
     throw new Error('Failed to delete folder type');
   }
 }
 
 /**
- * Get folder types with usage statistics
- */
-export async function getFolderTypesWithStats(): Promise<
-  Array<
-    FolderType & {
-      foldersCount: number;
-      activeFoldersCount: number;
-    }
-  >
-> {
-  try {
-    const folderTypes = await prisma.folderType.findMany({
-      where: {
-        deletedAt: null,
-      },
-      include: {
-        requiredDocuments: true,
-        _count: {
-          select: { folders: true },
-        },
-        folders: {
-          select: {
-            archivedAt: true,
-          },
-        },
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-
-    return folderTypes.map(ft => ({
-      ...toAppModel(ft),
-      foldersCount: ft._count.folders,
-      activeFoldersCount: ft.folders.filter(f => !f.archivedAt).length,
-    }));
-  } catch (error) {
-    console.error('Error fetching folder types with stats:', error);
-    throw new Error('Failed to fetch folder types with stats');
-  }
-}
-
-/**
- * Check if folder type is used
+ * Check if folder type is used - SECURE (ownership should be verified by caller)
  */
 export async function isFolderTypeInUse(id: string): Promise<boolean> {
   try {
+    logger.info(
+      { folderTypeId: id, operation: 'isFolderTypeInUse' },
+      'Checking folder type usage'
+    );
+
     const count = await prisma.folder.count({
       where: {
         folderTypeId: id,
@@ -209,9 +262,21 @@ export async function isFolderTypeInUse(id: string): Promise<boolean> {
       },
     });
 
-    return count > 0;
+    const inUse = count > 0;
+    logger.info(
+      { folderTypeId: id, inUse, folderCount: count },
+      'Folder type usage check completed'
+    );
+    return inUse;
   } catch (error) {
-    console.error(`Error checking if folder type ${id} is in use:`, error);
+    logger.error(
+      {
+        folderTypeId: id,
+        operation: 'isFolderTypeInUse',
+        error: error instanceof Error ? error.message : error,
+      },
+      'Error checking folder type usage'
+    );
     throw new Error('Failed to check folder type usage');
   }
 }
