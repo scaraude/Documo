@@ -37,7 +37,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const preSelectedTypeId = searchParams?.get('typeId');
-
+  const [isSending, setIsSending] = useState(false);
   const { createFolderMutation } = useFolders();
   const { getAllFolderTypes } = useFolderTypes();
   const { data: folderTypes, isLoading: isFolderTypesLoading } =
@@ -126,6 +126,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
   const handleSendRequests = async () => {
     if (!createdFolder || !selectedType) return;
 
+    setIsSending(true);
     const validEmails = emails.filter(
       email => email.trim() !== '' && email.includes('@')
     );
@@ -149,8 +150,10 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
         )
       );
 
+      setIsSending(false);
       router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
     } catch (error) {
+      setIsSending(false);
       console.error('Error sending requests:', error);
     }
   };
@@ -483,9 +486,12 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
             <Button variant="outline" onClick={skipRequests}>
               Passer cette étape
             </Button>
-            <Button onClick={handleSendRequests}>
+            <Button
+              onClick={handleSendRequests}
+              disabled={isSending || emails.length === 0}
+            >
               <Send className="h-4 w-4 mr-2" />
-              Envoyer les demandes
+              {isSending ? 'Envoi...' : 'Envoyer les demandes'}
             </Button>
           </div>
         </div>
