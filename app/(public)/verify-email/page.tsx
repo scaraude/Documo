@@ -5,7 +5,6 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/features/auth';
 import { useVerificationSession } from '@/features/auth/hooks/useVerificationSession';
 import { useEmailVerification } from '@/features/auth/hooks/useEmailVerification';
-import { useEmailMasking } from '@/features/auth/hooks/useEmailMasking';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { Mail, Clock, CheckCircle } from 'lucide-react';
@@ -26,7 +25,6 @@ function VerifyEmailContent() {
     hasSession,
     clearSession,
   } = useVerificationSession();
-  const { maskEmail } = useEmailMasking();
 
   const token = searchParams.get('token');
 
@@ -97,9 +95,7 @@ function VerifyEmailContent() {
               <p className="text-gray-600">
                 Nous devons vérifier votre adresse email :
               </p>
-              <p className="font-medium text-gray-900 mt-1">
-                {maskEmail(sessionEmail)}
-              </p>
+              <p className="font-medium text-gray-900 mt-1">{sessionEmail}</p>
             </div>
 
             {emailVerificationHook.canResend && (

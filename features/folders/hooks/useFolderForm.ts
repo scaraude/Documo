@@ -4,14 +4,14 @@ import { FolderType } from '@/features/folder-types/types';
 import { CreateFolderParams, Folder } from '../types';
 import { useFolders } from './useFolders';
 import { useRequests } from '@/features/requests/hooks/useRequests';
-import { useFolderTypes } from '@/features/folder-types';
 import { ROUTES, AppDocumentType } from '@/shared/constants';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc/client';
 import {
-  getPreselectedFolderId,
-  getPreselectedFolderTypeId,
-  hasPreselectedFolder,
-  hasPreselectedFolderType,
+  computeFolderStatus,
+  computeRequestStatus,
+} from '@/shared/utils/computedStatus';
+import {
   getCurrentStepFromUrl,
   generateFillFormUrl,
   generateSendRequestsUrl,
@@ -27,107 +27,93 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Use utility functions to extract URL parameters
-  const searchParamsObj = searchParams
-    ? new URLSearchParams(searchParams.toString())
-    : new URLSearchParams();
-  const preSelectedTypeId = getPreselectedFolderTypeId(searchParamsObj);
-  const preSelectedFolderId = getPreselectedFolderId(searchParamsObj);
-  const hasPreselectedFolderParam = hasPreselectedFolder(searchParamsObj);
-  const hasPreselectedFolderTypeParam =
-    hasPreselectedFolderType(searchParamsObj);
+  // Extract URL parameters
+  const urlParams = new URLSearchParams(searchParams?.toString() || '');
+  const folderId = urlParams.get('folderId');
+  const typeId = urlParams.get('typeId');
+  const step = getCurrentStepFromUrl(urlParams);
 
-  const { createFolderMutation, getFolderById } = useFolders();
-  const { createRequestMutation } = useRequests();
-  const { getFolderTypeById } = useFolderTypes();
-
-  // Derive step from URL instead of local state
-  const step = getCurrentStepFromUrl(searchParamsObj);
+  // Local state
   const [selectedType, setSelectedType] = useState<FolderType | null>(null);
   const [createdFolder, setCreatedFolder] = useState<Folder | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isInitializing, setIsInitializing] = useState(false);
 
-  // Fetch preselected folder data if folderId is provided
-  const preSelectedFolderQuery = getFolderById(preSelectedFolderId || '');
-  const { data: preSelectedFolder, isLoading: isFolderLoading } = {
-    ...preSelectedFolderQuery,
-    data: preSelectedFolderId ? preSelectedFolderQuery.data : undefined,
-    isLoading: preSelectedFolderId ? preSelectedFolderQuery.isLoading : false,
-  };
+  // Hooks
+  const { createFolderMutation } = useFolders();
+  const { createRequestMutation } = useRequests();
 
-  // Fetch folder type for preselected folder
-  const preSelectedFolderTypeQuery = getFolderTypeById(
-    preSelectedFolder?.folderTypeId || ''
-  );
-  const { data: preSelectedFolderType, isLoading: isFolderTypeLoading } = {
-    ...preSelectedFolderTypeQuery,
-    data: preSelectedFolder?.folderTypeId
-      ? preSelectedFolderTypeQuery.data
-      : undefined,
-    isLoading: preSelectedFolder?.folderTypeId
-      ? preSelectedFolderTypeQuery.isLoading
-      : false,
-  };
-
-  // Handle pre-selected folder from query params (priority over typeId)
-  useEffect(() => {
-    // Handle folder preselection (highest priority)
-    if (hasPreselectedFolderParam) {
-      if (preSelectedFolder && preSelectedFolderType) {
-        setIsInitializing(true);
-        setCreatedFolder(preSelectedFolder);
-        setSelectedType(preSelectedFolderType);
-        setIsInitializing(false);
-        return;
-      } else if (
-        !isFolderLoading &&
-        !isFolderTypeLoading &&
-        preSelectedFolderId
-      ) {
-        // Folder or folder type not found/accessible
-        toast.error('Dossier non trouvé ou accès refusé');
-        router.push(ROUTES.FOLDERS.HOME);
-        return;
+  // Conditional tRPC queries
+  const { data: preSelectedFolder, isLoading: isFolderLoading } =
+    trpc.folder.getByIdWithRelations.useQuery(
+      { id: folderId || '' },
+      {
+        enabled: !!folderId,
+        select(folder) {
+          return folder === null
+            ? null
+            : {
+                ...folder,
+                status: computeFolderStatus(folder),
+                requests: folder.requests?.map(request => ({
+                  ...request,
+                  status: computeRequestStatus(request),
+                })),
+              };
+        },
       }
+    );
+
+  const { data: preSelectedFolderType, isLoading: isFolderTypeLoading } =
+    trpc.folderTypes.getById.useQuery(
+      { id: preSelectedFolder?.folderTypeId || '' },
+      {
+        enabled: !!preSelectedFolder?.folderTypeId,
+      }
+    );
+
+  // Initialize state from URL parameters
+  useEffect(() => {
+    // Handle preselected folder (highest priority)
+    if (folderId && preSelectedFolder && preSelectedFolderType) {
+      setCreatedFolder(preSelectedFolder);
+      setSelectedType(preSelectedFolderType);
+      return;
     }
 
-    // Fallback to pre-selected type if no folder is specified
-    if (
-      hasPreselectedFolderTypeParam &&
-      preSelectedTypeId &&
-      folderTypes &&
-      folderTypes.length > 0
-    ) {
-      const foundType = folderTypes.find(type => type.id === preSelectedTypeId);
+    // Handle folder not found
+    if (folderId && !isFolderLoading && !preSelectedFolder) {
+      toast.error('Dossier non trouvé ou accès refusé');
+      router.push(ROUTES.FOLDERS.HOME);
+      return;
+    }
+
+    // Handle preselected type
+    if (typeId && folderTypes?.length) {
+      const foundType = folderTypes.find(type => type.id === typeId);
       if (foundType) {
         setSelectedType(foundType);
       } else {
-        // Folder type not found
         toast.error('Type de dossier non trouvé');
         router.push(ROUTES.FOLDERS.HOME);
       }
     }
   }, [
-    hasPreselectedFolderParam,
-    preSelectedFolderId,
+    folderId,
+    typeId,
     preSelectedFolder,
     preSelectedFolderType,
     isFolderLoading,
-    isFolderTypeLoading,
-    hasPreselectedFolderTypeParam,
-    preSelectedTypeId,
     folderTypes,
     router,
   ]);
 
+  // Navigation handlers
   const handleTypeSelect = (folderType: FolderType) => {
-    // Navigate to fillForm step with selected type
     router.push(generateFillFormUrl(folderType.id));
   };
 
   const handleGoBack = () => {
-    if (canNavigateBack(searchParamsObj)) {
+    if (canNavigateBack(urlParams)) {
       router.push(generateSelectTypeUrl());
     }
   };
@@ -165,7 +151,6 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
     }
 
     if (emails.length === 0) {
-      // No requests to send, go directly to folder
       router.push(ROUTES.FOLDERS.DETAIL(createdFolder.id));
       return;
     }
@@ -205,9 +190,9 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
     router.back();
   };
 
-  const canGoBack = canNavigateBack(searchParamsObj);
-  const isLoading =
-    isSubmitting || isFolderLoading || isFolderTypeLoading || isInitializing;
+  // Computed values
+  const canGoBack = canNavigateBack(urlParams);
+  const isLoading = isSubmitting || isFolderLoading || isFolderTypeLoading;
 
   return {
     // State
