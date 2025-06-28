@@ -20,6 +20,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
     selectedType,
     createdFolder,
     isSubmitting,
+    isLoading: isFormLoading,
     canGoBack,
     handleTypeSelect,
     handleGoBack,
@@ -30,7 +31,7 @@ export const FolderForm = ({ isLoading }: FolderFormProps) => {
   } = useFolderForm({ folderTypes });
 
   // Loading state
-  if (isLoading || isFolderTypesLoading) {
+  if (isLoading || isFolderTypesLoading || isFormLoading) {
     return <LoadingState />;
   }
 

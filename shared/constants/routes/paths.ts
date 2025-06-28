@@ -14,6 +14,8 @@ export const ROUTES = {
   FOLDERS: {
     HOME: '/folders',
     NEW: '/folders/new',
+    NEW_WITH_TYPE: (typeId: string) => `/folders/new?typeId=${typeId}`,
+    NEW_WITH_FOLDER: (folderId: string) => `/folders/new?folderId=${folderId}`,
     DETAIL: (id: string) => `/folders/${id}`,
     EDIT: (id: string) => `/folders/${id}/edit`,
   },
