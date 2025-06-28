@@ -6,6 +6,12 @@ import { toAppModel as resquestToAppModel } from '@/features/requests/repository
 import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
 import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
 import logger from '@/lib/logger';
+import {
+  eventBus,
+  EVENT_TYPES,
+  createTypedEvent,
+  FolderCreatedEvent,
+} from '@/shared/lib/events';
 
 // Type mapper between Prisma and App
 type PrismaFolder = Prisma.FolderGetPayload<{
@@ -204,6 +210,22 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
       { folderId: newFolder.id, folderName: newFolder.name },
       'Folder created successfully'
     );
+
+    // Publish domain event after successful creation
+    await eventBus.publish(
+      createTypedEvent<FolderCreatedEvent>(
+        EVENT_TYPES.FOLDER.CREATED,
+        newFolder.id,
+        {
+          folderId: newFolder.id,
+          name: newFolder.name,
+          createdById: newFolder.createdById || '',
+          folderTypeId: newFolder.folderTypeId,
+        },
+        newFolder.createdById || undefined
+      )
+    );
+
     return toAppModel(newFolder);
   } catch (error) {
     logger.error(

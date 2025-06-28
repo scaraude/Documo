@@ -2,6 +2,10 @@
 import { fetchRequestHandler } from '@trpc/server/adapters/fetch';
 import { NextRequest } from 'next/server';
 import { appRouter } from '@/lib/trpc/root';
+import { setupEventHandlers } from '@/lib/events/setup';
+
+// Initialize event handlers on server startup
+setupEventHandlers();
 
 const handler = (req: NextRequest) =>
   fetchRequestHandler({
