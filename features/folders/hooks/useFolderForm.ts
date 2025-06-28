@@ -134,8 +134,6 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
       });
 
       setCreatedFolder(folder);
-      toast.success('Dossier créé avec succès !');
-      // Navigate to sendRequests step with created folder
       router.push(generateSendRequestsUrl(folder.id));
     } catch (error) {
       toast.error('Une erreur est survenue lors de la création du dossier');
