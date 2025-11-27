@@ -1,14 +1,14 @@
 // features/requests/components/RequestFilters.tsx
 'use client';
-import { ComputedRequestStatus } from '@/shared/types';
 import {
+  Badge,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
 } from '@/shared/components';
-import { Filter, CheckCircle, Clock, XCircle, FileCheck } from 'lucide-react';
+import type { ComputedRequestStatus } from '@/shared/types';
+import { CheckCircle, Clock, FileCheck, Filter, XCircle } from 'lucide-react';
 
 interface RequestFiltersProps {
   statusFilter: ComputedRequestStatus | 'ALL';
@@ -82,12 +82,13 @@ export const RequestFilters = ({
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2">
-            {statusOptions.map(option => {
+            {statusOptions.map((option) => {
               const Icon = option.icon;
               const isActive = statusFilter === option.value;
 
               return (
                 <button
+                  type="button"
                   key={option.value}
                   onClick={() => onStatusFilterChange(option.value)}
                   className={`inline-flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
@@ -127,12 +128,13 @@ export const RequestFilters = ({
           </h3>
         </div>
         <div className="space-y-2">
-          {statusOptions.map(option => {
+          {statusOptions.map((option) => {
             const Icon = option.icon;
             const isActive = statusFilter === option.value;
 
             return (
               <button
+                type="button"
                 key={option.value}
                 onClick={() => onStatusFilterChange(option.value)}
                 className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-md text-sm transition-colors ${

@@ -1,13 +1,13 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { ROUTES } from '@/shared/constants';
-import { uploadDocument } from '../api/uploadDocument';
+import { useRouter } from 'next/navigation';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
+import type { DocumentTypeId } from '../../document-types/client';
 import { useDocumentTypes } from '../../document-types/hooks/useDocumentTypes';
-import { DocumentTypeId } from '../../document-types/client';
+import { uploadDocument } from '../api/uploadDocument';
 
 interface DocumentUploaderProps {
   token: string;
@@ -34,25 +34,25 @@ export const DocumentUploader = ({
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
 
   // Update uploadStatus when requiredDocuments changes
+  // biome-ignore lint/correctness/useExhaustiveDependencies: infinite loop otherwise
   useEffect(() => {
-    const newUploadStatus = documentTypeMissing.reduce(
-      (acc, doc) => ({
-        ...acc,
-        [doc]: uploadStatus[doc] || { progress: 0, status: 'idle' as const },
-      }),
-      {}
-    );
+    const newUploadStatus: UploadStatus = {};
+    for (const doc of documentTypeMissing) {
+      newUploadStatus[doc] = uploadStatus[doc] || {
+        progress: 0,
+        status: 'idle' as const,
+      };
+    }
 
     setUploadStatus(newUploadStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentTypeMissing]); // Remove uploadStatus from dependencies to avoid infinite loop
 
   const handleFileUpload = async (
     file: File,
-    documentTypeId: DocumentTypeId
+    documentTypeId: DocumentTypeId,
   ) => {
     try {
-      setUploadStatus(prev => ({
+      setUploadStatus((prev) => ({
         ...prev,
         [documentTypeId]: { progress: 0, status: 'uploading', file },
       }));
@@ -61,26 +61,26 @@ export const DocumentUploader = ({
         file,
         documentTypeId,
         token,
-        onProgress: progress => {
-          setUploadStatus(prev => ({
+        onProgress: (progress) => {
+          setUploadStatus((prev) => ({
             ...prev,
             [documentTypeId]: { ...prev[documentTypeId], progress },
           }));
         },
       });
 
-      setDocumentTypeMissing(documentTypes =>
-        documentTypes.filter(dt => dt !== documentTypeId)
+      setDocumentTypeMissing((documentTypes) =>
+        documentTypes.filter((dt) => dt !== documentTypeId),
       );
-      setUploadStatus(prev => ({
+      setUploadStatus((prev) => ({
         ...prev,
         [documentTypeId]: { progress: 100, status: 'completed', file },
       }));
 
       // Check if all documents are uploaded - use current state
-      setUploadStatus(currentStatus => {
+      setUploadStatus((currentStatus) => {
         const allCompleted = Object.values(currentStatus).every(
-          status => status.status === 'completed'
+          (status) => status.status === 'completed',
         );
 
         if (allCompleted) {
@@ -90,7 +90,7 @@ export const DocumentUploader = ({
         return currentStatus;
       });
     } catch (error) {
-      setUploadStatus(prev => ({
+      setUploadStatus((prev) => ({
         ...prev,
         [documentTypeId]: {
           progress: 0,
@@ -112,7 +112,7 @@ export const DocumentUploader = ({
 
   return (
     <div className="space-y-6">
-      {documentTypeMissing.map(documentType => {
+      {documentTypeMissing.map((documentType) => {
         const status = uploadStatus[documentType];
 
         // Safety check - skip if status doesn't exist
@@ -143,7 +143,7 @@ export const DocumentUploader = ({
                       const input = document.createElement('input');
                       input.type = 'file';
                       input.accept = '.pdf,.jpg,.jpeg,.png';
-                      input.onchange = e => {
+                      input.onchange = (e) => {
                         const file = (e.target as HTMLInputElement).files?.[0];
                         if (file) {
                           handleFileUpload(file, documentType);
@@ -165,7 +165,7 @@ export const DocumentUploader = ({
                 <div
                   className="bg-blue-600 h-2.5 rounded-full"
                   style={{ width: `${status.progress}%` }}
-                ></div>
+                />
               </div>
             )}
           </Card>

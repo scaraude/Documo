@@ -10,7 +10,7 @@ const passwordSchema = z
   .regex(/[0-9]/, 'Le mot de passe doit contenir au moins un chiffre')
   .regex(
     /[^A-Za-z0-9]/,
-    'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)'
+    'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)',
   );
 
 // Export password requirements for UI display
@@ -43,7 +43,7 @@ export const validatePassword = (password: string) => {
   }
   if (!/[^A-Za-z0-9]/.test(password)) {
     errors.push(
-      'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)'
+      'Le mot de passe doit contenir au moins un caractère spécial (!@#$%^&*)',
     );
   }
 
@@ -57,7 +57,7 @@ export const loginSchema = z.object({
   email: z
     .string()
     .email('Adresse email invalide')
-    .transform(email => email.toLowerCase()),
+    .transform((email) => email.toLowerCase()),
   password: z.string().min(1, 'Le mot de passe est requis'),
 });
 
@@ -66,7 +66,7 @@ export const signupSchema = z.object({
   email: z
     .string()
     .email('Adresse email invalide')
-    .transform(email => email.toLowerCase()),
+    .transform((email) => email.toLowerCase()),
   password: passwordSchema,
   firstName: z.string().min(1, 'Le prénom est requis').max(50),
   lastName: z.string().min(1, 'Le nom est requis').max(50),
@@ -77,7 +77,7 @@ export const signupApiSchema = z.object({
   email: z
     .string()
     .email('Adresse email invalide')
-    .transform(email => email.toLowerCase()),
+    .transform((email) => email.toLowerCase()),
   password: passwordSchema,
   firstName: z.string().min(1, 'Le prénom est requis').max(50),
   lastName: z.string().min(1, 'Le nom est requis').max(50),
@@ -91,14 +91,14 @@ export const resendVerificationSchema = z.object({
   email: z
     .string()
     .email('Adresse email invalide')
-    .transform(email => email.toLowerCase()),
+    .transform((email) => email.toLowerCase()),
 });
 
 export const forgotPasswordSchema = z.object({
   email: z
     .string()
     .email('Adresse email invalide')
-    .transform(email => email.toLowerCase()),
+    .transform((email) => email.toLowerCase()),
 });
 
 export const resetPasswordSchema = z
@@ -107,7 +107,7 @@ export const resetPasswordSchema = z
     password: passwordSchema,
     confirmPassword: z.string().min(1, 'Veuillez confirmer votre mot de passe'),
   })
-  .refine(data => data.password === data.confirmPassword, {
+  .refine((data) => data.password === data.confirmPassword, {
     message: 'Les mots de passe ne correspondent pas',
     path: ['confirmPassword'],
   });

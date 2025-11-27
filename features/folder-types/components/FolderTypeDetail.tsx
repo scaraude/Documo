@@ -1,8 +1,4 @@
 'use client';
-import { useState } from 'react';
-import Link from 'next/link';
-import { FolderType } from '../types';
-import { ROUTES } from '@/shared/constants';
 import {
   Button,
   Card,
@@ -10,14 +6,18 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components';
+import { ROUTES } from '@/shared/constants';
 import {
-  FolderOpen,
-  FileText,
-  Plus,
-  Trash2,
-  Settings,
   Calendar,
+  FileText,
+  FolderOpen,
+  Plus,
+  Settings,
+  Trash2,
 } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import type { FolderType } from '../types';
 
 interface FolderTypeDetailProps {
   folderType: FolderType;
@@ -33,7 +33,7 @@ export const FolderTypeDetail = ({
   const handleDelete = async () => {
     if (
       window.confirm(
-        `Êtes-vous sûr de vouloir supprimer le type de dossier "${folderType.name}" ? Cette action est irréversible.`
+        `Êtes-vous sûr de vouloir supprimer le type de dossier "${folderType.name}" ? Cette action est irréversible.`,
       )
     ) {
       await onDelete(folderType.id);
@@ -86,6 +86,7 @@ export const FolderTypeDetail = ({
         <div className="border-t border-gray-200">
           <div className="flex px-4 py-3 bg-gray-50 border-b">
             <button
+              type="button"
               className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
                 activeTab === 'info'
                   ? 'bg-white shadow text-gray-900'
@@ -97,6 +98,7 @@ export const FolderTypeDetail = ({
               Informations
             </button>
             <button
+              type="button"
               className={`px-4 py-2 font-medium text-sm rounded-md ${
                 activeTab === 'usage'
                   ? 'bg-white shadow text-gray-900'
@@ -141,12 +143,12 @@ export const FolderTypeDetail = ({
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {folderType.requiredDocuments.map((doc, index) => (
+                  {folderType.requiredDocuments.map((doc) => (
                     <div
-                      key={index}
+                      key={doc.id}
                       className="flex items-center p-2 bg-gray-50 rounded-md"
                     >
-                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-blue-500 rounded-full mr-3" />
                       <span className="text-sm font-medium">{doc.label}</span>
                     </div>
                   ))}

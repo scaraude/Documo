@@ -1,12 +1,12 @@
-import { FolderOpen, FileText } from 'lucide-react';
+import type { FolderType } from '@/features/folder-types/types';
 import {
+  Badge,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
 } from '@/shared/components';
-import { FolderType } from '@/features/folder-types/types';
+import { FileText, FolderOpen } from 'lucide-react';
 
 interface TypeSelectionStepProps {
   folderTypes: FolderType[];
@@ -23,7 +23,7 @@ export const TypeSelectionStep = ({
         Choisissez un type de dossier
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {folderTypes.map(folderType => (
+        {folderTypes.map((folderType) => (
           <Card
             key={folderType.id}
             className="cursor-pointer hover:shadow-lg transition-shadow"

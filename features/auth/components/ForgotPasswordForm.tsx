@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { forgotPasswordSchema, type ForgotPasswordInput } from '../types/zod';
+import { type ForgotPasswordInput, forgotPasswordSchema } from '../types/zod';
 
 interface ForgotPasswordFormProps {
   onSuccess?: () => void;
@@ -40,7 +41,7 @@ export const ForgotPasswordForm: React.FC<ForgotPasswordFormProps> = ({
     } catch (err) {
       setError(
         (err as Error)?.message ||
-          'Échec de la demande de réinitialisation. Veuillez réessayer.'
+          'Échec de la demande de réinitialisation. Veuillez réessayer.',
       );
     }
   };

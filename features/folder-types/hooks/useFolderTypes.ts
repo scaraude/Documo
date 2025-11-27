@@ -1,7 +1,7 @@
 'use client';
-import { trpc } from '../../../lib/trpc/client';
 import { useAuthErrorHandler } from '@/shared/utils';
 import { toast } from 'sonner';
+import { trpc } from '../../../lib/trpc/client';
 
 export function useFolderTypes() {
   const { createErrorHandler } = useAuthErrorHandler();
@@ -37,7 +37,7 @@ export function useFolderTypes() {
 
   const updateFolderTypeMutation = trpc.folderTypes.update.useMutation({
     onError: createErrorHandler(),
-    onSuccess: updatedFolderType => {
+    onSuccess: (updatedFolderType) => {
       // Invalidate specific folder type and list queries
       utils.folderTypes.getAll.invalidate();
       utils.folderTypes.getById.invalidate({ id: updatedFolderType.id });

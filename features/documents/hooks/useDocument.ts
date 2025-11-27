@@ -9,11 +9,11 @@ export const useDocument = () => {
       },
       {
         enabled: !!requestId,
-        select: documents =>
-          documents.map(document => {
+        select: (documents) =>
+          documents.map((document) => {
             return { ...document, status: computeDocumentStatus(document) };
           }),
-      }
+      },
     );
 
   const getDocumentsByRequestIds = (requestIds: string[]) =>
@@ -23,11 +23,11 @@ export const useDocument = () => {
       },
       {
         enabled: requestIds.length > 0,
-        select: documents =>
-          documents.map(document => {
+        select: (documents) =>
+          documents.map((document) => {
             return { ...document, status: computeDocumentStatus(document) };
           }),
-      }
+      },
     );
 
   return {

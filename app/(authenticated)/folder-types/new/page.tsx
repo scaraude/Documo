@@ -1,8 +1,8 @@
 'use client';
-import { useState } from 'react';
 import { useFolderTypes } from '@/features/folder-types';
 import { FolderTypeForm } from '@/features/folder-types/components/FolderTypeForm';
-import { CreateFolderTypeParams } from '@/features/folder-types/types';
+import type { CreateFolderTypeParams } from '@/features/folder-types/types';
+import { useState } from 'react';
 
 export default function NewFolderTypePage() {
   const { createFolderTypeMutation } = useFolderTypes();

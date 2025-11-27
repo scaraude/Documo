@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff } from 'lucide-react';
+import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
-import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { useAuth } from '../hooks/useAuth';
-import { resetPasswordSchema, type ResetPasswordInput } from '../types/zod';
+import { type ResetPasswordInput, resetPasswordSchema } from '../types/zod';
 
 interface ResetPasswordFormProps {
   token: string;
@@ -53,7 +54,7 @@ export const ResetPasswordForm: React.FC<ResetPasswordFormProps> = ({
     } catch (err) {
       setError(
         (err as Error)?.message ||
-          'Échec de la réinitialisation. Veuillez réessayer.'
+          'Échec de la réinitialisation. Veuillez réessayer.',
       );
     }
   };

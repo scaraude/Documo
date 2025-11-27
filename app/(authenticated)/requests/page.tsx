@@ -5,7 +5,7 @@ import { RequestFilters } from '@/features/requests/components/RequestFilters';
 import { RequestSearchAndSort } from '@/features/requests/components/RequestSearchAndSort';
 import { useRequests } from '@/features/requests/hooks/useRequests';
 import { Card, CardContent } from '@/shared/components';
-import { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
+import type { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
 import { FileX } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -20,7 +20,7 @@ export default function RequestsPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const getRequestStatus = (
-    request: DocumentRequest
+    request: DocumentRequest,
   ): ComputedRequestStatus => {
     if (request.completedAt) return 'COMPLETED';
     if (request.rejectedAt) return 'REJECTED';
@@ -28,6 +28,7 @@ export default function RequestsPage() {
     return 'PENDING';
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: loop
   const { filteredAndSortedRequests, statusCounts } = useMemo(() => {
     if (!requests)
       return {
@@ -43,13 +44,13 @@ export default function RequestsPage() {
       COMPLETED: 0,
     };
 
-    requests.forEach(request => {
+    for (const request of requests) {
       const status = getRequestStatus(request);
       counts[status]++;
-    });
+    }
 
     // Filter requests
-    const filtered = requests.filter(request => {
+    const filtered = requests.filter((request) => {
       const searchLower = searchTerm.toLowerCase();
       const matchesEmail = request.email.toLowerCase().includes(searchLower);
       const matchesFolder =
@@ -87,7 +88,7 @@ export default function RequestsPage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -112,8 +113,8 @@ export default function RequestsPage() {
     <div className="min-h-screen bg-gray-50">
       {/* Background decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100/20 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-100/30 rounded-full mix-blend-multiply filter blur-3xl opacity-40"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-100/20 rounded-full mix-blend-multiply filter blur-3xl opacity-40" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-gray-100/30 rounded-full mix-blend-multiply filter blur-3xl opacity-40" />
       </div>
 
       {/* Header */}
@@ -131,6 +132,7 @@ export default function RequestsPage() {
             </div>
             <div className="hidden sm:flex items-center space-x-2">
               <button
+                type="button"
                 onClick={() => setStatusFilter('COMPLETED')}
                 className={`text-center p-3 rounded-lg transition-all duration-200 ${
                   statusFilter === 'COMPLETED'
@@ -146,6 +148,7 @@ export default function RequestsPage() {
                 </div>
               </button>
               <button
+                type="button"
                 onClick={() => setStatusFilter('ACCEPTED')}
                 className={`text-center p-3 rounded-lg transition-all duration-200 ${
                   statusFilter === 'ACCEPTED'
@@ -161,6 +164,7 @@ export default function RequestsPage() {
                 </div>
               </button>
               <button
+                type="button"
                 onClick={() => setStatusFilter('PENDING')}
                 className={`text-center p-3 rounded-lg transition-all duration-200 ${
                   statusFilter === 'PENDING'
@@ -176,6 +180,7 @@ export default function RequestsPage() {
                 </div>
               </button>
               <button
+                type="button"
                 onClick={() => setStatusFilter('REJECTED')}
                 className={`text-center p-3 rounded-lg transition-all duration-200 ${
                   statusFilter === 'REJECTED'
@@ -191,6 +196,7 @@ export default function RequestsPage() {
                 </div>
               </button>
               <button
+                type="button"
                 onClick={() => setStatusFilter('ALL')}
                 className={`text-center p-3 rounded-lg transition-all duration-200 ${
                   statusFilter === 'ALL'
@@ -288,10 +294,10 @@ export default function RequestsPage() {
               </div>
             ) : (
               <div className="overflow-hidden">
-                {filteredAndSortedRequests.map(request => (
+                {filteredAndSortedRequests.map((request) => (
                   <div
                     key={request.id}
-                    className={`bg-white border border-gray-200 rounded-xl`}
+                    className={'bg-white border border-gray-200 rounded-xl'}
                   >
                     <RequestAccordion
                       request={request}

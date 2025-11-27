@@ -1,5 +1,5 @@
+import type { DocumentType } from '@/lib/prisma/generated/client';
 import { trpc } from '@/lib/trpc/client';
-import { DocumentType } from '@/lib/prisma/generated/client';
 
 interface UseDocumentTypesReturn {
   documentTypes: DocumentType[];
@@ -30,7 +30,7 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
       acc[docType.id] = docType.label;
       return acc;
     },
-    {} as Record<string, string>
+    {} as Record<string, string>,
   );
 
   const getLabel = (id: string): string => {

@@ -17,12 +17,14 @@
       "coverage",
       "lib/prisma/generated",
       "prisma/migrations",
+      "prisma/seed*",
       "*.config.js",
       "*.config.mjs",
       "jest.*.js",
       "e2e/screenshots",
       "playwright-report",
-      "test-results"
+      "test-results",
+      "*/__tests__/*"
     ]
   },
   "formatter": {
@@ -118,6 +120,9 @@
         "noUnsafeNegation": "error",
         "useGetterReturn": "error",
         "useValidTypeof": "error"
+      },
+      "a11y": {
+        "useKeyWithClickEvents": "off"
       }
     }
   },

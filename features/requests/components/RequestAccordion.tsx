@@ -1,28 +1,28 @@
 'use client';
-import { useState } from 'react';
-import {
-  DocumentRequest,
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
+import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
+import { Badge, Button } from '@/shared/components';
+import type {
   ComputedRequestStatus,
+  DocumentRequest,
   DocumentRequestWithFolder,
 } from '@/shared/types';
-import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
-import { Badge, Button } from '@/shared/components';
-import {
-  ChevronDown,
-  ChevronRight,
-  Calendar,
-  Hash,
-  FileText,
-  Clock,
-  User,
-  FolderOpen,
-  Eye,
-} from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import {
+  Calendar,
+  ChevronDown,
+  ChevronRight,
+  Clock,
+  Eye,
+  FileText,
+  FolderOpen,
+  Hash,
+  User,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 import { ROUTES } from '../../../shared/constants';
-import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
 
 interface RequestAccordionProps {
   request: DocumentRequestWithFolder;
@@ -201,7 +201,7 @@ export const RequestAccordion = ({
                 </h4>
                 <div className="space-y-2">
                   <div className="flex items-center text-sm">
-                    <div className="w-2 h-2 bg-yellow-600 rounded-full mr-3"></div>
+                    <div className="w-2 h-2 bg-yellow-600 rounded-full mr-3" />
                     <span className="text-gray-600">Demande créée</span>
                     <span className="text-gray-400 ml-auto">
                       {formatRelativeTime(request.createdAt)}
@@ -209,7 +209,7 @@ export const RequestAccordion = ({
                   </div>
                   {request.acceptedAt && (
                     <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-green-600 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-green-600 rounded-full mr-3" />
                       <span className="text-gray-600">Demande acceptée</span>
                       <span className="text-gray-400 ml-auto">
                         {formatRelativeTime(request.acceptedAt)}
@@ -218,7 +218,7 @@ export const RequestAccordion = ({
                   )}
                   {request.rejectedAt && (
                     <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-red-600 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-red-600 rounded-full mr-3" />
                       <span className="text-gray-600">Demande refusée</span>
                       <span className="text-gray-400 ml-auto">
                         {formatRelativeTime(request.rejectedAt)}
@@ -227,7 +227,7 @@ export const RequestAccordion = ({
                   )}
                   {request.completedAt && (
                     <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3"></div>
+                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3" />
                       <span className="text-gray-600">Demande terminée</span>
                       <span className="text-gray-400 ml-auto">
                         {formatRelativeTime(request.completedAt)}
@@ -246,8 +246,8 @@ export const RequestAccordion = ({
                   {request.requestedDocuments.length} documents
                 </div>
                 <div className="space-y-1">
-                  {request.requestedDocuments.map((docType, index) => (
-                    <div key={index} className="text-sm text-gray-700">
+                  {request.requestedDocuments.map((docType) => (
+                    <div key={docType} className="text-sm text-gray-700">
                       • {getLabel(docType)}
                     </div>
                   ))}

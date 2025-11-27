@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
+import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
 import { useRequests } from '@/features/requests';
 import { Badge } from '@/shared/components/ui/badge';
 import {
@@ -15,26 +16,25 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/shared/components/ui/tabs';
-import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
-import {
+import type {
+  ComputedDocumentStatus,
   ComputedRequestStatus,
   DocumentRequest,
-  ComputedDocumentStatus,
 } from '@/shared/types';
 import { computeDocumentStatus } from '@/shared/utils/computedStatus';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
+  AlertTriangle,
   CheckCircle,
   Clock,
   FileCheck,
   FileText,
   History,
   XCircle,
-  AlertTriangle,
 } from 'lucide-react';
 import { useParams, useSearchParams } from 'next/navigation';
-import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
+import { Suspense, useEffect, useState } from 'react';
 
 function RequestDetailContent() {
   const params: { id: string } = useParams();
@@ -53,7 +53,7 @@ function RequestDetailContent() {
   }, [searchParams]);
 
   const getRequestStatus = (
-    request: DocumentRequest
+    request: DocumentRequest,
   ): ComputedRequestStatus => {
     if (request.completedAt) return 'COMPLETED';
     if (request.rejectedAt) return 'REJECTED';
@@ -165,7 +165,7 @@ function RequestDetailContent() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -336,10 +336,10 @@ function RequestDetailContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {request.requestedDocuments.map(documentType => {
+                    {request.requestedDocuments.map((documentType) => {
                       const uploadedDocs =
                         request.documents?.filter(
-                          doc => doc.type === documentType
+                          (doc) => doc.type === documentType,
                         ) || [];
                       const hasUploadedDoc = uploadedDocs.length > 0;
                       const latestDoc = uploadedDocs[0]; // Already sorted by uploadedAt desc
@@ -363,11 +363,11 @@ function RequestDetailContent() {
                                 className={`text-xs font-medium border ${getDocumentStatusColor(computeDocumentStatus(latestDoc))}`}
                               >
                                 {getDocumentStatusIcon(
-                                  computeDocumentStatus(latestDoc)
+                                  computeDocumentStatus(latestDoc),
                                 )}
                                 <span className="ml-1">
                                   {getDocumentStatusLabel(
-                                    computeDocumentStatus(latestDoc)
+                                    computeDocumentStatus(latestDoc),
                                   )}
                                 </span>
                               </Badge>
@@ -419,7 +419,7 @@ export default function RequestDetailPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
         </div>
       }
     >

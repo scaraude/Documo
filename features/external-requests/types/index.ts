@@ -1,4 +1,4 @@
-import { AppDocument } from '../../../shared/types';
+import type { AppDocument } from '../../../shared/types';
 
 export type AppDocumentToUpload = Omit<
   AppDocument,

@@ -1,10 +1,10 @@
-import { eventBus, EVENT_TYPES } from '@/shared/lib/events';
 import {
   FolderAnalyticsHandler,
   FolderAuditHandler,
   FolderNotificationHandler,
 } from '@/features/folders/events/handlers';
 import logger from '@/lib/logger';
+import { EVENT_TYPES, eventBus } from '@/shared/lib/events';
 
 let handlersRegistered = false;
 
@@ -37,12 +37,12 @@ export function setupEventHandlers(): void {
         ],
         eventTypes: [EVENT_TYPES.FOLDER.CREATED],
       },
-      'Event handlers registered successfully'
+      'Event handlers registered successfully',
     );
   } catch (error) {
     logger.error(
       { error: error instanceof Error ? error.message : error },
-      'Failed to register event handlers'
+      'Failed to register event handlers',
     );
     throw new Error('Event handler setup failed');
   }

@@ -1,13 +1,17 @@
 // features/folders/components/FolderDetail.tsx
 'use client';
-import { useState } from 'react';
+import { ROUTES } from '@/shared/constants';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ROUTES } from '@/shared/constants';
-import { ComputedFolderStatus, FolderWithRelationsAndStatus } from '../types';
-import { FolderRequestManager } from './FolderRequestManager';
-import { FolderDocumentList } from './FolderDocumentList';
+import { useState } from 'react';
+import type React from 'react';
 import { useDocument } from '../../documents/hooks/useDocument';
+import type {
+  ComputedFolderStatus,
+  FolderWithRelationsAndStatus,
+} from '../types';
+import { FolderDocumentList } from './FolderDocumentList';
+import { FolderRequestManager } from './FolderRequestManager';
 
 interface FolderDetailProps {
   folder: FolderWithRelationsAndStatus;
@@ -23,10 +27,10 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
   const { getDocumentsByRequestIds } = useDocument();
   const router = useRouter();
   const { data: documents } = getDocumentsByRequestIds(
-    folder.requests?.map(request => request.id) || []
+    folder.requests?.map((request) => request.id) || [],
   );
   const [activeTab, setActiveTab] = useState<'info' | 'requests' | 'documents'>(
-    'info'
+    'info',
   );
 
   const handleDelete = async () => {
@@ -87,11 +91,15 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
         </div>
         <div className="flex space-x-2">
           <Link href={ROUTES.FOLDERS.EDIT(folder.id)}>
-            <button className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <button
+              type="button"
+              className="inline-flex items-center px-3 py-1.5 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
               Modifier
             </button>
           </Link>
           <button
+            type="button"
             onClick={handleDelete}
             className="inline-flex items-center px-3 py-1.5 border border-transparent text-sm font-medium rounded-md text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
           >
@@ -103,6 +111,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
       <div className="border-t border-gray-200">
         <div className="flex px-4 py-3 bg-gray-50 border-b">
           <button
+            type="button"
             className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
               activeTab === 'info'
                 ? 'bg-white shadow text-gray-900'
@@ -113,6 +122,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
             Informations
           </button>
           <button
+            type="button"
             className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
               activeTab === 'requests'
                 ? 'bg-white shadow text-gray-900'
@@ -128,6 +138,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
             )}
           </button>
           <button
+            type="button"
             className={`px-4 py-2 font-medium text-sm rounded-md ${
               activeTab === 'documents'
                 ? 'bg-white shadow text-gray-900'
@@ -151,7 +162,7 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                 <span
                   className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getFolderStatusClass(
-                    folder.status
+                    folder.status,
                   )}`}
                 >
                   {getFolderStatusText(folder.status)}
@@ -174,9 +185,9 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
               </dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                 <ul className="border border-gray-200 rounded-md divide-y divide-gray-200">
-                  {folder.requestedDocuments.map((doc, index) => (
+                  {folder.requestedDocuments.map((doc) => (
                     <li
-                      key={index}
+                      key={doc}
                       className="pl-3 pr-4 py-3 flex items-center justify-between text-sm"
                     >
                       <div className="w-0 flex-1 flex items-center">
@@ -239,8 +250,8 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
             ) : (
               <ul className="divide-y divide-gray-200">
                 {documents
-                  .filter(document => document.url)
-                  .map(document => (
+                  .filter((document) => document.url)
+                  .map((document) => (
                     <FolderDocumentList key={document.id} document={document} />
                   ))}
               </ul>

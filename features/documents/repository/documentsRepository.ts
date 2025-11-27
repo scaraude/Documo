@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { AppDocument, AppDocumentToUpload } from '@/shared/types';
+import type { AppDocument, AppDocumentToUpload } from '@/shared/types';
 import {
   inputToPrismaCreateInput,
   prismaDocumentToAppDocument,
@@ -24,7 +24,7 @@ export async function getDocuments(): Promise<AppDocument[]> {
  * Upload a new document
  */
 export async function uploadDocument(
-  document: AppDocumentToUpload
+  document: AppDocumentToUpload,
 ): Promise<AppDocument> {
   try {
     // Créer l'entrée en base de données
@@ -49,7 +49,7 @@ export async function deleteDocument(id: string): Promise<void> {
       where: { id },
       data: { deletedAt: new Date() },
     });
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // biome-ignore lint/suspicious/noExplicitAny: any needed for error handling
   } catch (error: any) {
     // Gérer les erreurs spécifiques
     if (error?.code === 'P2025') {
@@ -65,7 +65,7 @@ export async function deleteDocument(id: string): Promise<void> {
  * Get a document by ID
  */
 export async function getDocument(
-  documentId: string
+  documentId: string,
 ): Promise<AppDocument | null> {
   try {
     const document = await prisma.document.findUnique({
@@ -84,7 +84,7 @@ export async function getDocument(
  * Get documents by request ID
  */
 export async function getValidDocumentsByRequestId(
-  requestId: string
+  requestId: string,
 ): Promise<AppDocument[]> {
   try {
     const documents = await prisma.document.findMany({
@@ -103,7 +103,7 @@ export async function getValidDocumentsByRequestId(
  * Get documents by multiple request IDs
  */
 export async function getValidDocumentsByRequestIds(
-  requestIds: string[]
+  requestIds: string[],
 ): Promise<AppDocument[]> {
   try {
     if (requestIds.length === 0) {
@@ -123,7 +123,7 @@ export async function getValidDocumentsByRequestIds(
   } catch (error) {
     console.error(
       'Error fetching documents by multiple requests from database:',
-      error
+      error,
     );
     throw new Error('Failed to fetch documents by multiple requests');
   }

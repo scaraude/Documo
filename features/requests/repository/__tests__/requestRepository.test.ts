@@ -1,38 +1,40 @@
+import prisma from '@/lib/prisma';
+import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 // features/requests/repository/__tests__/requestRepository.test.ts
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
+import type { CreateRequestParams } from '../../types';
 import {
-  getRequests,
   createRequest,
   deleteRequest,
   getRequestById,
+  getRequests,
 } from '../requestRepository';
-import { APP_DOCUMENT_TYPES } from '@/shared/constants';
-import { CreateRequestParams } from '../../types';
-import prisma from '@/lib/prisma';
 
 // Mock Prisma
-jest.mock('@/lib/prisma', () => {
+vi.mock('@/lib/prisma', () => {
   return {
     __esModule: true,
     default: {
       documentRequest: {
-        findMany: jest.fn(),
-        findUnique: jest.fn(),
-        create: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
+        findMany: vi.fn(),
+        findUnique: vi.fn(),
+        create: vi.fn(),
+        update: vi.fn(),
+        delete: vi.fn(),
       },
     },
   };
 });
 
 // Typer le mock pour résoudre l'erreur TypeScript
-const mockPrisma = prisma as jest.Mocked<typeof prisma> & {
+const mockPrisma = prisma as typeof prisma & {
   documentRequest: {
-    findMany: jest.Mock;
-    findUnique: jest.Mock;
-    create: jest.Mock;
-    update: jest.Mock;
-    delete: jest.Mock;
+    findMany: Mock;
+    findUnique: Mock;
+    create: Mock;
+    update: Mock;
+    delete: Mock;
   };
 };
 
@@ -71,13 +73,13 @@ describe('Request Repository', () => {
   const mockRequests = [mockPrismaRequest];
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
-    jest.setSystemTime(mockDate);
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    vi.setSystemTime(mockDate);
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('getRequests', () => {
@@ -165,7 +167,7 @@ describe('Request Repository', () => {
       };
 
       mockPrisma.documentRequest.create.mockResolvedValue(
-        mockRequestWithCustomExpiry
+        mockRequestWithCustomExpiry,
       );
 
       // WHEN
@@ -184,12 +186,12 @@ describe('Request Repository', () => {
       };
 
       mockPrisma.documentRequest.create.mockRejectedValue(
-        new Error('Insertion error')
+        new Error('Insertion error'),
       );
 
       // WHEN/THEN
       await expect(createRequest(requestData)).rejects.toThrow(
-        'Failed to create request'
+        'Failed to create request',
       );
     });
   });
@@ -211,12 +213,12 @@ describe('Request Repository', () => {
     it('devrait gérer les erreurs lors de la suppression', async () => {
       // GIVEN
       mockPrisma.documentRequest.delete.mockRejectedValue(
-        new Error('Delete error')
+        new Error('Delete error'),
       );
 
       // WHEN/THEN
       await expect(deleteRequest('1')).rejects.toThrow(
-        'Failed to delete request'
+        'Failed to delete request',
       );
     });
   });
@@ -225,7 +227,7 @@ describe('Request Repository', () => {
     it('devrait récupérer une demande par ID', async () => {
       // GIVEN
       mockPrisma.documentRequest.findUnique.mockResolvedValue(
-        mockPrismaRequest
+        mockPrismaRequest,
       );
 
       // WHEN
@@ -262,12 +264,12 @@ describe('Request Repository', () => {
     it('devrait gérer les erreurs de recherche', async () => {
       // GIVEN
       mockPrisma.documentRequest.findUnique.mockRejectedValue(
-        new Error('Query error')
+        new Error('Query error'),
       );
 
       // WHEN/THEN
       await expect(getRequestById('1')).rejects.toThrow(
-        'Failed to fetch request'
+        'Failed to fetch request',
       );
     });
   });

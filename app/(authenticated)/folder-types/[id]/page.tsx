@@ -1,9 +1,9 @@
 // app/folder-types/[id]/page.tsx
 'use client';
-import { useParams, useRouter } from 'next/navigation';
 import { useFolderTypes } from '@/features/folder-types';
 import { FolderTypeDetail } from '@/features/folder-types/components/FolderTypeDetail';
 import { ROUTES } from '@/shared/constants';
+import { useParams, useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export default function FolderTypeDetailPage() {
@@ -24,7 +24,7 @@ export default function FolderTypeDetailPage() {
   if (isLoading && !folderType) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
       </div>
     );
   }

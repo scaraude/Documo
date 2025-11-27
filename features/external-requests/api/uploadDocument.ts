@@ -1,14 +1,14 @@
 'use client';
 
-import { v4 as uuidv4 } from 'uuid';
 import {
+  computeFileHash,
   encryptFile,
   exportedKeyBase64,
-  computeFileHash,
 } from '@/features/documents/utils/encryption';
-import { AppDocumentToUpload } from '../types';
 import { trpcVanilla } from '@/lib/trpc/client';
-import { DocumentTypeId } from '../../document-types/client';
+import { v4 as uuidv4 } from 'uuid';
+import type { DocumentTypeId } from '../../document-types/client';
+import type { AppDocumentToUpload } from '../types';
 
 interface UploadDocumentOptions {
   file: File;

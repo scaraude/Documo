@@ -1,6 +1,6 @@
-import { EventHandler, FolderCreatedEvent } from '@/shared/lib/events';
-import { prisma } from '@/lib/prisma';
 import logger from '@/lib/logger';
+import { prisma } from '@/lib/prisma';
+import type { EventHandler, FolderCreatedEvent } from '@/shared/lib/events';
 
 export class FolderAnalyticsHandler
   implements EventHandler<FolderCreatedEvent>
@@ -23,7 +23,7 @@ export class FolderAnalyticsHandler
           folderTypeId: event.data.folderTypeId,
           userId: event.data.createdById,
         },
-        'Updated folder type analytics after folder creation'
+        'Updated folder type analytics after folder creation',
       );
     } catch (error) {
       logger.error(
@@ -31,7 +31,7 @@ export class FolderAnalyticsHandler
           folderId: event.data.folderId,
           error: error instanceof Error ? error.message : error,
         },
-        'Failed to update folder analytics'
+        'Failed to update folder analytics',
       );
       throw error;
     }
@@ -53,7 +53,7 @@ export class FolderAuditHandler implements EventHandler<FolderCreatedEvent> {
           timestamp: event.occurredAt,
           eventId: event.eventId,
         },
-        'Folder creation audit log'
+        'Folder creation audit log',
       );
 
       // If you have an audit table, you could insert here:
@@ -73,7 +73,7 @@ export class FolderAuditHandler implements EventHandler<FolderCreatedEvent> {
           folderId: event.data.folderId,
           error: error instanceof Error ? error.message : error,
         },
-        'Failed to create audit log for folder creation'
+        'Failed to create audit log for folder creation',
       );
       // Don't throw for audit failures - they shouldn't break the main flow
     }
@@ -94,7 +94,7 @@ export class FolderNotificationHandler
           folderName: event.data.name,
           notificationType: 'FOLDER_CREATED_SUCCESS',
         },
-        'Folder creation notification sent'
+        'Folder creation notification sent',
       );
 
       // Example: Send email or push notification
@@ -112,7 +112,7 @@ export class FolderNotificationHandler
           folderId: event.data.folderId,
           error: error instanceof Error ? error.message : error,
         },
-        'Failed to send folder creation notification'
+        'Failed to send folder creation notification',
       );
       // Don't throw for notification failures
     }

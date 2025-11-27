@@ -1,23 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { FolderType } from '@/features/folder-types/types';
-import { CreateFolderParams, Folder } from '../types';
-import { useFolders } from './useFolders';
+import type { FolderType } from '@/features/folder-types/types';
 import { useRequests } from '@/features/requests/hooks/useRequests';
-import { ROUTES, AppDocumentType } from '@/shared/constants';
-import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc/client';
+import { type AppDocumentType, ROUTES } from '@/shared/constants';
 import {
   computeFolderStatus,
   computeRequestStatus,
 } from '@/shared/utils/computedStatus';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import type { CreateFolderParams, Folder } from '../types';
 import {
-  getCurrentStepFromUrl,
-  generateFillFormUrl,
-  generateSendRequestsUrl,
-  generateSelectTypeUrl,
   canNavigateBack,
+  generateFillFormUrl,
+  generateSelectTypeUrl,
+  generateSendRequestsUrl,
+  getCurrentStepFromUrl,
 } from '../utils/folderFormUtils';
+import { useFolders } from './useFolders';
 
 interface UseFolderFormProps {
   folderTypes?: FolderType[];
@@ -54,13 +54,13 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
             : {
                 ...folder,
                 status: computeFolderStatus(folder),
-                requests: folder.requests?.map(request => ({
+                requests: folder.requests?.map((request) => ({
                   ...request,
                   status: computeRequestStatus(request),
                 })),
               };
         },
-      }
+      },
     );
 
   const { data: preSelectedFolderType, isLoading: isFolderTypeLoading } =
@@ -68,7 +68,7 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
       { id: preSelectedFolder?.folderTypeId || '' },
       {
         enabled: !!preSelectedFolder?.folderTypeId,
-      }
+      },
     );
 
   // Initialize state from URL parameters
@@ -89,7 +89,7 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
 
     // Handle preselected type
     if (typeId && folderTypes?.length) {
-      const foundType = folderTypes.find(type => type.id === typeId);
+      const foundType = folderTypes.find((type) => type.id === typeId);
       if (foundType) {
         setSelectedType(foundType);
       } else {
@@ -157,15 +157,15 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
 
     try {
       await Promise.all(
-        emails.map(email =>
+        emails.map((email) =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
             requestedDocuments: selectedType.requiredDocuments.map(
-              doc => doc.id as AppDocumentType
+              (doc) => doc.id as AppDocumentType,
             ),
             folderId: createdFolder.id,
-          })
-        )
+          }),
+        ),
       );
 
       toast.success(`${emails.length} demande(s) envoyée(s) avec succès !`);

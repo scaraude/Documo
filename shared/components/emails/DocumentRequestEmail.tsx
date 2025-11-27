@@ -1,14 +1,14 @@
 import {
-  Html,
-  Head,
   Body,
+  Button,
   Container,
+  Head,
+  Heading,
+  Hr,
+  Html,
+  Preview,
   Section,
   Text,
-  Button,
-  Hr,
-  Heading,
-  Preview,
 } from '@react-email/components';
 
 interface DocumentRequestEmailProps {
@@ -51,8 +51,8 @@ export const DocumentRequestEmail = ({
             <Text style={paragraph}>Voici la liste des documents requis :</Text>
 
             <Section style={documentList}>
-              {requestedDocuments.map((document, index) => (
-                <Text key={index} style={documentItem}>
+              {requestedDocuments.map((document) => (
+                <Text key={document} style={documentItem}>
                   • {document}
                 </Text>
               ))}

@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
 import { SignupForm } from '@/features/auth';
 import { ROUTES } from '@/shared/constants/routes/paths';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function SignupPage() {
   const router = useRouter();

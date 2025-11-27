@@ -1,14 +1,14 @@
+import logger from '@/lib/logger';
+import type { AppDocumentType } from '@/shared/constants';
 import { protectedProcedure, router } from '../../../lib/trpc/trpc';
 import * as folderRepository from '../repository/foldersRepository';
 import {
-  CreateFolderSchema,
-  UpdateFolderInputSchema,
   AddRequestToFolderSchema,
+  CreateFolderSchema,
   FolderIdSchema,
   RequestIdSchema,
+  UpdateFolderInputSchema,
 } from '../types/zod';
-import logger from '@/lib/logger';
-import { AppDocumentType } from '@/shared/constants';
 
 export const folderRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -17,7 +17,7 @@ export const folderRouter = router({
       const result = await folderRepository.getFoldersByUserId(ctx.user.id);
       logger.info(
         { userId: ctx.user.id, count: result.length },
-        'User folders fetched successfully'
+        'User folders fetched successfully',
       );
       return result;
     } catch (error) {
@@ -26,7 +26,7 @@ export const folderRouter = router({
           userId: ctx.user.id,
           error: error instanceof Error ? error.message : error,
         },
-        'Error fetching user folders'
+        'Error fetching user folders',
       );
       throw new Error('Failed to fetch folders');
     }
@@ -37,24 +37,24 @@ export const folderRouter = router({
       try {
         logger.info(
           { folderId: input.id, userId: ctx.user.id },
-          'Fetching folder by ID with relations'
+          'Fetching folder by ID with relations',
         );
         const result = await folderRepository.getFolderByIdWithRelationsForUser(
           input.id,
-          ctx.user.id
+          ctx.user.id,
         );
 
         if (!result) {
           logger.warn(
             { folderId: input.id, userId: ctx.user.id },
-            'Folder not found or user not authorized'
+            'Folder not found or user not authorized',
           );
           throw new Error('Folder not found or access denied');
         }
 
         logger.info(
           { folderId: input.id, userId: ctx.user.id },
-          'Folder fetch completed'
+          'Folder fetch completed',
         );
         return result;
       } catch (error) {
@@ -64,7 +64,7 @@ export const folderRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error fetching folder'
+          'Error fetching folder',
         );
         throw error;
       }
@@ -75,7 +75,7 @@ export const folderRouter = router({
       try {
         logger.info(
           { folderName: input.name, folderTypeId: input.folderTypeId },
-          'Creating folder'
+          'Creating folder',
         );
         const result = await folderRepository.createFolder({
           ...input,
@@ -84,7 +84,7 @@ export const folderRouter = router({
         });
         logger.info(
           { folderId: result.id, folderName: result.name },
-          'Folder created successfully'
+          'Folder created successfully',
         );
         return result;
       } catch (error) {
@@ -93,7 +93,7 @@ export const folderRouter = router({
             folderName: input.name,
             error: error instanceof Error ? error.message : error,
           },
-          'Error creating folder'
+          'Error creating folder',
         );
         throw new Error('Failed to create folder');
       }
@@ -104,7 +104,7 @@ export const folderRouter = router({
       try {
         logger.info(
           { folderId: input.id, userId: ctx.user.id },
-          'Updating folder'
+          'Updating folder',
         );
 
         const result = await folderRepository.updateFolderForUser(
@@ -114,12 +114,12 @@ export const folderRouter = router({
             ...input.data,
             requestedDocuments: input.data
               .requestedDocuments as AppDocumentType[],
-          }
+          },
         );
 
         logger.info(
           { folderId: input.id, userId: ctx.user.id },
-          'Folder updated successfully'
+          'Folder updated successfully',
         );
         return result;
       } catch (error) {
@@ -129,7 +129,7 @@ export const folderRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error updating folder'
+          'Error updating folder',
         );
         throw error;
       }
@@ -144,13 +144,13 @@ export const folderRouter = router({
             requestId: input.requestId,
             userId: ctx.user.id,
           },
-          'Adding request to folder'
+          'Adding request to folder',
         );
 
         await folderRepository.addRequestToFolderForUser(
           input.folderId,
           input.requestId,
-          ctx.user.id
+          ctx.user.id,
         );
 
         logger.info(
@@ -159,7 +159,7 @@ export const folderRouter = router({
             requestId: input.requestId,
             userId: ctx.user.id,
           },
-          'Request added to folder successfully'
+          'Request added to folder successfully',
         );
       } catch (error) {
         logger.error(
@@ -169,7 +169,7 @@ export const folderRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error adding request to folder'
+          'Error adding request to folder',
         );
         throw error;
       }
@@ -178,11 +178,11 @@ export const folderRouter = router({
     try {
       logger.info({ userId: ctx.user.id }, 'Fetching user folders with stats');
       const result = await folderRepository.getFoldersWithStatsForUser(
-        ctx.user.id
+        ctx.user.id,
       );
       logger.info(
         { userId: ctx.user.id, count: result.length },
-        'User folders with stats fetched successfully'
+        'User folders with stats fetched successfully',
       );
       return result;
     } catch (error) {
@@ -191,7 +191,7 @@ export const folderRouter = router({
           userId: ctx.user.id,
           error: error instanceof Error ? error.message : error,
         },
-        'Error fetching user folders with stats'
+        'Error fetching user folders with stats',
       );
       throw new Error('Failed to fetch folders with stats');
     }
@@ -202,18 +202,18 @@ export const folderRouter = router({
       try {
         logger.info(
           { folderId: input.id, userId: ctx.user.id },
-          'Deleting folder'
+          'Deleting folder',
         );
 
         // Check ownership before deletion
         const folder = await folderRepository.getFolderByIdForUser(
           input.id,
-          ctx.user.id
+          ctx.user.id,
         );
         if (!folder) {
           logger.warn(
             { folderId: input.id, userId: ctx.user.id },
-            'Folder not found or user not authorized to delete'
+            'Folder not found or user not authorized to delete',
           );
           throw new Error('Folder not found or access denied');
         }
@@ -221,7 +221,7 @@ export const folderRouter = router({
         await folderRepository.deleteFolder(input.id);
         logger.info(
           { folderId: input.id, userId: ctx.user.id },
-          'Folder deleted successfully'
+          'Folder deleted successfully',
         );
       } catch (error) {
         logger.error(
@@ -230,7 +230,7 @@ export const folderRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error deleting folder'
+          'Error deleting folder',
         );
         throw error;
       }
@@ -241,18 +241,18 @@ export const folderRouter = router({
       try {
         logger.info(
           { requestId: input.requestId, userId: ctx.user.id },
-          'Removing request from folder'
+          'Removing request from folder',
         );
 
         // Check if user owns the folder containing this request
         const hasAccess = await folderRepository.userOwnsRequestFolder(
           input.requestId,
-          ctx.user.id
+          ctx.user.id,
         );
         if (!hasAccess) {
           logger.warn(
             { requestId: input.requestId, userId: ctx.user.id },
-            'User not authorized to remove request from folder'
+            'User not authorized to remove request from folder',
           );
           throw new Error('Request not found or access denied');
         }
@@ -260,7 +260,7 @@ export const folderRouter = router({
         await folderRepository.removeRequestFromFolder(input.requestId);
         logger.info(
           { requestId: input.requestId, userId: ctx.user.id },
-          'Request removed from folder successfully'
+          'Request removed from folder successfully',
         );
       } catch (error) {
         logger.error(
@@ -269,7 +269,7 @@ export const folderRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error removing request from folder'
+          'Error removing request from folder',
         );
         throw error;
       }

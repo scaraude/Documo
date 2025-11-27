@@ -1,13 +1,13 @@
-import prisma, { Prisma } from '@/lib/prisma';
-import { CreateRequestParams } from '../types';
-import {
+import logger from '@/lib/logger';
+import prisma, { type Prisma } from '@/lib/prisma';
+import type { AppDocumentType } from '@/shared/constants';
+import type {
   DocumentRequest,
   DocumentRequestWithFolder,
   DocumentRequestWithFolderAndDocuments,
 } from '@/shared/types';
-import { AppDocumentType } from '@/shared/constants';
 import { prismaDocumentToAppDocument } from '../../documents/mappers';
-import logger from '@/lib/logger';
+import type { CreateRequestParams } from '../types';
 
 // Mapper entre le type Prisma et le type App
 type PrismaDocumentRequest = Prisma.DocumentRequestGetPayload<{
@@ -28,13 +28,13 @@ type PrismaDocumentRequestWithDocuments = Prisma.DocumentRequestGetPayload<{
  * Convertir un modèle Prisma en modèle d'application
  */
 export function toAppModel(
-  prismaModel: PrismaDocumentRequest
+  prismaModel: PrismaDocumentRequest,
 ): DocumentRequest {
   return {
     id: prismaModel.id,
     email: prismaModel.email,
     requestedDocuments: prismaModel.requestedDocuments.map(
-      dt => dt.id as AppDocumentType
+      (dt) => dt.id as AppDocumentType,
     ),
     createdAt: prismaModel.createdAt,
     expiresAt: prismaModel.expiresAt,
@@ -51,7 +51,7 @@ export function toAppModel(
  * Convertir un modèle Prisma avec folder en modèle d'application
  */
 export function toAppModelWithFolder(
-  prismaModel: PrismaDocumentRequestWithFolder
+  prismaModel: PrismaDocumentRequestWithFolder,
 ): DocumentRequestWithFolder {
   return {
     ...toAppModel(prismaModel),
@@ -66,7 +66,7 @@ export function toAppModelWithFolder(
  * Convertir un modèle Prisma avec folder et documents en modèle d'application
  */
 export function toAppModelWithFolderAndDocuments(
-  prismaModel: PrismaDocumentRequestWithDocuments
+  prismaModel: PrismaDocumentRequestWithDocuments,
 ): DocumentRequestWithFolderAndDocuments {
   return {
     ...toAppModelWithFolder(prismaModel),
@@ -78,11 +78,11 @@ export function toAppModelWithFolderAndDocuments(
  * Get all document requests for a specific user (security-aware)
  */
 export async function getRequestsForUser(
-  userId: string
+  userId: string,
 ): Promise<DocumentRequestWithFolder[]> {
   try {
     logger.info({ userId }, 'Fetching requests for user');
-    
+
     const requests = await prisma.documentRequest.findMany({
       where: {
         folder: {
@@ -94,16 +94,16 @@ export async function getRequestsForUser(
         requestedDocuments: true,
       },
     });
-    
+
     logger.info(
       { userId, count: requests.length },
-      'User requests fetched successfully'
+      'User requests fetched successfully',
     );
     return requests.map(toAppModelWithFolder);
   } catch (error) {
     logger.error(
       { userId, error: error instanceof Error ? error.message : error },
-      'Error fetching requests for user'
+      'Error fetching requests for user',
     );
     throw new Error('Failed to fetch requests');
   }
@@ -114,8 +114,10 @@ export async function getRequestsForUser(
  */
 export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
   try {
-    logger.warn('Using deprecated getRequests - use getRequestsForUser instead');
-    
+    logger.warn(
+      'Using deprecated getRequests - use getRequestsForUser instead',
+    );
+
     const requests = await prisma.documentRequest.findMany({
       include: {
         folder: true,
@@ -126,7 +128,7 @@ export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
   } catch (error) {
     logger.error(
       { error: error instanceof Error ? error.message : error },
-      'Error fetching requests from database'
+      'Error fetching requests from database',
     );
     throw new Error('Failed to fetch requests');
   }
@@ -137,11 +139,11 @@ export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
  */
 export async function createRequestForUser(
   params: CreateRequestParams,
-  userId: string
+  userId: string,
 ): Promise<DocumentRequest> {
   try {
     const { email, requestedDocuments, expirationDays = 7, folderId } = params;
-    
+
     logger.info(
       {
         userId,
@@ -149,7 +151,7 @@ export async function createRequestForUser(
         folderId,
         requestedDocumentsCount: requestedDocuments.length,
       },
-      'Creating request for user'
+      'Creating request for user',
     );
 
     // First verify user owns the target folder
@@ -164,21 +166,21 @@ export async function createRequestForUser(
     if (!folder) {
       logger.warn(
         { userId, folderId },
-        'User attempted to create request for folder they do not own'
+        'User attempted to create request for folder they do not own',
       );
       throw new Error('Folder not found or access denied');
     }
 
     const now = new Date();
     const expiresAt = new Date(
-      now.getTime() + expirationDays * 24 * 60 * 60 * 1000
+      now.getTime() + expirationDays * 24 * 60 * 60 * 1000,
     );
 
     const newRequest = await prisma.documentRequest.create({
       data: {
         email,
         requestedDocuments: {
-          connect: requestedDocuments.map(id => ({ id })),
+          connect: requestedDocuments.map((id) => ({ id })),
         },
         expiresAt,
         folderId,
@@ -190,7 +192,7 @@ export async function createRequestForUser(
 
     logger.info(
       { userId, requestId: newRequest.id, folderId },
-      'Request created successfully for user'
+      'Request created successfully for user',
     );
     return toAppModel(newRequest);
   } catch (error) {
@@ -200,7 +202,7 @@ export async function createRequestForUser(
         folderId: params.folderId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error creating request for user'
+      'Error creating request for user',
     );
     throw error;
   }
@@ -210,23 +212,25 @@ export async function createRequestForUser(
  * Create a new document request (⚠️ DEPRECATED: Not security-aware - use createRequestForUser instead)
  */
 export async function createRequest(
-  params: CreateRequestParams
+  params: CreateRequestParams,
 ): Promise<DocumentRequest> {
   try {
-    logger.warn('Using deprecated createRequest - use createRequestForUser instead');
-    
+    logger.warn(
+      'Using deprecated createRequest - use createRequestForUser instead',
+    );
+
     const { email, requestedDocuments, expirationDays = 7, folderId } = params;
     const now = new Date();
 
     const expiresAt = new Date(
-      now.getTime() + expirationDays * 24 * 60 * 60 * 1000
+      now.getTime() + expirationDays * 24 * 60 * 60 * 1000,
     );
 
     const newRequest = await prisma.documentRequest.create({
       data: {
         email,
         requestedDocuments: {
-          connect: requestedDocuments.map(id => ({ id })),
+          connect: requestedDocuments.map((id) => ({ id })),
         },
         expiresAt,
         folderId,
@@ -240,7 +244,7 @@ export async function createRequest(
   } catch (error) {
     logger.error(
       { error: error instanceof Error ? error.message : error },
-      'Error creating request in database'
+      'Error creating request in database',
     );
     throw new Error('Failed to create request');
   }
@@ -251,7 +255,7 @@ export async function createRequest(
  */
 export async function deleteRequestForUser(
   id: string,
-  userId: string
+  userId: string,
 ): Promise<void> {
   try {
     logger.info({ requestId: id, userId }, 'Deleting request for user');
@@ -265,7 +269,7 @@ export async function deleteRequestForUser(
     if (!request || !request.folder || request.folder.createdById !== userId) {
       logger.warn(
         { requestId: id, userId },
-        'User attempted to delete request they do not own'
+        'User attempted to delete request they do not own',
       );
       throw new Error('Request not found or access denied');
     }
@@ -283,14 +287,14 @@ export async function deleteRequestForUser(
     if (result.count === 0) {
       logger.warn(
         { requestId: id, userId },
-        'No request was deleted - ownership mismatch'
+        'No request was deleted - ownership mismatch',
       );
       throw new Error('Request not found or access denied');
     }
 
     logger.info(
       { requestId: id, userId },
-      'Request deleted successfully for user'
+      'Request deleted successfully for user',
     );
   } catch (error) {
     logger.error(
@@ -299,7 +303,7 @@ export async function deleteRequestForUser(
         userId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error deleting request for user'
+      'Error deleting request for user',
     );
     throw error;
   }
@@ -312,16 +316,16 @@ export async function deleteRequest(id: string): Promise<void> {
   try {
     logger.warn(
       { requestId: id },
-      'Using deprecated deleteRequest - use deleteRequestForUser instead'
+      'Using deprecated deleteRequest - use deleteRequestForUser instead',
     );
-    
+
     await prisma.documentRequest.delete({
       where: { id },
     });
   } catch (error) {
     logger.error(
       { requestId: id, error: error instanceof Error ? error.message : error },
-      'Error deleting request from database'
+      'Error deleting request from database',
     );
     throw new Error('Failed to delete request');
   }
@@ -332,11 +336,11 @@ export async function deleteRequest(id: string): Promise<void> {
  */
 export async function getRequestByIdForUser(
   id: string,
-  userId: string
+  userId: string,
 ): Promise<DocumentRequestWithFolderAndDocuments | null> {
   try {
     logger.info({ requestId: id, userId }, 'Fetching request by ID for user');
-    
+
     const request = await prisma.documentRequest.findUnique({
       where: {
         id,
@@ -358,12 +362,12 @@ export async function getRequestByIdForUser(
     if (request) {
       logger.info(
         { requestId: id, userId },
-        'Request fetched successfully for user'
+        'Request fetched successfully for user',
       );
     } else {
       logger.warn(
         { requestId: id, userId },
-        'Request not found or user not authorized'
+        'Request not found or user not authorized',
       );
     }
 
@@ -375,7 +379,7 @@ export async function getRequestByIdForUser(
         userId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error fetching request for user'
+      'Error fetching request for user',
     );
     throw new Error('Failed to fetch request');
   }
@@ -385,14 +389,14 @@ export async function getRequestByIdForUser(
  * Get a single request by ID (⚠️ DEPRECATED: Not security-aware - use getRequestByIdForUser instead)
  */
 export async function getRequestById(
-  id: string
+  id: string,
 ): Promise<DocumentRequestWithFolderAndDocuments | null> {
   try {
     logger.warn(
       { requestId: id },
-      'Using deprecated getRequestById - use getRequestByIdForUser instead'
+      'Using deprecated getRequestById - use getRequestByIdForUser instead',
     );
-    
+
     const request = await prisma.documentRequest.findUnique({
       where: { id },
       include: {
@@ -410,7 +414,7 @@ export async function getRequestById(
   } catch (error) {
     logger.error(
       { requestId: id, error: error instanceof Error ? error.message : error },
-      'Error fetching request from database'
+      'Error fetching request from database',
     );
     throw new Error('Failed to fetch request');
   }

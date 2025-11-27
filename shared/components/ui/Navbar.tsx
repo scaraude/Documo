@@ -1,11 +1,11 @@
 'use client';
-import Link from 'next/link';
-import { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { UserMenu } from '@/features/auth';
 import { cn } from '@/lib/utils';
 import { APP_ICON_PATH, ROUTES } from '@/shared/constants';
-import { UserMenu } from '@/features/auth';
 import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 
 const navLinks = [
   { href: ROUTES.FOLDERS.HOME, label: 'Dossiers' },
@@ -36,7 +36,7 @@ export const Navbar = () => {
 
           {/* Desktop navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -44,7 +44,7 @@ export const Navbar = () => {
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   pathname === link.href
                     ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50',
                 )}
               >
                 {link.label}
@@ -57,8 +57,10 @@ export const Navbar = () => {
           <div className="md:hidden flex items-center space-x-4">
             <UserMenu />
             <button
+              type="button"
               className="p-2 rounded-md text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none"
               aria-expanded={isMenuOpen}
+              aria-label="Toggle navigation menu"
               onClick={toggleMenu}
             >
               <svg
@@ -66,6 +68,7 @@ export const Navbar = () => {
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
               >
                 {isMenuOpen ? (
                   <path
@@ -92,7 +95,7 @@ export const Navbar = () => {
       {isMenuOpen && (
         <div className="md:hidden border-t">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -100,7 +103,7 @@ export const Navbar = () => {
                   'block px-3 py-2 rounded-md text-base font-medium transition-colors',
                   pathname === link.href
                     ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50'
+                    : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50',
                 )}
                 onClick={toggleMenu}
               >

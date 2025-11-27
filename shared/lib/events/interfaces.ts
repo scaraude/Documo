@@ -1,4 +1,4 @@
-import { DocumentEventTypes, DomainEvent, EventTypes } from './types';
+import type { DocumentEventTypes, DomainEvent, EventTypes } from './types';
 
 // Domain-specific event interfaces
 // Folder events

@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { documentTypeIdsSchema } from '../../document-types/types/zod';
 import { AppDocumentSchema } from '../../../shared/types';
+import { documentTypeIdsSchema } from '../../document-types/types/zod';
 
 // Schema for external request response
 export const externalRequestSchema = z.object({

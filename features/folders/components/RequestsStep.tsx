@@ -1,15 +1,15 @@
-import { useState } from 'react';
-import { Users, Send, Plus, Trash2 } from 'lucide-react';
+import type { FolderType } from '@/features/folder-types/types';
 import {
+  Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
-  Button,
 } from '@/shared/components';
-import { FolderType } from '@/features/folder-types/types';
-import { Folder } from '../types';
+import { Plus, Send, Trash2, Users } from 'lucide-react';
+import { useState } from 'react';
+import type { Folder } from '../types';
 
 interface RequestsStepProps {
   folder: Folder;
@@ -45,11 +45,12 @@ const EmailInput = ({
   return (
     <div className="space-y-3">
       {emails.map((email, index) => (
+        // biome-ignore lint/suspicious/noArrayIndexKey: email
         <div key={index} className="flex gap-3">
           <input
             type="email"
             value={email}
-            onChange={e => updateEmail(index, e.target.value)}
+            onChange={(e) => updateEmail(index, e.target.value)}
             placeholder="email@exemple.com"
             className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
             disabled={disabled}
@@ -94,14 +95,14 @@ export const RequestsStep = ({
 
   const handleSendRequests = async () => {
     const validEmails = emails
-      .map(email => email.trim())
-      .filter(email => email !== '' && email.includes('@'));
+      .map((email) => email.trim())
+      .filter((email) => email !== '' && email.includes('@'));
 
     await onSendRequests(validEmails);
   };
 
   const hasValidEmails = emails.some(
-    email => email.trim() !== '' && email.includes('@')
+    (email) => email.trim() !== '' && email.includes('@'),
   );
 
   return (
@@ -125,9 +126,9 @@ export const RequestsStep = ({
               Documents qui seront demandés :
             </h4>
             <div className="flex flex-wrap gap-2">
-              {selectedType.requiredDocuments.map((doc, index) => (
+              {selectedType.requiredDocuments.map((doc) => (
                 <Badge
-                  key={index}
+                  key={doc.id}
                   variant="outline"
                   className="text-blue-700 border-blue-300"
                 >

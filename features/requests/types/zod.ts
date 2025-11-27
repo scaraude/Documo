@@ -1,7 +1,7 @@
 import z from 'zod';
 import {
-  documentTypeIdsSchema,
   documentTypeIdSchema,
+  documentTypeIdsSchema,
 } from '../../document-types/types/zod';
 
 // Schéma de validation pour la création de request
@@ -9,7 +9,7 @@ export const createRequestSchema = z.object({
   email: z
     .string()
     .email()
-    .transform(email => email.toLowerCase()),
+    .transform((email) => email.toLowerCase()),
   requestedDocuments: documentTypeIdsSchema,
   folderId: z.string().uuid(),
   expirationDays: z.number().positive().optional(),
@@ -20,7 +20,7 @@ export const updateRequestSchema = z.object({
   email: z
     .string()
     .email()
-    .transform(email => email.toLowerCase())
+    .transform((email) => email.toLowerCase())
     .optional(),
   requestedDocuments: documentTypeIdsSchema.optional(),
   expirationDays: z.number().positive().optional(),

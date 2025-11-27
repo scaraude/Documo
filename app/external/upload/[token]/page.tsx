@@ -1,19 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from '@/shared/components/ui/card';
-import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
-import { DocumentUploader } from '../../../../features/external-requests/components/DocumentUploader';
-import { Loader } from 'lucide-react';
-import * as React from 'react';
-import { useParams } from 'next/navigation';
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { useDocument } from '@/features/documents/hooks/useDocument';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
+import { Loader } from 'lucide-react';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import * as React from 'react';
+import { DocumentUploader } from '../../../../features/external-requests/components/DocumentUploader';
+import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
 
 export default function ExternalUploadPage() {
   const { token }: { token: string } = useParams();
@@ -22,7 +22,7 @@ export default function ExternalUploadPage() {
   const { getLabel } = useDocumentTypes();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [documentTypesMissing, setDocumentTypesMissing] = useState<string[]>(
-    []
+    [],
   );
   const { data: request, isLoading, error } = getRequestByToken(token);
   const { data: documents } = getDocumentsByRequestId(request?.id);
@@ -31,7 +31,7 @@ export default function ExternalUploadPage() {
     if (request) {
       const documentTypeMissing = documents
         ? request.requestedDocuments.filter(
-            doc => !documents.some(d => d.type === doc)
+            (doc) => !documents.some((d) => d.type === doc),
           )
         : request.requestedDocuments;
       setDocumentTypesMissing(documentTypeMissing);
@@ -118,7 +118,10 @@ export default function ExternalUploadPage() {
             <h2 className="text-lg font-semibold mb-2">Documents demandés :</h2>
             <ul className="list-disc list-inside space-y-2">
               {request.requestedDocuments.map((requestedDocument, index) => (
-                <li key={index} className="text-gray-700">
+                <li
+                  key={`${requestedDocument.toLowerCase()}-${index}`}
+                  className="text-gray-700"
+                >
                   {documentTypesMissing.includes(requestedDocument)
                     ? '⏳  '
                     : '✅  '}

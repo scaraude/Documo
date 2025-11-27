@@ -1,9 +1,10 @@
 'use client';
 
 import { useAuth } from '@/features/auth';
+import { ROUTES } from '@/shared/constants';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { ROUTES } from '@/shared/constants';
+import type React from 'react';
 
 interface PublicGuardProps {
   children: React.ReactNode;
@@ -24,7 +25,7 @@ export default function PublicGuard({ children }: PublicGuardProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
       </div>
     );
   }

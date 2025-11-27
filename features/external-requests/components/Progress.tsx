@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import type React from 'react';
 
 interface ProgressProps extends React.HTMLAttributes<HTMLDivElement> {
   value: number;
@@ -9,7 +10,7 @@ export function Progress({ className, value, ...props }: ProgressProps) {
     <div
       className={cn(
         'relative h-2 w-full overflow-hidden rounded-full bg-gray-100',
-        className
+        className,
       )}
       {...props}
     >

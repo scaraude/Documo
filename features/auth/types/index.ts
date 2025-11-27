@@ -53,7 +53,7 @@ export interface AuthContextValue {
     email: string,
     password: string,
     firstName?: string,
-    lastName?: string
+    lastName?: string,
   ) => Promise<{
     success: boolean;
     message: string;
@@ -76,7 +76,7 @@ export interface AuthContextValue {
   }>;
   resetPassword: (
     token: string,
-    password: string
+    password: string,
   ) => Promise<{
     success: boolean;
     message: string;

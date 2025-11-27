@@ -1,16 +1,16 @@
-import * as requestRepository from './../repository/requestRepository';
-import * as foldersRepository from '@/features/folders/repository/foldersRepository';
-import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
-import { protectedProcedure, router } from '@/lib/trpc/trpc';
-import { sendDocumentRequestEmail } from '@/lib/email';
 import * as documentTypesRepository from '@/features/document-types/repository/documentTypesRepository';
+import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
+import * as foldersRepository from '@/features/folders/repository/foldersRepository';
+import { sendDocumentRequestEmail } from '@/lib/email';
 import logger from '@/lib/logger';
-import {
-  createRequestSchema,
-  RequestIdSchema,
-  DeleteRequestSchema,
-} from '../types/zod';
+import { protectedProcedure, router } from '@/lib/trpc/trpc';
 import { ROUTES } from '../../../shared/constants';
+import {
+  DeleteRequestSchema,
+  RequestIdSchema,
+  createRequestSchema,
+} from '../types/zod';
+import * as requestRepository from './../repository/requestRepository';
 
 export const requestsRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -19,7 +19,7 @@ export const requestsRouter = router({
       const result = await requestRepository.getRequestsForUser(ctx.user.id);
       logger.info(
         { userId: ctx.user.id, count: result.length },
-        'User requests fetched successfully'
+        'User requests fetched successfully',
       );
       return result;
     } catch (error) {
@@ -28,7 +28,7 @@ export const requestsRouter = router({
           userId: ctx.user.id,
           error: error instanceof Error ? error.message : error,
         },
-        'Error fetching requests for user'
+        'Error fetching requests for user',
       );
       throw new Error('Failed to fetch requests');
     }
@@ -40,24 +40,24 @@ export const requestsRouter = router({
       try {
         logger.info(
           { requestId: input.id, userId: ctx.user.id },
-          'Fetching request by ID for user'
+          'Fetching request by ID for user',
         );
         const result = await requestRepository.getRequestByIdForUser(
           input.id,
-          ctx.user.id
+          ctx.user.id,
         );
 
         if (!result) {
           logger.warn(
             { requestId: input.id, userId: ctx.user.id },
-            'Request not found or user not authorized'
+            'Request not found or user not authorized',
           );
           throw new Error('Request not found or access denied');
         }
 
         logger.info(
           { requestId: input.id, userId: ctx.user.id },
-          'Request fetch completed for user'
+          'Request fetch completed for user',
         );
         return result;
       } catch (error) {
@@ -67,7 +67,7 @@ export const requestsRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error fetching request for user'
+          'Error fetching request for user',
         );
         throw error;
       }
@@ -83,19 +83,19 @@ export const requestsRouter = router({
             folderId: input.folderId,
             documentsCount: input.requestedDocuments.length,
           },
-          'Creating request'
+          'Creating request',
         );
 
         // Create the request with ownership validation
         const documentRequest = await requestRepository.createRequestForUser(
           input,
-          ctx.user.id
+          ctx.user.id,
         );
 
         // Get folder information for the email (ownership already validated in createRequestForUser)
         const folder = await foldersRepository.getFolderByIdForUser(
           input.folderId,
-          ctx.user.id
+          ctx.user.id,
         );
         if (!folder) {
           throw new Error('Folder not found');
@@ -109,7 +109,7 @@ export const requestsRouter = router({
             acc[dt.id] = dt.label;
             return acc;
           },
-          {} as Record<string, string>
+          {} as Record<string, string>,
         );
         // Store the share token with expiration
         const result = await externalRequestsRepository.createShareLink({
@@ -118,7 +118,7 @@ export const requestsRouter = router({
         });
         // Prepare email data
         const documentLabels = input.requestedDocuments.map(
-          docTypeId => documentTypeMap[docTypeId] || docTypeId
+          (docTypeId) => documentTypeMap[docTypeId] || docTypeId,
         );
 
         const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.EXTERNAL.REQUEST(result.token)}`;
@@ -146,7 +146,7 @@ export const requestsRouter = router({
               email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'),
               error: emailResult.error,
             },
-            'Request created but email failed to send'
+            'Request created but email failed to send',
           );
         }
 
@@ -156,7 +156,7 @@ export const requestsRouter = router({
             email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'),
             emailSent: emailResult.success,
           },
-          'Request created successfully'
+          'Request created successfully',
         );
 
         return result;
@@ -166,7 +166,7 @@ export const requestsRouter = router({
             email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'),
             error: error instanceof Error ? error.message : error,
           },
-          'Error creating request'
+          'Error creating request',
         );
         throw new Error('Failed to create request');
       }
@@ -178,7 +178,7 @@ export const requestsRouter = router({
       try {
         logger.info(
           { requestId: input.id, userId: ctx.user.id },
-          'Deleting request for user'
+          'Deleting request for user',
         );
 
         // Use security-aware delete function
@@ -186,7 +186,7 @@ export const requestsRouter = router({
 
         logger.info(
           { requestId: input.id, userId: ctx.user.id },
-          'Request deleted successfully for user'
+          'Request deleted successfully for user',
         );
       } catch (error) {
         logger.error(
@@ -195,7 +195,7 @@ export const requestsRouter = router({
             userId: ctx.user.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error deleting request for user'
+          'Error deleting request for user',
         );
         throw error;
       }

@@ -7,7 +7,7 @@ const isTest = process.env.NODE_ENV === 'test';
 const logger = pino({
   level: isTest ? 'silent' : isDevelopment ? 'debug' : 'info',
   formatters: {
-    level: label => ({ level: label }),
+    level: (label) => ({ level: label }),
   },
 });
 

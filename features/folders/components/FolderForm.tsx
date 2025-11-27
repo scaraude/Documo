@@ -1,11 +1,11 @@
 'use client';
 import { useFolderTypes } from '@/features/folder-types';
+import { useFolderForm } from '../hooks/useFolderForm';
+import { FolderDetailsStep } from './FolderDetailsStep';
+import { EmptyFolderTypesState, LoadingState } from './FolderFormStates';
+import { RequestsStep } from './RequestsStep';
 import { StepIndicator } from './StepIndicator';
 import { TypeSelectionStep } from './TypeSelectionStep';
-import { FolderDetailsStep } from './FolderDetailsStep';
-import { RequestsStep } from './RequestsStep';
-import { LoadingState, EmptyFolderTypesState } from './FolderFormStates';
-import { useFolderForm } from '../hooks/useFolderForm';
 
 interface FolderFormProps {
   isLoading: boolean;

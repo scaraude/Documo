@@ -1,19 +1,20 @@
 import { render, screen } from '@testing-library/react';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import Home from '../page';
 
 // Mock the imported components
-jest.mock('@/features/requests/components', () => ({
-  RequestsList: jest.fn(() => <div data-testid="requests-list-mock" />),
+vi.mock('@/features/requests/components', () => ({
+  RequestsList: vi.fn(() => <div data-testid="requests-list-mock" />),
 }));
 
-jest.mock('@/shared/components', () => ({
-  ActionSection: jest.fn(() => <div data-testid="action-section-mock" />),
-  HeroSection: jest.fn(() => <div data-testid="hero-section-mock" />),
+vi.mock('@/shared/components', () => ({
+  ActionSection: vi.fn(() => <div data-testid="action-section-mock" />),
+  HeroSection: vi.fn(() => <div data-testid="hero-section-mock" />),
 }));
 
 describe('Home Page', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test('renders all required components', () => {

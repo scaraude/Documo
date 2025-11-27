@@ -1,22 +1,22 @@
-import { z } from 'zod';
-import { TRPCError } from '@trpc/server';
-import {
-  createTRPCRouter,
-  publicProcedure,
-  protectedProcedure,
-} from '@/lib/trpc/trpc';
-import { AuthRepository } from '../repository/authRepository';
+import { sendPasswordResetEmail, sendVerificationEmail } from '@/lib/email';
+import logger from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
 import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from '@/lib/trpc/trpc';
+import { TRPCError } from '@trpc/server';
+import { z } from 'zod';
+import { AuthRepository } from '../repository/authRepository';
+import {
+  forgotPasswordSchema,
   loginSchema,
+  resendVerificationSchema,
+  resetPasswordApiSchema,
   signupApiSchema,
   verifyEmailSchema,
-  resendVerificationSchema,
-  forgotPasswordSchema,
-  resetPasswordApiSchema,
 } from '../types/zod';
-import logger from '@/lib/logger';
-import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email';
 
 const authRepository = new AuthRepository(prisma);
 
@@ -28,11 +28,11 @@ export const authRouter = createTRPCRouter({
 
       // Create email verification token
       const verificationToken =
-        await authRepository.createEmailVerificationToken(user.email!);
+        await authRepository.createEmailVerificationToken(user.email);
 
       // Send verification email
       const emailResult = await sendVerificationEmail({
-        to: user.email!,
+        to: user.email,
         firstName: user.firstName || 'User',
         verificationToken: verificationToken.token,
       });
@@ -45,7 +45,7 @@ export const authRouter = createTRPCRouter({
             error: emailResult.error,
             operation: 'auth.signup',
           },
-          'Failed to send verification email during signup'
+          'Failed to send verification email during signup',
         );
       }
 
@@ -56,7 +56,7 @@ export const authRouter = createTRPCRouter({
           emailSent: emailResult.success,
           operation: 'auth.signup',
         },
-        'User signed up, verification email sent'
+        'User signed up, verification email sent',
       );
 
       return {
@@ -72,7 +72,7 @@ export const authRouter = createTRPCRouter({
     } catch (error) {
       logger.error(
         { input: { email: input.email }, error: (error as Error).message },
-        'Signup failed'
+        'Signup failed',
       );
 
       if ((error as Error).message.includes('already exists')) {
@@ -107,7 +107,7 @@ export const authRouter = createTRPCRouter({
         ctx.req?.headers.get('user-agent') || undefined,
         ctx.req?.headers.get('x-forwarded-for') ||
           ctx.req?.headers.get('x-real-ip') ||
-          undefined
+          undefined,
       );
 
       // Set session cookie
@@ -137,7 +137,7 @@ export const authRouter = createTRPCRouter({
 
       logger.error(
         { input: { email: input.email }, error: (error as Error).message },
-        'Login failed'
+        'Login failed',
       );
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -160,13 +160,13 @@ export const authRouter = createTRPCRouter({
 
       logger.info(
         { userId: ctx.user?.id, operation: 'auth.logout.success' },
-        'User logged out successfully'
+        'User logged out successfully',
       );
       return { success: true };
     } catch (error) {
       logger.error(
         { userId: ctx.user?.id, error: (error as Error).message },
-        'Logout failed'
+        'Logout failed',
       );
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -199,10 +199,10 @@ export const authRouter = createTRPCRouter({
 
         logger.error(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             error: (error as Error).message,
           },
-          'Email verification failed'
+          'Email verification failed',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -242,11 +242,11 @@ export const authRouter = createTRPCRouter({
         }
 
         const verificationToken =
-          await authRepository.createEmailVerificationToken(user.email!);
+          await authRepository.createEmailVerificationToken(user.email);
 
         // Send verification email
         const emailResult = await sendVerificationEmail({
-          to: user.email!,
+          to: user.email,
           firstName: user.firstName || 'User',
           verificationToken: verificationToken.token,
         });
@@ -259,7 +259,7 @@ export const authRouter = createTRPCRouter({
               error: emailResult.error,
               operation: 'auth.resendVerification',
             },
-            'Failed to resend verification email'
+            'Failed to resend verification email',
           );
         }
 
@@ -270,7 +270,7 @@ export const authRouter = createTRPCRouter({
             emailSent: emailResult.success,
             operation: 'auth.resendVerification',
           },
-          'Verification email resent'
+          'Verification email resent',
         );
 
         return {
@@ -288,7 +288,7 @@ export const authRouter = createTRPCRouter({
 
         logger.error(
           { email: input.email, error: (error as Error).message },
-          'Resend verification failed'
+          'Resend verification failed',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -329,7 +329,7 @@ export const authRouter = createTRPCRouter({
     } catch (error) {
       logger.error(
         { userId: ctx.user.id, error: (error as Error).message },
-        'Failed to fetch sessions'
+        'Failed to fetch sessions',
       );
       throw new TRPCError({
         code: 'INTERNAL_SERVER_ERROR',
@@ -372,7 +372,7 @@ export const authRouter = createTRPCRouter({
             sessionId: input.sessionId,
             error: (error as Error).message,
           },
-          'Failed to revoke session'
+          'Failed to revoke session',
         );
 
         throw new TRPCError({
@@ -388,8 +388,8 @@ export const authRouter = createTRPCRouter({
         email: z
           .string()
           .email()
-          .transform(email => email.toLowerCase()),
-      })
+          .transform((email) => email.toLowerCase()),
+      }),
     )
     .query(async ({ input }) => {
       try {
@@ -398,7 +398,7 @@ export const authRouter = createTRPCRouter({
       } catch (error) {
         logger.error(
           { email: input.email, error: (error as Error).message },
-          'Failed to check email verification'
+          'Failed to check email verification',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -412,7 +412,7 @@ export const authRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       try {
         const { token } = await authRepository.createPasswordResetToken(
-          input.email
+          input.email,
         );
 
         // Only send email if it's a real token (not fake)
@@ -433,7 +433,7 @@ export const authRouter = createTRPCRouter({
                 error: emailResult.error,
                 operation: 'auth.forgotPassword.email_failed',
               },
-              'Failed to send password reset email'
+              'Failed to send password reset email',
             );
           }
 
@@ -443,12 +443,12 @@ export const authRouter = createTRPCRouter({
               emailSent: emailResult.success,
               operation: 'auth.forgotPassword',
             },
-            'Password reset token created'
+            'Password reset token created',
           );
         } else {
           logger.info(
             { email: input.email, operation: 'auth.forgotPassword.fake_token' },
-            'Fake token returned for non-existent email'
+            'Fake token returned for non-existent email',
           );
         }
 
@@ -467,7 +467,7 @@ export const authRouter = createTRPCRouter({
 
         logger.error(
           { email: input.email, error: (error as Error).message },
-          'Forgot password failed'
+          'Forgot password failed',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -482,7 +482,7 @@ export const authRouter = createTRPCRouter({
       try {
         const success = await authRepository.resetPassword(
           input.token,
-          input.password
+          input.password,
         );
 
         if (!success) {
@@ -494,10 +494,10 @@ export const authRouter = createTRPCRouter({
 
         logger.info(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             operation: 'auth.resetPassword',
           },
-          'Password reset successful'
+          'Password reset successful',
         );
 
         return {
@@ -512,10 +512,10 @@ export const authRouter = createTRPCRouter({
 
         logger.error(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             error: (error as Error).message,
           },
-          'Reset password failed'
+          'Reset password failed',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

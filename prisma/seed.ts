@@ -13,28 +13,28 @@
  * - Documents with various states (uploaded, validated, etc.)
  */
 
+import * as crypto from 'crypto';
+import { faker } from '@faker-js/faker';
+import { addDays, addHours } from 'date-fns';
+import { hashPassword } from '../features/auth/utils/password';
 import {
-  PrismaClient,
   type DocumentType,
+  PrismaClient,
   ProviderType,
 } from '../lib/prisma/generated/client';
-import { addDays, addHours } from 'date-fns';
-import { faker } from '@faker-js/faker';
-import * as crypto from 'crypto';
-import { hashPassword } from '../features/auth/utils/password';
 const prisma = new PrismaClient();
 
 // Document type IDs from seed-document-types.ts
 const DOCUMENT_TYPE_IDS = [
   'IDENTITY_PROOF',
-  'DRIVERS_LICENSE', 
+  'DRIVERS_LICENSE',
   'BANK_STATEMENT',
   'RESIDENCY_PROOF',
   'TAX_RETURN',
   'EMPLOYMENT_CONTRACT',
   'SALARY_SLIP',
   'INSURANCE_CERTIFICATE',
-  'OTHER'
+  'OTHER',
 ];
 
 // Helper function to get random subset of document types
@@ -234,7 +234,7 @@ async function createTestSessions(users: any[]) {
   // Create active session for activeSessionUser
   const activeSession = await prisma.userSession.create({
     data: {
-      userId: users.find(u => u.email === TEST_USERS.activeSession.email)?.id,
+      userId: users.find((u) => u.email === TEST_USERS.activeSession.email)?.id,
       token: `session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), 7),
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -247,7 +247,7 @@ async function createTestSessions(users: any[]) {
 
   // Create multiple sessions for multipleSessionUser
   const multipleSessionUser = users.find(
-    u => u.email === TEST_USERS.multipleSession.email
+    (u) => u.email === TEST_USERS.multipleSession.email,
   );
   if (multipleSessionUser) {
     const sessionData = [
@@ -290,7 +290,7 @@ async function createTestSessions(users: any[]) {
   // Create expired session for testing
   const expiredSession = await prisma.userSession.create({
     data: {
-      userId: users.find(u => u.email === TEST_USERS.verified.email)?.id,
+      userId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
       token: `expired_session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), -1), // Expired yesterday
       userAgent: 'Mozilla/5.0 (Test Browser)',
@@ -304,7 +304,7 @@ async function createTestSessions(users: any[]) {
   // Create revoked session for testing
   const revokedSession = await prisma.userSession.create({
     data: {
-      userId: users.find(u => u.email === TEST_USERS.verified.email)?.id,
+      userId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
       token: `revoked_session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), 7),
       userAgent: 'Mozilla/5.0 (Revoked Browser)',
@@ -320,7 +320,7 @@ async function createTestSessions(users: any[]) {
 }
 
 // Create test email verification tokens
-async function createTestEmailVerificationTokens(users: any[]) {
+async function createTestEmailVerificationTokens(_users: any[]) {
   console.log('📧 Creating test email verification tokens...');
 
   const tokens = [];
@@ -366,7 +366,7 @@ async function createTestEmailVerificationTokens(users: any[]) {
 }
 
 // Create test password reset tokens
-async function createTestPasswordResetTokens(users: any[]) {
+async function createTestPasswordResetTokens(_users: any[]) {
   console.log('🔐 Creating test password reset tokens...');
 
   const tokens = [];
@@ -448,7 +448,7 @@ async function createRandomFolderType(createdById: string) {
       name,
       description,
       requiredDocuments: {
-        connect: requiredDocuments.map(doc => ({ id: doc }))
+        connect: requiredDocuments.map((doc) => ({ id: doc })),
       },
       createdById,
       deletedAt: Math.random() < 0.1 ? faker.date.past() : null, // 10% chance of soft delete
@@ -460,7 +460,7 @@ async function createRandomFolderType(createdById: string) {
 async function createRandomFolder(
   folderTypeId: string,
   folderTypeRequiredDocs: DocumentType[],
-  createdById: string
+  createdById: string,
 ) {
   const cities = [
     'Paris',
@@ -503,7 +503,7 @@ async function createRandomFolder(
       description,
       folderTypeId,
       requestedDocuments: {
-        connect: folderTypeRequiredDocs.map(doc => ({ id: doc.id }))
+        connect: folderTypeRequiredDocs.map((doc) => ({ id: doc.id })),
       },
       createdById,
       expiresAt:
@@ -522,7 +522,7 @@ async function createRandomFolder(
 // Generate random document request with realistic email patterns
 async function createRandomDocumentRequest(
   folderId: string,
-  requestedDocuments: DocumentType[]
+  requestedDocuments: DocumentType[],
 ) {
   const isAccepted = Math.random() < 0.6; // 60% chance of being accepted
   const isRejected = Math.random() < 0.1; // 10% chance of being rejected
@@ -558,7 +558,7 @@ async function createRandomDocumentRequest(
     data: {
       email: email,
       requestedDocuments: {
-        connect: requestedDocuments.map(doc => ({ id: doc.id }))
+        connect: requestedDocuments.map((doc) => ({ id: doc.id })),
       },
       folderId,
       expiresAt: addDays(createdAt, faker.number.int({ min: 14, max: 60 })),
@@ -582,7 +582,7 @@ async function createRandomDocumentRequest(
 // Generate random share link
 async function createRandomShareLink(
   requestId: string,
-  requestCreatedAt: Date
+  requestCreatedAt: Date,
 ) {
   const isAccessed = Math.random() < 0.7; // 70% chance of being accessed
 
@@ -592,7 +592,7 @@ async function createRandomShareLink(
       token: `share_${faker.string.alphanumeric(32)}`,
       expiresAt: addDays(
         requestCreatedAt,
-        faker.number.int({ min: 30, max: 90 })
+        faker.number.int({ min: 30, max: 90 }),
       ),
       accessedAt: isAccessed
         ? addHours(requestCreatedAt, faker.number.int({ min: 1, max: 168 }))
@@ -604,9 +604,9 @@ async function createRandomShareLink(
 // Generate random document
 async function createRandomDocument(
   requestId: string,
-  folderId: string,
+  _folderId: string,
   documentType: DocumentType,
-  requestCreatedAt: Date
+  requestCreatedAt: Date,
 ) {
   const isValidated = Math.random() < 0.8; // 80% chance of validation if uploaded
   const isInvalidated = !isValidated && Math.random() < 0.3; // 30% chance of invalidation if not validated
@@ -614,7 +614,7 @@ async function createRandomDocument(
 
   const uploadedAt = addHours(
     requestCreatedAt,
-    faker.number.int({ min: 1, max: 240 })
+    faker.number.int({ min: 1, max: 240 }),
   );
 
   const errorMessages = [
@@ -663,7 +663,7 @@ async function seedDatabase(
     foldersPerType?: number;
     requestsPerFolder?: number;
     documentsPerRequest?: number;
-  } = {}
+  } = {},
 ) {
   const {
     folderTypesCount = 10,
@@ -704,13 +704,13 @@ async function seedDatabase(
 
   // Fetch folder types with their relations
   const folderTypes = await prisma.folderType.findMany({
-    where: { 
+    where: {
       id: { in: folderTypeIds },
-      deletedAt: null 
+      deletedAt: null,
     },
     include: {
-      requiredDocuments: true
-    }
+      requiredDocuments: true,
+    },
   });
 
   console.log('📁 Creating folders...');
@@ -722,7 +722,7 @@ async function seedDatabase(
       const folder = await createRandomFolder(
         folderType.id,
         folderType.requiredDocuments,
-        defaultUserId
+        defaultUserId,
       );
       folders.push({ folder, folderType });
     }
@@ -734,7 +734,7 @@ async function seedDatabase(
     for (let i = 0; i < requestsPerFolder; i++) {
       const request = await createRandomDocumentRequest(
         folder.id,
-        folderType.requiredDocuments
+        folderType.requiredDocuments,
       );
       requests.push({ request, folder, folderType });
 
@@ -750,7 +750,7 @@ async function seedDatabase(
       .sort(() => 0.5 - Math.random())
       .slice(
         0,
-        Math.min(documentsPerRequest, folderType.requiredDocuments.length)
+        Math.min(documentsPerRequest, folderType.requiredDocuments.length),
       );
 
     for (const docType of documentsToCreate) {
@@ -758,7 +758,7 @@ async function seedDatabase(
         request.id,
         folder.id,
         docType,
-        request.createdAt
+        request.createdAt,
       );
     }
   }
@@ -814,7 +814,7 @@ async function main() {
 // Run if called directly
 if (require.main === module) {
   main()
-    .catch(e => {
+    .catch((e) => {
       console.error(e);
       process.exit(1);
     })

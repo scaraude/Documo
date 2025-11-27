@@ -1,10 +1,10 @@
 // app/folders/[id]/page.tsx
 'use client';
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useFolders } from '@/features/folders';
 import { FolderDetail } from '@/features/folders/components/FolderDetail';
 import { ROUTES } from '@/shared/constants';
-import { useFolders } from '@/features/folders';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function FolderDetailPage() {
@@ -28,7 +28,7 @@ export default function FolderDetailPage() {
     }
   };
 
-  const handleRemoveRequest = async (folderId: string, requestId: string) => {
+  const handleRemoveRequest = async (_folderId: string, requestId: string) => {
     try {
       removeRequestFromFolderMutation.mutate({ requestId });
     } catch {

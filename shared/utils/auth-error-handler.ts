@@ -1,7 +1,7 @@
-import { toast } from 'sonner';
-import { useRouter } from 'next/navigation';
 import { ROUTES } from '@/shared/constants';
 import { TRPCClientError } from '@trpc/client';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 
 /**
  * Checks if an error is a tRPC authentication error
@@ -18,7 +18,7 @@ export function isAuthError(error: unknown): boolean {
  */
 export function handleAuthError(
   error: unknown,
-  router: ReturnType<typeof useRouter>
+  router: ReturnType<typeof useRouter>,
 ) {
   if (isAuthError(error)) {
     toast.error('Votre session a expiré. Veuillez vous reconnecter.');

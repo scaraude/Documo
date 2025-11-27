@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '../hooks/useAuth';
 import { Button } from '@/shared/components/ui/button';
 import { ROUTES } from '@/shared/constants/routes/paths';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 
 export const UserMenu: React.FC = () => {
   const { user, logout, isLoading } = useAuth();
@@ -56,6 +57,7 @@ export const UserMenu: React.FC = () => {
     <div className="relative" ref={menuRef}>
       {/* Avatar Button */}
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-10 h-10 rounded-full bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
         aria-expanded={isOpen}
@@ -78,6 +80,7 @@ export const UserMenu: React.FC = () => {
           {/* Menu Items */}
           <div className="py-1">
             <button
+              type="button"
               onClick={handleLogout}
               className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
             >

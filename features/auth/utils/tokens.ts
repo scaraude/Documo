@@ -1,6 +1,6 @@
 import { randomBytes } from 'crypto';
 
-export const generateSecureToken = (length: number = 32): string => {
+export const generateSecureToken = (length = 32): string => {
   return randomBytes(length).toString('hex');
 };
 

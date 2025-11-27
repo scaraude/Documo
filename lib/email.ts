@@ -1,9 +1,9 @@
-import * as React from 'react';
+import logger from '@/lib/logger';
 import { resend } from '@/lib/resend';
-import { VerificationEmail } from '@/shared/components/emails/VerificationEmail';
 import { DocumentRequestEmail } from '@/shared/components/emails/DocumentRequestEmail';
 import { PasswordResetEmail } from '@/shared/components/emails/PasswordResetEmail';
-import logger from '@/lib/logger';
+import { VerificationEmail } from '@/shared/components/emails/VerificationEmail';
+import type * as React from 'react';
 
 interface EmailVerificationOptions {
   to: string;
@@ -35,7 +35,7 @@ export async function sendVerificationEmail({
           to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
           error: error.message,
         },
-        'Failed to send verification email'
+        'Failed to send verification email',
       );
       return { success: false, error: error.message };
     }
@@ -46,7 +46,7 @@ export async function sendVerificationEmail({
         messageId: data?.id,
         operation: sendVerificationEmail.name,
       },
-      'Verification email sent successfully'
+      'Verification email sent successfully',
     );
 
     return { success: true };
@@ -57,7 +57,7 @@ export async function sendVerificationEmail({
         to: to.replace(/(.{3}).*(@.*)/, '$1...$2'), // Mask email for privacy
         error: errorMessage,
       },
-      'Failed to send verification email'
+      'Failed to send verification email',
     );
     return { success: false, error: errorMessage };
   }
@@ -94,7 +94,7 @@ export async function sendPasswordResetEmail({
           error: error.message,
           operation: 'email.password_reset.failed',
         },
-        'Failed to send password reset email'
+        'Failed to send password reset email',
       );
       return { success: false, error: error.message };
     }
@@ -105,7 +105,7 @@ export async function sendPasswordResetEmail({
         messageId: data?.id,
         operation: 'email.password_reset.sent',
       },
-      'Password reset email sent successfully'
+      'Password reset email sent successfully',
     );
 
     return { success: true };
@@ -117,7 +117,7 @@ export async function sendPasswordResetEmail({
         error: errorMessage,
         operation: 'email.password_reset.failed',
       },
-      'Failed to send password reset email'
+      'Failed to send password reset email',
     );
     return { success: false, error: errorMessage };
   }
@@ -162,7 +162,7 @@ export async function sendDocumentRequestEmail({
           error: error.message,
           operation: 'email.document_request.failed',
         },
-        'Failed to send document request email'
+        'Failed to send document request email',
       );
       return { success: false, error: error.message };
     }
@@ -175,7 +175,7 @@ export async function sendDocumentRequestEmail({
         documentsCount: requestedDocuments.length,
         operation: 'email.document_request.sent',
       },
-      'Document request email sent successfully'
+      'Document request email sent successfully',
     );
 
     return { success: true };
@@ -187,7 +187,7 @@ export async function sendDocumentRequestEmail({
         error: errorMessage,
         operation: 'email.document_request.failed',
       },
-      'Failed to send document request email'
+      'Failed to send document request email',
     );
     return { success: false, error: errorMessage };
   }

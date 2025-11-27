@@ -1,10 +1,10 @@
+import { Button, Card, CardContent } from '@/shared/components';
 import { FolderOpen } from 'lucide-react';
 import Link from 'next/link';
-import { Card, CardContent, Button } from '@/shared/components';
 
 export const LoadingState = () => (
   <div className="flex items-center justify-center py-12">
-    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
   </div>
 );
 

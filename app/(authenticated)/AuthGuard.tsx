@@ -1,11 +1,12 @@
 'use client';
 
 import { useAuth } from '@/features/auth';
+import { Navbar } from '@/shared/components';
+import { ROUTES } from '@/shared/constants';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { ROUTES } from '@/shared/constants';
+import type React from 'react';
 import { toast } from 'sonner';
-import { Navbar } from '@/shared/components';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -27,7 +28,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
       </div>
     );
   }

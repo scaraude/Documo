@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
 import { trpc } from '@/lib/trpc/client';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface UseEmailVerificationProps {
   email: string;
@@ -29,7 +29,7 @@ export const useEmailVerification = ({
       refetchInterval: 10000, // Check every 10 seconds instead of 3
       refetchIntervalInBackground: true,
       enabled: !isProcessingVerification, // Disable polling when processing
-    }
+    },
   );
 
   // Timer countdown
@@ -37,7 +37,8 @@ export const useEmailVerification = ({
     if (timeLeft > 0) {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
-    } else if (timeLeft === 0 && !canResend) {
+    }
+    if (timeLeft === 0 && !canResend) {
       setCanResend(true);
     }
   }, [timeLeft, canResend]);
@@ -68,7 +69,7 @@ export const useEmailVerification = ({
                 isLoginInProgress.current = false;
                 setIsProcessingVerification(false);
               },
-            }
+            },
           );
         } else if (!password) {
           onVerificationComplete?.();

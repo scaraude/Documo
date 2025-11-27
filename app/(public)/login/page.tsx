@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import {
-  LoginForm,
   ForgotPasswordForm,
+  LoginForm,
   ResetPasswordForm,
 } from '@/features/auth';
 import { ROUTES } from '@/shared/constants/routes/paths';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
 
 type AuthView = 'login' | 'forgot-password' | 'reset-password';
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-md w-full space-y-8">
             <div className="flex justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
             </div>
           </div>
         </div>

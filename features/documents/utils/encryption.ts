@@ -5,12 +5,12 @@ const generateEncryptionKey = async (): Promise<CryptoKey> => {
       length: 256,
     },
     true,
-    ['encrypt', 'decrypt']
+    ['encrypt', 'decrypt'],
   );
 };
 
 export const encryptFile = async (
-  file: File
+  file: File,
 ): Promise<{ encryptedFile: Uint8Array; encryptionKey: CryptoKey }> => {
   const key = await generateEncryptionKey();
 
@@ -23,7 +23,7 @@ export const encryptFile = async (
       iv,
     },
     key,
-    fileBuffer
+    fileBuffer,
   );
 
   const encryptedArray = new Uint8Array(iv.length + encryptedData.byteLength);
@@ -39,9 +39,9 @@ export const exportedKeyBase64 = async (key: CryptoKey): Promise<string> => {
 };
 
 export const importEncryptionKey = async (
-  keyBase64: string
+  keyBase64: string,
 ): Promise<CryptoKey> => {
-  const keyData = Uint8Array.from(atob(keyBase64), c => c.charCodeAt(0));
+  const keyData = Uint8Array.from(atob(keyBase64), (c) => c.charCodeAt(0));
   return await crypto.subtle.importKey('raw', keyData, 'AES-GCM', true, [
     'decrypt',
   ]);
@@ -50,7 +50,7 @@ export const importEncryptionKey = async (
 export const decryptBlob = async (
   encryptedBlob: Blob,
   key: CryptoKey,
-  mimeType: string
+  mimeType: string,
 ): Promise<Blob> => {
   const iv = encryptedBlob.slice(0, 12);
   const encryptedData = encryptedBlob.slice(12);
@@ -61,7 +61,7 @@ export const decryptBlob = async (
       iv: await iv.arrayBuffer(),
     },
     key,
-    await encryptedData.arrayBuffer()
+    await encryptedData.arrayBuffer(),
   );
 
   return new Blob([decryptedBuffer], { type: mimeType });
@@ -72,6 +72,6 @@ export const computeFileHash = async (file: File): Promise<string> => {
   const hashBuffer = await window.crypto.subtle.digest('SHA-256', fileBuffer);
   const hashArray = new Uint8Array(hashBuffer);
   return Array.from(hashArray)
-    .map(b => b.toString(16).padStart(2, '0'))
+    .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 };

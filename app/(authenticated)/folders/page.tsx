@@ -1,26 +1,29 @@
 'use client';
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Search, Plus, FileText, FolderOpen } from 'lucide-react';
-import { FolderType, useFolderTypes } from '../../../features/folder-types';
-import { useFolders } from '../../../features/folders/hooks/useFolders';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import {
+  Badge,
   Button,
   Card,
   CardContent,
-  Badge,
   ScrollArea,
   ScrollBar,
 } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { FileText, FolderOpen, Plus, Search } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import {
+  type FolderType,
+  useFolderTypes,
+} from '../../../features/folder-types';
+import { useFolders } from '../../../features/folders/hooks/useFolders';
+import type {
   ComputedFolderStatus,
   FolderWithStatus,
 } from '../../../features/folders/types';
-import { useRouter } from 'next/navigation';
-import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 
 export default function FoldersPage() {
   const { getAllFolderTypes } = useFolderTypes();
@@ -38,16 +41,15 @@ export default function FoldersPage() {
   >([]);
 
   const toggleFilter = (status: ComputedFolderStatus) => {
-    setSelectedFilters(prev => {
+    setSelectedFilters((prev) => {
       if (prev.includes(status)) {
-        return prev.filter(f => f !== status);
-      } else {
-        return [...prev, status];
+        return prev.filter((f) => f !== status);
       }
+      return [...prev, status];
     });
   };
 
-  const filteredFolders = folders?.filter(folder => {
+  const filteredFolders = folders?.filter((folder) => {
     const matchesSearch = folder.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
@@ -68,9 +70,10 @@ export default function FoldersPage() {
         );
       case 'ARCHIVED':
         return <Badge className="bg-red-100 text-red-800">❌ Refusé</Badge>;
-      default:
+      default: {
         const never: never = status;
         return never;
+      }
     }
   };
 
@@ -93,7 +96,7 @@ export default function FoldersPage() {
           <div className="absolute bottom-4 right-4 z-50 group/button">
             <Link
               href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
-              onClick={e => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <div className="relative">
                 {/* Tooltip */}
@@ -101,9 +104,10 @@ export default function FoldersPage() {
                   className={`absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover/button:opacity-100 transform scale-95 group-hover/button:scale-100 transition-all pointer-events-none whitespace-nowrap z-60 ${groupTransition}`}
                 >
                   Créer un dossier
-                  <div className="absolute top-full right-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                  <div className="absolute top-full right-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1" />
                 </div>
                 <button
+                  type="button"
                   className={`w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl ${groupTransition}`}
                 >
                   <Plus className="h-5 w-5" />
@@ -115,7 +119,7 @@ export default function FoldersPage() {
           {/* Folder Tab */}
           <div
             className={`absolute -top-3.5 left-0 bg-white w-24 h-7 rounded-t-lg rounded-tl-sm border-2 border-gray-200 border-b-0 group-hover:bg-gray-50 group-hover:border-blue-300 ${groupTransition}`}
-          ></div>
+          />
 
           {/* Folder Body */}
           <div
@@ -136,17 +140,15 @@ export default function FoldersPage() {
                     Documents requis:
                   </p>
                   <div className="flex flex-wrap gap-1">
-                    {folderType.requiredDocuments
-                      .slice(0, 2)
-                      .map((doc, index) => (
-                        <Badge
-                          key={index}
-                          variant="outline"
-                          className="text-xs px-2 py-0.5"
-                        >
-                          {getLabel(doc.id)}
-                        </Badge>
-                      ))}
+                    {folderType.requiredDocuments.slice(0, 2).map((doc) => (
+                      <Badge
+                        key={doc.id}
+                        variant="outline"
+                        className="text-xs px-2 py-0.5"
+                      >
+                        {getLabel(doc.id)}
+                      </Badge>
+                    ))}
                     {folderType.requiredDocuments.length > 2 && (
                       <Badge
                         variant="outline"
@@ -222,7 +224,7 @@ export default function FoldersPage() {
 
           {isfolderTypesLoading ? (
             <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
             </div>
           ) : !folderTypes || folderTypes.length === 0 ? (
             <Card className="text-center py-12">
@@ -247,7 +249,7 @@ export default function FoldersPage() {
               <div className="hidden md:block">
                 <ScrollArea className="w-full rounded-md whitespace-nowrap">
                   <div className="flex w-max space-x-6 p-4 pt-7">
-                    {folderTypes.map(folderType => (
+                    {folderTypes.map((folderType) => (
                       <FolderTypeGridItem
                         key={folderType.id}
                         folderType={folderType}
@@ -260,7 +262,7 @@ export default function FoldersPage() {
               {/* Mobile: Vertical grid */}
               <div className="md:hidden">
                 <div className="grid grid-cols-1 gap-4 p-6">
-                  {folderTypes.map(folderType => (
+                  {folderTypes.map((folderType) => (
                     <FolderTypeGridItem
                       key={folderType.id}
                       folderType={folderType}
@@ -299,7 +301,7 @@ export default function FoldersPage() {
                   type="text"
                   placeholder="Rechercher un dossier..."
                   value={searchTerm}
-                  onChange={e => setSearchTerm(e.target.value)}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
                 />
               </div>
@@ -348,6 +350,7 @@ export default function FoldersPage() {
                 </Badge>
                 {selectedFilters.length > 0 && (
                   <button
+                    type="button"
                     onClick={() => setSelectedFilters([])}
                     className="text-sm text-gray-500 hover:text-gray-700 underline"
                   >
@@ -379,7 +382,7 @@ export default function FoldersPage() {
           {/* Dossiers Grid */}
           {isLoading ? (
             <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
             </div>
           ) : !filteredFolders || filteredFolders.length === 0 ? (
             <Card className="text-center py-12">
@@ -413,7 +416,7 @@ export default function FoldersPage() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredFolders.map(folder => (
+              {filteredFolders.map((folder) => (
                 <FolderCard key={folder.id} folder={folder} />
               ))}
             </div>

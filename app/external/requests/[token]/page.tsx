@@ -1,15 +1,15 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent } from '@/shared/components/ui/card';
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import { FileText, CheckCircle, XCircle } from 'lucide-react';
-import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
+import { Card, CardContent } from '@/shared/components/ui/card';
+import { ROUTES } from '@/shared/constants/routes/paths';
+import { CheckCircle, FileText, XCircle } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { ROUTES } from '@/shared/constants/routes/paths';
+import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
 
 export default function ExternalRequestPage() {
   const { token }: { token: string } = useParams();
@@ -57,7 +57,7 @@ export default function ExternalRequestPage() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto" />
           <h1 className="text-2xl font-bold text-gray-800 mt-4">
             Chargement...
           </h1>
@@ -152,9 +152,9 @@ export default function ExternalRequestPage() {
                 Documents demandés
               </div>
               <div className="space-y-2">
-                {request.requestedDocuments.map((doc, index) => (
+                {request.requestedDocuments.map((doc) => (
                   <div
-                    key={index}
+                    key={doc}
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     <div className="flex items-center space-x-3">
@@ -209,7 +209,7 @@ export default function ExternalRequestPage() {
                     <textarea
                       id="message"
                       value={declineMessage}
-                      onChange={e => setDeclineMessage(e.target.value)}
+                      onChange={(e) => setDeclineMessage(e.target.value)}
                       placeholder="Expliquez pourquoi vous refusez cette demande..."
                       rows={3}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical"

@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Eye, EyeOff } from 'lucide-react';
+import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
-import { PasswordStrengthIndicator } from '@/shared/components/ui/PasswordStrengthIndicator';
-import { useAuth } from '../hooks/useAuth';
-import { signupSchema, type SignupInput } from '../types/zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { useAuth } from '../hooks/useAuth';
+import { type SignupInput, signupSchema } from '../types/zod';
 
 interface SignupFormProps {
   onSuccess?: (email?: string) => void;
@@ -43,14 +44,14 @@ export const SignupForm: React.FC<SignupFormProps> = ({
         data.email,
         data.password,
         data.firstName,
-        data.lastName
+        data.lastName,
       );
       sessionStorage.setItem('unverified_email', data.email);
       toast.success(result.message);
       onSuccess?.(data.email);
     } catch (err) {
       setError(
-        (err as Error)?.message || 'Inscription échouée. Veuillez réessayer.'
+        (err as Error)?.message || 'Inscription échouée. Veuillez réessayer.',
       );
     }
   };

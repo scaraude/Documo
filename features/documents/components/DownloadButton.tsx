@@ -1,6 +1,7 @@
 import { Button } from '@/shared/components/ui/button';
+import type { AppDocument } from '@/shared/types';
 import { Download, Loader2 } from 'lucide-react';
-import { AppDocument } from '@/shared/types';
+import type React from 'react';
 import { useDecryptedDocument } from '../hooks/useDecryptedDocument';
 
 interface DownloadButtonProps {

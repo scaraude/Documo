@@ -1,17 +1,17 @@
-// features/folders/repository/folderRepository.ts
-import prisma, { Prisma } from '@/lib/prisma';
-import { CreateFolderParams, Folder, FolderWithRelations } from '../types';
-import { AppDocumentType } from '@/shared/constants';
-import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repository/folderTypesRepository';
-import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
+import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import logger from '@/lib/logger';
+// features/folders/repository/folderRepository.ts
+import prisma, { type Prisma } from '@/lib/prisma';
+import type { AppDocumentType } from '@/shared/constants';
 import {
-  eventBus,
   EVENT_TYPES,
+  type FolderCreatedEvent,
   createTypedEvent,
-  FolderCreatedEvent,
+  eventBus,
 } from '@/shared/lib/events';
+import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
+import type { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 
 // Type mapper between Prisma and App
 type PrismaFolder = Prisma.FolderGetPayload<{
@@ -25,7 +25,7 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
     name: prismaModel.name,
     description: prismaModel.description || '',
     requestedDocuments: prismaModel.requestedDocuments.map(
-      documentTypeToAppDocumentType
+      documentTypeToAppDocumentType,
     ),
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
@@ -51,13 +51,13 @@ export async function getFoldersByUserId(userId: string): Promise<Folder[]> {
 
     logger.info(
       { userId, count: folders.length },
-      'User folders fetched successfully'
+      'User folders fetched successfully',
     );
     return folders.map(toAppModel);
   } catch (error) {
     logger.error(
       { userId, error: error instanceof Error ? error.message : error },
-      'Error fetching user folders from database'
+      'Error fetching user folders from database',
     );
     throw new Error('Failed to fetch user folders');
   }
@@ -66,7 +66,7 @@ export async function getFoldersByUserId(userId: string): Promise<Folder[]> {
 // Get folder by ID for specific user (security-aware)
 export async function getFolderByIdForUser(
   id: string,
-  userId: string
+  userId: string,
 ): Promise<Folder | null> {
   try {
     const folder = await prisma.folder.findUnique({
@@ -84,7 +84,7 @@ export async function getFolderByIdForUser(
   } catch (error) {
     console.error(
       `Error fetching folder with ID ${id} for user ${userId}:`,
-      error
+      error,
     );
     throw new Error('Failed to fetch folder');
   }
@@ -93,7 +93,7 @@ export async function getFolderByIdForUser(
 // Get folder by ID with relations for specific user (security-aware)
 export async function getFolderByIdWithRelationsForUser(
   id: string,
-  userId: string
+  userId: string,
 ): Promise<FolderWithRelations | null> {
   try {
     const folder = await prisma.folder.findUnique({
@@ -127,7 +127,7 @@ export async function getFolderByIdWithRelationsForUser(
   } catch (error) {
     console.error(
       `Error fetching folder with ID ${id} for user ${userId}:`,
-      error
+      error,
     );
     throw new Error('Failed to fetch folder');
   }
@@ -136,7 +136,7 @@ export async function getFolderByIdWithRelationsForUser(
 // Check if user owns the folder containing a specific request (security-aware)
 export async function userOwnsRequestFolder(
   requestId: string,
-  userId: string
+  userId: string,
 ): Promise<boolean> {
   try {
     logger.info({ requestId, userId }, 'Checking folder ownership for request');
@@ -151,7 +151,7 @@ export async function userOwnsRequestFolder(
     if (!request || !request.folder) {
       logger.warn(
         { requestId, userId },
-        'Request or folder not found during ownership check'
+        'Request or folder not found during ownership check',
       );
       return false;
     }
@@ -161,7 +161,7 @@ export async function userOwnsRequestFolder(
     if (!isOwner) {
       logger.warn(
         { requestId, userId, folderId: request.folder.id },
-        'User does not own folder containing request'
+        'User does not own folder containing request',
       );
     }
 
@@ -173,7 +173,7 @@ export async function userOwnsRequestFolder(
         userId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error checking folder ownership for request'
+      'Error checking folder ownership for request',
     );
     return false; // Fail secure
   }
@@ -189,7 +189,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
         createdById: data.createdById,
         requestedDocumentsCount: data.requestedDocuments.length,
       },
-      'Creating new folder'
+      'Creating new folder',
     );
 
     const { requestedDocuments, ...folderData } = data;
@@ -198,7 +198,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
         ...folderData,
         createdById: folderData.createdById || '', // Ensure string is provided
         requestedDocuments: {
-          connect: requestedDocuments.map(id => ({ id })),
+          connect: requestedDocuments.map((id) => ({ id })),
         },
       },
       include: {
@@ -208,7 +208,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
 
     logger.info(
       { folderId: newFolder.id, folderName: newFolder.name },
-      'Folder created successfully'
+      'Folder created successfully',
     );
 
     // Publish domain event after successful creation
@@ -222,8 +222,8 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
           createdById: newFolder.createdById || '',
           folderTypeId: newFolder.folderTypeId,
         },
-        newFolder.createdById || undefined
-      )
+        newFolder.createdById || undefined,
+      ),
     );
 
     return toAppModel(newFolder);
@@ -234,7 +234,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
         createdById: data.createdById,
         error: error instanceof Error ? error.message : error,
       },
-      'Error creating folder in database'
+      'Error creating folder in database',
     );
     throw new Error('Failed to create folder');
   }
@@ -250,7 +250,7 @@ export async function updateFolderForUser(
     requestedDocuments: AppDocumentType[];
     expiresAt: Date | null;
     sharedWith: string[];
-  }>
+  }>,
 ): Promise<Folder> {
   try {
     // First verify ownership
@@ -269,7 +269,7 @@ export async function updateFolderForUser(
         ...updateData,
         ...(requestedDocuments && {
           requestedDocuments: {
-            set: requestedDocuments.map(id => ({ id })),
+            set: requestedDocuments.map((id) => ({ id })),
           },
         }),
       },
@@ -286,7 +286,7 @@ export async function updateFolderForUser(
         userId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error updating folder for user'
+      'Error updating folder for user',
     );
     throw new Error('Failed to update folder');
   }
@@ -309,7 +309,7 @@ export async function deleteFolder(id: string): Promise<void> {
   } catch (error) {
     logger.error(
       { folderId: id, error: error instanceof Error ? error.message : error },
-      'Error deleting folder'
+      'Error deleting folder',
     );
     throw new Error('Failed to delete folder');
   }
@@ -319,7 +319,7 @@ export async function deleteFolder(id: string): Promise<void> {
 export async function addRequestToFolderForUser(
   folderId: string,
   requestId: string,
-  userId: string
+  userId: string,
 ): Promise<void> {
   try {
     // First verify user owns the target folder
@@ -350,7 +350,7 @@ export async function addRequestToFolderForUser(
   } catch (error) {
     console.error(
       `Error adding request ${requestId} to folder ${folderId} for user ${userId}:`,
-      error
+      error,
     );
     throw new Error('Failed to add request to folder');
   }
@@ -359,7 +359,7 @@ export async function addRequestToFolderForUser(
 // Remove a request from a folder (⚠️ WARNING: Not security-aware - verify ownership before calling)
 // This function only performs the removal operation, ownership must be verified beforehand
 export async function removeRequestFromFolder(
-  requestId: string
+  requestId: string,
 ): Promise<void> {
   try {
     logger.info({ requestId }, 'Removing request from folder');
@@ -376,7 +376,7 @@ export async function removeRequestFromFolder(
         requestId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error removing request from folder'
+      'Error removing request from folder',
     );
     throw new Error('Failed to remove request from folder');
   }
@@ -384,7 +384,7 @@ export async function removeRequestFromFolder(
 
 // Get user's folders with their requests count (security-aware)
 export async function getFoldersWithStatsForUser(
-  userId: string
+  userId: string,
 ): Promise<Array<Folder & { requestsCount: number }>> {
   try {
     logger.info({ userId }, 'Fetching folders with stats for user');
@@ -404,10 +404,10 @@ export async function getFoldersWithStatsForUser(
 
     logger.info(
       { userId, count: folders.length },
-      'User folders with stats fetched successfully'
+      'User folders with stats fetched successfully',
     );
 
-    return folders.map(folder => ({
+    return folders.map((folder) => ({
       ...toAppModel(folder),
       requestsCount: folder._count.requests,
     }));
@@ -417,7 +417,7 @@ export async function getFoldersWithStatsForUser(
         userId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error fetching folders with stats for user'
+      'Error fetching folders with stats for user',
     );
     throw new Error('Failed to fetch folders with stats');
   }

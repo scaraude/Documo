@@ -1,5 +1,5 @@
 import { ROUTES } from '@/shared/constants/routes/paths';
-import { FolderFormStep } from '../components/StepIndicator';
+import type { FolderFormStep } from '../components/StepIndicator';
 
 /**
  * Utility functions for folder form navigation and URL generation
@@ -11,7 +11,7 @@ import { FolderFormStep } from '../components/StepIndicator';
  * @returns The current step of the folder form
  */
 export const getCurrentStepFromUrl = (
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): FolderFormStep => {
   // Priority 1: folderId means we're at sendRequests step
   if (searchParams.has('folderId')) {
@@ -42,7 +42,7 @@ export const getCurrentStepFromUrl = (
  * @returns True if a folder is preselected
  */
 export const hasPreselectedFolder = (
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): boolean => {
   return searchParams.has('folderId');
 };
@@ -53,7 +53,7 @@ export const hasPreselectedFolder = (
  * @returns True if a folder type is preselected
  */
 export const hasPreselectedFolderType = (
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): boolean => {
   return searchParams.has('typeId');
 };
@@ -64,7 +64,7 @@ export const hasPreselectedFolderType = (
  * @returns Folder ID if present, null otherwise
  */
 export const getPreselectedFolderId = (
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): string | null => {
   return searchParams.get('folderId');
 };
@@ -75,7 +75,7 @@ export const getPreselectedFolderId = (
  * @returns Folder type ID if present, null otherwise
  */
 export const getPreselectedFolderTypeId = (
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
 ): string | null => {
   return searchParams.get('typeId');
 };

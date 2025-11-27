@@ -1,23 +1,23 @@
-import { AuthRepository } from '../repository/authRepository';
-import { mockDeep, mockReset, DeepMockProxy } from 'jest-mock-extended';
-import {
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { type DeepMockProxy, mockDeep, mockReset } from 'vitest-mock-extended';
+import type {
   AuthProvider,
   Prisma,
   PrismaClient,
 } from '../../../lib/prisma/generated/client';
-import { verifyPassword } from '../utils/password'; // assuming it's imported here
-jest.mock('../utils/password'); // mock the whole module
+import { AuthRepository } from '../repository/authRepository';
+import { verifyPassword } from '../utils/password';
 
-jest.mock('@/lib/prisma', () => ({
+vi.mock('../utils/password');
+
+vi.mock('@/lib/prisma', () => ({
   prisma: mockDeep<PrismaClient>(),
 }));
 
 describe('AuthRepository', () => {
   let authRepository: AuthRepository;
   let mockPrisma: DeepMockProxy<PrismaClient>;
-  const mockedVerifyPassword = verifyPassword as jest.MockedFunction<
-    typeof verifyPassword
-  >;
+  const mockedVerifyPassword = vi.mocked(verifyPassword);
 
   beforeEach(() => {
     mockPrisma = mockDeep<PrismaClient>();
@@ -59,7 +59,7 @@ describe('AuthRepository', () => {
               }),
             }),
           }),
-        })
+        }),
       );
     });
 
@@ -115,14 +115,14 @@ describe('AuthRepository', () => {
       const email = 'test@example.com';
 
       // Mock 3 recent reset attempts
-      authRepository.findUserByEmail = jest.fn().mockResolvedValue('user');
+      authRepository.findUserByEmail = vi.fn().mockResolvedValue('user');
       mockPrisma.authProvider.findFirst.mockResolvedValue(
-        'authProvider' as unknown as AuthProvider
+        'authProvider' as unknown as AuthProvider,
       );
       mockPrisma.passwordResetToken.count.mockResolvedValue(3);
 
       await expect(
-        authRepository.createPasswordResetToken(email)
+        authRepository.createPasswordResetToken(email),
       ).rejects.toThrow('Too many password reset attempts');
     });
 
@@ -133,7 +133,7 @@ describe('AuthRepository', () => {
       mockPrisma.emailVerificationToken.count.mockResolvedValue(3);
 
       await expect(
-        authRepository.createEmailVerificationToken(email)
+        authRepository.createEmailVerificationToken(email),
       ).rejects.toThrow('Too many verification attempts');
     });
   });
@@ -153,7 +153,7 @@ describe('AuthRepository', () => {
 
       const result = await authRepository.resetPassword(
         'expired-token',
-        'NewPass123!'
+        'NewPass123!',
       );
       expect(result).toBe(false);
     });
@@ -172,7 +172,7 @@ describe('AuthRepository', () => {
 
       const result = await authRepository.resetPassword(
         'used-token',
-        'NewPass123!'
+        'NewPass123!',
       );
       expect(result).toBe(false);
     });
@@ -198,7 +198,7 @@ describe('AuthRepository', () => {
       const session = await authRepository.createSession(
         userId,
         userAgent,
-        ipAddress
+        ipAddress,
       );
 
       expect(session.userId).toBe(userId);
@@ -477,7 +477,7 @@ describe('AuthRepository', () => {
       const email = 'test@example.com';
 
       mockPrisma.user.findFirst.mockRejectedValue(
-        new Error('Database connection failed')
+        new Error('Database connection failed'),
       );
 
       const result = await authRepository.findUserByEmail(email);
@@ -489,7 +489,7 @@ describe('AuthRepository', () => {
       const userId = 'user-id';
 
       mockPrisma.user.findFirst.mockRejectedValue(
-        new Error('Database connection failed')
+        new Error('Database connection failed'),
       );
 
       const result = await authRepository.findUserById(userId);
@@ -501,7 +501,7 @@ describe('AuthRepository', () => {
       const email = 'test@example.com';
 
       mockPrisma.authProvider.findFirst.mockRejectedValue(
-        new Error('Database connection failed')
+        new Error('Database connection failed'),
       );
 
       const result = await authRepository.isEmailVerified(email);

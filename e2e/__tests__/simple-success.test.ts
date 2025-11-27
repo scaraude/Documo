@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Simple E2E Success Tests', () => {
   test('should successfully load the application', async ({ page }) => {
@@ -76,7 +76,7 @@ test.describe('Simple E2E Success Tests', () => {
 
     expect(foundContent).toBeGreaterThan(0);
     console.log(
-      `✅ Found ${foundContent}/${expectedContent.length} expected content elements`
+      `✅ Found ${foundContent}/${expectedContent.length} expected content elements`,
     );
   });
 
@@ -85,7 +85,7 @@ test.describe('Simple E2E Success Tests', () => {
     await page.waitForLoadState('networkidle');
 
     // Check if Tailwind CSS is working
-    const bodyStyles = await page.locator('body').evaluate(el => {
+    const bodyStyles = await page.locator('body').evaluate((el) => {
       const styles = window.getComputedStyle(el);
       return styles.fontFamily;
     });

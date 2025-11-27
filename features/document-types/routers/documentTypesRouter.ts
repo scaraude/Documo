@@ -1,12 +1,12 @@
 import { createTRPCRouter, publicProcedure } from '@/lib/trpc/trpc';
 import {
+  getAllDocumentTypesCached,
   getDocumentTypeById,
   validateDocumentFile,
-  getAllDocumentTypesCached,
 } from '../repository/documentTypesRepository';
 import {
-  documentTypeIdSchema,
   documentFileValidationSchema,
+  documentTypeIdSchema,
 } from '../types/zod';
 
 export const documentTypesRouter = createTRPCRouter({
@@ -32,7 +32,7 @@ export const documentTypesRouter = createTRPCRouter({
       const result = await validateDocumentFile(
         documentTypeId,
         fileSize,
-        mimeType
+        mimeType,
       );
       return result;
     }),

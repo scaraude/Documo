@@ -1,28 +1,30 @@
+import prisma from '@/lib/prisma';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
+import type { CreateShareLinkParams } from '../../types/api';
 import {
   createShareLink,
-  getShareLinkByToken,
   deleteExpiredShareLinks,
+  getShareLinkByToken,
 } from '../externalRequestsRepository';
-import prisma from '@/lib/prisma';
-import { CreateShareLinkParams } from '../../types/api';
 
 // Mock Prisma
-jest.mock('@/lib/prisma', () => ({
+vi.mock('@/lib/prisma', () => ({
   __esModule: true,
   default: {
     requestShareLink: {
-      create: jest.fn(),
-      findFirst: jest.fn(),
-      deleteMany: jest.fn(),
+      create: vi.fn(),
+      findFirst: vi.fn(),
+      deleteMany: vi.fn(),
     },
   },
 }));
 
-const mockPrisma = prisma as jest.Mocked<typeof prisma> & {
+const mockPrisma = prisma as typeof prisma & {
   requestShareLink: {
-    create: jest.Mock;
-    findFirst: jest.Mock;
-    deleteMany: jest.Mock;
+    create: Mock;
+    findFirst: Mock;
+    deleteMany: Mock;
   };
 };
 
@@ -46,13 +48,13 @@ describe('External Requests Repository', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
-    jest.setSystemTime(mockDate);
+    vi.clearAllMocks();
+    vi.useFakeTimers();
+    vi.setSystemTime(mockDate);
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   describe('createShareLink', () => {
@@ -85,7 +87,7 @@ describe('External Requests Repository', () => {
       };
 
       mockPrisma.requestShareLink.create.mockRejectedValue(
-        new Error('Database error')
+        new Error('Database error'),
       );
 
       await expect(createShareLink(params)).rejects.toThrow('Database error');

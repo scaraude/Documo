@@ -1,6 +1,9 @@
-import { AppDocumentType } from '@/shared/constants';
-import { DocumentRequest, DocumentRequestWithStatue } from '@/shared/types';
-import { FolderType } from '@/features/folder-types/types';
+import type { FolderType } from '@/features/folder-types/types';
+import type { AppDocumentType } from '@/shared/constants';
+import type {
+  DocumentRequest,
+  DocumentRequestWithStatue,
+} from '@/shared/types';
 
 export interface Folder {
   id: string;

@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/features/auth';
-import { useVerificationSession } from '@/features/auth/hooks/useVerificationSession';
 import { useEmailVerification } from '@/features/auth/hooks/useEmailVerification';
+import { useVerificationSession } from '@/features/auth/hooks/useVerificationSession';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
-import { Mail, Clock, CheckCircle } from 'lucide-react';
 import { ROUTES } from '@/shared/constants/routes/paths';
+import { CheckCircle, Clock, Mail } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useEffect, useState, Suspense } from 'react';
 
 function VerifyEmailContent() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>(
-    'loading'
+    'loading',
   );
   const [message, setMessage] = useState('');
   const [email, setEmail] = useState('');
@@ -37,6 +37,7 @@ function VerifyEmailContent() {
     },
   });
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: Only want to run on token or session change
   useEffect(() => {
     // Only run verification once per token
     if (!token || hasVerified) {
@@ -44,7 +45,7 @@ function VerifyEmailContent() {
       if (!hasSession && !token) {
         setStatus('error');
         setMessage(
-          'Aucun token de vérification fourni. Veuillez réessayer de vous connecter.'
+          'Aucun token de vérification fourni. Veuillez réessayer de vous connecter.',
         );
       }
       return;
@@ -56,7 +57,7 @@ function VerifyEmailContent() {
         await verifyEmail(token);
         setStatus('success');
         setMessage(
-          'Email vérifié avec succès. Vous pouvez maintenant vous connecter.'
+          'Email vérifié avec succès. Vous pouvez maintenant vous connecter.',
         );
 
         // Redirect to login after 3 seconds
@@ -66,7 +67,7 @@ function VerifyEmailContent() {
       } catch (error) {
         setStatus('error');
         setMessage(
-          (error as Error)?.message || "Échec de la vérification de l'email"
+          (error as Error)?.message || "Échec de la vérification de l'email",
         );
       }
     };
@@ -140,7 +141,7 @@ function VerifyEmailContent() {
                     <span>
                       Renvoyer dans{' '}
                       {emailVerificationHook.formatTime(
-                        emailVerificationHook.timeLeft
+                        emailVerificationHook.timeLeft,
                       )}
                     </span>
                   </div>
@@ -202,12 +203,12 @@ function VerifyEmailContent() {
     try {
       await resendVerification(email);
       setMessage(
-        'Email de vérification envoyé. Veuillez vérifier votre boîte de réception.'
+        'Email de vérification envoyé. Veuillez vérifier votre boîte de réception.',
       );
     } catch (error) {
       setMessage(
         (error as Error)?.message ||
-          "Échec de l'envoi de l'email de vérification"
+          "Échec de l'envoi de l'email de vérification",
       );
     }
   };
@@ -220,7 +221,7 @@ function VerifyEmailContent() {
 
           {status === 'loading' && (
             <div>
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
               <p className="text-gray-600">Vérification de votre email...</p>
             </div>
           )}
@@ -246,7 +247,7 @@ function VerifyEmailContent() {
                     type="email"
                     placeholder="Entrez votre email pour renvoyer la vérification"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
@@ -285,7 +286,7 @@ export default function VerifyEmailPage() {
               <h2 className="text-2xl font-bold">
                 Vérification de l&apos;email
               </h2>
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4" />
               <p className="text-gray-600">Chargement...</p>
             </div>
           </Card>

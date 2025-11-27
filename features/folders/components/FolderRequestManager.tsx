@@ -1,37 +1,38 @@
 'use client';
-import { useState } from 'react';
-import { FolderWithRelationsAndStatus } from '../types';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { useRequests } from '@/features/requests/hooks/useRequests';
 import {
+  Badge,
   Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
 } from '@/shared/components';
-import {
-  Plus,
-  Send,
-  Users,
-  Clock,
-  CheckCircle,
-  XCircle,
-  FileCheck,
-  Hash,
-  Calendar,
-  Trash2,
-  Eye,
-} from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import {
+import type {
   ComputedRequestStatus,
   DocumentRequestWithStatue,
 } from '@/shared/types';
+import { formatDistanceToNow } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  Eye,
+  FileCheck,
+  Hash,
+  Plus,
+  Send,
+  Trash2,
+  Users,
+  XCircle,
+} from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
+import type React from 'react';
 import { ROUTES } from '../../../shared/constants';
-import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
+import type { FolderWithRelationsAndStatus } from '../types';
 
 interface FolderRequestManagerProps {
   folder: FolderWithRelationsAndStatus;
@@ -49,20 +50,22 @@ export const FolderRequestManager = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const addEmail = () => {
-    setNewEmails(prev => [...prev, '']);
+    setNewEmails((prev) => [...prev, '']);
   };
 
   const removeEmail = (index: number) => {
-    setNewEmails(prev => prev.filter((_, i) => i !== index));
+    setNewEmails((prev) => prev.filter((_, i) => i !== index));
   };
 
   const updateEmail = (index: number, value: string) => {
-    setNewEmails(prev => prev.map((email, i) => (i === index ? value : email)));
+    setNewEmails((prev) =>
+      prev.map((email, i) => (i === index ? value : email)),
+    );
   };
 
   const handleCreateRequests = async () => {
     const validEmails = newEmails.filter(
-      email => email.trim() !== '' && email.includes('@')
+      (email) => email.trim() !== '' && email.includes('@'),
     );
 
     if (validEmails.length === 0) return;
@@ -71,13 +74,13 @@ export const FolderRequestManager = ({
       setIsLoading(true);
 
       await Promise.all(
-        validEmails.map(email =>
+        validEmails.map((email) =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
             requestedDocuments: folder.requestedDocuments,
             folderId: folder.id,
-          })
-        )
+          }),
+        ),
       );
 
       // Reset form
@@ -177,9 +180,9 @@ export const FolderRequestManager = ({
                 Documents qui seront demandés :
               </h4>
               <div className="flex flex-wrap gap-2">
-                {folder.requestedDocuments.map((docType, index) => (
+                {folder.requestedDocuments.map((docType) => (
                   <Badge
-                    key={index}
+                    key={docType}
                     variant="outline"
                     className="text-blue-700 border-blue-300"
                   >
@@ -190,16 +193,21 @@ export const FolderRequestManager = ({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label
+                htmlFor="email-input"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
                 Adresses email des personnes concernées
               </label>
               <div className="space-y-3">
                 {newEmails.map((email, index) => (
+                  // biome-ignore lint/suspicious/noArrayIndexKey: email
                   <div key={index} className="flex gap-3">
                     <input
+                      id="email-input"
                       type="email"
                       value={email}
-                      onChange={e => updateEmail(index, e.target.value)}
+                      onChange={(e) => updateEmail(index, e.target.value)}
                       placeholder="email@exemple.com"
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
                     />
@@ -264,7 +272,7 @@ export const FolderRequestManager = ({
         )
       ) : (
         <div className="space-y-3">
-          {folder.requests.map(request => (
+          {folder.requests.map((request) => (
             <RequestCard
               key={request.id}
               request={request}

@@ -1,11 +1,11 @@
 'use client';
 
-import React from 'react';
-import { Check, X } from 'lucide-react';
 import {
-  validatePassword,
   passwordRequirements,
+  validatePassword,
 } from '@/features/auth/types/zod';
+import { Check, X } from 'lucide-react';
+import type React from 'react';
 
 interface PasswordStrengthIndicatorProps {
   password: string;
@@ -84,7 +84,7 @@ export const PasswordStrengthIndicator: React.FC<
         <div className="space-y-1">
           <span className="text-xs font-medium text-gray-700">Exigences :</span>
           <ul className="space-y-1">
-            {passwordRequirements.map((requirement, index) => {
+            {passwordRequirements.map((requirement) => {
               // Precise validation for each requirement
               let requirementMet = false;
               if (requirement.includes('8 caractères')) {
@@ -100,7 +100,7 @@ export const PasswordStrengthIndicator: React.FC<
               }
 
               return (
-                <li key={index} className="flex items-center space-x-2">
+                <li key={requirement} className="flex items-center space-x-2">
                   {requirementMet ? (
                     <Check className="w-3 h-3 text-green-500" />
                   ) : (

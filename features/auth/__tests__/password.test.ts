@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest';
 import { hashPassword, verifyPassword } from '../utils/password';
 
 describe('Password Utils', () => {
@@ -77,11 +78,11 @@ describe('Password Utils', () => {
 
       const isValidLower = await verifyPassword(
         'casesensitive123!',
-        hashedPassword
+        hashedPassword,
       );
       const isValidUpper = await verifyPassword(
         'CASESENSITIVE123!',
-        hashedPassword
+        hashedPassword,
       );
 
       expect(isValidLower).toBe(false);

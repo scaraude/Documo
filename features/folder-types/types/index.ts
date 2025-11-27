@@ -1,4 +1,4 @@
-import {
+import type {
   AppDocumentType,
   DocumentTypeId,
 } from '../../document-types/types/zod';

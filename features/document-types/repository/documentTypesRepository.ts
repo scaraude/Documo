@@ -1,6 +1,6 @@
-import prisma from '@/lib/prisma';
-import { DocumentType } from '@/lib/prisma/generated/client';
 import logger from '@/lib/logger';
+import prisma from '@/lib/prisma';
+import type { DocumentType } from '@/lib/prisma/generated/client';
 
 export interface DocumentTypeWithValidation extends DocumentType {
   // Add computed validation helpers
@@ -12,7 +12,7 @@ export const getAllDocumentTypes = async (): Promise<DocumentType[]> => {
   try {
     logger.info(
       { operation: 'documentTypes.getAll' },
-      'Fetching all document types'
+      'Fetching all document types',
     );
 
     const documentTypes = await prisma.documentType.findMany({
@@ -21,26 +21,26 @@ export const getAllDocumentTypes = async (): Promise<DocumentType[]> => {
 
     logger.info(
       { operation: 'documentTypes.getAll', count: documentTypes.length },
-      'Successfully fetched document types'
+      'Successfully fetched document types',
     );
 
     return documentTypes;
   } catch (error) {
     logger.error(
       { operation: 'documentTypes.getAll', error: (error as Error).message },
-      'Failed to fetch document types'
+      'Failed to fetch document types',
     );
     throw new Error('Failed to fetch document types');
   }
 };
 
 export const getDocumentTypeById = async (
-  id: string
+  id: string,
 ): Promise<DocumentType | null> => {
   try {
     logger.info(
       { operation: 'documentTypes.getById', documentTypeId: id },
-      'Fetching document type by ID'
+      'Fetching document type by ID',
     );
 
     const documentType = await prisma.documentType.findUnique({
@@ -50,12 +50,12 @@ export const getDocumentTypeById = async (
     if (documentType) {
       logger.info(
         { operation: 'documentTypes.getById', documentTypeId: id },
-        'Successfully fetched document type'
+        'Successfully fetched document type',
       );
     } else {
       logger.warn(
         { operation: 'documentTypes.getById', documentTypeId: id },
-        'Document type not found'
+        'Document type not found',
       );
     }
 
@@ -67,14 +67,14 @@ export const getDocumentTypeById = async (
         documentTypeId: id,
         error: (error as Error).message,
       },
-      'Failed to fetch document type'
+      'Failed to fetch document type',
     );
     throw new Error('Failed to fetch document type');
   }
 };
 
 export const getDocumentTypesById = async (
-  ids: string[]
+  ids: string[],
 ): Promise<DocumentType[]> => {
   try {
     logger.info(
@@ -83,7 +83,7 @@ export const getDocumentTypesById = async (
         documentTypeIds: ids,
         count: ids.length,
       },
-      'Fetching document types by IDs'
+      'Fetching document types by IDs',
     );
 
     const documentTypes = await prisma.documentType.findMany({
@@ -97,7 +97,7 @@ export const getDocumentTypesById = async (
         requestedCount: ids.length,
         foundCount: documentTypes.length,
       },
-      'Successfully fetched document types'
+      'Successfully fetched document types',
     );
 
     return documentTypes;
@@ -108,21 +108,21 @@ export const getDocumentTypesById = async (
         documentTypeIds: ids,
         error: (error as Error).message,
       },
-      'Failed to fetch document types'
+      'Failed to fetch document types',
     );
     throw new Error('Failed to fetch document types');
   }
 };
 
 export const getDocumentTypeWithValidation = async (
-  id: string
+  id: string,
 ): Promise<DocumentTypeWithValidation | null> => {
   try {
     const documentType = await getDocumentTypeById(id);
     if (!documentType) return null;
 
     // Convert format strings to MIME types
-    const allowedMimeTypes = documentType.acceptedFormats.map(format => {
+    const allowedMimeTypes = documentType.acceptedFormats.map((format) => {
       switch (format.toLowerCase()) {
         case 'pdf':
           return 'application/pdf';
@@ -148,7 +148,7 @@ export const getDocumentTypeWithValidation = async (
         documentTypeId: id,
         error: (error as Error).message,
       },
-      'Failed to fetch document type with validation'
+      'Failed to fetch document type with validation',
     );
     throw new Error('Failed to fetch document type with validation');
   }
@@ -157,7 +157,7 @@ export const getDocumentTypeWithValidation = async (
 export const validateDocumentFile = async (
   documentTypeId: string,
   fileSize: number,
-  mimeType: string
+  mimeType: string,
 ): Promise<{ isValid: boolean; errors: string[] }> => {
   try {
     const documentType = await getDocumentTypeWithValidation(documentTypeId);
@@ -174,7 +174,7 @@ export const validateDocumentFile = async (
     // Check file size
     if (fileSize > documentType.maxSizeBytes) {
       errors.push(
-        `La taille du fichier ne doit pas dépasser ${documentType.maxSizeMB} MB`
+        `La taille du fichier ne doit pas dépasser ${documentType.maxSizeMB} MB`,
       );
     }
 
@@ -182,7 +182,7 @@ export const validateDocumentFile = async (
     if (!documentType.allowedMimeTypes.includes(mimeType)) {
       const allowedFormats = documentType.acceptedFormats.join(', ');
       errors.push(
-        `Format de fichier non autorisé. Formats acceptés: ${allowedFormats}`
+        `Format de fichier non autorisé. Formats acceptés: ${allowedFormats}`,
       );
     }
 
@@ -197,7 +197,7 @@ export const validateDocumentFile = async (
         documentTypeId,
         error: (error as Error).message,
       },
-      'Failed to validate document file'
+      'Failed to validate document file',
     );
     return {
       isValid: false,
@@ -208,7 +208,7 @@ export const validateDocumentFile = async (
 
 // Cache for frequently accessed document types
 let documentTypesCache: DocumentType[] | null = null;
-let cacheTimestamp: number = 0;
+let cacheTimestamp = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
 export const getAllDocumentTypesCached = async (): Promise<DocumentType[]> => {
@@ -217,14 +217,14 @@ export const getAllDocumentTypesCached = async (): Promise<DocumentType[]> => {
   if (documentTypesCache && now - cacheTimestamp < CACHE_DURATION) {
     logger.debug(
       { operation: 'documentTypes.getAllCached' },
-      'Returning cached document types'
+      'Returning cached document types',
     );
     return documentTypesCache;
   }
 
   logger.info(
     { operation: 'documentTypes.getAllCached' },
-    'Cache miss, fetching fresh document types'
+    'Cache miss, fetching fresh document types',
   );
   documentTypesCache = await getAllDocumentTypes();
   cacheTimestamp = now;
@@ -235,7 +235,7 @@ export const getAllDocumentTypesCached = async (): Promise<DocumentType[]> => {
 export const clearDocumentTypesCache = (): void => {
   logger.info(
     { operation: 'documentTypes.clearCache' },
-    'Clearing document types cache'
+    'Clearing document types cache',
   );
   documentTypesCache = null;
   cacheTimestamp = 0;

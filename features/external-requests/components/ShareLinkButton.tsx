@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { Check, Link as LinkIcon } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { ROUTES } from '@/shared/constants';
+import { Check, Link as LinkIcon } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { useExternalRequest } from '../hooks/useExternalRequest';
 
@@ -38,7 +38,7 @@ export function ShareLinkButton({
           onError: () => {
             toast.error('Erreur lors de la génération du lien de partage');
           },
-        }
+        },
       );
     } catch (error) {
       console.error('Error sharing link:', error);

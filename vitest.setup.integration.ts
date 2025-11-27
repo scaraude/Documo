@@ -1,6 +1,6 @@
+import * as matchers from '@testing-library/jest-dom/matchers';
 import { beforeAll, vi } from 'vitest';
 import { expect } from 'vitest';
-import * as matchers from '@testing-library/jest-dom/matchers';
 import { seedTestData } from './prisma/seed-test';
 
 // Extend Vitest's expect with jest-dom matchers

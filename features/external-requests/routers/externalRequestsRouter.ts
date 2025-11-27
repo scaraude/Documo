@@ -1,30 +1,30 @@
-import { z } from 'zod';
-import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
 import * as documentRepository from '@/features/documents/repository/documentsRepository';
+import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
+import logger from '@/lib/logger';
 import { TRPCError } from '@trpc/server';
+import { put } from '@vercel/blob';
+import { z } from 'zod';
 import { publicProcedure, router } from '../../../lib/trpc/trpc';
+import { prismaShareLinkToExternalRequest } from '../mapper/mapper';
 import {
   externalCreateDocumentSchema,
   externalRequestSchema,
 } from '../types/zod';
-import { prismaShareLinkToExternalRequest } from '../mapper/mapper';
-import { put } from '@vercel/blob';
-import logger from '@/lib/logger';
 
 export const externalRouter = router({
   getRequestByToken: publicProcedure
     .input(
       z.object({
         token: z.string().min(1, 'Token is required'),
-      })
+      }),
     )
     .output(externalRequestSchema)
     .query(async ({ input }) => {
       try {
         const { token } = input;
         logger.info(
-          { token: token.substring(0, 8) + '...' },
-          'Fetching external request by token'
+          { token: `${token.substring(0, 8)}...` },
+          'Fetching external request by token',
         );
 
         const shareLink =
@@ -33,8 +33,8 @@ export const externalRouter = router({
 
         if (!request) {
           logger.warn(
-            { token: token.substring(0, 8) + '...' },
-            'Request not found for token'
+            { token: `${token.substring(0, 8)}...` },
+            'Request not found for token',
           );
           throw new TRPCError({
             code: 'NOT_FOUND',
@@ -43,8 +43,8 @@ export const externalRouter = router({
         }
 
         logger.info(
-          { requestId: request.id, token: token.substring(0, 8) + '...' },
-          'External request fetched successfully'
+          { requestId: request.id, token: `${token.substring(0, 8)}...` },
+          'External request fetched successfully',
         );
         // Only return necessary information for external users
         return prismaShareLinkToExternalRequest(shareLink);
@@ -55,10 +55,10 @@ export const externalRouter = router({
 
         logger.error(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             error: error instanceof Error ? error.message : error,
           },
-          'Error fetching external request'
+          'Error fetching external request',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -80,11 +80,11 @@ export const externalRouter = router({
         } = input;
         logger.info(
           {
-            token: token.substring(0, 8) + '...',
+            token: `${token.substring(0, 8)}...`,
             documentType: documentData.typeId,
             fileName: documentData.fileName,
           },
-          'Creating external document'
+          'Creating external document',
         );
 
         const shareLink =
@@ -92,8 +92,8 @@ export const externalRouter = router({
 
         if (!shareLink) {
           logger.warn(
-            { token: token.substring(0, 8) + '...' },
-            'Share link not found for document upload'
+            { token: `${token.substring(0, 8)}...` },
+            'Share link not found for document upload',
           );
           throw new TRPCError({
             code: 'NOT_FOUND',
@@ -105,8 +105,8 @@ export const externalRouter = router({
 
         if (!file || !documentData) {
           logger.error(
-            { token: token.substring(0, 8) + '...' },
-            'Missing file or document data'
+            { token: `${token.substring(0, 8)}...` },
+            'Missing file or document data',
           );
           throw new TRPCError({
             code: 'FORBIDDEN',
@@ -123,7 +123,7 @@ export const externalRouter = router({
 
         logger.info(
           { requestId, documentType: documentData.typeId, url },
-          'Document blob uploaded, saving to database'
+          'Document blob uploaded, saving to database',
         );
         // Sauvegarder le document dans la base de données
         const result = await documentRepository.uploadDocument({
@@ -135,16 +135,16 @@ export const externalRouter = router({
         });
         logger.info(
           { documentId: result.id, requestId },
-          'External document created successfully'
+          'External document created successfully',
         );
         return result;
       } catch (error) {
         logger.error(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             error: error instanceof Error ? error.message : error,
           },
-          'Error uploading external document'
+          'Error uploading external document',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -157,12 +157,12 @@ export const externalRouter = router({
     .input(
       z.object({
         requestId: z.string().min(1, 'Request ID is required'),
-      })
+      }),
     )
     .output(
       z.object({
         token: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const { requestId } = input;
@@ -182,14 +182,14 @@ export const externalRouter = router({
     .input(
       z.object({
         token: z.string().min(1, 'Token is required'),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       try {
         const { token } = input;
         logger.info(
-          { token: token.substring(0, 8) + '...' },
-          'Accepting external request'
+          { token: `${token.substring(0, 8)}...` },
+          'Accepting external request',
         );
 
         const shareLink =
@@ -197,8 +197,8 @@ export const externalRouter = router({
 
         if (!shareLink) {
           logger.warn(
-            { token: token.substring(0, 8) + '...' },
-            'Share link not found for accept request'
+            { token: `${token.substring(0, 8)}...` },
+            'Share link not found for accept request',
           );
           throw new TRPCError({
             code: 'NOT_FOUND',
@@ -207,12 +207,12 @@ export const externalRouter = router({
         }
 
         const result = await externalRequestsRepository.acceptRequest(
-          shareLink.requestId
+          shareLink.requestId,
         );
 
         logger.info(
           { requestId: shareLink.requestId },
-          'External request accepted successfully'
+          'External request accepted successfully',
         );
         return result;
       } catch (error) {
@@ -222,10 +222,10 @@ export const externalRouter = router({
 
         logger.error(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             error: error instanceof Error ? error.message : error,
           },
-          'Error accepting external request'
+          'Error accepting external request',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -239,14 +239,14 @@ export const externalRouter = router({
       z.object({
         token: z.string().min(1, 'Token is required'),
         message: z.string().optional(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       try {
         const { token, message } = input;
         logger.info(
-          { token: token.substring(0, 8) + '...', hasMessage: !!message },
-          'Declining external request'
+          { token: `${token.substring(0, 8)}...`, hasMessage: !!message },
+          'Declining external request',
         );
 
         const shareLink =
@@ -254,8 +254,8 @@ export const externalRouter = router({
 
         if (!shareLink) {
           logger.warn(
-            { token: token.substring(0, 8) + '...' },
-            'Share link not found for decline request'
+            { token: `${token.substring(0, 8)}...` },
+            'Share link not found for decline request',
           );
           throw new TRPCError({
             code: 'NOT_FOUND',
@@ -265,12 +265,12 @@ export const externalRouter = router({
 
         const result = await externalRequestsRepository.declineRequest(
           shareLink.requestId,
-          message
+          message,
         );
 
         logger.info(
           { requestId: shareLink.requestId },
-          'External request declined successfully'
+          'External request declined successfully',
         );
         return result;
       } catch (error) {
@@ -280,10 +280,10 @@ export const externalRouter = router({
 
         logger.error(
           {
-            token: input.token.substring(0, 8) + '...',
+            token: `${input.token.substring(0, 8)}...`,
             error: error instanceof Error ? error.message : error,
           },
-          'Error declining external request'
+          'Error declining external request',
         );
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

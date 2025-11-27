@@ -1,14 +1,14 @@
+import type { AppDocument } from '@/shared/types';
+import { Download, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect } from 'react';
-import { AppDocument } from '@/shared/types';
+import { Button } from '../../../shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from '../../../shared/components/ui/dialog';
 import { ScrollArea } from '../../../shared/components/ui/scroll-area';
-import { Button } from '../../../shared/components/ui/button';
-import { Loader2, Download } from 'lucide-react';
-import Image from 'next/image';
 import { useDecryptedDocument } from '../hooks/useDecryptedDocument';
 
 interface DocumentViewerProps {

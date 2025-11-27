@@ -1,12 +1,12 @@
 'use client';
 
-import { trpc } from '../../../lib/trpc/client';
 import {
   computeFolderStatus,
   computeRequestStatus,
 } from '@/shared/utils/computedStatus';
-import { useAuthErrorHandler } from '../../../shared/utils';
 import { toast } from 'sonner';
+import { trpc } from '../../../lib/trpc/client';
+import { useAuthErrorHandler } from '../../../shared/utils';
 
 export function useFolders() {
   const { createErrorHandler } = useAuthErrorHandler();
@@ -15,7 +15,7 @@ export function useFolders() {
   const getAllFolders = () =>
     trpc.folder.getAll.useQuery(undefined, {
       select(data) {
-        return data.map(folder => {
+        return data.map((folder) => {
           return { ...folder, status: computeFolderStatus(folder) };
         });
       },
@@ -31,13 +31,13 @@ export function useFolders() {
             : {
                 ...folder,
                 status: computeFolderStatus(folder),
-                requests: folder.requests?.map(request => ({
+                requests: folder.requests?.map((request) => ({
                   ...request,
                   status: computeRequestStatus(request),
                 })),
               };
         },
-      }
+      },
     );
 
   const createFolderMutation = trpc.folder.create.useMutation({

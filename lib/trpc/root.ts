@@ -1,11 +1,11 @@
 import { requestsRouter } from '@/features/requests/routers/requestsRouter';
-import { router } from './trpc';
+import { authRouter } from '../../features/auth/routers/authRouter';
+import { documentTypesRouter } from '../../features/document-types/routers/documentTypesRouter';
+import { routerDocument } from '../../features/documents/routers/documentRouter';
 import { externalRouter } from '../../features/external-requests/routers/externalRequestsRouter';
 import { folderTypesRouter } from '../../features/folder-types/routers/folderTypesRouter';
 import { folderRouter } from '../../features/folders/routers/folderRouter';
-import { routerDocument } from '../../features/documents/routers/documentRouter';
-import { authRouter } from '../../features/auth/routers/authRouter';
-import { documentTypesRouter } from '../../features/document-types/routers/documentTypesRouter';
+import { router } from './trpc';
 
 export const appRouter = router({
   requests: requestsRouter,

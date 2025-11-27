@@ -1,11 +1,15 @@
 // features/folder-types/components/FolderTypeForm.tsx
 'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { ROUTES } from '@/shared/constants';
-import { CreateFolderTypeParams } from '../types';
 import { Button } from '@/shared/components';
-import { DocumentTypeId, useDocumentTypes } from '../../document-types/client';
+import { ROUTES } from '@/shared/constants';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import type React from 'react';
+import {
+  type DocumentTypeId,
+  useDocumentTypes,
+} from '../../document-types/client';
+import type { CreateFolderTypeParams } from '../types';
 
 interface FolderTypeFormProps {
   onSubmit: (data: CreateFolderTypeParams) => Promise<void>;
@@ -22,7 +26,7 @@ export const FolderTypeForm = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [requiredDocuments, setRequiredDocuments] = useState<DocumentTypeId[]>(
-    []
+    [],
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,10 +47,10 @@ export const FolderTypeForm = ({
   };
 
   const toggleDocumentType = (docTypeId: DocumentTypeId) => {
-    setRequiredDocuments(prev =>
+    setRequiredDocuments((prev) =>
       prev.includes(docTypeId)
-        ? prev.filter(dt => dt !== docTypeId)
-        : [...prev, docTypeId]
+        ? prev.filter((dt) => dt !== docTypeId)
+        : [...prev, docTypeId],
     );
   };
 
@@ -71,7 +75,7 @@ export const FolderTypeForm = ({
             required
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             value={name}
-            onChange={e => setName(e.target.value)}
+            onChange={(e) => setName(e.target.value)}
             placeholder="Ex: Dossier locatif, Demande de crédit..."
           />
         </div>
@@ -88,7 +92,7 @@ export const FolderTypeForm = ({
             rows={3}
             className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             value={description}
-            onChange={e => setDescription(e.target.value)}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Décrivez l'usage de ce type de dossier..."
           />
         </div>
@@ -103,7 +107,7 @@ export const FolderTypeForm = ({
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 border border-gray-300 rounded-md p-4 max-h-60 overflow-y-auto">
-          {documentTypes.map(docType => (
+          {documentTypes.map((docType) => (
             <label key={docType.id} className="flex items-center">
               <input
                 type="checkbox"

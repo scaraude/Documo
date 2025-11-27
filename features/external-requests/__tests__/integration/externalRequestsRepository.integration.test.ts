@@ -1,6 +1,7 @@
-import * as externalRequestsRepository from '../../repository/externalRequestsRepository';
-import prisma from '@/lib/prisma';
 import { randomUUID } from 'crypto';
+import prisma from '@/lib/prisma';
+import { beforeEach, describe, expect, it } from 'vitest';
+import * as externalRequestsRepository from '../../repository/externalRequestsRepository';
 
 describe('ExternalRequestsRepository Integration Tests', () => {
   let testRequestId: string;
@@ -22,7 +23,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
     testRequestId = testRequest.id;
     testShareLinkToken = testShareLink.token;
     testCivilId = testRequest.email;
-    testRequestedDocuments = testRequest.requestedDocuments.map(dt => dt.id);
+    testRequestedDocuments = testRequest.requestedDocuments.map((dt) => dt.id);
   });
 
   describe('createShareLink', () => {
@@ -54,7 +55,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       // Act - Use actual seeded token
       const foundShareLink =
         await externalRequestsRepository.getShareLinkByToken(
-          testShareLinkToken
+          testShareLinkToken,
         );
 
       // Assert
@@ -69,7 +70,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       // Act
       const result =
         await externalRequestsRepository.getShareLinkByToken(
-          'non-existent-token'
+          'non-existent-token',
         );
 
       // Assert
@@ -102,7 +103,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       // Act
       const shareLink =
         await externalRequestsRepository.getShareLinkByToken(
-          testShareLinkToken
+          testShareLinkToken,
         );
 
       // Assert
@@ -165,7 +166,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       // Verify seeded valid link still exists
       const seededValidLink =
         await externalRequestsRepository.getShareLinkByToken(
-          testShareLinkToken
+          testShareLinkToken,
         );
       expect(seededValidLink).toBeTruthy();
     });
@@ -188,7 +189,7 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       // Act
       const shareLink =
         await externalRequestsRepository.getShareLinkByToken(
-          testShareLinkToken
+          testShareLinkToken,
         );
 
       // Assert
@@ -201,12 +202,12 @@ describe('ExternalRequestsRepository Integration Tests', () => {
       // Act
       const shareLink =
         await externalRequestsRepository.getShareLinkByToken(
-          testShareLinkToken
+          testShareLinkToken,
         );
 
       // Assert
       expect(shareLink?.request?.requestedDocuments).toEqual(
-        testRequestedDocuments
+        testRequestedDocuments,
       );
       expect(Array.isArray(shareLink?.request?.requestedDocuments)).toBe(true);
     });

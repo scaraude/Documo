@@ -11,18 +11,25 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   // Node Environment
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
 
   // Database
   DATABASE_URL: z.string().url('DATABASE_URL must be a valid PostgreSQL URL'),
-  TEST_DATABASE_URL: z.string().url('TEST_DATABASE_URL must be a valid PostgreSQL URL').optional(),
+  TEST_DATABASE_URL: z
+    .string()
+    .url('TEST_DATABASE_URL must be a valid PostgreSQL URL')
+    .optional(),
 
   // Email Configuration
   FROM_EMAIL: z.string().email('FROM_EMAIL must be a valid email address'),
   RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY is required'),
 
   // Application URLs
-  NEXT_PUBLIC_APP_URL: z.string().url('NEXT_PUBLIC_APP_URL must be a valid URL'),
+  NEXT_PUBLIC_APP_URL: z
+    .string()
+    .url('NEXT_PUBLIC_APP_URL must be a valid URL'),
 
   // Vercel Blob Storage
   BLOB_READ_WRITE_TOKEN: z.string().min(1, 'BLOB_READ_WRITE_TOKEN is required'),
@@ -53,7 +60,7 @@ function validateEnv(): Env {
         .map((err) => `  - ${err.path.join('.')}: ${err.message}`)
         .join('\n');
 
-      console.error('❌ Invalid environment variables:\n' + missingVars);
+      console.error(`❌ Invalid environment variables:\n${missingVars}`);
       throw new Error('Environment validation failed. Check your .env file.');
     }
     throw error;

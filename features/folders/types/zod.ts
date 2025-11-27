@@ -23,7 +23,9 @@ export const UpdateFolderInputSchema = z.object({
   data: z.object({
     name: z.string().min(1, 'Le nom est requis').optional(),
     description: z.string().optional(),
-    requestedDocuments: z.array(z.string().uuid('ID de document invalide')).optional(),
+    requestedDocuments: z
+      .array(z.string().uuid('ID de document invalide'))
+      .optional(),
     expiresAt: z.date().nullable().optional(),
     sharedWith: z.array(z.string().uuid('ID utilisateur invalide')).optional(),
   }),

@@ -1,6 +1,7 @@
-import TRPCProvider from '../providers/trpc-provider';
 import { AuthProvider } from '@/features/auth';
+import type React from 'react';
 import { Toaster } from 'sonner';
+import TRPCProvider from '../providers/trpc-provider';
 import AuthGuard from './AuthGuard';
 
 interface AuthenticatedLayoutProps {

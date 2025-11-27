@@ -1,23 +1,25 @@
-import { render, screen, fireEvent, act } from '@testing-library/react';
-import { useRouter } from 'next/navigation';
-import * as externalRequestsRepository from '../../repository/externalRequestsRepository';
-import * as documentsRepository from '@/features/documents/repository/documentsRepository';
-import { ShareLinkButton } from '../../components/ShareLinkButton';
 import ExternalRequestPage from '@/app/external/requests/[token]/page';
+import * as documentsRepository from '@/features/documents/repository/documentsRepository';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { useRouter } from 'next/navigation';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { Mock } from 'vitest';
+import { ShareLinkButton } from '../../components/ShareLinkButton';
+import * as externalRequestsRepository from '../../repository/externalRequestsRepository';
 
 // Mock dependencies
-jest.mock('next/navigation', () => ({
-  useRouter: jest.fn(),
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
   useParams: () => ({ token: 'test-token' }),
 }));
 
-jest.mock('../../repository/externalRequestsRepository');
-jest.mock('@/features/documents/repository/documentsRepository');
+vi.mock('../../repository/externalRequestsRepository');
+vi.mock('@/features/documents/repository/documentsRepository');
 
 describe('External Document Upload Flow', () => {
   const mockRouter = {
-    push: jest.fn(),
-    refresh: jest.fn(),
+    push: vi.fn(),
+    refresh: vi.fn(),
   };
 
   const mockRequest = {
@@ -29,17 +31,15 @@ describe('External Document Upload Flow', () => {
   };
 
   beforeEach(() => {
-    jest.clearAllMocks();
-    (useRouter as jest.Mock).mockReturnValue(mockRouter);
+    vi.clearAllMocks();
+    (useRouter as Mock).mockReturnValue(mockRouter);
   });
 
   describe('Share Link Generation', () => {
     const mockToken = 'test-token';
 
     it('should complete full share link generation flow', async () => {
-      (
-        externalRequestsRepository.createShareLink as jest.Mock
-      ).mockResolvedValue({
+      (externalRequestsRepository.createShareLink as Mock).mockResolvedValue({
         token: mockToken,
       });
 
@@ -62,7 +62,7 @@ describe('External Document Upload Flow', () => {
     it('should handle complete external user journey', async () => {
       // Mock share link lookup
       (
-        externalRequestsRepository.getShareLinkByToken as jest.Mock
+        externalRequestsRepository.getShareLinkByToken as Mock
       ).mockResolvedValue({
         request: mockRequest,
       });
@@ -74,12 +74,12 @@ describe('External Document Upload Flow', () => {
 
       // Verify request details are displayed
       expect(
-        screen.getByText(/Continuer avec FranceConnect/i)
+        screen.getByText(/Continuer avec FranceConnect/i),
       ).toBeInTheDocument();
       expect(screen.getByText(/Continuer avec un email/i)).toBeInTheDocument();
 
       // Verify document list
-      mockRequest.requestedDocuments.forEach(doc => {
+      mockRequest.requestedDocuments.forEach((doc) => {
         expect(screen.getByText(new RegExp(doc, 'i'))).toBeInTheDocument();
       });
     });
@@ -88,14 +88,12 @@ describe('External Document Upload Flow', () => {
       // Implementation depends on your session management
       // This is a basic example
       const mockSession = { user: { id: 'user-123' } };
-      jest
-        .spyOn(Storage.prototype, 'getItem')
-        .mockImplementation(key =>
-          key === 'session' ? JSON.stringify(mockSession) : null
-        );
+      vi.spyOn(Storage.prototype, 'getItem').mockImplementation((key) =>
+        key === 'session' ? JSON.stringify(mockSession) : null,
+      );
 
       (
-        externalRequestsRepository.getShareLinkByToken as jest.Mock
+        externalRequestsRepository.getShareLinkByToken as Mock
       ).mockResolvedValue({
         request: mockRequest,
       });
@@ -120,7 +118,7 @@ describe('External Document Upload Flow', () => {
 
       await screen.findByText(/Demande non trouvée/i);
       expect(
-        screen.getByText(/La demande n'existe pas ou a expiré/i)
+        screen.getByText(/La demande n'existe pas ou a expiré/i),
       ).toBeInTheDocument();
     });
 

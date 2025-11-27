@@ -1,15 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
-import { useAuth } from '../hooks/useAuth';
-import { loginSchema, type LoginInput } from '../types/zod';
 import { ROUTES } from '@/shared/constants/routes/paths';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Eye, EyeOff } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useAuth } from '../hooks/useAuth';
+import { type LoginInput, loginSchema } from '../types/zod';
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -59,7 +60,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
           errorMessage.includes('Invalid credentials') ||
           errorMessage.includes('mot de passe')
         ) {
-          setFailedAttempts(prev => prev + 1);
+          setFailedAttempts((prev) => prev + 1);
         }
         setError(errorMessage);
       }

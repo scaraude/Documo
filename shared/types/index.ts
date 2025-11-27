@@ -1,6 +1,6 @@
 import z from 'zod';
-import { AppDocumentType } from '../constants';
 import { documentTypeIdSchema } from '../../features/document-types/types/zod';
+import type { AppDocumentType } from '../constants';
 
 export interface DocumentRequest {
   id: string;

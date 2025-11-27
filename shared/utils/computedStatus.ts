@@ -1,10 +1,10 @@
-import {
-  DocumentRequest,
+import type { ComputedFolderStatus, Folder } from '@/features/folders/types';
+import type {
   AppDocument,
-  ComputedRequestStatus,
   ComputedDocumentStatus,
+  ComputedRequestStatus,
+  DocumentRequest,
 } from '@/shared/types';
-import { ComputedFolderStatus, Folder } from '@/features/folders/types';
 
 export const computeFolderStatus = (folder: Folder): ComputedFolderStatus => {
   if (folder.archivedAt) return 'ARCHIVED';
@@ -13,7 +13,7 @@ export const computeFolderStatus = (folder: Folder): ComputedFolderStatus => {
 };
 
 export const computeRequestStatus = (
-  request: DocumentRequest
+  request: DocumentRequest,
 ): ComputedRequestStatus => {
   if (request.completedAt) return 'COMPLETED';
   if (request.rejectedAt) return 'REJECTED';
@@ -22,7 +22,7 @@ export const computeRequestStatus = (
 };
 
 export const computeDocumentStatus = (
-  document: AppDocument
+  document: AppDocument,
 ): ComputedDocumentStatus => {
   if (document.errorAt) return 'ERROR';
   if (document.invalidatedAt) return 'INVALID';

@@ -1,7 +1,7 @@
 // features/external-requests/repository/externalRequestsRepository.ts
 import prisma from '@/lib/prisma';
-import { CreateShareLinkParams } from '../types/api';
 import { generateSecureToken } from '../../../lib/utils';
+import type { CreateShareLinkParams } from '../types/api';
 
 /**
  * Create a new share link for a request

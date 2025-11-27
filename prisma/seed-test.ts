@@ -1,15 +1,15 @@
 import { PrismaClient } from '../lib/prisma/generated/client';
 import {
-  createTestUsers,
-  createTestSessions,
+  TEST_USERS,
+  createRandomDocument,
+  createRandomDocumentRequest,
+  createRandomFolder,
+  createRandomFolderType,
+  createRandomShareLink,
   createTestEmailVerificationTokens,
   createTestPasswordResetTokens,
-  createRandomFolderType,
-  createRandomFolder,
-  createRandomDocumentRequest,
-  createRandomShareLink,
-  createRandomDocument,
-  TEST_USERS,
+  createTestSessions,
+  createTestUsers,
 } from './seed';
 
 const prisma = new PrismaClient();
@@ -31,11 +31,11 @@ export async function seedTestData() {
   const folderType = await createRandomFolderType();
   const folder = await createRandomFolder(
     folderType.id,
-    folderType.requiredDocuments
+    folderType.requiredDocuments,
   );
   const request = await createRandomDocumentRequest(
     folder.id,
-    folderType.requiredDocuments
+    folderType.requiredDocuments,
   );
   const shareLink = await createRandomShareLink(request.id, request.createdAt);
 
@@ -46,7 +46,7 @@ export async function seedTestData() {
       request.id,
       folder.id,
       docType,
-      request.createdAt
+      request.createdAt,
     );
     documents.push(document);
   }
@@ -106,7 +106,7 @@ async function main() {
 // Run if called directly
 if (require.main === module) {
   main()
-    .catch(e => {
+    .catch((e) => {
       console.error(e);
       process.exit(1);
     })

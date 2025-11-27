@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { TEST_USERS, TEST_DATA } from '../test-data';
+import { expect, test } from '@playwright/test';
+import { TEST_DATA, TEST_USERS } from '../test-data';
 
 test.describe('Auth Feature E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
@@ -24,7 +24,7 @@ test.describe('Auth Feature E2E Tests', () => {
       // Check for validation errors - they appear as text within the form
       await expect(page.locator('text=Invalid email address')).toBeVisible();
       await expect(
-        page.locator('text=Password must be at least 6 characters')
+        page.locator('text=Password must be at least 6 characters'),
       ).toBeVisible();
     });
 
@@ -55,7 +55,7 @@ test.describe('Auth Feature E2E Tests', () => {
       await expect(
         page
           .locator(`button:has-text("${TEST_USERS.verified.initials}")`)
-          .first()
+          .first(),
       ).toBeVisible();
     });
 
@@ -93,7 +93,7 @@ test.describe('Auth Feature E2E Tests', () => {
 
       await expect(page.locator('text=Invalid email address')).toBeVisible();
       await expect(
-        page.locator('text=Password must be at least 6 characters')
+        page.locator('text=Password must be at least 6 characters'),
       ).toBeVisible();
       await expect(page.locator('text=First name is required')).toBeVisible();
       await expect(page.locator('text=Last name is required')).toBeVisible();
@@ -190,7 +190,7 @@ test.describe('Auth Feature E2E Tests', () => {
       await expect(
         page
           .locator(`button:has-text("${TEST_USERS.verified.initials}")`)
-          .first()
+          .first(),
       ).toBeVisible();
       await expect(page).toHaveURL('/');
     });
@@ -241,7 +241,7 @@ test.describe('Auth Feature E2E Tests', () => {
       const currentUrl = page.url();
       expect(
         currentUrl === 'http://localhost:3000/' ||
-          currentUrl === 'http://localhost:3000/login'
+          currentUrl === 'http://localhost:3000/login',
       ).toBe(true);
 
       // User menu should no longer be visible - should show Sign In button instead

@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import { FolderOpen } from 'lucide-react';
+import type { FolderType } from '@/features/folder-types/types';
 import {
+  Badge,
+  Button,
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  Badge,
-  Button,
 } from '@/shared/components';
-import { FolderType } from '@/features/folder-types/types';
-import { CreateFolderParams } from '../types';
-import { AppDocumentType } from '@/shared/constants';
+import type { AppDocumentType } from '@/shared/constants';
+import { FolderOpen } from 'lucide-react';
+import { useState } from 'react';
+import type React from 'react';
+import type { CreateFolderParams } from '../types';
 
 interface FolderDetailsStepProps {
   selectedType: FolderType;
@@ -41,7 +42,7 @@ export const FolderDetailsStep = ({
       description: description.trim() || undefined,
       folderTypeId: selectedType.id,
       requestedDocuments: selectedType.requiredDocuments.map(
-        doc => doc.id as AppDocumentType
+        (doc) => doc.id as AppDocumentType,
       ),
       expiresAt: expirationDate ? new Date(expirationDate) : null,
     };
@@ -64,8 +65,8 @@ export const FolderDetailsStep = ({
             <p className="text-gray-600 mb-4">{selectedType.description}</p>
           )}
           <div className="flex flex-wrap gap-2">
-            {selectedType.requiredDocuments.map((doc, index) => (
-              <Badge key={index} variant="outline">
+            {selectedType.requiredDocuments.map((doc) => (
+              <Badge key={doc.id} variant="outline">
                 {doc.label}
               </Badge>
             ))}
@@ -92,7 +93,7 @@ export const FolderDetailsStep = ({
               required
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={name}
-              onChange={e => setName(e.target.value)}
+              onChange={(e) => setName(e.target.value)}
               placeholder="Nom de ce dossier spécifique"
               disabled={isLoading}
             />
@@ -110,7 +111,7 @@ export const FolderDetailsStep = ({
               rows={3}
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={description}
-              onChange={e => setDescription(e.target.value)}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Description de ce dossier"
               disabled={isLoading}
             />
@@ -128,7 +129,7 @@ export const FolderDetailsStep = ({
               id="expirationDate"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               value={expirationDate}
-              onChange={e => setExpirationDate(e.target.value)}
+              onChange={(e) => setExpirationDate(e.target.value)}
               disabled={isLoading}
               min={new Date().toISOString().split('T')[0]} // Prevent past dates
             />

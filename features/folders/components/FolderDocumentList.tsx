@@ -1,9 +1,9 @@
-import { useState } from 'react';
-import { AppDocumentWithStatus } from '@/shared/types';
+import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { DocumentViewer } from '@/features/documents/components/DocumentViewer';
 import { DownloadButton } from '@/features/documents/components/DownloadButton';
+import type { AppDocumentWithStatus } from '@/shared/types';
 import { Eye } from 'lucide-react';
-import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
+import { useState } from 'react';
 
 interface FolderDocumentListProps {
   document: AppDocumentWithStatus;
@@ -24,6 +24,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
         <div className="min-w-0 flex-1 flex items-center">
           <div className="flex-shrink-0">
             <svg
+              aria-hidden="true"
               className="h-10 w-10 text-gray-400"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -44,9 +45,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                 {document.fileName}
               </p>
               <p className="mt-1 flex items-center text-sm text-gray-500">
-                <span className="truncate">
-                  {getLabel(document.type)}
-                </span>
+                <span className="truncate">{getLabel(document.type)}</span>
                 <span className="ml-1.5 flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
                   {document.status}
                 </span>
@@ -56,6 +55,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => setIsViewerOpen(true)}
             className="inline-flex items-center shadow-sm px-2.5 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
           >

@@ -1,26 +1,27 @@
 import { renderHook } from '@testing-library/react';
+import { describe, expect, test, vi } from 'vitest';
 import { useRequests } from '../useRequests';
 
 // Mock TRPC
-jest.mock('@/lib/trpc/client', () => ({
+vi.mock('@/lib/trpc/client', () => ({
   trpc: {
     requests: {
       getAll: {
-        useQuery: jest.fn(() => ({ data: [], isLoading: false })),
+        useQuery: vi.fn(() => ({ data: [], isLoading: false })),
       },
       getById: {
-        useQuery: jest.fn(() => ({ data: null, isLoading: false })),
+        useQuery: vi.fn(() => ({ data: null, isLoading: false })),
       },
       create: {
-        useMutation: jest.fn(() => ({
-          mutateAsync: jest.fn(),
+        useMutation: vi.fn(() => ({
+          mutateAsync: vi.fn(),
         })),
       },
     },
-    useUtils: jest.fn(() => ({
+    useUtils: vi.fn(() => ({
       requests: {
         getAll: {
-          invalidate: jest.fn(),
+          invalidate: vi.fn(),
         },
       },
     })),

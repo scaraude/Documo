@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
-import { AppDocument } from '@/shared/types';
+import type { AppDocument } from '@/shared/types';
+import { useCallback, useEffect, useState } from 'react';
 import { decryptBlob, importEncryptionKey } from '../utils/encryption';
 
 export interface DecryptedDocumentState {
@@ -10,7 +10,7 @@ export interface DecryptedDocumentState {
 }
 
 export function useDecryptedDocument(
-  document: AppDocument
+  document: AppDocument,
 ): DecryptedDocumentState {
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +35,7 @@ export function useDecryptedDocument(
       }
 
       // Fetch the encrypted file
-      const response = await fetch(document.url!);
+      const response = await fetch(document.url);
       const encryptedBlob = await response.blob();
 
       // Import the DEK (Document Encryption Key)
@@ -45,7 +45,7 @@ export function useDecryptedDocument(
       const decryptedBlob = await decryptBlob(
         encryptedBlob,
         key,
-        document.mimeType
+        document.mimeType,
       );
       const url = URL.createObjectURL(decryptedBlob);
       setObjectUrl(url);
@@ -62,14 +62,7 @@ export function useDecryptedDocument(
     if (document.url && !objectUrl && !isLoading && !error) {
       decryptDocument();
     }
-  }, [
-    document.url,
-    document.dek,
-    objectUrl,
-    isLoading,
-    error,
-    decryptDocument,
-  ]);
+  }, [document.url, objectUrl, isLoading, error, decryptDocument]);
 
   return {
     objectUrl,

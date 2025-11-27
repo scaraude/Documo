@@ -1,22 +1,22 @@
-import { PrismaClient, ProviderType } from '@/lib/prisma/generated/client';
 import logger from '@/lib/logger';
-import { hashPassword, verifyPassword } from '../utils/password';
-import {
-  generateSessionToken,
-  generateVerificationToken,
-  generatePasswordResetToken,
-  getSessionExpiryDate,
-  getVerificationExpiryDate,
-  getPasswordResetExpiryDate,
-  isTokenExpired,
-} from '../utils/tokens';
+import { type PrismaClient, ProviderType } from '@/lib/prisma/generated/client';
 import type {
+  EmailVerificationToken,
+  LoginCredentials,
+  SignupCredentials,
   User,
   UserSession,
-  EmailVerificationToken,
-  SignupCredentials,
-  LoginCredentials,
 } from '../types';
+import { hashPassword, verifyPassword } from '../utils/password';
+import {
+  generatePasswordResetToken,
+  generateSessionToken,
+  generateVerificationToken,
+  getPasswordResetExpiryDate,
+  getSessionExpiryDate,
+  getVerificationExpiryDate,
+  isTokenExpired,
+} from '../utils/tokens';
 
 export class AuthRepository {
   constructor(private prisma: PrismaClient) {}
@@ -55,13 +55,13 @@ export class AuthRepository {
 
       logger.info(
         { userId: user.id, operation: 'user.created' },
-        'User created successfully'
+        'User created successfully',
       );
       return user;
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to create user'
+        'Failed to create user',
       );
       throw error;
     }
@@ -96,7 +96,7 @@ export class AuthRepository {
       if (!authProvider.passwordHash) {
         logger.warn(
           { email, operation: 'auth.failed' },
-          'No password hash found'
+          'No password hash found',
         );
         return null;
       }
@@ -104,7 +104,7 @@ export class AuthRepository {
       // Check password first before checking verification
       const isValidPassword = await verifyPassword(
         password,
-        authProvider.passwordHash
+        authProvider.passwordHash,
       );
       if (!isValidPassword) {
         logger.warn({ email, operation: 'auth.failed' }, 'Invalid password');
@@ -115,14 +115,14 @@ export class AuthRepository {
       if (!authProvider.isVerified) {
         logger.warn(
           { email, operation: 'auth.unverified' },
-          'User email not verified'
+          'User email not verified',
         );
         throw new Error('UNVERIFIED_EMAIL');
       }
 
       logger.info(
         { userId: user.id, operation: 'auth.success' },
-        'User authenticated successfully'
+        'User authenticated successfully',
       );
       return user;
     } catch (error) {
@@ -133,7 +133,7 @@ export class AuthRepository {
 
       logger.error(
         { email, error: (error as Error).message },
-        'Authentication error'
+        'Authentication error',
       );
       return null;
     }
@@ -142,11 +142,11 @@ export class AuthRepository {
   async createSession(
     userId: string,
     userAgent?: string,
-    ipAddress?: string
+    ipAddress?: string,
   ): Promise<UserSession> {
     logger.info(
       { userId, operation: 'session.create' },
-      'Creating user session'
+      'Creating user session',
     );
 
     try {
@@ -165,20 +165,20 @@ export class AuthRepository {
 
       logger.info(
         { userId, sessionId: session.id, operation: 'session.created' },
-        'Session created'
+        'Session created',
       );
       return session;
     } catch (error) {
       logger.error(
         { userId, error: (error as Error).message },
-        'Failed to create session'
+        'Failed to create session',
       );
       throw error;
     }
   }
 
   async findSessionByToken(
-    token: string
+    token: string,
   ): Promise<(UserSession & { user: User }) | null> {
     try {
       const session = await this.prisma.userSession.findFirst({
@@ -199,7 +199,7 @@ export class AuthRepository {
       if (isTokenExpired(session.expiresAt)) {
         logger.info(
           { sessionId: session.id, operation: 'session.expired' },
-          'Session expired'
+          'Session expired',
         );
         await this.revokeSession(session.id);
         return null;
@@ -209,10 +209,10 @@ export class AuthRepository {
     } catch (error) {
       logger.error(
         {
-          token: token.substring(0, 8) + '...',
+          token: `${token.substring(0, 8)}...`,
           error: (error as Error).message,
         },
-        'Failed to find session'
+        'Failed to find session',
       );
       return null;
     }
@@ -229,12 +229,12 @@ export class AuthRepository {
 
       logger.info(
         { sessionId, operation: 'session.revoked' },
-        'Session revoked'
+        'Session revoked',
       );
     } catch (error) {
       logger.error(
         { sessionId, error: (error as Error).message },
-        'Failed to revoke session'
+        'Failed to revoke session',
       );
       throw error;
     }
@@ -243,7 +243,7 @@ export class AuthRepository {
   async revokeAllUserSessions(userId: string): Promise<void> {
     logger.info(
       { userId, operation: 'session.revokeAll' },
-      'Revoking all user sessions'
+      'Revoking all user sessions',
     );
 
     try {
@@ -257,23 +257,23 @@ export class AuthRepository {
 
       logger.info(
         { userId, operation: 'session.allRevoked' },
-        'All user sessions revoked'
+        'All user sessions revoked',
       );
     } catch (error) {
       logger.error(
         { userId, error: (error as Error).message },
-        'Failed to revoke all sessions'
+        'Failed to revoke all sessions',
       );
       throw error;
     }
   }
 
   async createEmailVerificationToken(
-    email: string
+    email: string,
   ): Promise<EmailVerificationToken> {
     logger.info(
       { email, operation: 'verification.create' },
-      'Creating email verification token'
+      'Creating email verification token',
     );
 
     try {
@@ -295,10 +295,10 @@ export class AuthRepository {
             attempts: recentAttempts,
             operation: 'verification.rate_limited',
           },
-          'Too many verification attempts'
+          'Too many verification attempts',
         );
         throw new Error(
-          'Too many verification attempts. Please wait 15 minutes before trying again.'
+          'Too many verification attempts. Please wait 15 minutes before trying again.',
         );
       }
 
@@ -320,18 +320,18 @@ export class AuthRepository {
             token,
             expiresAt,
           },
-        }
+        },
       );
 
       logger.info(
         { email, operation: 'verification.created' },
-        'Verification token created'
+        'Verification token created',
       );
       return verificationToken;
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to create verification token'
+        'Failed to create verification token',
       );
       throw error;
     }
@@ -340,10 +340,10 @@ export class AuthRepository {
   async verifyEmail(token: string): Promise<boolean> {
     logger.info(
       {
-        token: token.substring(0, 8) + '...',
+        token: `${token.substring(0, 8)}...`,
         operation: 'verification.verify',
       },
-      'Verifying email token'
+      'Verifying email token',
     );
 
     try {
@@ -358,10 +358,10 @@ export class AuthRepository {
       if (!verificationToken) {
         logger.warn(
           {
-            token: token.substring(0, 8) + '...',
+            token: `${token.substring(0, 8)}...`,
             operation: 'verification.failed',
           },
-          'Token not found'
+          'Token not found',
         );
         return false;
       }
@@ -369,10 +369,10 @@ export class AuthRepository {
       if (isTokenExpired(verificationToken.expiresAt)) {
         logger.warn(
           {
-            token: token.substring(0, 8) + '...',
+            token: `${token.substring(0, 8)}...`,
             operation: 'verification.expired',
           },
-          'Token expired'
+          'Token expired',
         );
         return false;
       }
@@ -397,16 +397,16 @@ export class AuthRepository {
 
       logger.info(
         { email: verificationToken.email, operation: 'verification.success' },
-        'Email verified successfully'
+        'Email verified successfully',
       );
       return true;
     } catch (error) {
       logger.error(
         {
-          token: token.substring(0, 8) + '...',
+          token: `${token.substring(0, 8)}...`,
           error: (error as Error).message,
         },
-        'Email verification failed'
+        'Email verification failed',
       );
       return false;
     }
@@ -423,7 +423,7 @@ export class AuthRepository {
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to find user by email'
+        'Failed to find user by email',
       );
       return null;
     }
@@ -440,7 +440,7 @@ export class AuthRepository {
     } catch (error) {
       logger.error(
         { userId: id, error: (error as Error).message },
-        'Failed to find user by ID'
+        'Failed to find user by ID',
       );
       return null;
     }
@@ -459,7 +459,7 @@ export class AuthRepository {
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to check email verification status'
+        'Failed to check email verification status',
       );
       return false;
     }
@@ -468,7 +468,7 @@ export class AuthRepository {
   async createPasswordResetToken(email: string): Promise<{ token: string }> {
     logger.info(
       { email, operation: 'password_reset.create_token' },
-      'Creating password reset token'
+      'Creating password reset token',
     );
 
     try {
@@ -478,7 +478,7 @@ export class AuthRepository {
         // Don't reveal if email exists - return success anyway for security
         logger.info(
           { email, operation: 'password_reset.email_not_found' },
-          'Email not found for password reset'
+          'Email not found for password reset',
         );
         return { token: 'fake-token' }; // Return fake token to avoid email enumeration
       }
@@ -493,7 +493,7 @@ export class AuthRepository {
       if (!authProvider) {
         logger.info(
           { email, operation: 'password_reset.no_email_provider' },
-          'No email provider found'
+          'No email provider found',
         );
         return { token: 'fake-token' };
       }
@@ -516,10 +516,10 @@ export class AuthRepository {
             attempts: recentAttempts,
             operation: 'password_reset.rate_limited',
           },
-          'Too many reset attempts'
+          'Too many reset attempts',
         );
         throw new Error(
-          'Too many password reset attempts. Please wait 15 minutes before trying again.'
+          'Too many password reset attempts. Please wait 15 minutes before trying again.',
         );
       }
 
@@ -544,13 +544,13 @@ export class AuthRepository {
 
       logger.info(
         { email, operation: 'password_reset.token_created' },
-        'Password reset token created'
+        'Password reset token created',
       );
       return { token };
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to create password reset token'
+        'Failed to create password reset token',
       );
       throw error;
     }
@@ -559,10 +559,10 @@ export class AuthRepository {
   async resetPassword(token: string, newPassword: string): Promise<boolean> {
     logger.info(
       {
-        token: token.substring(0, 8) + '...',
+        token: `${token.substring(0, 8)}...`,
         operation: 'password_reset.reset',
       },
-      'Resetting password'
+      'Resetting password',
     );
 
     try {
@@ -575,10 +575,10 @@ export class AuthRepository {
       if (!resetToken) {
         logger.warn(
           {
-            token: token.substring(0, 8) + '...',
+            token: `${token.substring(0, 8)}...`,
             operation: 'password_reset.token_not_found',
           },
-          'Reset token not found'
+          'Reset token not found',
         );
         return false;
       }
@@ -586,10 +586,10 @@ export class AuthRepository {
       if (resetToken.usedAt) {
         logger.warn(
           {
-            token: token.substring(0, 8) + '...',
+            token: `${token.substring(0, 8)}...`,
             operation: 'password_reset.token_used',
           },
-          'Reset token already used'
+          'Reset token already used',
         );
         return false;
       }
@@ -597,10 +597,10 @@ export class AuthRepository {
       if (isTokenExpired(resetToken.expiresAt)) {
         logger.warn(
           {
-            token: token.substring(0, 8) + '...',
+            token: `${token.substring(0, 8)}...`,
             operation: 'password_reset.token_expired',
           },
-          'Reset token expired'
+          'Reset token expired',
         );
         return false;
       }
@@ -639,16 +639,16 @@ export class AuthRepository {
 
       logger.info(
         { email: resetToken.email, operation: 'password_reset.success' },
-        'Password reset successfully'
+        'Password reset successfully',
       );
       return true;
     } catch (error) {
       logger.error(
         {
-          token: token.substring(0, 8) + '...',
+          token: `${token.substring(0, 8)}...`,
           error: (error as Error).message,
         },
-        'Password reset failed'
+        'Password reset failed',
       );
       return false;
     }

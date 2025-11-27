@@ -1,5 +1,5 @@
-import { ChevronRight } from 'lucide-react';
 import { Button } from '@/shared/components';
+import { ChevronRight } from 'lucide-react';
 
 export type FolderFormStep = 'selectType' | 'fillForm' | 'sendRequests';
 
@@ -22,8 +22,8 @@ const steps: StepConfig[] = [
 ];
 
 const getStepStatus = (step: StepConfig, currentStep: FolderFormStep) => {
-  const currentIndex = steps.findIndex(s => s.id === currentStep);
-  const stepIndex = steps.findIndex(s => s.id === step.id);
+  const currentIndex = steps.findIndex((s) => s.id === currentStep);
+  const stepIndex = steps.findIndex((s) => s.id === step.id);
 
   if (stepIndex < currentIndex) return 'completed';
   if (stepIndex === currentIndex) return 'current';
