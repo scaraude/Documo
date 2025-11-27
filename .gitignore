@@ -48,7 +48,6 @@ lib/prisma/generated*
 next-env.d.ts
 
 /postgres_data
-.env*.local
 
 # Test results and reports
 test-results/
