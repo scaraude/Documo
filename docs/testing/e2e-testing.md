@@ -33,31 +33,40 @@ yarn test:e2e:headed
 # Run with Playwright UI (interactive debugging)
 yarn test:e2e:ui
 
-# Complete E2E workflow (setup → test → teardown)
-yarn test:e2e:workflow
+# Complete E2E workflow (requires Docker)
+# docker compose -f docker-compose.test.yaml up -d
+# yarn test:e2e
+# docker compose -f docker-compose.test.yaml down -v
 ```
 
 #### Database Commands
 
 ```bash
-# Setup test database
-yarn test:setup-db
+# Setup test database (Docker)
+yarn test:db:up
 
-# Teardown test database
-yarn test:teardown-db
+# Teardown test database (Docker)
+yarn test:db:down
 
 # Seed test database
 yarn test:seed
 ```
 
-#### Complete Testing Workflows
+#### Complete Testing Workflow
 
 ```bash
-# Complete test workflow (unit + integration + E2E)
-yarn test:workflow
+# Unit tests
+yarn test
 
-# E2E-specific workflow
-yarn test:e2e:workflow
+# Integration tests (requires test database)
+yarn test:db:up
+yarn test:integration
+yarn test:db:down
+
+# E2E tests (requires test database)
+yarn test:db:up
+yarn test:e2e
+yarn test:db:down
 ```
 
 ### 🎨 **File Structure**
@@ -73,10 +82,7 @@ e2e/
     └── test-setup.ts              # Test fixtures (future use)
 
 playwright.config.ts               # Playwright configuration
-scripts/
-├── e2e-workflow.sh               # Complete E2E workflow
-├── setup-test-db.js              # Database setup
-└── teardown-test-db.js           # Database cleanup
+docker-compose.test.yaml           # Test database setup
 ```
 
 ### 🚀 **Test Scenarios Covered**
@@ -96,7 +102,7 @@ scripts/
 
 3. **Content Validation Test**
 
-   - ✅ Checks for "Centradoc"
+   - ✅ Checks for "Documo"
    - ✅ Validates French navigation ("Accueil", "Dossiers", "Demandes")
    - ✅ Confirms expected content structure
 

@@ -15,40 +15,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn dev`: Start dev server with database setup
 - `yarn build`: Build for production
 - `yarn start`: Start production server
-- `yarn lint`: Run ESLint
-- `yarn test`: Run unit tests
+- `yarn lint`: Run Biome linting and formatting checks
+- `yarn lint:fix`: Run Biome with auto-fix
+- `yarn format`: Format code with Biome
+- `yarn format:check`: Check code formatting with Biome
+- `yarn test`: Run unit tests with Vitest
+- `yarn test:watch`: Run tests in watch mode
+- `yarn test:coverage`: Run tests with coverage report
 - `yarn test:integration`: Run integration tests with database isolation
 - `yarn test:integration:watch`: Run integration tests in watch mode
-- `yarn test:setup-db`: Setup test database with Docker
-- `yarn test:teardown-db`: Teardown test database Docker container
+- `yarn test:db:up`: Start test database with Docker
+- `yarn test:db:down`: Stop and remove test database
 - `yarn test:seed`: Manually seed test database with test data
-- `yarn test:workflow`: Run the complete test workflow with database setup
 - `yarn test:e2e`: Run end-to-end tests with Playwright
 - `yarn test:e2e:ui`: Run E2E tests with Playwright UI mode
 - `yarn test:e2e:headed`: Run E2E tests with visible browser
-- `yarn test:e2e:workflow`: Run complete E2E workflow with setup and teardown
-- `yarn test path/to/test`: Run a specific test file
-- `yarn test:watch`: Run tests in watch mode
 - `yarn prisma:generate`: Generate Prisma client
 - `yarn prisma:migrate`: Run database migrations
 - `yarn prisma:studio`: Open Prisma database UI
 - `yarn unused`: Check for unused files/exports
-- `yarn check-env`: Verify environment variables in .env file
-- `yarn check-env:dev`: Verify environment variables in .env.development file
-- `yarn check-env:test`: Verify environment variables in .env.test file
+- `yarn ts`: Type-check TypeScript without emitting files
+- `yarn ts-watch`: Type-check TypeScript in watch mode
 
 ## Code Style Guidelines
 
-- TypeScript: Use strict typing with interfaces/types in separate files
-- Import order: React, external libs, shared, features, local
-- Naming: PascalCase for components/types, camelCase for variables/functions
-- Components: Functional components with explicit props interfaces
-- State: Use hooks (useState, useReducer) with typed state
-- Error handling: Try/catch with specific error messages
-- Repository pattern: Data access in repository files, API in api files
-- Testing: Component tests with React Testing Library, repository tests with mocks
-- Documentation: JSDoc comments for functions and types
-- Logging: Use structured logging with Pino logger (see Logging section)
+- **Formatting**: Use Biome for linting and formatting (80 char width, single quotes, 2 spaces)
+- **TypeScript**: Use strict typing with interfaces/types in separate files
+- **Import order**: React, external libs, shared, features, local (auto-sorted by Biome)
+- **Naming**: PascalCase for components/types, camelCase for variables/functions
+- **Components**: Functional components with explicit props interfaces
+- **State**: Use hooks (useState, useReducer) with typed state
+- **Error handling**: Try/catch with specific error messages
+- **Repository pattern**: Data access in repository files, API in api files
+- **Testing**: Component tests with Vitest + React Testing Library, repository tests with mocks
+- **Documentation**: JSDoc comments for functions and types
+- **Logging**: Use structured logging with Pino logger (see Logging section)
+- **Environment**: Import validated env from `@/lib/config/env` (see Environment Validation section)
 
 ## MORE GUIDELINE
 
@@ -97,7 +99,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Testing Guidelines
 
-- **Unit Tests**: Write unit tests for components, hooks, and repositories.
+- **Test Framework**: Use Vitest for unit and integration tests, Playwright for E2E tests
+- **Unit Tests**: Write unit tests for components, hooks, and repositories with Vitest
 - **Integration Tests**: Test API routes and their interactions with the database.
 - **Test Location**: Place tests in the `__tests__/` folder within the relevant domain.
 
@@ -150,6 +153,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **Error Handling**: Always log errors with context before throwing
 - **Development**: Run `yarn dev` for pretty-formatted logs in development
 - **Production**: Logs output as JSON for structured parsing in production
+
+## Environment Validation Guidelines
+
+- **Zod Validation**: All environment variables are validated at startup using Zod schemas
+- **Configuration File**: Import validated env from `@/lib/config/env`
+- **Type Safety**: Environment variables are fully typed and validated
+- **Error Handling**: Application fails fast with clear error messages for missing/invalid env vars
+- **Usage Pattern**:
+  ```typescript
+  import { env, isDevelopment, getDatabaseUrl } from '@/lib/config/env';
+
+  // Access type-safe, validated environment variables
+  const apiKey = env.RESEND_API_KEY;
+  const dbUrl = getDatabaseUrl(); // Returns TEST_DATABASE_URL in test mode
+
+  if (isDevelopment) {
+    console.log('Running in development mode');
+  }
+  ```
+- **Adding New Variables**:
+  1. Add to `.env.example` with placeholder value
+  2. Add to Zod schema in `lib/config/env.ts`
+  3. Add to `Env` type (auto-inferred from schema)
+  4. Update your `.env.local` with actual value
+- **Environment Files**:
+  - `.env.example`: Template (committed to git)
+  - `.env.local`: Your local config (gitignored, create from example)
+  - `.env.test`: Test environment config (committed to git)
+- **Never** access `process.env` directly - always use the validated `env` object
 
 ## Toast Notifications Guidelines
 

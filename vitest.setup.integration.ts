@@ -1,11 +1,15 @@
-// jest.setup.integration.js
-import '@testing-library/jest-dom';
+import { beforeAll, vi } from 'vitest';
+import { expect } from 'vitest';
+import * as matchers from '@testing-library/jest-dom/matchers';
 import { seedTestData } from './prisma/seed-test';
+
+// Extend Vitest's expect with jest-dom matchers
+expect.extend(matchers);
 
 // Global test database URL for integration tests
 process.env.DATABASE_URL =
   process.env.TEST_DATABASE_URL ||
-  'postgresql://postgres:password@localhost:5433/document_transfer_test';
+  'postgresql://postgres:password@localhost:5433/documo_test';
 
 // Seed test data before all tests
 beforeAll(async () => {
@@ -13,14 +17,14 @@ beforeAll(async () => {
 });
 
 // Mock Next.js router for tests
-jest.mock('next/navigation', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
-    replace: jest.fn(),
-    back: jest.fn(),
-    forward: jest.fn(),
-    refresh: jest.fn(),
-    prefetch: jest.fn(),
+    push: vi.fn(),
+    replace: vi.fn(),
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    prefetch: vi.fn(),
   }),
   usePathname: () => '/',
   useSearchParams: () => new URLSearchParams(),
@@ -29,7 +33,7 @@ jest.mock('next/navigation', () => ({
 // Mock Web Crypto API for tests
 Object.defineProperty(globalThis, 'crypto', {
   value: {
-    getRandomValues: arr => {
+    getRandomValues: (arr: Uint8Array) => {
       for (let i = 0; i < arr.length; i++) {
         arr[i] = Math.floor(Math.random() * 256);
       }
@@ -37,17 +41,17 @@ Object.defineProperty(globalThis, 'crypto', {
     },
     randomUUID: () => Math.random().toString(36).substring(2, 15),
     subtle: {
-      generateKey: jest.fn(),
-      exportKey: jest.fn(),
-      importKey: jest.fn(),
-      encrypt: jest.fn(),
-      decrypt: jest.fn(),
+      generateKey: vi.fn(),
+      exportKey: vi.fn(),
+      importKey: vi.fn(),
+      encrypt: vi.fn(),
+      decrypt: vi.fn(),
     },
   },
 });
 
 // Mock Vercel Blob for tests
-jest.mock('@vercel/blob', () => ({
-  put: jest.fn(),
-  del: jest.fn(),
+vi.mock('@vercel/blob', () => ({
+  put: vi.fn(),
+  del: vi.fn(),
 }));

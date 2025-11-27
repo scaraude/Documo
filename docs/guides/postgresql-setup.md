@@ -1,6 +1,6 @@
-# PostgreSQL Integration Guide for Centradoc
+# PostgreSQL Integration Guide for Documo
 
-This guide outlines how to set up and use PostgreSQL with the Centradoc.
+This guide outlines how to set up and use PostgreSQL with Documo.
 
 ## Prerequisites
 
@@ -26,7 +26,7 @@ PostgreSQL will be available at `localhost:5432` with the following credentials:
 
 - Username: postgres
 - Password: postgres
-- Database: document_transfer_db
+- Database: documo_db
 
 pgAdmin will be available at http://localhost:5050 with:
 
@@ -35,10 +35,10 @@ pgAdmin will be available at http://localhost:5050 with:
 
 ### 2. Set Up Environment Variables
 
-Create a `.env` file based on the `.env.development` example:
+Create a `.env.local` file based on the `.env.example` template:
 
 ```bash
-cp .env.development .env
+cp .env.example .env.local
 ```
 
 Customize the `DATABASE_URL` if needed.
