@@ -21,29 +21,36 @@ export function ShareLinkButton({
   const { generateShareLink } = useExternalRequest();
 
   const handleShare = async () => {
+    setIsLoading(true);
     try {
       generateShareLink.mutate(
         { requestId },
         {
           onSuccess: async ({ token }) => {
-            const shareUrl = `${window.location.origin}${ROUTES.EXTERNAL.REQUEST(token)}`;
-            await navigator.clipboard.writeText(shareUrl);
-            toast.success('Lien copié dans le presse-papiers');
-            setIsCopied(true);
-            // Reset copy status after 2 seconds
-            setTimeout(() => {
-              setIsCopied(false);
-            }, 2000);
+            try {
+              const shareUrl = `${window.location.origin}${ROUTES.EXTERNAL.REQUEST(token)}`;
+              await navigator.clipboard.writeText(shareUrl);
+              toast.success('Lien copié dans le presse-papiers');
+              setIsCopied(true);
+              // Reset copy status after 2 seconds
+              setTimeout(() => {
+                setIsCopied(false);
+              }, 2000);
+            } catch {
+              toast.error('Erreur lors de la génération du lien de partage');
+            } finally {
+              setIsLoading(false);
+            }
           },
           onError: () => {
             toast.error('Erreur lors de la génération du lien de partage');
+            setIsLoading(false);
           },
         },
       );
     } catch (error) {
       console.error('Error sharing link:', error);
       toast.error('Erreur lors de la génération du lien de partage');
-    } finally {
       setIsLoading(false);
     }
   };

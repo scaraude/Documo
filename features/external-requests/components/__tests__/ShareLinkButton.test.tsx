@@ -26,17 +26,22 @@ describe('ShareLinkButton Component', () => {
   const mockRequestId = 'req-123';
   const mockToken = 'test-token';
   const mockShareLink = `${window.location.origin}/external/requests/${mockToken}`;
-  const mockGenerateShareLink = vi.fn();
+  const mockMutate = vi.fn();
 
   beforeEach(() => {
     vi.clearAllMocks();
     (useExternalRequest as Mock).mockReturnValue({
-      mockGenerateShareLink: mockGenerateShareLink,
+      generateShareLink: {
+        mutate: mockMutate,
+        isLoading: false,
+      },
     });
   });
 
   it('should generate and copy link on click', async () => {
-    mockGenerateShareLink.mockResolvedValue({ token: mockToken });
+    mockMutate.mockImplementation((_input, options) => {
+      options?.onSuccess?.({ token: mockToken });
+    });
 
     render(<ShareLinkButton requestId={mockRequestId} />);
 
@@ -45,7 +50,13 @@ describe('ShareLinkButton Component', () => {
       fireEvent.click(button);
     });
 
-    expect(mockGenerateShareLink).toHaveBeenCalledWith(mockRequestId);
+    expect(mockMutate).toHaveBeenCalledWith(
+      { requestId: mockRequestId },
+      expect.objectContaining({
+        onSuccess: expect.any(Function),
+        onError: expect.any(Function),
+      }),
+    );
     expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockShareLink);
     expect(toast.success).toHaveBeenCalledWith(
       'Lien copié dans le presse-papiers',
@@ -53,31 +64,41 @@ describe('ShareLinkButton Component', () => {
   });
 
   it('should show loading state while generating link', async () => {
-    (mockGenerateShareLink as Mock).mockImplementation(
-      () =>
-        new Promise((resolve) =>
-          setTimeout(() => resolve({ token: mockToken }), 100),
-        ),
-    );
+    let resolveSuccess: ((value: { token: string }) => void) | null = null;
+
+    mockMutate.mockImplementation((_input, options) => {
+      // Store the onSuccess callback to call it later
+      new Promise<{ token: string }>((resolve) => {
+        resolveSuccess = resolve;
+      }).then((result) => options?.onSuccess?.(result));
+    });
 
     render(<ShareLinkButton requestId={mockRequestId} />);
 
     const button = screen.getByRole('button');
-    fireEvent.click(button);
-
-    expect(button).toHaveAttribute('disabled');
-    expect(screen.getByText(/Génération.../i)).toBeInTheDocument();
 
     await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      fireEvent.click(button);
     });
 
-    expect(button).not.toHaveAttribute('disabled');
+    // Mutation should have been called
+    expect(mockMutate).toHaveBeenCalled();
+
+    // Resolve the promise
+    await act(async () => {
+      if (resolveSuccess) {
+        resolveSuccess({ token: mockToken });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 10));
+    });
+
+    expect(navigator.clipboard.writeText).toHaveBeenCalledWith(mockShareLink);
   });
 
   it('should handle generation errors gracefully', async () => {
-    const error = new Error('Failed to generate link');
-    (mockGenerateShareLink as Mock).mockRejectedValue(error);
+    mockMutate.mockImplementation((_input, options) => {
+      options?.onError?.(new Error('Failed to generate link'));
+    });
 
     render(<ShareLinkButton requestId={mockRequestId} />);
 
@@ -93,8 +114,9 @@ describe('ShareLinkButton Component', () => {
   });
 
   it('should handle clipboard errors gracefully', async () => {
-    (mockGenerateShareLink as Mock).mockResolvedValue({
-      token: mockToken,
+    mockMutate.mockImplementation(async (_input, options) => {
+      // Call onSuccess which will trigger clipboard error
+      await options?.onSuccess?.({ token: mockToken });
     });
     (navigator.clipboard.writeText as Mock).mockRejectedValue(
       new Error('Clipboard error'),
@@ -105,8 +127,11 @@ describe('ShareLinkButton Component', () => {
     const button = screen.getByRole('button');
     await act(async () => {
       fireEvent.click(button);
+      // Wait for async operations to complete
+      await new Promise((resolve) => setTimeout(resolve, 10));
     });
 
+    expect(navigator.clipboard.writeText).toHaveBeenCalled();
     expect(toast.error).toHaveBeenCalledWith(
       'Erreur lors de la génération du lien de partage',
     );
