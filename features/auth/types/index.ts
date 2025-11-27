@@ -39,7 +39,7 @@ export interface EmailVerificationToken {
   usedAt: Date | null;
 }
 
-export enum ProviderType {
+enum ProviderType {
   EMAIL_PASSWORD = 'EMAIL_PASSWORD',
   FRANCE_CONNECT = 'FRANCE_CONNECT',
 }
@@ -95,7 +95,7 @@ export interface SignupCredentials {
   lastName?: string;
 }
 
-export interface AuthError {
+interface AuthError {
   code: string;
   message: string;
 }

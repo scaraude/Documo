@@ -1,5 +1,5 @@
 import logger from '@/lib/logger';
-import prisma, { type Prisma } from '@/lib/prisma';
+import { type Prisma, prisma } from '@/lib/prisma';
 import type { AppDocumentType } from '@/shared/constants';
 import type {
   DocumentRequest,
@@ -50,7 +50,7 @@ export function toAppModel(
 /**
  * Convertir un modèle Prisma avec folder en modèle d'application
  */
-export function toAppModelWithFolder(
+function toAppModelWithFolder(
   prismaModel: PrismaDocumentRequestWithFolder,
 ): DocumentRequestWithFolder {
   return {
@@ -65,7 +65,7 @@ export function toAppModelWithFolder(
 /**
  * Convertir un modèle Prisma avec folder et documents en modèle d'application
  */
-export function toAppModelWithFolderAndDocuments(
+function toAppModelWithFolderAndDocuments(
   prismaModel: PrismaDocumentRequestWithDocuments,
 ): DocumentRequestWithFolderAndDocuments {
   return {

@@ -49,7 +49,7 @@ export function setupEventHandlers(): void {
 }
 
 // Cleanup function for testing or graceful shutdown
-export function cleanupEventHandlers(): void {
+function cleanupEventHandlers(): void {
   handlersRegistered = false;
   logger.info('Event handlers cleanup completed');
 }

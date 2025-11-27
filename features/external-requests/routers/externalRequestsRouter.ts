@@ -293,4 +293,4 @@ export const externalRouter = router({
     }),
 });
 
-export type ExternalRouter = typeof externalRouter;
+type ExternalRouter = typeof externalRouter;

@@ -16,7 +16,7 @@ export const createRequestSchema = z.object({
 });
 
 // Schéma de validation pour la mise à jour de request
-export const updateRequestSchema = z.object({
+const updateRequestSchema = z.object({
   email: z
     .string()
     .email()
@@ -35,17 +35,17 @@ export const DeleteRequestSchema = z.object({
   id: z.string().uuid('ID de demande invalide'),
 });
 
-export const UpdateRequestInputSchema = z.object({
+const UpdateRequestInputSchema = z.object({
   id: z.string().uuid('ID de demande invalide'),
   data: updateRequestSchema,
 });
 
 // Schéma pour un seul type de document
-export const requestDocumentTypeSchema = documentTypeIdSchema;
+const requestDocumentTypeSchema = documentTypeIdSchema;
 
 // Type exports
-export type CreateRequest = z.infer<typeof createRequestSchema>;
-export type UpdateRequest = z.infer<typeof updateRequestSchema>;
-export type RequestId = z.infer<typeof RequestIdSchema>;
-export type DeleteRequest = z.infer<typeof DeleteRequestSchema>;
-export type UpdateRequestInput = z.infer<typeof UpdateRequestInputSchema>;
+type CreateRequest = z.infer<typeof createRequestSchema>;
+type UpdateRequest = z.infer<typeof updateRequestSchema>;
+type RequestId = z.infer<typeof RequestIdSchema>;
+type DeleteRequest = z.infer<typeof DeleteRequestSchema>;
+type UpdateRequestInput = z.infer<typeof UpdateRequestInputSchema>;

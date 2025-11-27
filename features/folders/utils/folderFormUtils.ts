@@ -41,9 +41,7 @@ export const getCurrentStepFromUrl = (
  * @param searchParams - URL search parameters
  * @returns True if a folder is preselected
  */
-export const hasPreselectedFolder = (
-  searchParams: URLSearchParams,
-): boolean => {
+const hasPreselectedFolder = (searchParams: URLSearchParams): boolean => {
   return searchParams.has('folderId');
 };
 
@@ -52,9 +50,7 @@ export const hasPreselectedFolder = (
  * @param searchParams - URL search parameters
  * @returns True if a folder type is preselected
  */
-export const hasPreselectedFolderType = (
-  searchParams: URLSearchParams,
-): boolean => {
+const hasPreselectedFolderType = (searchParams: URLSearchParams): boolean => {
   return searchParams.has('typeId');
 };
 
@@ -63,7 +59,7 @@ export const hasPreselectedFolderType = (
  * @param searchParams - URL search parameters
  * @returns Folder ID if present, null otherwise
  */
-export const getPreselectedFolderId = (
+const getPreselectedFolderId = (
   searchParams: URLSearchParams,
 ): string | null => {
   return searchParams.get('folderId');
@@ -74,7 +70,7 @@ export const getPreselectedFolderId = (
  * @param searchParams - URL search parameters
  * @returns Folder type ID if present, null otherwise
  */
-export const getPreselectedFolderTypeId = (
+const getPreselectedFolderTypeId = (
   searchParams: URLSearchParams,
 ): string | null => {
   return searchParams.get('typeId');

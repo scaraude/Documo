@@ -12,9 +12,5 @@
     "postcss.config.mjs",
     "biome.json"
   ],
-  "ignoreDependencies": [
-    "ts-node",
-    "tsx",
-    "typescript"
-  ]
+  "ignoreDependencies": ["ts-node", "tsx", "typescript"]
 }

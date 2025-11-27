@@ -250,5 +250,3 @@ const disclaimer = {
   margin: '24px 0 0 0',
   textAlign: 'center' as const,
 };
-
-export default DocumentRequestEmail;

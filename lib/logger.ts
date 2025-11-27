@@ -1,7 +1,5 @@
+import { isDevelopment, isTest } from '@/lib/config/env';
 import pino from 'pino';
-
-const isDevelopment = process.env.NODE_ENV === 'development';
-const isTest = process.env.NODE_ENV === 'test';
 
 // Simple logger without transport to avoid Next.js bundling issues
 const logger = pino({

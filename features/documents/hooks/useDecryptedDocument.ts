@@ -2,7 +2,7 @@ import type { AppDocument } from '@/shared/types';
 import { useCallback, useEffect, useState } from 'react';
 import { decryptBlob, importEncryptionKey } from '../utils/encryption';
 
-export interface DecryptedDocumentState {
+interface DecryptedDocumentState {
   objectUrl: string | null;
   isLoading: boolean;
   error: string | null;

@@ -1,8 +1,8 @@
 import logger from '@/lib/logger';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import type { DocumentType } from '@/lib/prisma/generated/client';
 
-export interface DocumentTypeWithValidation extends DocumentType {
+interface DocumentTypeWithValidation extends DocumentType {
   // Add computed validation helpers
   allowedMimeTypes: string[];
   maxSizeBytes: number;
@@ -73,9 +73,7 @@ export const getDocumentTypeById = async (
   }
 };
 
-export const getDocumentTypesById = async (
-  ids: string[],
-): Promise<DocumentType[]> => {
+const getDocumentTypesById = async (ids: string[]): Promise<DocumentType[]> => {
   try {
     logger.info(
       {
@@ -114,7 +112,7 @@ export const getDocumentTypesById = async (
   }
 };
 
-export const getDocumentTypeWithValidation = async (
+const getDocumentTypeWithValidation = async (
   id: string,
 ): Promise<DocumentTypeWithValidation | null> => {
   try {
@@ -232,7 +230,7 @@ export const getAllDocumentTypesCached = async (): Promise<DocumentType[]> => {
   return documentTypesCache;
 };
 
-export const clearDocumentTypesCache = (): void => {
+const clearDocumentTypesCache = (): void => {
   logger.info(
     { operation: 'documentTypes.clearCache' },
     'Clearing document types cache',

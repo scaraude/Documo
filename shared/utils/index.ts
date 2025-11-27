@@ -1,12 +1,3 @@
-export {
-  computeFolderStatus,
-  computeRequestStatus,
-  computeDocumentStatus,
-} from './computedStatus';
+export { computeDocumentStatus } from './computedStatus';
 
-export {
-  isAuthError,
-  handleAuthError,
-  createAuthErrorHandler,
-  useAuthErrorHandler,
-} from './auth-error-handler';
+export { useAuthErrorHandler } from './auth-error-handler';

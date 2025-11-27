@@ -12,7 +12,7 @@ export interface FolderCreatedEvent extends DomainEvent {
   };
 }
 
-export interface FolderCompletedEvent extends DomainEvent {
+interface FolderCompletedEvent extends DomainEvent {
   eventType: EventTypes['FOLDER']['COMPLETED'];
   data: {
     folderId: string;
@@ -21,7 +21,7 @@ export interface FolderCompletedEvent extends DomainEvent {
   };
 }
 
-export interface FolderUpdatedEvent extends DomainEvent {
+interface FolderUpdatedEvent extends DomainEvent {
   eventType: EventTypes['FOLDER']['UPDATED'];
   data: {
     folderId: string;
@@ -30,7 +30,7 @@ export interface FolderUpdatedEvent extends DomainEvent {
   };
 }
 
-export interface FolderDeletedEvent extends DomainEvent {
+interface FolderDeletedEvent extends DomainEvent {
   eventType: EventTypes['FOLDER']['DELETED'];
   data: {
     folderId: string;
@@ -40,7 +40,7 @@ export interface FolderDeletedEvent extends DomainEvent {
 }
 
 // Request events
-export interface RequestCreatedEvent extends DomainEvent {
+interface RequestCreatedEvent extends DomainEvent {
   eventType: EventTypes['REQUEST']['CREATED'];
   data: {
     requestId: string;
@@ -50,7 +50,7 @@ export interface RequestCreatedEvent extends DomainEvent {
   };
 }
 
-export interface RequestAcceptedEvent extends DomainEvent {
+interface RequestAcceptedEvent extends DomainEvent {
   eventType: EventTypes['REQUEST']['ACCEPTED'];
   data: {
     requestId: string;
@@ -58,7 +58,7 @@ export interface RequestAcceptedEvent extends DomainEvent {
   };
 }
 
-export interface RequestCompletedEvent extends DomainEvent {
+interface RequestCompletedEvent extends DomainEvent {
   eventType: EventTypes['REQUEST']['COMPLETED'];
   data: {
     requestId: string;
@@ -67,7 +67,7 @@ export interface RequestCompletedEvent extends DomainEvent {
   };
 }
 
-export interface RequestRejectedEvent extends DomainEvent {
+interface RequestRejectedEvent extends DomainEvent {
   eventType: EventTypes['REQUEST']['REJECTED'];
   data: {
     requestId: string;
@@ -77,7 +77,7 @@ export interface RequestRejectedEvent extends DomainEvent {
 }
 
 // Document events
-export interface DocumentUploadedEvent extends DomainEvent {
+interface DocumentUploadedEvent extends DomainEvent {
   eventType: DocumentEventTypes;
   data: {
     documentId: string;
@@ -88,7 +88,7 @@ export interface DocumentUploadedEvent extends DomainEvent {
   };
 }
 
-export interface DocumentValidatedEvent extends DomainEvent {
+interface DocumentValidatedEvent extends DomainEvent {
   eventType: DocumentEventTypes;
   data: {
     documentId: string;
@@ -97,7 +97,7 @@ export interface DocumentValidatedEvent extends DomainEvent {
   };
 }
 
-export interface DocumentRejectedEvent extends DomainEvent {
+interface DocumentRejectedEvent extends DomainEvent {
   eventType: DocumentEventTypes;
   data: {
     documentId: string;
@@ -108,7 +108,7 @@ export interface DocumentRejectedEvent extends DomainEvent {
 }
 
 // Union type of all specific events
-export type AllDomainEvents =
+type AllDomainEvents =
   | FolderCreatedEvent
   | FolderCompletedEvent
   | FolderUpdatedEvent

@@ -1,5 +1,5 @@
 import logger from '@/lib/logger';
-import prisma, { type Prisma } from '@/lib/prisma';
+import { type Prisma, prisma } from '@/lib/prisma';
 import type {
   CreateFolderTypeParams,
   FolderType,

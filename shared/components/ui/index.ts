@@ -1,6 +1,4 @@
-export { IDInput } from './IDInput';
 export { Navbar } from './Navbar';
-export { HeroSection } from './HeroSection';
 export * from './alert';
 export * from './badge';
 export * from './button';

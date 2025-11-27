@@ -1,3 +1,4 @@
+import { isDevelopment, isProduction } from '@/lib/config/env';
 import { sendPasswordResetEmail, sendVerificationEmail } from '@/lib/email';
 import logger from '@/lib/logger';
 import { prisma } from '@/lib/prisma';
@@ -65,7 +66,7 @@ export const authRouter = createTRPCRouter({
           'Account created successfully. Please check your email to verify your account.',
         userId: user.id,
         // In development, return the token for testing
-        ...(process.env.NODE_ENV === 'production' && {
+        ...(isProduction && {
           verificationToken: verificationToken.token,
         }),
       };
@@ -112,7 +113,7 @@ export const authRouter = createTRPCRouter({
 
       // Set session cookie
       if (ctx.resHeaders) {
-        const cookieValue = `session=${session.token}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; ${process.env.NODE_ENV === 'production' ? 'Secure; ' : ''}SameSite=lax`;
+        const cookieValue = `session=${session.token}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=lax`;
         ctx.resHeaders.set('Set-Cookie', cookieValue);
       }
 
@@ -154,7 +155,7 @@ export const authRouter = createTRPCRouter({
 
       // Clear session cookie using resHeaders
       if (ctx.resHeaders) {
-        const cookieValue = `session=; Path=/; Max-Age=0; HttpOnly; ${process.env.NODE_ENV === 'production' ? 'Secure; ' : ''}SameSite=lax`;
+        const cookieValue = `session=; Path=/; Max-Age=0; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=lax`;
         ctx.resHeaders.set('Set-Cookie', cookieValue);
       }
 
@@ -277,7 +278,7 @@ export const authRouter = createTRPCRouter({
           success: true,
           message: 'Verification email sent. Please check your inbox.',
           // In development, return the token for testing
-          ...(process.env.NODE_ENV === 'development' && {
+          ...(isDevelopment && {
             verificationToken: verificationToken.token,
           }),
         };

@@ -1,3 +1,4 @@
+import { env } from '@/lib/config/env';
 import logger from '@/lib/logger';
 import { resend } from '@/lib/resend';
 import { DocumentRequestEmail } from '@/shared/components/emails/DocumentRequestEmail';
@@ -17,10 +18,10 @@ export async function sendVerificationEmail({
   verificationToken,
 }: EmailVerificationOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    const verificationUrl = `${process.env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${env.NEXT_PUBLIC_APP_URL}/verify-email?token=${verificationToken}`;
 
     const { data, error } = await resend.emails.send({
-      from: `Documo <${process.env.FROM_EMAIL}>`,
+      from: `Documo <${env.FROM_EMAIL}>`,
       to: [to.toLowerCase()],
       subject: 'Verify your email address',
       react: VerificationEmail({
@@ -75,10 +76,10 @@ export async function sendPasswordResetEmail({
   resetToken,
 }: PasswordResetEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL}/login?token=${resetToken}`;
+    const resetUrl = `${env.NEXT_PUBLIC_APP_URL}/login?token=${resetToken}`;
 
     const { data, error } = await resend.emails.send({
-      from: `Documo <${process.env.FROM_EMAIL}>`,
+      from: `Documo <${env.FROM_EMAIL}>`,
       to: [to.toLowerCase()],
       subject: 'Réinitialisation de votre mot de passe Documo',
       react: PasswordResetEmail({
@@ -142,7 +143,7 @@ export async function sendDocumentRequestEmail({
 }: DocumentRequestEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
     const { data, error } = await resend.emails.send({
-      from: `Documo <${process.env.FROM_EMAIL}>`,
+      from: `Documo <${env.FROM_EMAIL}>`,
       to: [to.toLowerCase()],
       subject: `Demande de documents - ${folderName}`,
       react: DocumentRequestEmail({
@@ -192,8 +193,3 @@ export async function sendDocumentRequestEmail({
     return { success: false, error: errorMessage };
   }
 }
-
-export { resend };
-export { VerificationEmail };
-export { DocumentRequestEmail };
-export { PasswordResetEmail };

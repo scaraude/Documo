@@ -31,5 +31,5 @@ export const ROUTES = {
 } as const;
 
 // Type utilities for routes
-export type AppRoutes = typeof ROUTES;
-export type RouteKeys = keyof typeof ROUTES;
+type AppRoutes = typeof ROUTES;
+type RouteKeys = keyof typeof ROUTES;

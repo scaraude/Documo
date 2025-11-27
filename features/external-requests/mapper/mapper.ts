@@ -1,6 +1,6 @@
+import { documentTypeToAppDocumentType } from '@/shared/utils/prismaMapper';
 import type { z } from 'zod';
 import { Prisma } from '../../../lib/prisma';
-import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
 import type { externalRequestSchema } from '../types/zod';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

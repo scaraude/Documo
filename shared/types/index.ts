@@ -19,7 +19,7 @@ export interface DocumentRequest {
   folderId?: string;
 }
 
-export interface DocumentRequestWithDocuments extends DocumentRequest {
+interface DocumentRequestWithDocuments extends DocumentRequest {
   documents: AppDocument[];
 }
 

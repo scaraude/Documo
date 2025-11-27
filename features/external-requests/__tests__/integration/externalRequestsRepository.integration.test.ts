@@ -1,5 +1,5 @@
 import { randomUUID } from 'crypto';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { beforeEach, describe, expect, it } from 'vitest';
 import * as externalRequestsRepository from '../../repository/externalRequestsRepository';
 

@@ -14,7 +14,7 @@ interface Context {
 
 const authRepository = new AuthRepository(prisma);
 
-export const t = initTRPC.context<Context>().create({
+const t = initTRPC.context<Context>().create({
   transformer: superjson,
 });
 

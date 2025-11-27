@@ -20,11 +20,11 @@ export const EVENT_TYPES = {
 } as const;
 
 // Type helpers for event types
-export type RequestEventTypes =
+type RequestEventTypes =
   (typeof EVENT_TYPES.REQUEST)[keyof typeof EVENT_TYPES.REQUEST];
 export type DocumentEventTypes =
   (typeof EVENT_TYPES.DOCUMENT)[keyof typeof EVENT_TYPES.DOCUMENT];
-export type FolderEventTypes =
+type FolderEventTypes =
   (typeof EVENT_TYPES.FOLDER)[keyof typeof EVENT_TYPES.FOLDER];
 export type EventTypes = typeof EVENT_TYPES;
 

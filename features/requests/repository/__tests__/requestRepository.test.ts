@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import { APP_DOCUMENT_TYPES } from '@/shared/constants';
 // features/requests/repository/__tests__/requestRepository.test.ts
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

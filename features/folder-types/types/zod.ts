@@ -15,5 +15,5 @@ export const UpdateFolderTypeSchema = z.object({
 });
 
 // Type exports
-export type CreateFolderType = z.infer<typeof CreateFolderTypeSchema>;
-export type UpdateFolderType = z.infer<typeof UpdateFolderTypeSchema>;
+type CreateFolderType = z.infer<typeof CreateFolderTypeSchema>;
+type UpdateFolderType = z.infer<typeof UpdateFolderTypeSchema>;

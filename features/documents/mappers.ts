@@ -1,5 +1,5 @@
 import type { Prisma } from '@/lib/prisma';
-import { documentTypeToAppDocumentType } from '../../shared/mapper/prismaMapper';
+import { documentTypeToAppDocumentType } from '@/shared/utils/prismaMapper';
 import type { AppDocument, AppDocumentToUpload } from '../../shared/types';
 
 // Type du modèle Document de Prisma

@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import type { AppDocument, AppDocumentToUpload } from '@/shared/types';
 import {
   inputToPrismaCreateInput,
@@ -8,7 +8,7 @@ import {
 /**
  * Get all documents
  */
-export async function getDocuments(): Promise<AppDocument[]> {
+async function getDocuments(): Promise<AppDocument[]> {
   try {
     const documents = await prisma.document.findMany({
       include: { type: true },
@@ -43,7 +43,7 @@ export async function uploadDocument(
 /**
  * Delete a document
  */
-export async function deleteDocument(id: string): Promise<void> {
+async function deleteDocument(id: string): Promise<void> {
   try {
     await prisma.document.update({
       where: { id },
@@ -64,9 +64,7 @@ export async function deleteDocument(id: string): Promise<void> {
 /**
  * Get a document by ID
  */
-export async function getDocument(
-  documentId: string,
-): Promise<AppDocument | null> {
+async function getDocument(documentId: string): Promise<AppDocument | null> {
   try {
     const document = await prisma.document.findUnique({
       where: { id: documentId, deletedAt: null },

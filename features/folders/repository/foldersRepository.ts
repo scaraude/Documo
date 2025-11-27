@@ -2,7 +2,7 @@ import { toAppModel as folderTypeToAppModel } from '@/features/folder-types/repo
 import { toAppModel as resquestToAppModel } from '@/features/requests/repository/requestRepository';
 import logger from '@/lib/logger';
 // features/folders/repository/folderRepository.ts
-import prisma, { type Prisma } from '@/lib/prisma';
+import { type Prisma, prisma } from '@/lib/prisma';
 import type { AppDocumentType } from '@/shared/constants';
 import {
   EVENT_TYPES,
@@ -10,7 +10,7 @@ import {
   createTypedEvent,
   eventBus,
 } from '@/shared/lib/events';
-import { documentTypeToAppDocumentType } from '../../../shared/mapper/prismaMapper';
+import { documentTypeToAppDocumentType } from '@/shared/utils/prismaMapper';
 import type { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 
 // Type mapper between Prisma and App

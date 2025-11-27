@@ -1,12 +1,12 @@
-export interface ShareLinkParams {
+interface ShareLinkParams {
   params: { id: string };
 }
 
-export interface ShareLinkResponse {
+interface ShareLinkResponse {
   token: string;
 }
 
-export interface ErrorResponse {
+interface ErrorResponse {
   error: string;
 }
 

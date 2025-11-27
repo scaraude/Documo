@@ -1,6 +1,7 @@
 import * as documentTypesRepository from '@/features/document-types/repository/documentTypesRepository';
 import * as externalRequestsRepository from '@/features/external-requests/repository/externalRequestsRepository';
 import * as foldersRepository from '@/features/folders/repository/foldersRepository';
+import { env } from '@/lib/config/env';
 import { sendDocumentRequestEmail } from '@/lib/email';
 import logger from '@/lib/logger';
 import { protectedProcedure, router } from '@/lib/trpc/trpc';
@@ -121,7 +122,7 @@ export const requestsRouter = router({
           (docTypeId) => documentTypeMap[docTypeId] || docTypeId,
         );
 
-        const uploadUrl = `${process.env.NEXT_PUBLIC_APP_URL}${ROUTES.EXTERNAL.REQUEST(result.token)}`;
+        const uploadUrl = `${env.NEXT_PUBLIC_APP_URL}${ROUTES.EXTERNAL.REQUEST(result.token)}`;
         const expirationDate = new Intl.DateTimeFormat('fr-FR', {
           year: 'numeric',
           month: 'long',

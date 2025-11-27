@@ -44,7 +44,7 @@ const envSchema = z.object({
 /**
  * Validated and typed environment variables
  */
-export type Env = z.infer<typeof envSchema>;
+type Env = z.infer<typeof envSchema>;
 
 /**
  * Parse and validate environment variables
@@ -99,7 +99,7 @@ export const isTest = env.NODE_ENV === 'test';
 /**
  * Get the active database URL based on environment
  */
-export const getDatabaseUrl = (): string => {
+const getDatabaseUrl = (): string => {
   if (isTest && env.TEST_DATABASE_URL) {
     return env.TEST_DATABASE_URL;
   }

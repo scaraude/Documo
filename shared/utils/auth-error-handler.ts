@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 /**
  * Checks if an error is a tRPC authentication error
  */
-export function isAuthError(error: unknown): boolean {
+function isAuthError(error: unknown): boolean {
   if (error instanceof TRPCClientError) {
     return error.data?.code === 'UNAUTHORIZED';
   }
@@ -16,10 +16,7 @@ export function isAuthError(error: unknown): boolean {
 /**
  * Handles authentication errors by showing a toast and redirecting to login
  */
-export function handleAuthError(
-  error: unknown,
-  router: ReturnType<typeof useRouter>,
-) {
+function handleAuthError(error: unknown, router: ReturnType<typeof useRouter>) {
   if (isAuthError(error)) {
     toast.error('Votre session a expiré. Veuillez vous reconnecter.');
     router.push(ROUTES.AUTH.LOGIN);
@@ -32,7 +29,7 @@ export function handleAuthError(
  * Creates an error handler function for tRPC operations
  * Usage: onError: createAuthErrorHandler(router)
  */
-export function createAuthErrorHandler(router: ReturnType<typeof useRouter>) {
+function createAuthErrorHandler(router: ReturnType<typeof useRouter>) {
   return (error: unknown) => {
     if (!handleAuthError(error, router)) {
       // Handle other errors as needed

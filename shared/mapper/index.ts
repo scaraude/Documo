@@ -1,1 +1,0 @@
-export { createDocumentTypeLabelMap } from './mapper';

@@ -69,5 +69,3 @@ function ToggleGroupItem({
     </ToggleGroupPrimitive.Item>
   );
 }
-
-export { ToggleGroup, ToggleGroupItem };
