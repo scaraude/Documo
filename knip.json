@@ -1,0 +1,20 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignore": [
+    "**/__tests__/**",
+    "**/*.test.{ts,tsx}",
+    "**/*.spec.{ts,tsx}",
+    "vitest.config.ts",
+    "vitest.integration.config.ts",
+    "playwright.config.ts",
+    "next.config.ts",
+    "tailwind.config.ts",
+    "postcss.config.mjs",
+    "biome.json"
+  ],
+  "ignoreDependencies": [
+    "ts-node",
+    "tsx",
+    "typescript"
+  ]
+}

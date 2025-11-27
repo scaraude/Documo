@@ -33,7 +33,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `yarn prisma:generate`: Generate Prisma client
 - `yarn prisma:migrate`: Run database migrations
 - `yarn prisma:studio`: Open Prisma database UI
-- `yarn unused`: Check for unused files/exports
+- `yarn unused`: Check for unused files, exports, and dependencies with Knip
+- `yarn unused:files`: Check for unused files only
+- `yarn unused:exports`: Check for unused exports only
+- `yarn unused:deps`: Check for unused dependencies only
+- `yarn unused:fix`: Auto-fix unused exports
+- `yarn clean`: Auto-fix unused exports and run linter
 - `yarn ts`: Type-check TypeScript without emitting files
 - `yarn ts-watch`: Type-check TypeScript in watch mode
 
