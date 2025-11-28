@@ -1,4 +1,3 @@
-import { documentTypeToAppDocumentType } from '@/shared/utils/prismaMapper';
 import type { z } from 'zod';
 import { Prisma } from '../../../lib/prisma';
 import type { externalRequestSchema } from '../types/zod';
@@ -16,9 +15,7 @@ export const prismaShareLinkToExternalRequest = (
   return {
     id: request.id,
     email: request.email,
-    requestedDocuments: request.requestedDocuments.map(
-      documentTypeToAppDocumentType,
-    ),
+    requestedDocuments: request.requestedDocuments.map((dt) => dt.id),
     createdAt: request.createdAt,
     expiresAt: request.expiresAt,
     acceptedAt: request.acceptedAt,

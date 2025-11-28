@@ -1,5 +1,5 @@
 import type { DocumentType } from '@/lib/prisma/generated/client';
-import type { AppDocumentType } from '../constants';
+import type { AppDocumentType } from '@/features/document-types/types/zod';
 
 /**
  * Convert Prisma DocumentType to App DocumentType
@@ -9,8 +9,9 @@ export function documentTypeToAppDocumentType(
 ): AppDocumentType {
   return {
     id: documentType.id,
+    createdAt: documentType.createdAt,
     label: documentType.label,
-    description: documentType.description || undefined,
+    description: documentType.description || null,
     acceptedFormats: documentType.acceptedFormats,
     maxSizeMB: documentType.maxSizeMB,
   };

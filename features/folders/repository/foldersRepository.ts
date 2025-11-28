@@ -10,7 +10,6 @@ import {
   createTypedEvent,
   eventBus,
 } from '@/shared/lib/events';
-import { documentTypeToAppDocumentType } from '@/shared/utils/prismaMapper';
 import type { CreateFolderParams, Folder, FolderWithRelations } from '../types';
 
 // Type mapper between Prisma and App
@@ -25,7 +24,7 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
     name: prismaModel.name,
     description: prismaModel.description || '',
     requestedDocuments: prismaModel.requestedDocuments.map(
-      documentTypeToAppDocumentType,
+      (dt) => dt.id as AppDocumentType,
     ),
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
@@ -407,7 +406,7 @@ export async function getFoldersWithStatsForUser(
       'User folders with stats fetched successfully',
     );
 
-    return folders.map((folder) => ({
+    return folders.map((folder): Folder & { requestsCount: number } => ({
       ...toAppModel(folder),
       requestsCount: folder._count.requests,
     }));
