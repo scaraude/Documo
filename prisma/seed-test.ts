@@ -28,10 +28,11 @@ export async function seedTestData() {
   const resetTokens = await createTestPasswordResetTokens(users);
 
   // Create minimal business data
-  const folderType = await createRandomFolderType();
+  const folderType = await createRandomFolderType(users[0].id);
   const folder = await createRandomFolder(
     folderType.id,
     folderType.requiredDocuments,
+    users[0].id,
   );
   const request = await createRandomDocumentRequest(
     folder.id,

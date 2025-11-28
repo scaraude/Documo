@@ -61,7 +61,6 @@ describe('External Requests Repository', () => {
     it('should create a new share link with correct expiration', async () => {
       const params: CreateShareLinkParams = {
         requestId: 'req-123',
-        token: 'test-token',
         expiresAt: futureDate,
       };
 
@@ -72,7 +71,7 @@ describe('External Requests Repository', () => {
       expect(mockPrisma.requestShareLink.create).toHaveBeenCalledWith({
         data: {
           requestId: params.requestId,
-          token: params.token,
+          token: expect.any(String), // Token is generated internally
           expiresAt: params.expiresAt,
         },
       });
@@ -82,7 +81,6 @@ describe('External Requests Repository', () => {
     it('should throw error if creation fails', async () => {
       const params: CreateShareLinkParams = {
         requestId: 'req-123',
-        token: 'test-token',
         expiresAt: futureDate,
       };
 

@@ -29,23 +29,21 @@ describe('ExternalRequestsRepository Integration Tests', () => {
   describe('createShareLink', () => {
     it('should create a share link for a request', async () => {
       // Arrange
-      const token = randomUUID();
       const expiresAt = new Date(Date.now() + 86400000); // 24 hours from now
 
       // Act
       const shareLink = await externalRequestsRepository.createShareLink({
         requestId: testRequestId,
-        token,
         expiresAt,
       });
 
       // Assert
       expect(shareLink).toMatchObject({
         requestId: testRequestId,
-        token,
         expiresAt,
       });
       expect(shareLink.id).toBeDefined();
+      expect(shareLink.token).toBeDefined(); // Token is generated internally
       expect(shareLink.createdAt).toBeInstanceOf(Date);
     });
   });
@@ -119,20 +117,15 @@ describe('ExternalRequestsRepository Integration Tests', () => {
   describe('deleteExpiredShareLinks', () => {
     it('should delete expired share links but keep valid ones', async () => {
       // Arrange - Create additional test data
-      const newValidToken = randomUUID();
-      const newExpiredToken = randomUUID();
-
       // Create a new valid share link
-      await externalRequestsRepository.createShareLink({
+      const validShareLink = await externalRequestsRepository.createShareLink({
         requestId: testRequestId,
-        token: newValidToken,
         expiresAt: new Date(Date.now() + 86400000), // 24 hours from now
       });
 
       // Create a new expired share link
-      await externalRequestsRepository.createShareLink({
+      const expiredShareLink = await externalRequestsRepository.createShareLink({
         requestId: testRequestId,
-        token: newExpiredToken,
         expiresAt: new Date(Date.now() - 86400000), // 24 hours ago
       });
 
@@ -155,12 +148,12 @@ describe('ExternalRequestsRepository Integration Tests', () => {
 
       // Verify our newly created expired link is gone
       const expiredLinkResult =
-        await externalRequestsRepository.getShareLinkByToken(newExpiredToken);
+        await externalRequestsRepository.getShareLinkByToken(expiredShareLink.token);
       expect(expiredLinkResult).toBeNull();
 
       // Verify our newly created valid link still exists
       const validLinkResult =
-        await externalRequestsRepository.getShareLinkByToken(newValidToken);
+        await externalRequestsRepository.getShareLinkByToken(validShareLink.token);
       expect(validLinkResult).toBeTruthy();
 
       // Verify seeded valid link still exists

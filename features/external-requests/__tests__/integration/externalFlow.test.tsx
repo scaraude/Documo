@@ -111,7 +111,7 @@ describe('External Document Upload Flow', () => {
     it('should prevent access with expired tokens', async () => {
       // Mock expired share link
       (
-        externalRequestsRepository.getShareLinkByToken as jest.Mock
+        externalRequestsRepository.getShareLinkByToken as Mock
       ).mockResolvedValue(null);
 
       render(<ExternalRequestPage />);
@@ -123,15 +123,15 @@ describe('External Document Upload Flow', () => {
     });
 
     it('should validate document upload permissions', async () => {
-      const mockUpload = jest.fn().mockRejectedValue(new Error('Unauthorized'));
+      const mockUpload = vi.fn().mockRejectedValue(new Error('Unauthorized'));
 
       (
-        externalRequestsRepository.getShareLinkByToken as jest.Mock
+        externalRequestsRepository.getShareLinkByToken as Mock
       ).mockResolvedValue({
         request: mockRequest,
       });
 
-      (documentsRepository.uploadDocument as jest.Mock) = mockUpload;
+      (documentsRepository.uploadDocument as Mock) = mockUpload;
 
       render(<ExternalRequestPage />);
 

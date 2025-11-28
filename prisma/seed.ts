@@ -453,6 +453,9 @@ async function createRandomFolderType(createdById: string) {
       createdById,
       deletedAt: Math.random() < 0.1 ? faker.date.past() : null, // 10% chance of soft delete
     },
+    include: {
+      requiredDocuments: true,
+    },
   });
 }
 
