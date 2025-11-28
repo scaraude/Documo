@@ -19,7 +19,7 @@ export default function ExternalUploadPage() {
   const { token }: { token: string } = useParams();
   const { getRequestByToken } = useExternalRequest();
   const { getDocumentsByRequestId } = useDocument();
-  const { getLabel } = useDocumentTypes();
+  const { getLabelById } = useDocumentTypes();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [documentTypesMissing, setDocumentTypesMissing] = useState<string[]>(
     [],
@@ -29,12 +29,12 @@ export default function ExternalUploadPage() {
 
   useEffect(() => {
     if (request) {
-      const documentTypeMissing = documents
-        ? request.requestedDocuments.filter(
-            (doc) => !documents.some((d) => d.type === doc),
-          )
-        : request.requestedDocuments;
-      setDocumentTypesMissing(documentTypeMissing);
+      const docTypeIdsMissing = documents
+        ? request.requestedDocumentIds.filter(
+          (doc) => !documents.some((d) => d.typeId === doc),
+        )
+        : request.requestedDocumentIds;
+      setDocumentTypesMissing(docTypeIdsMissing);
     }
   }, [request, documents]);
 
@@ -117,15 +117,15 @@ export default function ExternalUploadPage() {
           <div className="mb-6">
             <h2 className="text-lg font-semibold mb-2">Documents demandés :</h2>
             <ul className="list-disc list-inside space-y-2">
-              {request.requestedDocuments.map((requestedDocument, index) => (
+              {request.requestedDocumentIds.map((docTypeId, index) => (
                 <li
-                  key={`${requestedDocument.toLowerCase()}-${index}`}
+                  key={`${docTypeId.toLowerCase()}-${index}`}
                   className="text-gray-700"
                 >
-                  {documentTypesMissing.includes(requestedDocument)
+                  {documentTypesMissing.includes(docTypeId)
                     ? '⏳  '
                     : '✅  '}
-                  {getLabel(requestedDocument)}
+                  {getLabelById(docTypeId)}
                 </li>
               ))}
             </ul>

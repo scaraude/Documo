@@ -1,6 +1,5 @@
 import z from 'zod';
 import {
-  documentTypeIdSchema,
   documentTypeIdsSchema,
 } from '../../document-types/types/zod';
 
@@ -10,7 +9,7 @@ export const createRequestSchema = z.object({
     .string()
     .email()
     .transform((email) => email.toLowerCase()),
-  requestedDocuments: documentTypeIdsSchema,
+  requestedDocumentIds: documentTypeIdsSchema,
   folderId: z.string().uuid(),
   expirationDays: z.number().positive().optional(),
 });
@@ -22,7 +21,7 @@ const updateRequestSchema = z.object({
     .email()
     .transform((email) => email.toLowerCase())
     .optional(),
-  requestedDocuments: documentTypeIdsSchema.optional(),
+  requestedDocumentIds: documentTypeIdsSchema.optional(),
   expirationDays: z.number().positive().optional(),
 });
 
@@ -39,9 +38,6 @@ const UpdateRequestInputSchema = z.object({
   id: z.string().uuid('ID de demande invalide'),
   data: updateRequestSchema,
 });
-
-// Schéma pour un seul type de document
-const requestDocumentTypeSchema = documentTypeIdSchema;
 
 // Type exports
 type CreateRequest = z.infer<typeof createRequestSchema>;

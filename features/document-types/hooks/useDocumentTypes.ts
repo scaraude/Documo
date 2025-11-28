@@ -3,10 +3,10 @@ import { trpc } from '@/lib/trpc/client';
 
 interface UseDocumentTypesReturn {
   documentTypes: DocumentType[];
-  labelMap: Record<string, string>;
   isLoading: boolean;
   error: Error | null;
-  getLabel: (id: string) => string;
+  getLabel: (doc: DocumentType) => string;
+  getLabelById: (id: DocumentType["id"]) => string;
   getDocumentType: (id: string) => DocumentType | undefined;
 }
 
@@ -24,17 +24,13 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
     refetchOnWindowFocus: false,
   });
 
-  // Create label map from document types
-  const labelMap = (documentTypes || []).reduce(
-    (acc, docType) => {
-      acc[docType.id] = docType.label;
-      return acc;
-    },
-    {} as Record<string, string>,
-  );
+  const getLabelById = (id: string): string => {
+    const docType = documentTypes?.find((dt: DocumentType) => dt.id === id);
+    return docType ? docType.label : 'Unknown Document Type';
+  }
 
-  const getLabel = (id: string): string => {
-    return labelMap[id] || id;
+  const getLabel = (docType: DocumentType): string => {
+    return docType.label;
   };
 
   const getDocumentType = (id: string): DocumentType | undefined => {
@@ -43,10 +39,10 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
 
   return {
     documentTypes: documentTypes || [],
-    labelMap,
     isLoading,
     error: error as Error | null,
     getLabel,
+    getLabelById,
     getDocumentType,
   };
 };

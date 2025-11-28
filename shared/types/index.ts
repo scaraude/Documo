@@ -1,6 +1,8 @@
 import z from 'zod';
-import { documentTypeIdSchema } from '../../features/document-types/types/zod';
-import type { AppDocumentType } from '../constants';
+import {
+  type AppDocumentType,
+  documentTypeIdSchema,
+} from '@/features/document-types/types/zod';
 
 export interface DocumentRequest {
   id: string;
@@ -32,7 +34,7 @@ export interface DocumentRequestWithFolder extends DocumentRequest {
 
 export interface DocumentRequestWithFolderAndDocuments
   extends DocumentRequestWithDocuments,
-    DocumentRequestWithFolder {}
+  DocumentRequestWithFolder { }
 
 export interface DocumentRequestWithStatue extends DocumentRequest {
   status: ComputedRequestStatus;
@@ -53,7 +55,7 @@ export const AppDocumentSchema = z.object({
   id: z.string().uuid(),
   requestId: z.string().uuid(),
   folderId: z.string().uuid().optional(),
-  type: documentTypeIdSchema,
+  typeId: documentTypeIdSchema,
   fileName: z.string(),
   mimeType: z.string(),
   originalSize: z.number(),

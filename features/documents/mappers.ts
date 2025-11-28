@@ -15,7 +15,7 @@ export function prismaDocumentToAppDocument(
   return {
     id: prismaModel.id,
     requestId: prismaModel.requestId,
-    type: prismaModel.type.id,
+    typeId: prismaModel.type.id,
     fileName: prismaModel.fileName,
     mimeType: prismaModel.mimeType,
     originalSize: prismaModel.originalSize,

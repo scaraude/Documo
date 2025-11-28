@@ -15,7 +15,7 @@ export const prismaShareLinkToExternalRequest = (
   return {
     id: request.id,
     email: request.email,
-    requestedDocuments: request.requestedDocuments.map((dt) => dt.id),
+    requestedDocumentIds: request.requestedDocuments.map((dt) => dt.id),
     createdAt: request.createdAt,
     expiresAt: request.expiresAt,
     acceptedAt: request.acceptedAt,

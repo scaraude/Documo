@@ -17,7 +17,7 @@ export default function ExternalRequestPage() {
   const { getRequestByToken, acceptRequest, declineRequest } =
     useExternalRequest();
   const { data: request, isLoading, error } = getRequestByToken(token);
-  const { getLabel } = useDocumentTypes();
+  const { getLabelById } = useDocumentTypes();
 
   const [showDeclineForm, setShowDeclineForm] = useState(false);
   const [declineMessage, setDeclineMessage] = useState('');
@@ -152,15 +152,15 @@ export default function ExternalRequestPage() {
                 Documents demandés
               </div>
               <div className="space-y-2">
-                {request.requestedDocuments.map((doc) => (
+                {request.requestedDocumentIds.map((docTypeId) => (
                   <div
-                    key={doc}
+                    key={docTypeId}
                     className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
                   >
                     <div className="flex items-center space-x-3">
                       <FileText className="h-5 w-5 text-gray-500" />
                       <span className="text-gray-700 font-medium">
-                        {getLabel(doc)}
+                        {getLabelById(docTypeId)}
                       </span>
                     </div>
                     <Badge variant="outline" className="text-xs">

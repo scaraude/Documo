@@ -79,7 +79,7 @@ export const folderRouter = router({
         );
         const result = await folderRepository.createFolder({
           ...input,
-          requestedDocuments: input.requestedDocuments as AppDocumentType[],
+          requestedDocumentIds: input.requestedDocumentIds,
           createdById: ctx.user.id, // Use authenticated user's ID
         });
         logger.info(

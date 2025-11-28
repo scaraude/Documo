@@ -1,9 +1,9 @@
 import type { FolderType } from '@/features/folder-types/types';
-import type { AppDocumentType } from '@/shared/constants';
 import type {
   DocumentRequest,
   DocumentRequestWithStatue,
 } from '@/shared/types';
+import type { AppDocumentType } from '../../document-types/types/zod';
 
 export interface Folder {
   id: string;
@@ -45,7 +45,7 @@ export interface CreateFolderParams {
   description?: string;
   folderTypeId: string;
   expiresAt: Date | null;
-  requestedDocuments: AppDocumentType[];
+  requestedDocumentIds: AppDocumentType["id"][];
   createdById?: string;
 }
 

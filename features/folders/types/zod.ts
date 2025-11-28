@@ -6,7 +6,7 @@ export const CreateFolderSchema = z.object({
   folderTypeId: z.string().uuid('ID de type de dossier invalide'),
   description: z.string().optional(),
   expiresAt: z.date().nullable(),
-  requestedDocuments: documentTypeIdsSchema,
+  requestedDocumentIds: documentTypeIdsSchema,
   createdById: z.string().uuid().optional(),
 });
 

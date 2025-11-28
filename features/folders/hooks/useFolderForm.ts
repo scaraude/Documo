@@ -52,13 +52,13 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
           return folder === null
             ? null
             : {
-                ...folder,
-                status: computeFolderStatus(folder),
-                requests: folder.requests?.map((request) => ({
-                  ...request,
-                  status: computeRequestStatus(request),
-                })),
-              };
+              ...folder,
+              status: computeFolderStatus(folder),
+              requests: folder.requests?.map((request) => ({
+                ...request,
+                status: computeRequestStatus(request),
+              })),
+            };
         },
       },
     );
@@ -160,8 +160,8 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
         emails.map((email) =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
-            requestedDocuments: selectedType.requiredDocuments.map(
-              (doc) => doc.id as AppDocumentType,
+            requestedDocumentIds: selectedType.requiredDocuments.map(
+              (doc) => doc.id,
             ),
             folderId: createdFolder.id,
           }),

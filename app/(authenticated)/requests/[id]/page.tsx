@@ -336,24 +336,24 @@ function RequestDetailContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {request.requestedDocuments.map((documentType) => {
+                    {request.requestedDocuments.map((docType) => {
                       const uploadedDocs =
                         request.documents?.filter(
-                          (doc) => doc.type === documentType,
+                          (doc) => doc.typeId === docType.id,
                         ) || [];
                       const hasUploadedDoc = uploadedDocs.length > 0;
                       const latestDoc = uploadedDocs[0]; // Already sorted by uploadedAt desc
 
                       return (
                         <div
-                          key={documentType}
+                          key={docType.id}
                           className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
                         >
                           <div className="flex items-center gap-3">
                             <FileText className="h-5 w-5 text-gray-600" />
                             <div>
                               <p className="font-medium text-gray-900">
-                                {getLabel(documentType)}
+                                {getLabel(docType)}
                               </p>
                             </div>
                           </div>

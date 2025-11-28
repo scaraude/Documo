@@ -6,7 +6,7 @@ import { documentTypeIdsSchema } from '../../document-types/types/zod';
 export const externalRequestSchema = z.object({
   id: z.string(),
   email: z.string(),
-  requestedDocuments: documentTypeIdsSchema,
+  requestedDocumentIds: documentTypeIdsSchema,
   createdAt: z.date(),
   expiresAt: z.date(),
   acceptedAt: z.date().nullable().optional(),
@@ -21,7 +21,7 @@ export const externalCreateDocumentSchema = z.object({
     requestId: true,
     dek: true,
     url: true,
-    type: true,
+    typeId: true,
   }).extend({
     typeId: z.string(), // DocumentTypeId
   }),

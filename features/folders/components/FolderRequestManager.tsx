@@ -77,7 +77,7 @@ export const FolderRequestManager = ({
         validEmails.map((email) =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
-            requestedDocuments: folder.requestedDocuments,
+            requestedDocumentIds: folder.requestedDocuments.map((docType) => docType.id),
             folderId: folder.id,
           }),
         ),
@@ -182,7 +182,7 @@ export const FolderRequestManager = ({
               <div className="flex flex-wrap gap-2">
                 {folder.requestedDocuments.map((docType) => (
                   <Badge
-                    key={docType}
+                    key={docType.id}
                     variant="outline"
                     className="text-blue-700 border-blue-300"
                   >

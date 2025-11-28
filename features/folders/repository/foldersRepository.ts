@@ -23,9 +23,7 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
     id: prismaModel.id,
     name: prismaModel.name,
     description: prismaModel.description || '',
-    requestedDocuments: prismaModel.requestedDocuments.map(
-      (dt) => dt.id as AppDocumentType,
-    ),
+    requestedDocuments: prismaModel.requestedDocuments,
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
     expiresAt: prismaModel.expiresAt || undefined,
@@ -186,18 +184,18 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
         folderName: data.name,
         folderTypeId: data.folderTypeId,
         createdById: data.createdById,
-        requestedDocumentsCount: data.requestedDocuments.length,
+        requestedDocumentsCount: data.requestedDocumentIds.length,
       },
       'Creating new folder',
     );
 
-    const { requestedDocuments, ...folderData } = data;
+    const { requestedDocumentIds, ...folderData } = data;
     const newFolder = await prisma.folder.create({
       data: {
         ...folderData,
         createdById: folderData.createdById || '', // Ensure string is provided
         requestedDocuments: {
-          connect: requestedDocuments.map((id) => ({ id })),
+          connect: requestedDocumentIds.map((id) => ({ id })),
         },
       },
       include: {

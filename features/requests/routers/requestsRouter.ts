@@ -82,7 +82,7 @@ export const requestsRouter = router({
           {
             email: input.email.replace(/(.{3}).*(@.*)/, '$1...$2'),
             folderId: input.folderId,
-            documentsCount: input.requestedDocuments.length,
+            documentsCount: input.requestedDocumentIds.length,
           },
           'Creating request',
         );
@@ -118,7 +118,7 @@ export const requestsRouter = router({
           expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry by default
         });
         // Prepare email data
-        const documentLabels = input.requestedDocuments.map(
+        const documentLabels = input.requestedDocumentIds.map(
           (docTypeId) => documentTypeMap[docTypeId] || docTypeId,
         );
 

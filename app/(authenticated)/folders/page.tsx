@@ -146,7 +146,7 @@ export default function FoldersPage() {
                         variant="outline"
                         className="text-xs px-2 py-0.5"
                       >
-                        {getLabel(doc.id)}
+                        {getLabel(doc)}
                       </Badge>
                     ))}
                     {folderType.requiredDocuments.length > 2 && (
@@ -311,11 +311,10 @@ export default function FoldersPage() {
                   variant={
                     selectedFilters.includes('PENDING') ? 'default' : 'outline'
                   }
-                  className={`h-8 cursor-pointer transition-colors ${
-                    selectedFilters.includes('PENDING')
+                  className={`h-8 cursor-pointer transition-colors ${selectedFilters.includes('PENDING')
                       ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
                       : 'hover:bg-yellow-50 bg-white'
-                  }`}
+                    }`}
                   onClick={() => toggleFilter('PENDING')}
                 >
                   🕐 En attente
@@ -326,11 +325,10 @@ export default function FoldersPage() {
                       ? 'default'
                       : 'outline'
                   }
-                  className={`h-8 cursor-pointer transition-colors ${
-                    selectedFilters.includes('COMPLETED')
+                  className={`h-8 cursor-pointer transition-colors ${selectedFilters.includes('COMPLETED')
                       ? 'bg-green-500 hover:bg-green-600 text-white'
                       : 'hover:bg-green-50 bg-white'
-                  }`}
+                    }`}
                   onClick={() => toggleFilter('COMPLETED')}
                 >
                   ✅ Terminé
@@ -339,11 +337,10 @@ export default function FoldersPage() {
                   variant={
                     selectedFilters.includes('ARCHIVED') ? 'default' : 'outline'
                   }
-                  className={`h-8 cursor-pointer transition-colors ${
-                    selectedFilters.includes('ARCHIVED')
+                  className={`h-8 cursor-pointer transition-colors ${selectedFilters.includes('ARCHIVED')
                       ? 'bg-red-500 hover:bg-red-600 text-white'
                       : 'hover:bg-red-50 bg-white'
-                  }`}
+                    }`}
                   onClick={() => toggleFilter('ARCHIVED')}
                 >
                   ❌ Refusé
@@ -369,7 +366,7 @@ export default function FoldersPage() {
                 {filteredFolders.length !== 1 ? 's' : ''}
                 {selectedFilters.length > 0 || searchTerm ? ' trouvé' : ''}
                 {filteredFolders.length !== 1 &&
-                (selectedFilters.length > 0 || searchTerm)
+                  (selectedFilters.length > 0 || searchTerm)
                   ? 's'
                   : ''}
                 {folders &&

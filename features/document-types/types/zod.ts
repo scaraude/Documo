@@ -1,8 +1,11 @@
 import { z } from 'zod';
 
+// Schema for validating document type IDs
+export const documentTypeIdSchema = z.string().uuid('ID de type de document invalide');
+
 // Base DocumentType schema
 export const documentTypeSchema = z.object({
-  id: z.string(),
+  id: documentTypeIdSchema,
   label: z.string().min(1, 'Le libellé est requis'),
   description: z.string().nullable(),
   acceptedFormats: z
@@ -32,10 +35,7 @@ export const updateDocumentTypeSchema = createDocumentTypeSchema
   .partial()
   .omit({ id: true });
 
-// Schema for validating document type IDs
-export const documentTypeIdSchema = z
-  .string()
-  .min(1, "L'ID du type de document est requis");
+
 
 // Schema for arrays of document type IDs
 export const documentTypeIdsSchema = z
