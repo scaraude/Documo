@@ -1,5 +1,5 @@
-import type { DocumentType } from '@/lib/prisma/generated/client';
 import type { AppDocumentType } from '@/features/document-types/types/zod';
+import type { DocumentType } from '@/lib/prisma/generated/client';
 
 /**
  * Convert Prisma DocumentType to App DocumentType
