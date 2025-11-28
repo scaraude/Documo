@@ -12,7 +12,7 @@ interface FolderDocumentListProps {
 export const FolderDocumentList = (props: FolderDocumentListProps) => {
   const { document } = props;
   const [isViewerOpen, setIsViewerOpen] = useState(false);
-  const { getLabel } = useDocumentTypes();
+  const { getLabelById } = useDocumentTypes();
 
   return (
     <>
@@ -45,7 +45,7 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                 {document.fileName}
               </p>
               <p className="mt-1 flex items-center text-sm text-gray-500">
-                <span className="truncate">{getLabel(document)}</span>
+                <span className="truncate">{getLabelById(document.typeId)}</span>
                 <span className="ml-1.5 flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
                   {document.status}
                 </span>

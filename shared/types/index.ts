@@ -7,7 +7,7 @@ import {
 export interface DocumentRequest {
   id: string;
   email: string;
-  requestedDocuments: AppDocumentType[];
+  requestedDocumentIds: AppDocumentType["id"][];
   createdAt: Date;
   expiresAt: Date;
   updatedAt: Date;

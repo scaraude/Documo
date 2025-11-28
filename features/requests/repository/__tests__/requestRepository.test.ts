@@ -124,7 +124,7 @@ describe('Request Repository', () => {
       // GIVEN
       const requestData: CreateRequestParams = {
         email: 'test@example.com',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
+        requestedDocumentIds: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
         folderId: 'test-folder-id',
       };
 
@@ -136,7 +136,7 @@ describe('Request Repository', () => {
       // THEN
       expect(result.id).toBe('1');
       expect(result.email).toBe('test@example.com');
-      expect(result.requestedDocuments).toEqual([
+      expect(result.requestedDocumentIds).toEqual([
         APP_DOCUMENT_TYPES.IDENTITY_PROOF,
       ]);
       expect(mockPrisma.documentRequest.create).toHaveBeenCalledWith({
@@ -156,7 +156,7 @@ describe('Request Repository', () => {
       // GIVEN
       const requestData: CreateRequestParams = {
         email: 'test@example.com',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
+        requestedDocumentIds: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
         folderId: 'test-folder-id',
         expirationDays: 14,
       };
@@ -181,7 +181,7 @@ describe('Request Repository', () => {
       // GIVEN
       const requestData: CreateRequestParams = {
         email: 'test@example.com',
-        requestedDocuments: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
+        requestedDocumentIds: [APP_DOCUMENT_TYPES.IDENTITY_PROOF],
         folderId: 'test-folder-id',
       };
 

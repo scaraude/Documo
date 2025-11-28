@@ -33,8 +33,8 @@ export function toAppModel(
   return {
     id: prismaModel.id,
     email: prismaModel.email,
-    requestedDocuments: prismaModel.requestedDocuments.map(
-      (dt) => dt.id as AppDocumentType,
+    requestedDocumentIds: prismaModel.requestedDocuments.map(
+      (dt) => dt.id,
     ),
     createdAt: prismaModel.createdAt,
     expiresAt: prismaModel.expiresAt,
@@ -142,14 +142,14 @@ export async function createRequestForUser(
   userId: string,
 ): Promise<DocumentRequest> {
   try {
-    const { email, requestedDocuments, expirationDays = 7, folderId } = params;
+    const { email, requestedDocumentIds, expirationDays = 7, folderId } = params;
 
     logger.info(
       {
         userId,
         email: email.replace(/(.{3}).*(@.*)/, '$1...$2'),
         folderId,
-        requestedDocumentsCount: requestedDocuments.length,
+        requestedDocumentsCount: requestedDocumentIds.length,
       },
       'Creating request for user',
     );
@@ -180,7 +180,7 @@ export async function createRequestForUser(
       data: {
         email,
         requestedDocuments: {
-          connect: requestedDocuments.map((id) => ({ id })),
+          connect: requestedDocumentIds.map((id) => ({ id })),
         },
         expiresAt,
         folderId,
@@ -219,7 +219,7 @@ export async function createRequest(
       'Using deprecated createRequest - use createRequestForUser instead',
     );
 
-    const { email, requestedDocuments, expirationDays = 7, folderId } = params;
+    const { email, requestedDocumentIds, expirationDays = 7, folderId } = params;
     const now = new Date();
 
     const expiresAt = new Date(
@@ -230,7 +230,7 @@ export async function createRequest(
       data: {
         email,
         requestedDocuments: {
-          connect: requestedDocuments.map((id) => ({ id })),
+          connect: requestedDocumentIds.map((id) => ({ id })),
         },
         expiresAt,
         folderId,

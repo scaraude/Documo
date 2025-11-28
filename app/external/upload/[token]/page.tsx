@@ -132,7 +132,7 @@ export default function ExternalUploadPage() {
           </div>
           <DocumentUploader
             token={token}
-            documentTypesMissing={documentTypesMissing}
+            documentTypeIdsMissing={documentTypesMissing}
             setDocumentTypeMissing={setDocumentTypesMissing}
           />
         </CardContent>

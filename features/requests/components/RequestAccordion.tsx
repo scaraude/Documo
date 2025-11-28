@@ -34,7 +34,7 @@ export const RequestAccordion = ({
   getRequestStatus,
 }: RequestAccordionProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { getLabel } = useDocumentTypes();
+  const { getLabelById } = useDocumentTypes();
   const status = getRequestStatus(request);
 
   const getStatusColor = (status: ComputedRequestStatus) => {
@@ -123,8 +123,8 @@ export const RequestAccordion = ({
                 <FileText className="h-4 w-4 text-gray-600" />
               </div>
               <span className="text-sm text-gray-700 font-medium">
-                {request.requestedDocuments.length} document
-                {request.requestedDocuments.length > 1 ? 's' : ''}
+                {request.requestedDocumentIds.length} document
+                {request.requestedDocumentIds.length > 1 ? 's' : ''}
               </span>
             </div>
 
@@ -243,12 +243,12 @@ export const RequestAccordion = ({
               {/* Documents */}
               <div>
                 <div className="text-xs text-gray-500 mb-2">
-                  {request.requestedDocuments.length} documents
+                  {request.requestedDocumentIds.length} documents
                 </div>
                 <div className="space-y-1">
-                  {request.requestedDocuments.map((docType) => (
-                    <div key={docType} className="text-sm text-gray-700">
-                      • {getLabel(docType)}
+                  {request.requestedDocumentIds.map((docTypeId) => (
+                    <div key={docTypeId} className="text-sm text-gray-700">
+                      • {getLabelById(docTypeId)}
                     </div>
                   ))}
                 </div>

@@ -11,7 +11,7 @@ import { uploadDocument } from '../api/uploadDocument';
 
 interface DocumentUploaderProps {
   token: string;
-  documentTypesMissing: DocumentTypeId[];
+  documentTypeIdsMissing: DocumentTypeId[];
   setDocumentTypeMissing: Dispatch<SetStateAction<string[]>>;
 }
 
@@ -26,18 +26,18 @@ interface UploadStatus {
 
 export const DocumentUploader = ({
   token,
-  documentTypesMissing: documentTypeMissing,
+  documentTypeIdsMissing,
   setDocumentTypeMissing,
 }: DocumentUploaderProps) => {
   const router = useRouter();
-  const { getLabel } = useDocumentTypes();
+  const { getLabelById } = useDocumentTypes();
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
 
   // Update uploadStatus when requiredDocuments changes
   // biome-ignore lint/correctness/useExhaustiveDependencies: infinite loop otherwise
   useEffect(() => {
     const newUploadStatus: UploadStatus = {};
-    for (const doc of documentTypeMissing) {
+    for (const doc of documentTypeIdsMissing) {
       newUploadStatus[doc] = uploadStatus[doc] || {
         progress: 0,
         status: 'idle' as const,
@@ -45,7 +45,7 @@ export const DocumentUploader = ({
     }
 
     setUploadStatus(newUploadStatus);
-  }, [documentTypeMissing]); // Remove uploadStatus from dependencies to avoid infinite loop
+  }, [documentTypeIdsMissing]); // Remove uploadStatus from dependencies to avoid infinite loop
 
   const handleFileUpload = async (
     file: File,
@@ -104,7 +104,7 @@ export const DocumentUploader = ({
 
   // Don't render if requiredDocuments is empty or uploadStatus is not ready
   if (
-    documentTypeMissing.length === 0 ||
+    documentTypeIdsMissing.length === 0 ||
     Object.keys(uploadStatus).length === 0
   ) {
     return null;
@@ -112,8 +112,8 @@ export const DocumentUploader = ({
 
   return (
     <div className="space-y-6">
-      {documentTypeMissing.map((documentType) => {
-        const status = uploadStatus[documentType];
+      {documentTypeIdsMissing.map((docTypeIdMissing) => {
+        const status = uploadStatus[docTypeIdMissing];
 
         // Safety check - skip if status doesn't exist
         if (!status) {
@@ -121,11 +121,11 @@ export const DocumentUploader = ({
         }
 
         return (
-          <Card key={documentType} className="p-6">
+          <Card key={docTypeIdMissing} className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-medium">
-                  {getLabel(documentType)}
+                  {getLabelById(docTypeIdMissing)}
                 </h3>
                 <p className="text-sm text-gray-500">
                   {status.status === 'idle' && 'En attente du document'}
@@ -146,7 +146,7 @@ export const DocumentUploader = ({
                       input.onchange = (e) => {
                         const file = (e.target as HTMLInputElement).files?.[0];
                         if (file) {
-                          handleFileUpload(file, documentType);
+                          handleFileUpload(file, docTypeIdMissing);
                         }
                       };
                       input.click();
