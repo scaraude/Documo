@@ -1,4 +1,4 @@
 {
   "installCommand": "yarn install --frozen-lockfile",
-  "buildCommand": "prisma generate && prisma migrate deploy && yarn build"
+  "buildCommand": "npx prisma generate && npx prisma migrate deploy && yarn build"
 }
