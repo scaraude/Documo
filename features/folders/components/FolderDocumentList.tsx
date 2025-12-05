@@ -45,7 +45,9 @@ export const FolderDocumentList = (props: FolderDocumentListProps) => {
                 {document.fileName}
               </p>
               <p className="mt-1 flex items-center text-sm text-gray-500">
-                <span className="truncate">{getLabelById(document.typeId)}</span>
+                <span className="truncate">
+                  {getLabelById(document.typeId)}
+                </span>
                 <span className="ml-1.5 flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-gray-100 text-gray-800">
                   {document.status}
                 </span>

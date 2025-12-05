@@ -1,7 +1,9 @@
 import { z } from 'zod';
 
 // Schema for validating document type IDs
-export const documentTypeIdSchema = z.string().uuid('ID de type de document invalide');
+export const documentTypeIdSchema = z
+  .string()
+  .uuid('ID de type de document invalide');
 
 // Base DocumentType schema
 export const documentTypeSchema = z.object({
@@ -34,8 +36,6 @@ export const createDocumentTypeSchema = z.object({
 export const updateDocumentTypeSchema = createDocumentTypeSchema
   .partial()
   .omit({ id: true });
-
-
 
 // Schema for arrays of document type IDs
 export const documentTypeIdsSchema = z

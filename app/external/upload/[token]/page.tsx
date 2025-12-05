@@ -31,8 +31,8 @@ export default function ExternalUploadPage() {
     if (request) {
       const docTypeIdsMissing = documents
         ? request.requestedDocumentIds.filter(
-          (doc) => !documents.some((d) => d.typeId === doc),
-        )
+            (doc) => !documents.some((d) => d.typeId === doc),
+          )
         : request.requestedDocumentIds;
       setDocumentTypesMissing(docTypeIdsMissing);
     }
@@ -122,9 +122,7 @@ export default function ExternalUploadPage() {
                   key={`${docTypeId.toLowerCase()}-${index}`}
                   className="text-gray-700"
                 >
-                  {documentTypesMissing.includes(docTypeId)
-                    ? '⏳  '
-                    : '✅  '}
+                  {documentTypesMissing.includes(docTypeId) ? '⏳  ' : '✅  '}
                   {getLabelById(docTypeId)}
                 </li>
               ))}

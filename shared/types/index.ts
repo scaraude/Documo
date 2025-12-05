@@ -1,13 +1,13 @@
-import z from 'zod';
 import {
   type AppDocumentType,
   documentTypeIdSchema,
 } from '@/features/document-types/types/zod';
+import z from 'zod';
 
 export interface DocumentRequest {
   id: string;
   email: string;
-  requestedDocumentIds: AppDocumentType["id"][];
+  requestedDocumentIds: AppDocumentType['id'][];
   createdAt: Date;
   expiresAt: Date;
   updatedAt: Date;
@@ -34,7 +34,7 @@ export interface DocumentRequestWithFolder extends DocumentRequest {
 
 export interface DocumentRequestWithFolderAndDocuments
   extends DocumentRequestWithDocuments,
-  DocumentRequestWithFolder { }
+    DocumentRequestWithFolder {}
 
 export interface DocumentRequestWithStatue extends DocumentRequest {
   status: ComputedRequestStatus;

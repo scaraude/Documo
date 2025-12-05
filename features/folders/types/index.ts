@@ -45,7 +45,7 @@ export interface CreateFolderParams {
   description?: string;
   folderTypeId: string;
   expiresAt: Date | null;
-  requestedDocumentIds: AppDocumentType["id"][];
+  requestedDocumentIds: AppDocumentType['id'][];
   createdById?: string;
 }
 

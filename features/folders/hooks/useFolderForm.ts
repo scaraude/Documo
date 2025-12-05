@@ -52,13 +52,13 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
           return folder === null
             ? null
             : {
-              ...folder,
-              status: computeFolderStatus(folder),
-              requests: folder.requests?.map((request) => ({
-                ...request,
-                status: computeRequestStatus(request),
-              })),
-            };
+                ...folder,
+                status: computeFolderStatus(folder),
+                requests: folder.requests?.map((request) => ({
+                  ...request,
+                  status: computeRequestStatus(request),
+                })),
+              };
         },
       },
     );

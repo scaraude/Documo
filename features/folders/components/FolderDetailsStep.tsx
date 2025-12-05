@@ -41,9 +41,7 @@ export const FolderDetailsStep = ({
       name: name.trim(),
       description: description.trim() || undefined,
       folderTypeId: selectedType.id,
-      requestedDocumentIds: selectedType.requiredDocuments.map(
-        (doc) => doc.id,
-      ),
+      requestedDocumentIds: selectedType.requiredDocuments.map((doc) => doc.id),
       expiresAt: expirationDate ? new Date(expirationDate) : null,
     };
 

@@ -77,7 +77,9 @@ export const FolderRequestManager = ({
         validEmails.map((email) =>
           createRequestMutation.mutateAsync({
             email: email.trim(),
-            requestedDocumentIds: folder.requestedDocuments.map((docType) => docType.id),
+            requestedDocumentIds: folder.requestedDocuments.map(
+              (docType) => docType.id,
+            ),
             folderId: folder.id,
           }),
         ),

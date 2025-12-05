@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type React from 'react';
+import { useDocumentTypes } from '../../document-types/client';
 import { useDocument } from '../../documents/hooks/useDocument';
 import type {
   ComputedFolderStatus,
@@ -12,7 +13,6 @@ import type {
 } from '../types';
 import { FolderDocumentList } from './FolderDocumentList';
 import { FolderRequestManager } from './FolderRequestManager';
-import { useDocumentTypes } from '../../document-types/client';
 
 interface FolderDetailProps {
   folder: FolderWithRelationsAndStatus;
@@ -114,20 +114,22 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
         <div className="flex px-4 py-3 bg-gray-50 border-b">
           <button
             type="button"
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${activeTab === 'info'
-              ? 'bg-white shadow text-gray-900'
-              : 'text-gray-500 hover:text-gray-700'
-              }`}
+            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
+              activeTab === 'info'
+                ? 'bg-white shadow text-gray-900'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
             onClick={() => setActiveTab('info')}
           >
             Informations
           </button>
           <button
             type="button"
-            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${activeTab === 'requests'
-              ? 'bg-white shadow text-gray-900'
-              : 'text-gray-500 hover:text-gray-700'
-              }`}
+            className={`px-4 py-2 font-medium text-sm rounded-md mr-2 ${
+              activeTab === 'requests'
+                ? 'bg-white shadow text-gray-900'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
             onClick={() => setActiveTab('requests')}
           >
             Demandes
@@ -139,10 +141,11 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
           </button>
           <button
             type="button"
-            className={`px-4 py-2 font-medium text-sm rounded-md ${activeTab === 'documents'
-              ? 'bg-white shadow text-gray-900'
-              : 'text-gray-500 hover:text-gray-700'
-              }`}
+            className={`px-4 py-2 font-medium text-sm rounded-md ${
+              activeTab === 'documents'
+                ? 'bg-white shadow text-gray-900'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
             onClick={() => setActiveTab('documents')}
           >
             Documents
@@ -203,7 +206,9 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span className="ml-2 flex-1 w-0 truncate">{getLabel(docType)}</span>
+                        <span className="ml-2 flex-1 w-0 truncate">
+                          {getLabel(docType)}
+                        </span>
                       </div>
                     </li>
                   ))}

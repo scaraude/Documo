@@ -1,7 +1,5 @@
 import z from 'zod';
-import {
-  documentTypeIdsSchema,
-} from '../../document-types/types/zod';
+import { documentTypeIdsSchema } from '../../document-types/types/zod';
 
 // Schéma de validation pour la création de request
 export const createRequestSchema = z.object({
