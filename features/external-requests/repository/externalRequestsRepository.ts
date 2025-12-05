@@ -32,7 +32,12 @@ export async function getShareLinkByToken(token: string) {
     include: {
       request: {
         include: {
-          requestedDocuments: true, // <-- Ensure this line is present
+          requestedDocuments: true,
+          folder: {
+            include: {
+              createdBy: true,
+            },
+          },
         },
       },
     },

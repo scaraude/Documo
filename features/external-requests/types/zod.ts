@@ -12,6 +12,9 @@ export const externalRequestSchema = z.object({
   acceptedAt: z.date().nullable().optional(),
   rejectedAt: z.date().nullable().optional(),
   declineMessage: z.string().nullable().optional(),
+  folderName: z.string(),
+  requesterName: z.string(),
+  requesterEmail: z.string(),
 });
 
 export const externalCreateDocumentSchema = z.object({

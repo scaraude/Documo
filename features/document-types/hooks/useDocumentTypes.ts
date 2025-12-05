@@ -6,8 +6,8 @@ interface UseDocumentTypesReturn {
   isLoading: boolean;
   error: Error | null;
   getLabel: (doc: DocumentType) => string;
-  getLabelById: (id: DocumentType["id"]) => string;
-  getDocumentType: (id: string) => DocumentType | undefined;
+  getLabelById: (id: DocumentType['id']) => string;
+  getDocumentTypeById: (id: string) => DocumentType | undefined;
 }
 
 /**
@@ -27,13 +27,13 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
   const getLabelById = (id: string): string => {
     const docType = documentTypes?.find((dt: DocumentType) => dt.id === id);
     return docType ? docType.label : 'Unknown Document Type';
-  }
+  };
 
   const getLabel = (docType: DocumentType): string => {
     return docType.label;
   };
 
-  const getDocumentType = (id: string): DocumentType | undefined => {
+  const getDocumentTypeById = (id: string): DocumentType | undefined => {
     return documentTypes?.find((dt: DocumentType) => dt.id === id);
   };
 
@@ -43,6 +43,6 @@ export const useDocumentTypes = (): UseDocumentTypesReturn => {
     error: error as Error | null,
     getLabel,
     getLabelById,
-    getDocumentType,
+    getDocumentTypeById,
   };
 };
