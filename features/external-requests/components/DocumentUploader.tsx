@@ -5,6 +5,10 @@ import { Button } from '@/shared/components/ui/button';
 import { Card } from '@/shared/components/ui/card';
 import { ROUTES } from '@/shared/constants';
 import {
+  formatAcceptedFormats,
+  formatsToFileExtensions,
+} from '@/shared/utils';
+import {
   CheckCircle2,
   FileText,
   Info,
@@ -147,16 +151,6 @@ export const DocumentUploader = ({
     fileInputRefs.current[documentTypeId]?.click();
   };
 
-  // Helper function to format accepted formats
-  const formatAcceptedFormats = (formats: string[]): string => {
-    return formats.map((f) => f.toUpperCase()).join(', ');
-  };
-
-  // Helper function to format file extensions for input accept attribute
-  const formatFileExtensions = (formats: string[]): string => {
-    return formats.map((f) => `.${f.toLowerCase()}`).join(',');
-  };
-
   // Helper to format file size
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 B';
@@ -192,11 +186,11 @@ export const DocumentUploader = ({
             className={cn(
               'overflow-hidden transition-all duration-300 border-2',
               status.status === 'completed' &&
-                'border-green-200 bg-green-50/30',
+              'border-green-200 bg-green-50/30',
               status.status === 'error' && 'border-red-200 bg-red-50/30',
               status.status === 'uploading' && 'border-blue-200 bg-blue-50/30',
               status.status === 'idle' &&
-                'border-gray-200 hover:border-gray-300',
+              'border-gray-200 hover:border-gray-300',
               isDragging && 'border-blue-400 bg-blue-50',
             )}
           >
@@ -274,7 +268,7 @@ export const DocumentUploader = ({
                     className="hidden"
                     accept={
                       documentType
-                        ? formatFileExtensions(documentType.acceptedFormats)
+                        ? formatsToFileExtensions(documentType.acceptedFormats)
                         : '.pdf,.jpg,.jpeg,.png'
                     }
                     onChange={(e) => {
@@ -426,7 +420,7 @@ export const DocumentUploader = ({
                     {formatAcceptedFormats(documentType.acceptedFormats)}
                     <span className="mx-2">•</span>
                     <span className="font-medium">Taille maximale:</span>{' '}
-                    {documentType.maxSizeMB} MB
+                    {documentType.maxSizeMB} Mo
                   </div>
                 </div>
               )}
