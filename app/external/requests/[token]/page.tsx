@@ -4,6 +4,7 @@ import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTyp
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
+import { Checkbox } from '@/shared/components/ui/checkbox';
 import { ROUTES } from '@/shared/constants/routes/paths';
 import { CheckCircle, FileText, XCircle } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -22,6 +23,7 @@ export default function ExternalRequestPage() {
   const [showDeclineForm, setShowDeclineForm] = useState(false);
   const [declineMessage, setDeclineMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasAcceptedDpa, setHasAcceptedDpa] = useState(false);
 
   const handleAccept = async () => {
     setIsProcessing(true);
@@ -172,25 +174,51 @@ export default function ExternalRequestPage() {
             </div>
 
             {!showDeclineForm && (
-              <div className="flex gap-4 mb-6">
-                <Button
-                  onClick={handleAccept}
-                  className="flex-1 bg-green-600 hover:bg-green-700"
-                  disabled={isProcessing}
-                >
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                  {isProcessing ? 'Traitement...' : 'Accepter'}
-                </Button>
-                <Button
-                  onClick={handleDeclineClick}
-                  variant="outline"
-                  className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                  disabled={isProcessing}
-                >
-                  <XCircle className="h-4 w-4 mr-2" />
-                  Refuser
-                </Button>
-              </div>
+              <>
+                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 mb-6">
+                  <Checkbox
+                    id="dpa-checkbox"
+                    checked={hasAcceptedDpa}
+                    onCheckedChange={setHasAcceptedDpa}
+                    className="mt-0.5"
+                  />
+                  <label
+                    htmlFor="dpa-checkbox"
+                    className="text-sm text-gray-700 cursor-pointer leading-relaxed"
+                  >
+                    J&apos;accepte les{' '}
+                    <a
+                      href="/cgu"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 underline"
+                    >
+                      Conditions Générales d&apos;Utilisation
+                    </a>{' '}
+                    et j&apos;autorise le traitement de mes données personnelles
+                    conformément à la politique de confidentialité.
+                  </label>
+                </div>
+                <div className="flex gap-4 mb-6">
+                  <Button
+                    onClick={handleAccept}
+                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    disabled={isProcessing || !hasAcceptedDpa}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    {isProcessing ? 'Traitement...' : 'Accepter'}
+                  </Button>
+                  <Button
+                    onClick={handleDeclineClick}
+                    variant="outline"
+                    className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                    disabled={isProcessing}
+                  >
+                    <XCircle className="h-4 w-4 mr-2" />
+                    Refuser
+                  </Button>
+                </div>
+              </>
             )}
 
             {showDeclineForm && (
