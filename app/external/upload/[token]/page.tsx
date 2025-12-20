@@ -7,12 +7,10 @@ import { APP_ICON_PATH } from '@/shared/constants';
 import {
   AlertCircle,
   CheckCircle2,
-  Clock,
-  FileCheck,
+  FolderOpen,
   Loader2,
-  Lock,
-  Shield,
   ShieldAlert,
+  XCircle,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
@@ -37,8 +35,8 @@ export default function ExternalUploadPage() {
     if (request) {
       const docTypeIdsMissing = documents
         ? request.requestedDocumentIds.filter(
-            (doc) => !documents.some((d) => d.typeId === doc),
-          )
+          (doc) => !documents.some((d) => d.typeId === doc),
+        )
         : request.requestedDocumentIds;
       setDocumentTypesMissing(docTypeIdsMissing);
     }
@@ -56,12 +54,12 @@ export default function ExternalUploadPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-white rounded-2xl shadow-lg">
-            <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
+          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-white rounded-3xl shadow-xl">
+            <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
           </div>
-          <p className="text-sm font-medium text-gray-600">
+          <p className="text-base font-medium text-gray-700">
             Chargement de votre demande...
           </p>
         </div>
@@ -71,11 +69,11 @@ export default function ExternalUploadPage() {
 
   if (!request) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-red-200 bg-red-50/30">
-          <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-red-100 rounded-2xl">
-              <AlertCircle className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full border-2 border-red-200 bg-red-50/50 shadow-xl">
+          <div className="p-10 text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-red-100 rounded-3xl">
+              <AlertCircle className="w-10 h-10 text-red-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-3">
               Demande non trouvée
@@ -92,11 +90,11 @@ export default function ExternalUploadPage() {
 
   if (error || !request) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-red-200 bg-red-50/30">
-          <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-red-100 rounded-2xl">
-              <AlertCircle className="w-8 h-8 text-red-600" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full border-2 border-red-200 bg-red-50/50 shadow-xl">
+          <div className="p-10 text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-red-100 rounded-3xl">
+              <AlertCircle className="w-10 h-10 text-red-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-3">Erreur</h1>
             <p className="text-sm text-gray-600 leading-relaxed">
@@ -110,11 +108,11 @@ export default function ExternalUploadPage() {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-amber-200 bg-amber-50/30">
-          <div className="p-8 text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 mb-6 bg-amber-100 rounded-2xl">
-              <ShieldAlert className="w-8 h-8 text-amber-600" />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
+        <Card className="max-w-md w-full border-2 border-amber-200 bg-amber-50/50 shadow-xl">
+          <div className="p-10 text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-amber-100 rounded-3xl">
+              <ShieldAlert className="w-10 h-10 text-amber-600" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-3">
               Authentification requise
@@ -129,150 +127,100 @@ export default function ExternalUploadPage() {
     );
   }
 
-  const totalDocuments = request.requestedDocumentIds.length;
-  const uploadedDocuments = totalDocuments - documentTypesMissing.length;
-  const progress =
-    totalDocuments > 0 ? (uploadedDocuments / totalDocuments) * 100 : 0;
-
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-6 max-w-3xl">
-        {/* Compact Header */}
-        <div className="mb-6 pb-6 border-b border-gray-200">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src={APP_ICON_PATH}
-                alt="Documo"
-                width={48}
-                height={48}
-                className="rounded-lg"
-              />
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Documo</h1>
-                <p className="text-xs text-gray-500">
-                  L&apos;échange de documents à l&apos;ère moderne
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <Shield className="w-3.5 h-3.5 text-green-600" />
-              <span className="text-green-700 font-medium">Sécurisé</span>
-            </div>
-          </div>
-
-          {/* Request Context */}
-          <div className="bg-blue-50 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <div className="mt-0.5">
-                <FileCheck className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-base font-semibold text-gray-900 mb-1">
-                  Demande de documents pour : {request.folderName}
-                </h2>
-                <p className="text-sm text-gray-700 mb-2">
-                  <span className="font-medium">{request.requesterName}</span> (
-                  {request.requesterEmail}) vous demande de fournir les
-                  documents suivants.
-                </p>
-                <div className="flex items-center gap-4 text-xs text-gray-600">
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {uploadedDocuments}/{totalDocuments} documents
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Lock className="w-3 h-3" />
-                    Chiffré E2EE
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Shield className="w-3 h-3" />
-                    RGPD
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Progress bar */}
-          {totalDocuments > 0 && (
-            <div className="mt-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs font-medium text-gray-700">
-                  Progression
-                </span>
-                <span className="text-xs font-semibold text-blue-600">
-                  {Math.round(progress)}%
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${progress}%` }}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
+      <div className="container mx-auto px-6 py-12 max-w-7xl">
+        {/* Hero Header Section */}
+        <div className="flex w-full justify-center mb-12">
+          <div className="flex">
+            <div className="flex w-1/2 justify-center mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-blue-400 blur-2xl opacity-20 rounded-full" />
+                <Image
+                  src={APP_ICON_PATH}
+                  alt="Documo"
+                  width={100}
+                  height={100}
+                  className="relative rounded-2xl shadow-xl"
                 />
               </div>
             </div>
-          )}
-        </div>
 
-        {/* Document List */}
-        <div className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">
-            Documents demandés
-          </h3>
-          <div className="space-y-2">
-            {request.requestedDocumentIds.map((docTypeId, index) => {
-              const isUploaded = !documentTypesMissing.includes(docTypeId);
-              return (
-                <div
-                  key={`${docTypeId.toLowerCase()}-${index}`}
-                  className="flex items-center gap-2 p-2 rounded-lg bg-gray-50"
-                >
-                  {isUploaded ? (
-                    <CheckCircle2 className="w-4 h-4 text-green-600 shrink-0" />
-                  ) : (
-                    <Clock className="w-4 h-4 text-gray-400 shrink-0" />
-                  )}
-                  <span
-                    className={`text-sm flex-1 ${isUploaded ? 'text-gray-900 font-medium' : 'text-gray-600'}`}
-                  >
-                    {getLabelById(docTypeId)}
-                  </span>
-                  {isUploaded && (
-                    <span className="text-xs text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
-                      ✓
-                    </span>
-                  )}
+            <div className='flex-col w-full h-full'>
+
+              <div className="flex-col w-full ml-12 mb-12">
+                <h1 className="text-4xl font-bold text-gray-900 mb-3">
+                  Bienvenue sur Documo
+                </h1>
+
+                <div className="max-w-2xl mx-auto">
+                  <p className="text-lg text-gray-700 mb-2">
+                    <span className="font-semibold">{request.requesterName}</span> a besoin de différents
+                  </p>
+                  <p className="text-lg text-gray-700 mb-6">
+                    documents pour le dossier <span className="font-semibold text-blue-600">{request.folderName}</span>
+                  </p>
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Progress Pills */}
+              <div className="flex flex-wrap justify-center gap-3 mb-8">
+                {request.requestedDocumentIds.map((docTypeId, index) => {
+                  const isUploaded = !documentTypesMissing.includes(docTypeId);
+                  return (
+                    <div
+                      key={`pill-${docTypeId.toLowerCase()}-${index}`}
+                      className={`
+                  inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium
+                  transition-all duration-300 border-2
+                  ${isUploaded
+                          ? 'bg-green-50 border-green-500 text-green-700'
+                          : 'bg-gray-100 border-gray-300 text-gray-600'
+                        }
+                  `}
+                    >
+                      <span>{getLabelById(docTypeId)}</span>
+                      {isUploaded ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      ) : (
+                        <XCircle className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
+        {/* Documents Section */}
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+            Documents nécessaires
+          </h2>
 
-        {/* Upload Section */}
-        {documentTypesMissing.length > 0 ? (
-          <DocumentUploader
-            token={token}
-            documentTypeIdsMissing={documentTypesMissing}
-            setDocumentTypeMissing={setDocumentTypesMissing}
-          />
-        ) : (
-          <div className="bg-green-50 border border-green-200 rounded-lg p-6 text-center">
-            <CheckCircle2 className="w-12 h-12 text-green-600 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Tous les documents ont été téléversés
-            </h3>
-            <p className="text-sm text-gray-600">
-              Votre demande est complète. Vous serez notifié par email.
-            </p>
-          </div>
-        )}
-
-        {/* Footer */}
-        <div className="mt-8 pt-6 border-t border-gray-200 text-center text-xs text-gray-500">
-          <p>
-            🔒 Vos documents sont protégés par chiffrement E2EE • Conforme RGPD
-          </p>
+          {documentTypesMissing.length > 0 ? (
+            <DocumentUploader
+              token={token}
+              documentTypeIdsMissing={documentTypesMissing}
+              setDocumentTypeMissing={setDocumentTypesMissing}
+            />
+          ) : (
+            <div className="max-w-2xl mx-auto">
+              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 shadow-xl">
+                <div className="p-12 text-center">
+                  <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-green-100 rounded-3xl">
+                    <CheckCircle2 className="w-12 h-12 text-green-600" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    Tous les documents ont été téléversés
+                  </h3>
+                  <p className="text-base text-gray-700">
+                    Votre demande est complète. Vous serez notifié par email.
+                  </p>
+                </div>
+              </Card>
+            </div>
+          )}
         </div>
       </div>
     </div>
