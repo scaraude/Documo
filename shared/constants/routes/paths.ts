@@ -28,6 +28,9 @@ export const ROUTES = {
     UPLOAD: (token: string) => `/external/upload/${token}`,
     UPLOAD_SUCCESS: (token: string) => `/external/upload/${token}/success`,
   },
+  LEGAL: {
+    GCU: '/gcu',
+  },
 } as const;
 
 // Type utilities for routes
