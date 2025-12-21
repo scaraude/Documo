@@ -175,7 +175,7 @@ export default function ExternalRequestPage() {
 
             {!showDeclineForm && (
               <>
-                <div className="flex items-start gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200 mb-6">
+                <div className="flex items-start gap-3 p-4 mb-6">
                   <Checkbox
                     id="dpa-checkbox"
                     checked={hasAcceptedDpa}
@@ -184,7 +184,7 @@ export default function ExternalRequestPage() {
                   />
                   <label
                     htmlFor="dpa-checkbox"
-                    className="text-sm text-gray-700 cursor-pointer leading-relaxed"
+                    className="text-xs text-gray-700 cursor-pointer leading-relaxed"
                   >
                     J&apos;accepte les{' '}
                     <a
