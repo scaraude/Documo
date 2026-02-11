@@ -73,45 +73,6 @@ export const getDocumentTypeById = async (
   }
 };
 
-const getDocumentTypesById = async (ids: string[]): Promise<DocumentType[]> => {
-  try {
-    logger.info(
-      {
-        operation: 'documentTypes.getByIds',
-        documentTypeIds: ids,
-        count: ids.length,
-      },
-      'Fetching document types by IDs',
-    );
-
-    const documentTypes = await prisma.documentType.findMany({
-      where: { id: { in: ids } },
-      orderBy: { label: 'asc' },
-    });
-
-    logger.info(
-      {
-        operation: 'documentTypes.getByIds',
-        requestedCount: ids.length,
-        foundCount: documentTypes.length,
-      },
-      'Successfully fetched document types',
-    );
-
-    return documentTypes;
-  } catch (error) {
-    logger.error(
-      {
-        operation: 'documentTypes.getByIds',
-        documentTypeIds: ids,
-        error: (error as Error).message,
-      },
-      'Failed to fetch document types',
-    );
-    throw new Error('Failed to fetch document types');
-  }
-};
-
 const getDocumentTypeWithValidation = async (
   id: string,
 ): Promise<DocumentTypeWithValidation | null> => {
@@ -228,13 +189,4 @@ export const getAllDocumentTypesCached = async (): Promise<DocumentType[]> => {
   cacheTimestamp = now;
 
   return documentTypesCache;
-};
-
-const clearDocumentTypesCache = (): void => {
-  logger.info(
-    { operation: 'documentTypes.clearCache' },
-    'Clearing document types cache',
-  );
-  documentTypesCache = null;
-  cacheTimestamp = 0;
 };
