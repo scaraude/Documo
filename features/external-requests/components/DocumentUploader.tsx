@@ -2,19 +2,16 @@
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/button';
-import { Card } from '@/shared/components/ui/card';
 import { ROUTES } from '@/shared/constants';
 import {
   formatAcceptedFormats,
   formatsToFileExtensions,
 } from '@/shared/utils';
 import {
-  CheckCircle2,
-  FileText,
-  Info,
+  Check,
   Loader2,
   Upload,
-  XCircle,
+  X,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
@@ -67,7 +64,7 @@ export const DocumentUploader = ({
     }
 
     setUploadStatus(newUploadStatus);
-  }, [documentTypeIdsMissing]); // Remove uploadStatus from dependencies to avoid infinite loop
+  }, [documentTypeIdsMissing]);
 
   const handleFileUpload = async (
     file: File,
@@ -99,7 +96,7 @@ export const DocumentUploader = ({
         [documentTypeId]: { progress: 100, status: 'completed', file },
       }));
 
-      // Check if all documents are uploaded - use current state
+      // Check if all documents are uploaded
       setUploadStatus((currentStatus) => {
         const allCompleted = Object.values(currentStatus).every(
           (status) => status.status === 'completed',
@@ -117,7 +114,7 @@ export const DocumentUploader = ({
         [documentTypeId]: {
           progress: 0,
           status: 'error',
-          error: error instanceof Error ? error.message : 'Upload failed',
+          error: error instanceof Error ? error.message : 'Échec de l\'envoi',
           file,
         },
       }));
@@ -151,16 +148,14 @@ export const DocumentUploader = ({
     fileInputRefs.current[documentTypeId]?.click();
   };
 
-  // Helper to format file size
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 B';
     const k = 1024;
-    const sizes = ['B', 'KB', 'MB'];
+    const sizes = ['B', 'Ko', 'Mo'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return `${Number.parseFloat((bytes / k ** i).toFixed(1))} ${sizes[i]}`;
   };
 
-  // Don't render if requiredDocuments is empty or uploadStatus is not ready
   if (
     documentTypeIdsMissing.length === 0 ||
     Object.keys(uploadStatus).length === 0
@@ -169,45 +164,46 @@ export const DocumentUploader = ({
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="space-y-4">
       {documentTypeIdsMissing.map((docTypeIdMissing) => {
         const status = uploadStatus[docTypeIdMissing];
         const documentType = getDocumentTypeById(docTypeIdMissing);
         const isDragging = draggedOver === docTypeIdMissing;
 
-        // Safety check - skip if status doesn't exist
         if (!status) {
           return null;
         }
 
         return (
-          <Card
+          <div
             key={docTypeIdMissing}
-            className={cn(
-              'overflow-hidden transition-all duration-300 border-2 hover:shadow-xl flex flex-col',
-              status.status === 'completed' &&
-              'border-green-300 bg-green-50/30',
-              status.status === 'error' && 'border-red-300 bg-red-50/30',
-              status.status === 'uploading' && 'border-blue-300 bg-blue-50/30',
-              status.status === 'idle' &&
-              'border-gray-200 hover:border-blue-300',
-              isDragging && 'border-blue-500 bg-blue-50 shadow-2xl scale-105',
-            )}
+            className="bg-white rounded-lg overflow-hidden"
+            style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
           >
-            {/* Header Section */}
-            <div className="px-6 pt-6 pb-4 border-b border-gray-200 bg-white">
-              <h3 className="text-base font-bold text-gray-900 mb-1">
+            {/* Header */}
+            <div
+              className="px-6 py-4 border-b"
+              style={{ borderColor: '#E5E7EB' }}
+            >
+              <h3
+                className="text-sm font-semibold"
+                style={{ color: '#1A1A2E' }}
+              >
                 {getLabelById(docTypeIdMissing)}
               </h3>
               {documentType?.description && (
-                <p className="text-xs text-gray-600 line-clamp-2">
+                <p
+                  className="text-xs mt-1"
+                  style={{ color: '#8E8E9E' }}
+                >
                   {documentType.description}
                 </p>
               )}
             </div>
 
-            {/* Upload Zone or File Info */}
-            <div className="px-6 py-6 flex-1 flex flex-col">
+            {/* Content */}
+            <div className="p-6">
+              {/* Idle state - upload zone */}
               {status.status === 'idle' && (
                 <>
                   <div
@@ -215,10 +211,8 @@ export const DocumentUploader = ({
                     onDragLeave={handleDragLeave}
                     onDrop={(e) => handleDrop(e, docTypeIdMissing)}
                     className={cn(
-                      'relative rounded-2xl border-2 border-dashed transition-all duration-300 cursor-pointer group flex-1 min-h-[200px] flex items-center justify-center',
-                      isDragging
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-300 hover:border-blue-400 bg-gray-50/50 hover:bg-blue-50/30',
+                      'relative rounded-lg border-2 border-dashed transition-colors cursor-pointer',
+                      isDragging ? 'border-[#2B7AE8] bg-[#E8F1FC]' : 'border-[#E5E7EB] hover:border-[#2B7AE8]',
                     )}
                   >
                     <input
@@ -242,138 +236,168 @@ export const DocumentUploader = ({
                     <button
                       type="button"
                       onClick={() => triggerFileInput(docTypeIdMissing)}
-                      className="w-full h-full flex items-center justify-center p-6"
+                      className="w-full p-8 flex flex-col items-center"
                     >
-                      <div className="text-center">
-                        <div
-                          className={cn(
-                            'inline-flex p-4 rounded-2xl transition-all duration-300 mb-4',
-                            isDragging
-                              ? 'bg-blue-100 scale-110'
-                              : 'bg-gray-100 group-hover:bg-blue-100 group-hover:scale-105',
-                          )}
-                        >
-                          <Upload
-                            className={cn(
-                              'w-8 h-8 transition-colors duration-300',
-                              isDragging
-                                ? 'text-blue-600'
-                                : 'text-gray-600 group-hover:text-blue-600',
-                            )}
-                          />
-                        </div>
-                        <p className="text-sm font-semibold text-gray-700 mb-1">
-                          Fais glisser ici
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          ou clique pour parcourir
-                        </p>
+                      <div
+                        className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
+                        style={{ backgroundColor: '#E8F1FC' }}
+                      >
+                        <Upload className="w-5 h-5" style={{ color: '#2B7AE8' }} />
                       </div>
+                      <p
+                        className="text-sm font-medium mb-1"
+                        style={{ color: '#1A1A2E' }}
+                      >
+                        Glisse ton fichier ici
+                      </p>
+                      <p
+                        className="text-xs"
+                        style={{ color: '#8E8E9E' }}
+                      >
+                        ou clique pour parcourir
+                      </p>
                     </button>
                   </div>
 
-                  {/* File Requirements */}
+                  {/* File requirements */}
                   {documentType && (
-                    <div className="mt-4 text-xs text-gray-600 space-y-1">
-                      <div className="flex items-start gap-1.5">
-                        <span className="font-semibold text-gray-700">Format accepté:</span>
-                        <span className="flex-1">{formatAcceptedFormats(documentType.acceptedFormats)}</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-gray-700">Taille max:</span>
-                        <span>{documentType.maxSizeMB} Mo</span>
-                      </div>
+                    <div
+                      className="mt-4 flex items-center gap-4 text-xs"
+                      style={{ color: '#8E8E9E' }}
+                    >
+                      <span>
+                        <span style={{ color: '#4A4A5A' }}>Formats :</span>{' '}
+                        {formatAcceptedFormats(documentType.acceptedFormats)}
+                      </span>
+                      <span>
+                        <span style={{ color: '#4A4A5A' }}>Taille max :</span>{' '}
+                        {documentType.maxSizeMB} Mo
+                      </span>
                     </div>
                   )}
                 </>
               )}
 
-              {status.file && status.status !== 'idle' && (
-                <div className="flex-1 flex flex-col">
-                  <div
-                    className={cn(
-                      'rounded-2xl p-6 transition-all duration-300 flex-1 flex flex-col justify-center',
-                      status.status === 'completed' && 'bg-green-50 border-2 border-green-200',
-                      status.status === 'uploading' && 'bg-blue-50 border-2 border-blue-200',
-                      status.status === 'error' && 'bg-red-50 border-2 border-red-200',
-                    )}
-                  >
-                    {/* Status Icon */}
-                    <div className="flex justify-center mb-4">
-                      {status.status === 'completed' && (
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full">
-                          <CheckCircle2 className="w-8 h-8 text-green-600 animate-in zoom-in duration-300" />
-                        </div>
-                      )}
-                      {status.status === 'uploading' && (
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full">
-                          <Loader2 className="w-8 h-8 text-blue-600 animate-spin" />
-                        </div>
-                      )}
-                      {status.status === 'error' && (
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full">
-                          <XCircle className="w-8 h-8 text-red-600 animate-in zoom-in duration-300" />
-                        </div>
-                      )}
+              {/* Uploading state */}
+              {status.status === 'uploading' && status.file && (
+                <div className="py-4">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: '#E8F1FC' }}
+                    >
+                      <Loader2
+                        className="w-5 h-5 animate-spin"
+                        style={{ color: '#2B7AE8' }}
+                      />
                     </div>
-
-                    <div className="text-center">
-                      <p className="text-sm font-semibold text-gray-900 mb-1 truncate">
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-sm font-medium truncate"
+                        style={{ color: '#1A1A2E' }}
+                      >
                         {status.file.name}
                       </p>
-                      <p className="text-xs text-gray-600 mb-4">
+                      <p
+                        className="text-xs"
+                        style={{ color: '#8E8E9E' }}
+                      >
                         {formatFileSize(status.file.size)}
                       </p>
+                    </div>
+                    <span
+                      className="text-sm font-medium"
+                      style={{ color: '#2B7AE8' }}
+                    >
+                      {status.progress}%
+                    </span>
+                  </div>
 
-                      {/* Progress Bar */}
-                      {status.status === 'uploading' && (
-                        <div className="mb-2">
-                          <div className="flex items-center justify-between mb-2">
-                            <span className="text-xs font-medium text-blue-700">
-                              Envoi...
-                            </span>
-                            <span className="text-xs font-bold text-blue-700">
-                              {status.progress}%
-                            </span>
-                          </div>
-                          <div className="w-full bg-blue-100 rounded-full h-2 overflow-hidden">
-                            <div
-                              className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                              style={{ width: `${status.progress}%` }}
-                            />
-                          </div>
-                        </div>
-                      )}
+                  {/* Progress bar */}
+                  <div
+                    className="h-1.5 rounded-full overflow-hidden"
+                    style={{ backgroundColor: '#E8F1FC' }}
+                  >
+                    <div
+                      className="h-full rounded-full transition-all duration-300"
+                      style={{
+                        backgroundColor: '#2B7AE8',
+                        width: `${status.progress}%`,
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
 
-                      {/* Success Message */}
-                      {status.status === 'completed' && (
-                        <div className="text-xs font-semibold text-green-700">
-                          Téléversé avec succès
-                        </div>
-                      )}
-
-                      {/* Error Message */}
-                      {status.status === 'error' && (
-                        <>
-                          <div className="text-xs font-medium text-red-700 mb-3">
-                            {status.error}
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => triggerFileInput(docTypeIdMissing)}
-                            className="w-full"
-                          >
-                            Réessayer
-                          </Button>
-                        </>
-                      )}
+              {/* Completed state */}
+              {status.status === 'completed' && status.file && (
+                <div className="py-4">
+                  <div className="flex items-center gap-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: '#DCFCE7' }}
+                    >
+                      <Check className="w-5 h-5" style={{ color: '#16A34A' }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-sm font-medium truncate"
+                        style={{ color: '#1A1A2E' }}
+                      >
+                        {status.file.name}
+                      </p>
+                      <p
+                        className="text-xs"
+                        style={{ color: '#16A34A' }}
+                      >
+                        Envoyé
+                      </p>
                     </div>
                   </div>
                 </div>
               )}
+
+              {/* Error state */}
+              {status.status === 'error' && status.file && (
+                <div className="py-4">
+                  <div className="flex items-center gap-4 mb-4">
+                    <div
+                      className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ backgroundColor: '#FEE2E2' }}
+                    >
+                      <X className="w-5 h-5" style={{ color: '#DC2626' }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p
+                        className="text-sm font-medium truncate"
+                        style={{ color: '#1A1A2E' }}
+                      >
+                        {status.file.name}
+                      </p>
+                      <p
+                        className="text-xs"
+                        style={{ color: '#DC2626' }}
+                      >
+                        {status.error}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => triggerFileInput(docTypeIdMissing)}
+                    className="w-full"
+                    style={{
+                      borderColor: '#E5E7EB',
+                      color: '#1A1A2E',
+                    }}
+                  >
+                    Réessayer
+                  </Button>
+                </div>
+              )}
             </div>
-          </Card>
+          </div>
         );
       })}
     </div>

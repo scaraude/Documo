@@ -160,11 +160,11 @@ Page vue par les clients externes - elle doit inspirer confiance et être ultra 
 
 #### Critères d'acceptation
 
-- [ ] Design sobre et professionnel
-- [ ] Instructions claires
-- [ ] Feedback visuel sur l'upload
-- [ ] Message de confirmation rassurant
-- [ ] Utiliser le skill `frontend-design`
+- [x] Design sobre et professionnel
+- [x] Instructions claires
+- [x] Feedback visuel sur l'upload
+- [x] Message de confirmation rassurant
+- [x] Utiliser le skill `frontend-design`
 
 #### Notes
 

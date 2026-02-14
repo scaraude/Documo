@@ -1,17 +1,8 @@
 'use client';
 
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
-import { useDocument } from '@/features/documents/hooks/useDocument';
-import { Card } from '@/shared/components/ui/card';
 import { APP_ICON_PATH } from '@/shared/constants';
-import {
-  AlertCircle,
-  CheckCircle2,
-  FolderOpen,
-  Loader2,
-  ShieldAlert,
-  XCircle,
-} from 'lucide-react';
+import { Check, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -21,15 +12,13 @@ import { useExternalRequest } from '../../../../features/external-requests/hooks
 
 export default function ExternalUploadPage() {
   const { token }: { token: string } = useParams();
-  const { getRequestByToken } = useExternalRequest();
-  const { getDocumentsByRequestId } = useDocument();
+  const { getRequestByToken, getDocumentsByToken } = useExternalRequest();
   const { getLabelById } = useDocumentTypes();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [documentTypesMissing, setDocumentTypesMissing] = useState<string[]>(
     [],
   );
   const { data: request, isLoading, error } = getRequestByToken(token);
-  const { data: documents } = getDocumentsByRequestId(request?.id);
+  const { data: documents } = getDocumentsByToken(token);
 
   useEffect(() => {
     if (request) {
@@ -42,187 +31,190 @@ export default function ExternalUploadPage() {
     }
   }, [request, documents]);
 
-  useEffect(() => {
-    // Check if user is authenticated via FranceConnect or email
-    // This will be implemented in ticket 5
-    const checkAuth = async () => {
-      // Temporary mock
-      setIsAuthenticated(true);
-    };
-    checkAuth();
-  }, []);
-
+  // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F4F5F7' }}>
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-white rounded-3xl shadow-xl">
-            <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl"
+            style={{ backgroundColor: '#E8F1FC' }}
+          >
+            <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#2B7AE8' }} />
           </div>
-          <p className="text-base font-medium text-gray-700">
-            Chargement de votre demande...
+          <p className="text-base font-medium" style={{ color: '#1A1A2E' }}>
+            Chargement de ta demande...
           </p>
         </div>
       </div>
     );
   }
 
-  if (!request) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-red-200 bg-red-50/50 shadow-xl">
-          <div className="p-10 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-red-100 rounded-3xl">
-              <AlertCircle className="w-10 h-10 text-red-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">
-              Demande non trouvée
-            </h1>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Aucune demande trouvée pour ce lien. Veuillez vérifier le lien ou
-              contacter le support.
-            </p>
-          </div>
-        </Card>
-      </div>
-    );
-  }
-
+  // Error or not found state
   if (error || !request) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-red-200 bg-red-50/50 shadow-xl">
-          <div className="p-10 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-red-100 rounded-3xl">
-              <AlertCircle className="w-10 h-10 text-red-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">Erreur</h1>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Cette demande n&apos;existe pas ou a expiré.
-            </p>
+      <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#F4F5F7' }}>
+        <div
+          className="max-w-md w-full bg-white rounded-lg p-10 text-center"
+          style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
+        >
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl"
+            style={{ backgroundColor: '#FEE2E2' }}
+          >
+            <svg className="w-8 h-8" style={{ color: '#DC2626' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            </svg>
           </div>
-        </Card>
+          <h1 className="text-xl font-semibold mb-3" style={{ color: '#1A1A2E' }}>
+            Demande introuvable
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: '#4A4A5A' }}>
+            Ce lien n'est plus valide ou a expiré. Contacte la personne qui t'a envoyé cette demande.
+          </p>
+        </div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50 flex items-center justify-center p-6">
-        <Card className="max-w-md w-full border-2 border-amber-200 bg-amber-50/50 shadow-xl">
-          <div className="p-10 text-center">
-            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-amber-100 rounded-3xl">
-              <ShieldAlert className="w-10 h-10 text-amber-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-3">
-              Authentification requise
-            </h1>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Veuillez vous authentifier pour accéder à cette page.
-            </p>
-            {/* Authentication components will be added in ticket 5 */}
-          </div>
-        </Card>
-      </div>
-    );
-  }
+  // Count uploaded documents
+  const totalDocuments = request.requestedDocumentIds.length;
+  const uploadedCount = totalDocuments - documentTypesMissing.length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-gray-50">
-      <div className="container mx-auto px-6 py-12 max-w-7xl">
-        {/* Hero Header Section */}
-        <div className="flex w-full justify-center mb-12">
-          <div className="flex">
-            <div className="flex w-1/2 justify-center mb-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-blue-400 blur-2xl opacity-20 rounded-full" />
-                <Image
-                  src={APP_ICON_PATH}
-                  alt="Documo"
-                  width={100}
-                  height={100}
-                  className="relative rounded-2xl shadow-xl"
-                />
-              </div>
-            </div>
-
-            <div className='flex-col w-full h-full'>
-
-              <div className="flex-col w-full ml-12 mb-12">
-                <h1 className="text-4xl font-bold text-gray-900 mb-3">
-                  Bienvenue sur Documo
-                </h1>
-
-                <div className="max-w-2xl mx-auto">
-                  <p className="text-lg text-gray-700 mb-2">
-                    <span className="font-semibold">{request.requesterName}</span> a besoin de différents
-                  </p>
-                  <p className="text-lg text-gray-700 mb-6">
-                    documents pour le dossier <span className="font-semibold text-blue-600">{request.folderName}</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Progress Pills */}
-              <div className="flex flex-wrap justify-center gap-3 mb-8">
-                {request.requestedDocumentIds.map((docTypeId, index) => {
-                  const isUploaded = !documentTypesMissing.includes(docTypeId);
-                  return (
-                    <div
-                      key={`pill-${docTypeId.toLowerCase()}-${index}`}
-                      className={`
-                  inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium
-                  transition-all duration-300 border-2
-                  ${isUploaded
-                          ? 'bg-green-50 border-green-500 text-green-700'
-                          : 'bg-gray-100 border-gray-300 text-gray-600'
-                        }
-                  `}
-                    >
-                      <span>{getLabelById(docTypeId)}</span>
-                      {isUploaded ? (
-                        <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      ) : (
-                        <XCircle className="w-5 h-5 text-gray-400" />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+    <div className="min-h-screen" style={{ backgroundColor: '#F4F5F7' }}>
+      {/* Header */}
+      <header className="bg-white border-b" style={{ borderColor: '#E5E7EB' }}>
+        <div className="max-w-4xl mx-auto px-6 py-4">
+          <div className="flex items-center gap-3">
+            <Image
+              src={APP_ICON_PATH}
+              alt="Documo"
+              width={40}
+              height={40}
+              className="rounded-lg"
+            />
+            <span className="text-lg font-semibold text-[var(--documo-blue)]">
+              Documo
+            </span>
           </div>
         </div>
-        {/* Documents Section */}
-        <div className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-            Documents nécessaires
-          </h2>
+      </header>
 
-          {documentTypesMissing.length > 0 ? (
+      <main className="max-w-4xl mx-auto px-6 py-12">
+        {/* Page header */}
+        <div className="mb-10">
+          <h1 className="text-2xl font-semibold mb-2" style={{ color: '#1A1A2E' }}>
+            Demande de documents
+          </h1>
+          <p className="text-base" style={{ color: '#4A4A5A' }}>
+            <span className="font-medium" style={{ color: '#1A1A2E' }}>{request.requesterName}</span>
+            {' '}a envoyé une demande pour les documents suivants:{' '}
+          </p>
+        </div>
+
+        {/* Progress indicator */}
+        <div
+          className="bg-white rounded-lg p-6 mb-8"
+          style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
+        >
+          {/* Document checklist */}
+          <div className="space-y-3">
+            {request.requestedDocumentIds.map((docTypeId) => {
+              const isUploaded = !documentTypesMissing.includes(docTypeId);
+              return (
+                <div
+                  key={docTypeId}
+                  className="flex items-center gap-3"
+                >
+                  <div
+                    className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
+                    style={{
+                      backgroundColor: isUploaded ? '#16A34A' : '#E5E7EB',
+                    }}
+                  >
+                    {isUploaded && <Check className="w-3 h-3 text-white" />}
+                  </div>
+                  <span
+                    className="text-sm"
+                    style={{
+                      color: isUploaded ? '#8E8E9E' : '#1A1A2E',
+                      textDecoration: isUploaded ? 'line-through' : 'none'
+                    }}
+                  >
+                    {getLabelById(docTypeId)}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-between my-4">
+            <span className="text-sm font-medium" style={{ color: '#1A1A2E' }}>
+              Progression
+            </span>
+            <span className="text-sm" style={{ color: '#4A4A5A' }}>
+              {uploadedCount} sur {totalDocuments} document{totalDocuments > 1 ? 's' : ''}
+            </span>
+          </div>
+          {/* Progress bar */}
+          <div
+            className="h-2 rounded-full overflow-hidden mb-6"
+            style={{ backgroundColor: '#E8F1FC' }}
+          >
+            <div
+              className="h-full rounded-full transition-all duration-500"
+              style={{
+                backgroundColor: uploadedCount === totalDocuments ? '#16A34A' : '#2B7AE8',
+                width: `${(uploadedCount / totalDocuments) * 100}%`
+              }}
+            />
+          </div>
+
+
+        </div>
+
+        {/* Upload section */}
+        {documentTypesMissing.length > 0 ? (
+          <div>
+            <h2 className="text-lg font-semibold mb-6" style={{ color: '#1A1A2E' }}>
+              Documents à envoyer
+            </h2>
             <DocumentUploader
               token={token}
               documentTypeIdsMissing={documentTypesMissing}
               setDocumentTypeMissing={setDocumentTypesMissing}
             />
-          ) : (
-            <div className="max-w-2xl mx-auto">
-              <Card className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 shadow-xl">
-                <div className="p-12 text-center">
-                  <div className="inline-flex items-center justify-center w-20 h-20 mb-6 bg-green-100 rounded-3xl">
-                    <CheckCircle2 className="w-12 h-12 text-green-600" />
-                  </div>
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                    Tous les documents ont été téléversés
-                  </h3>
-                  <p className="text-base text-gray-700">
-                    Votre demande est complète. Vous serez notifié par email.
-                  </p>
-                </div>
-              </Card>
+          </div>
+        ) : (
+          <div
+            className="bg-white rounded-lg p-10 text-center"
+            style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
+          >
+            <div
+              className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-full"
+              style={{ backgroundColor: '#DCFCE7' }}
+            >
+              <Check className="w-8 h-8" style={{ color: '#16A34A' }} />
             </div>
-          )}
+            <h3 className="text-xl font-semibold mb-2" style={{ color: '#1A1A2E' }}>
+              C'est envoyé.
+            </h3>
+            <p className="text-sm" style={{ color: '#4A4A5A' }}>
+              Tous les documents ont été transmis. Tu recevras une confirmation par email.
+            </p>
+          </div>
+        )}
+      </main>
+
+      {/* Footer */}
+      <footer className="mt-auto py-8">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <p className="text-xs" style={{ color: '#8E8E9E' }}>
+            Tes documents sont transmis de manière sécurisée via Documo.
+          </p>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

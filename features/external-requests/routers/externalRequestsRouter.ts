@@ -234,6 +234,62 @@ export const externalRouter = router({
       }
     }),
 
+  getDocumentsByToken: publicProcedure
+    .input(
+      z.object({
+        token: z.string().min(1, 'Token is required'),
+      }),
+    )
+    .query(async ({ input }) => {
+      try {
+        const { token } = input;
+        logger.info(
+          { token: `${token.substring(0, 8)}...` },
+          'Fetching documents by token',
+        );
+
+        const shareLink =
+          await externalRequestsRepository.getShareLinkByToken(token);
+
+        if (!shareLink) {
+          logger.warn(
+            { token: `${token.substring(0, 8)}...` },
+            'Share link not found for documents fetch',
+          );
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Request not found',
+          });
+        }
+
+        const documents = await documentRepository.getValidDocumentsByRequestId(
+          shareLink.requestId,
+        );
+
+        logger.info(
+          { requestId: shareLink.requestId, count: documents.length },
+          'Documents fetched successfully by token',
+        );
+        return documents;
+      } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
+        logger.error(
+          {
+            token: `${input.token.substring(0, 8)}...`,
+            error: error instanceof Error ? error.message : error,
+          },
+          'Error fetching documents by token',
+        );
+        throw new TRPCError({
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to fetch documents',
+        });
+      }
+    }),
+
   declineRequest: publicProcedure
     .input(
       z.object({
