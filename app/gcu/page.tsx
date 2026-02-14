@@ -1,5 +1,5 @@
 import { APP_ICON_PATH, ROUTES } from '@/shared/constants';
-import { ArrowLeft, FileText, Shield, Users, AlertCircle } from 'lucide-react';
+import { AlertCircle, ArrowLeft, FileText, Shield, Users } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -176,7 +176,8 @@ export default function GCUPage() {
               <li className="flex items-start gap-3">
                 <Shield className="h-5 w-5 text-blue-500 mt-0.5 flex-shrink-0" />
                 <span>
-                  Organisation des documents par types de dossiers configurables
+                  Organisation des documents par modèles de dossiers
+                  configurables
                 </span>
               </li>
             </ul>

@@ -2,7 +2,6 @@
 
 import { Button } from '@/shared/components/ui/button';
 import { ROUTES } from '@/shared/constants/routes/paths';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';

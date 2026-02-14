@@ -286,10 +286,10 @@ Extraire la gestion des types de dossiers dans une page dédiée, inspirée du d
 
 #### Critères d'acceptation
 
-- [ ] Page dédiée `/case-types` (ou `/folder-types` si renommage différé)
-- [ ] CRUD complet : créer, modifier, archiver
-- [ ] Liste claire des templates par type
-- [ ] Design cohérent avec le Brand Book
+- [x] Page dédiée `/case-types` (ou `/folder-types` si renommage différé)
+- [x] CRUD complet : créer, modifier, archiver
+- [x] Liste claire des templates par type
+- [x] Design cohérent avec le Brand Book
 
 #### Dépendance
 
@@ -309,8 +309,8 @@ Recentrer la page sur les dossiers en cours.
 
 #### Modifications
 
-- [ ] Afficher les dossiers en cours sous forme de liste/tableau
-- [ ] Supprimer la section "Types de dossier" (déplacée vers page dédiée - TICKET-011)
+- [x] Afficher les dossiers en cours sous forme de liste/tableau
+- [x] Supprimer la section "Types de dossier" (déplacée vers page dédiée - TICKET-011)
 
 #### Dépendance
 

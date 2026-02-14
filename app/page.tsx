@@ -237,7 +237,7 @@ export default function LandingPage() {
                 </span>
               </div>
               <h3 className="text-xl font-semibold text-[var(--documo-black)] mb-4">
-                Crée un type de dossier
+                Crée un modèle de dossier
               </h3>
               <p className="text-[var(--documo-text-secondary)] leading-relaxed">
                 Définis les documents nécessaires pour chaque type de demande.

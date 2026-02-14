@@ -1,39 +1,51 @@
 'use client';
-import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  ScrollArea,
-  ScrollBar,
-} from '@/shared/components';
+import { useFolders } from '@/features/folders/hooks/useFolders';
+import type {
+  ComputedFolderStatus,
+  FolderWithStatus,
+} from '@/features/folders/types';
+import { Badge, Button, Card, CardContent } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { FileText, FolderOpen, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-import {
-  type FolderType,
-  useFolderTypes,
-} from '../../../features/folder-types';
-import { useFolders } from '../../../features/folders/hooks/useFolders';
-import type {
+import { useState } from 'react';
+
+const STATUS_CONFIG: Record<
   ComputedFolderStatus,
-  FolderWithStatus,
-} from '../../../features/folders/types';
+  {
+    label: string;
+    badgeClass: string;
+    filterClass: string;
+  }
+> = {
+  PENDING: {
+    label: 'En cours',
+    badgeClass:
+      'border-[var(--documo-blue)]/25 bg-[var(--documo-blue-light)] text-[var(--documo-blue-deep)]',
+    filterClass:
+      'data-[active=true]:border-[var(--documo-blue)] data-[active=true]:bg-[var(--documo-blue-light)] data-[active=true]:text-[var(--documo-blue-deep)]',
+  },
+  COMPLETED: {
+    label: 'Terminé',
+    badgeClass:
+      'border-[var(--documo-success)]/25 bg-[var(--documo-success)]/10 text-[var(--documo-success)]',
+    filterClass:
+      'data-[active=true]:border-[var(--documo-success)] data-[active=true]:bg-[var(--documo-success)]/10 data-[active=true]:text-[var(--documo-success)]',
+  },
+  ARCHIVED: {
+    label: 'Archivé',
+    badgeClass:
+      'border-[var(--documo-text-tertiary)]/30 bg-[var(--documo-bg-light)] text-[var(--documo-text-secondary)]',
+    filterClass:
+      'data-[active=true]:border-[var(--documo-text-secondary)] data-[active=true]:bg-[var(--documo-bg-light)] data-[active=true]:text-[var(--documo-text-secondary)]',
+  },
+};
 
 export default function FoldersPage() {
-  const { getAllFolderTypes } = useFolderTypes();
-  const { data: folderTypes, isLoading: isfolderTypesLoading } =
-    getAllFolderTypes();
   const { getAllFolders } = useFolders();
   const { data: folders, isLoading } = getAllFolders();
-  const { getLabel } = useDocumentTypes();
-
-  const router = useRouter();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilters, setSelectedFilters] = useState<
@@ -41,388 +53,221 @@ export default function FoldersPage() {
   >([]);
 
   const toggleFilter = (status: ComputedFolderStatus) => {
-    setSelectedFilters((prev) => {
-      if (prev.includes(status)) {
-        return prev.filter((f) => f !== status);
-      }
-      return [...prev, status];
-    });
+    setSelectedFilters((prev) =>
+      prev.includes(status)
+        ? prev.filter((value) => value !== status)
+        : [...prev, status],
+    );
   };
 
-  const filteredFolders = folders?.filter((folder) => {
-    const matchesSearch = folder.name
-      .toLowerCase()
-      .includes(searchTerm.toLowerCase());
-    const matchesFilter =
-      selectedFilters.length === 0 || selectedFilters.includes(folder.status);
-    return matchesSearch && matchesFilter;
-  });
+  const filteredFolders =
+    folders
+      ?.filter((folder) => {
+        const searchValue = searchTerm.trim().toLowerCase();
+        const matchesSearch =
+          searchValue.length === 0 ||
+          folder.name.toLowerCase().includes(searchValue) ||
+          folder.description.toLowerCase().includes(searchValue);
 
-  const getStatusBadge = (status: ComputedFolderStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return (
-          <Badge className="bg-yellow-100 text-yellow-800">🕐 En attente</Badge>
-        );
-      case 'COMPLETED':
-        return (
-          <Badge className="bg-green-100 text-green-800">✅ Terminé</Badge>
-        );
-      case 'ARCHIVED':
-        return <Badge className="bg-red-100 text-red-800">❌ Refusé</Badge>;
-      default: {
-        const never: never = status;
-        return never;
-      }
-    }
-  };
+        const matchesFilter =
+          selectedFilters.length === 0 ||
+          selectedFilters.includes(folder.status);
 
-  const FolderTypeGridItem = ({
-    folderType,
-  }: {
-    folderType: FolderType & {
-      foldersCount?: number;
-      activeFoldersCount?: number;
-    };
-  }) => {
-    const groupTransition = 'group-hover:-translate-y-3 duration-300';
-    return (
-      <div
-        className="group cursor-pointer"
-        onClick={() => router.push(ROUTES.FOLDER_TYPES.DETAIL(folderType.id))}
+        return matchesSearch && matchesFilter;
+      })
+      .sort(
+        (a, b) =>
+          new Date(b.lastActivityAt).getTime() -
+          new Date(a.lastActivityAt).getTime(),
+      ) || [];
+
+  const totalFolders = folders?.length || 0;
+  const activeSearchOrFilters =
+    searchTerm.length > 0 || selectedFilters.length > 0;
+
+  const getStatusBadge = (status: ComputedFolderStatus) => (
+    <Badge variant="outline" className={STATUS_CONFIG[status].badgeClass}>
+      {STATUS_CONFIG[status].label}
+    </Badge>
+  );
+
+  const FolderListRow = ({ folder }: { folder: FolderWithStatus }) => (
+    <li className="border-b border-[var(--border)] last:border-b-0">
+      <Link
+        href={ROUTES.FOLDERS.DETAIL(folder.id)}
+        className="block p-4 md:p-5 hover:bg-[var(--documo-bg-light)]/60 transition-colors"
       >
-        {/* Folder Representation */}
-        <div className="relative">
-          <div className="absolute bottom-4 right-4 z-50 group/button">
-            <Link
-              href={`${ROUTES.FOLDERS.NEW}?typeId=${folderType.id}`}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="relative">
-                {/* Tooltip */}
-                <div
-                  className={`absolute bottom-full right-0 mb-2 px-3 py-1 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover/button:opacity-100 transform scale-95 group-hover/button:scale-100 transition-all pointer-events-none whitespace-nowrap z-60 ${groupTransition}`}
-                >
-                  Créer un dossier
-                  <div className="absolute top-full right-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1" />
-                </div>
-                <button
-                  type="button"
-                  className={`w-10 h-10 bg-blue-600 text-white rounded-full hover:bg-blue-700 hover:scale-110 transition-all duration-200 flex items-center justify-center shadow-lg hover:shadow-xl ${groupTransition}`}
-                >
-                  <Plus className="h-5 w-5" />
-                </button>
-              </div>
-            </Link>
-          </div>
-
-          {/* Folder Tab */}
-          <div
-            className={`absolute -top-3.5 left-0 bg-white w-24 h-7 rounded-t-lg rounded-tl-sm border-2 border-gray-200 border-b-0 group-hover:bg-gray-50 group-hover:border-blue-300 ${groupTransition}`}
-          />
-
-          {/* Folder Body */}
-          <div
-            className={`h-48 w-80 md:w-80 sm:w-72 bg-white border-2 border-gray-200 rounded-lg rounded-tl-none p-5 transition-all duration-300 group-hover:shadow-xl group-hover:bg-gray-50 group-hover:border-blue-300 relative overflow-hidden ${groupTransition}`}
-          >
-            {/* Folder Content */}
-            <div className="h-full flex flex-col justify-between">
-              <div>
-                <h3 className="font-semibold text-gray-800 text-lg mb-1 truncate">
-                  {folderType.name}
-                </h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-3 leading-relaxed">
-                  {folderType.description || 'Aucune description'}
-                </p>
-                <div className="mt-4">
-                  <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
-                    <FileText className="h-3 w-3" />
-                    Documents requis:
-                  </p>
-                  <div className="flex flex-wrap gap-1">
-                    {folderType.requiredDocuments.slice(0, 2).map((doc) => (
-                      <Badge
-                        key={doc.id}
-                        variant="outline"
-                        className="text-xs px-2 py-0.5"
-                      >
-                        {getLabel(doc)}
-                      </Badge>
-                    ))}
-                    {folderType.requiredDocuments.length > 2 && (
-                      <Badge
-                        variant="outline"
-                        className="text-xs px-2 py-0.5 bg-gray-50"
-                      >
-                        +{folderType.requiredDocuments.length - 2}
-                      </Badge>
-                    )}
-                  </div>
-                  {folderType.foldersCount !== undefined && (
-                    <p className="text-xs text-gray-500 mt-2">
-                      {folderType.foldersCount} dossier
-                      {folderType.foldersCount !== 1 ? 's' : ''} créé
-                      {folderType.foldersCount !== 1 ? 's' : ''}
-                    </p>
-                  )}
-                </div>
-              </div>
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-base font-medium text-[var(--documo-black)] truncate">
+              {folder.name}
+            </h2>
+            {folder.description && (
+              <p className="mt-1 text-sm text-[var(--documo-text-secondary)] line-clamp-1">
+                {folder.description}
+              </p>
+            )}
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[var(--documo-text-tertiary)]">
+              <span>
+                Créé{' '}
+                {formatDistanceToNow(new Date(folder.createdAt), {
+                  addSuffix: true,
+                  locale: fr,
+                })}
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <FileText className="h-3.5 w-3.5" />
+                {folder.requestedDocuments.length} document
+                {folder.requestedDocuments.length !== 1 ? 's' : ''}
+              </span>
             </div>
           </div>
+          <div className="shrink-0">{getStatusBadge(folder.status)}</div>
         </div>
+      </Link>
+    </li>
+  );
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[var(--documo-bg-light)]">
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--documo-blue)] border-t-transparent" />
       </div>
     );
-  };
-
-  const FolderCard = ({ folder }: { folder: FolderWithStatus }) => {
-    return (
-      <Link href={ROUTES.FOLDERS.DETAIL(folder.id)}>
-        <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <CardContent className="p-4">
-            <div className="flex justify-between items-start mb-2">
-              <h3 className="font-medium text-gray-900 truncate">
-                {folder.name}
-              </h3>
-              {getStatusBadge(folder.status)}
-            </div>
-            <p className="text-sm text-gray-500">
-              Envoyé{' '}
-              {formatDistanceToNow(new Date(folder.createdAt), {
-                addSuffix: true,
-                locale: fr,
-              })}{' '}
-              • {folder.requestedDocuments.length} document
-              {folder.requestedDocuments.length > 1 ? 's' : ''}
-            </p>
-          </CardContent>
-        </Card>
-      </Link>
-    );
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Types de dossier Section */}
-        <div className="mb-12">
-          <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-semibold text-gray-900">
-              Types de dossier
-            </h1>
-            <Button
-              asChild
-              size="lg"
-              className="font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
-            >
-              <Link href={ROUTES.FOLDER_TYPES.NEW}>
-                <Plus className="h-5 w-5" />
-                <FolderOpen className="h-5 w-5" />
-                Nouveau type de dossier
+    <div className="min-h-screen bg-[var(--documo-bg-light)]">
+      <header className="bg-white border-b border-[var(--border)]">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-semibold text-[var(--documo-black)] tracking-tight">
+                Dossiers en cours
+              </h1>
+              <p className="mt-1 text-sm text-[var(--documo-text-secondary)]">
+                {totalFolders} dossier{totalFolders !== 1 ? 's' : ''}
+              </p>
+            </div>
+            <Button asChild>
+              <Link href={ROUTES.FOLDERS.NEW}>
+                <Plus className="h-4 w-4 mr-2" />
+                Nouveau dossier
               </Link>
             </Button>
           </div>
-
-          {isfolderTypesLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
-          ) : !folderTypes || folderTypes.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  Aucun type de dossier
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  Créez votre premier type de dossier pour commencer
-                </p>
-                <Button asChild>
-                  <Link href={ROUTES.FOLDER_TYPES.NEW}>
-                    <Plus className="h-4 w-4 mr-2" />
-                    Créer un type de dossier
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <>
-              {/* Desktop: Horizontal scroll */}
-              <div className="hidden md:block">
-                <ScrollArea className="w-full rounded-md whitespace-nowrap">
-                  <div className="flex w-max space-x-6 p-4 pt-7">
-                    {folderTypes.map((folderType) => (
-                      <FolderTypeGridItem
-                        key={folderType.id}
-                        folderType={folderType}
-                      />
-                    ))}
-                  </div>
-                  <ScrollBar orientation="horizontal" />
-                </ScrollArea>
-              </div>
-              {/* Mobile: Vertical grid */}
-              <div className="md:hidden">
-                <div className="grid grid-cols-1 gap-4 p-6">
-                  {folderTypes.map((folderType) => (
-                    <FolderTypeGridItem
-                      key={folderType.id}
-                      folderType={folderType}
-                    />
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
         </div>
-        {/* Dossiers en cours Section */}
-        <div>
-          {/* Sticky Header and Controls */}
-          <div className="sticky top-0 z-10 bg-gray-50 p-4 -mt-2 mb-2 shadow-sm border-b border-gray-200/50 backdrop-blur-sm">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-semibold text-gray-900">
-                Dossiers en cours
-              </h2>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6 flex flex-col gap-4">
+          <div className="relative w-full md:max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[var(--documo-text-tertiary)]" />
+            <label htmlFor="folders-search" className="sr-only">
+              Rechercher un dossier
+            </label>
+            <input
+              id="folders-search"
+              type="text"
+              value={searchTerm}
+              onChange={(event) => setSearchTerm(event.target.value)}
+              placeholder="Rechercher un dossier..."
+              className="w-full pl-10 pr-4 py-2 border border-[var(--border)] rounded-lg focus:ring-2 focus:ring-[var(--documo-blue)] focus:border-[var(--documo-blue)] bg-white"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {(Object.keys(STATUS_CONFIG) as ComputedFolderStatus[]).map(
+              (status) => {
+                const isActive = selectedFilters.includes(status);
+                return (
+                  <Button
+                    key={status}
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    data-active={isActive}
+                    onClick={() => toggleFilter(status)}
+                    className={STATUS_CONFIG[status].filterClass}
+                  >
+                    {STATUS_CONFIG[status].label}
+                  </Button>
+                );
+              },
+            )}
+            {selectedFilters.length > 0 && (
               <Button
-                asChild
-                size="lg"
-                className="font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setSelectedFilters([])}
+                className="text-[var(--documo-text-secondary)]"
               >
+                Effacer les filtres
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {activeSearchOrFilters && (
+          <p className="text-sm text-[var(--documo-text-tertiary)] mb-4">
+            {filteredFolders.length} résultat
+            {filteredFolders.length !== 1 ? 's' : ''}
+            {filteredFolders.length !== totalFolders && ` sur ${totalFolders}`}
+          </p>
+        )}
+
+        {totalFolders === 0 ? (
+          <Card className="text-center py-12">
+            <CardContent>
+              <FolderOpen className="h-12 w-12 text-[var(--documo-text-tertiary)] mx-auto mb-4" />
+              <h3 className="text-base font-medium text-[var(--documo-black)] mb-1">
+                Aucun dossier
+              </h3>
+              <p className="text-sm text-[var(--documo-text-secondary)] mb-6">
+                Créez votre premier dossier pour démarrer votre suivi.
+              </p>
+              <Button asChild>
                 <Link href={ROUTES.FOLDERS.NEW}>
                   <Plus className="h-4 w-4 mr-2" />
                   Nouveau dossier
                 </Link>
               </Button>
-            </div>
-
-            {/* Search Bar et Filtres */}
-            <div className="flex flex-col sm:flex-row gap-4 mb-6">
-              <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Rechercher un dossier..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                />
-              </div>
-
-              <div className="flex gap-2 items-center">
-                <Badge
-                  variant={
-                    selectedFilters.includes('PENDING') ? 'default' : 'outline'
-                  }
-                  className={`h-8 cursor-pointer transition-colors ${
-                    selectedFilters.includes('PENDING')
-                      ? 'bg-yellow-500 hover:bg-yellow-600 text-white'
-                      : 'hover:bg-yellow-50 bg-white'
-                  }`}
-                  onClick={() => toggleFilter('PENDING')}
-                >
-                  🕐 En attente
-                </Badge>
-                <Badge
-                  variant={
-                    selectedFilters.includes('COMPLETED')
-                      ? 'default'
-                      : 'outline'
-                  }
-                  className={`h-8 cursor-pointer transition-colors ${
-                    selectedFilters.includes('COMPLETED')
-                      ? 'bg-green-500 hover:bg-green-600 text-white'
-                      : 'hover:bg-green-50 bg-white'
-                  }`}
-                  onClick={() => toggleFilter('COMPLETED')}
-                >
-                  ✅ Terminé
-                </Badge>
-                <Badge
-                  variant={
-                    selectedFilters.includes('ARCHIVED') ? 'default' : 'outline'
-                  }
-                  className={`h-8 cursor-pointer transition-colors ${
-                    selectedFilters.includes('ARCHIVED')
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
-                      : 'hover:bg-red-50 bg-white'
-                  }`}
-                  onClick={() => toggleFilter('ARCHIVED')}
-                >
-                  ❌ Refusé
-                </Badge>
-                {selectedFilters.length > 0 && (
-                  <button
-                    type="button"
-                    onClick={() => setSelectedFilters([])}
-                    className="text-sm text-gray-500 hover:text-gray-700 underline"
-                  >
-                    Effacer les filtres ({selectedFilters.length})
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Results counter */}
-          {filteredFolders && (
-            <div className="mb-4">
-              <p className="text-sm text-gray-600">
-                {filteredFolders.length} dossier
-                {filteredFolders.length !== 1 ? 's' : ''}
-                {selectedFilters.length > 0 || searchTerm ? ' trouvé' : ''}
-                {filteredFolders.length !== 1 &&
-                (selectedFilters.length > 0 || searchTerm)
-                  ? 's'
-                  : ''}
-                {folders &&
-                  filteredFolders.length !== folders.length &&
-                  ` sur ${folders.length}`}
+            </CardContent>
+          </Card>
+        ) : filteredFolders.length === 0 ? (
+          <Card className="text-center py-12">
+            <CardContent>
+              <FolderOpen className="h-12 w-12 text-[var(--documo-text-tertiary)] mx-auto mb-4" />
+              <h3 className="text-base font-medium text-[var(--documo-black)] mb-1">
+                Aucun résultat
+              </h3>
+              <p className="text-sm text-[var(--documo-text-secondary)] mb-6">
+                Aucun dossier ne correspond aux filtres actuels.
               </p>
-            </div>
-          )}
-
-          {/* Dossiers Grid */}
-          {isLoading ? (
-            <div className="flex justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-            </div>
-          ) : !filteredFolders || filteredFolders.length === 0 ? (
-            <Card className="text-center py-12">
-              <CardContent>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {folders?.length === 0 ? 'Aucun dossier' : 'Aucun résultat'}
-                </h3>
-                <p className="text-gray-500 mb-6">
-                  {folders?.length === 0
-                    ? 'Créez votre premier dossier pour commencer'
-                    : selectedFilters.length > 0
-                      ? 'Aucun dossier ne correspond aux filtres sélectionnés'
-                      : 'Aucun dossier ne correspond à votre recherche'}
-                </p>
-                {folders?.length === 0 ? (
-                  <Button asChild>
-                    <Link href={ROUTES.FOLDERS.NEW}>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nouveau dossier
-                    </Link>
-                  </Button>
-                ) : selectedFilters.length > 0 ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => setSelectedFilters([])}
-                  >
-                    Effacer les filtres
-                  </Button>
-                ) : null}
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredFolders.map((folder) => (
-                <FolderCard key={folder.id} folder={folder} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSearchTerm('');
+                  setSelectedFilters([]);
+                }}
+              >
+                Réinitialiser la recherche
+              </Button>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card className="py-0">
+            <CardContent className="p-0">
+              <ul>
+                {filteredFolders.map((folder) => (
+                  <FolderListRow key={folder.id} folder={folder} />
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        )}
+      </main>
     </div>
   );
 }

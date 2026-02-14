@@ -14,20 +14,32 @@ import type { CreateFolderTypeParams } from '../types';
 interface FolderTypeFormProps {
   onSubmit: (data: CreateFolderTypeParams) => Promise<void>;
   isLoading: boolean;
+  initialValues?: {
+    name?: string;
+    description?: string;
+    requiredDocuments?: DocumentTypeId[];
+  };
+  submitLabel?: string;
+  successRedirect?: string;
 }
 
 export const FolderTypeForm = ({
   onSubmit,
   isLoading,
+  initialValues,
+  submitLabel = 'Créer le modèle de dossier',
+  successRedirect = ROUTES.FOLDER_TYPES.HOME,
 }: FolderTypeFormProps) => {
   const router = useRouter();
 
   const { documentTypes, isLoading: isLoadingDocTypes } = useDocumentTypes();
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState(initialValues?.name || '');
+  const [description, setDescription] = useState(
+    initialValues?.description || '',
+  );
   const [requiredDocuments, setRequiredDocuments] = useState<DocumentTypeId[]>(
-    [],
+    initialValues?.requiredDocuments || [],
   );
 
   // Autocomplete state
@@ -44,7 +56,7 @@ export const FolderTypeForm = ({
       };
 
       await onSubmit(formData);
-      router.push(ROUTES.FOLDERS.HOME);
+      router.push(successRedirect);
     } catch (error) {
       console.error('Error submitting folder type:', error);
     }
@@ -71,7 +83,7 @@ export const FolderTypeForm = ({
             htmlFor="name"
             className="block text-sm font-medium text-[var(--documo-text-secondary)]"
           >
-            Type de dossier{' '}
+            Modèle de dossier{' '}
             <span className="text-[var(--documo-error)]">*</span>
           </label>
           <input
@@ -85,7 +97,6 @@ export const FolderTypeForm = ({
             onChange={(e) => setName(e.target.value)}
             placeholder="Ex : Dossier locatif, Demande de vente..."
           />
-
         </div>
 
         <div>
@@ -101,7 +112,7 @@ export const FolderTypeForm = ({
             className="mt-1 block w-full px-3 py-2 border border-[var(--border)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--documo-blue)] focus:border-[var(--documo-blue)]"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Décris l'usage de ce type de dossier..."
+            placeholder="Décris l'usage de ce modèle de dossier..."
           />
         </div>
       </div>
@@ -113,7 +124,7 @@ export const FolderTypeForm = ({
         </h2>
         <p className="text-sm text-[var(--documo-text-secondary)]">
           Sélectionne les documents que les utilisateurs devront fournir pour ce
-          type de dossier.
+          modèle de dossier.
         </p>
 
         {isLoadingDocTypes ? (
@@ -152,7 +163,7 @@ export const FolderTypeForm = ({
 
         {requiredDocuments.length === 0 && documentTypes.length > 0 && (
           <p className="text-sm text-[var(--documo-text-tertiary)]">
-            * Sélectionnez au moins un type de document
+            * Sélectionne au moins un type de document
           </p>
         )}
       </div>
@@ -166,7 +177,7 @@ export const FolderTypeForm = ({
           type="submit"
           disabled={isLoading || !name || requiredDocuments.length === 0}
         >
-          {isLoading ? 'Création...' : 'Créer le type de dossier'}
+          {isLoading ? 'Enregistrement...' : submitLabel}
         </Button>
       </div>
     </form>

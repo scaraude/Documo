@@ -14,10 +14,10 @@ export default function FolderTypeDetailPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      deleteFolderTypeMutation.mutate({ id });
-      router.push(ROUTES.FOLDERS.HOME);
+      await deleteFolderTypeMutation.mutateAsync({ id });
+      router.push(ROUTES.FOLDER_TYPES.HOME);
     } catch {
-      toast.error('Impossible de supprimer le type de dossier');
+      toast.error('Impossible de supprimer le modèle de dossier');
     }
   };
 
@@ -32,7 +32,7 @@ export default function FolderTypeDetailPage() {
   if (!folderType && !isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center text-red-500">
-        <p>Type de dossier introuvable</p>
+        <p>Modèle de dossier introuvable</p>
       </div>
     );
   }

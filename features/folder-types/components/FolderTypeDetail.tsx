@@ -33,7 +33,7 @@ export const FolderTypeDetail = ({
   const handleDelete = async () => {
     if (
       window.confirm(
-        `Êtes-vous sûr de vouloir supprimer le type de dossier "${folderType.name}" ? Cette action est irréversible.`,
+        `Êtes-vous sûr de vouloir supprimer le modèle de dossier "${folderType.name}" ? Cette action est irréversible.`,
       )
     ) {
       await onDelete(folderType.id);

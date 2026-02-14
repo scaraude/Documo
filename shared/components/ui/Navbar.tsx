@@ -9,6 +9,7 @@ import { useState } from 'react';
 
 const navLinks = [
   { href: ROUTES.FOLDERS.HOME, label: 'Dossiers' },
+  { href: ROUTES.FOLDER_TYPES.HOME, label: 'Modèles' },
   { href: ROUTES.REQUESTS.HOME, label: 'Demandes' },
 ];
 
@@ -17,6 +18,8 @@ export const Navbar = () => {
   const pathname = usePathname();
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const isActive = (href: string) =>
+    pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <nav className="bg-white border-b border-gray-200">
@@ -42,7 +45,7 @@ export const Navbar = () => {
                 href={link.href}
                 className={cn(
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
-                  pathname === link.href
+                  isActive(link.href)
                     ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50',
                 )}
@@ -101,7 +104,7 @@ export const Navbar = () => {
                 href={link.href}
                 className={cn(
                   'block px-3 py-2 rounded-md text-base font-medium transition-colors',
-                  pathname === link.href
+                  isActive(link.href)
                     ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-600 hover:text-blue-600 hover:bg-gray-50',
                 )}

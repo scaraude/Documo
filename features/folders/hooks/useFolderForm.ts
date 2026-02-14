@@ -93,7 +93,7 @@ export const useFolderForm = ({ folderTypes }: UseFolderFormProps) => {
       if (foundType) {
         setSelectedType(foundType);
       } else {
-        toast.error('Type de dossier non trouvé');
+        toast.error('Modèle de dossier non trouvé');
         router.push(ROUTES.FOLDERS.HOME);
       }
     }

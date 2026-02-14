@@ -19,7 +19,7 @@ export function useFolderTypes() {
     onSuccess: () => {
       // Invalidate all folder types queries to refresh the cache
       utils.folderTypes.getAll.invalidate();
-      toast.success('Type de dossier créé avec succès');
+      toast.success('Modèle de dossier créé avec succès');
     },
   });
 
@@ -31,7 +31,7 @@ export function useFolderTypes() {
     onSuccess: () => {
       // Invalidate all folder types queries to refresh the cache
       utils.folderTypes.getAll.invalidate();
-      toast.success('Type de dossier supprimé avec succès');
+      toast.success('Modèle de dossier supprimé avec succès');
     },
   });
 
@@ -41,7 +41,7 @@ export function useFolderTypes() {
       // Invalidate specific folder type and list queries
       utils.folderTypes.getAll.invalidate();
       utils.folderTypes.getById.invalidate({ id: updatedFolderType.id });
-      toast.success('Type de dossier mis à jour avec succès');
+      toast.success('Modèle de dossier mis à jour avec succès');
     },
   });
 
