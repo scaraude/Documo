@@ -2,15 +2,13 @@
 'use client';
 import { Button } from '@/shared/components';
 import { ROUTES } from '@/shared/constants';
-import { Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import type React from 'react';
 import {
   type DocumentTypeId,
   useDocumentTypes,
 } from '../../document-types/client';
-import { useFolderTypes } from '../hooks/useFolderTypes';
 import type { CreateFolderTypeParams } from '../types';
 
 interface FolderTypeFormProps {
@@ -25,8 +23,6 @@ export const FolderTypeForm = ({
   const router = useRouter();
 
   const { documentTypes, isLoading: isLoadingDocTypes } = useDocumentTypes();
-  const { getAllFolderTypes } = useFolderTypes();
-  const { data: existingFolderTypes } = getAllFolderTypes();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -35,59 +31,7 @@ export const FolderTypeForm = ({
   );
 
   // Autocomplete state
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [filteredSuggestions, setFilteredSuggestions] = useState<string[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
-  const suggestionsRef = useRef<HTMLDivElement>(null);
-
-  // Filter suggestions based on input
-  useEffect(() => {
-    if (existingFolderTypes && name.length > 0) {
-      const filtered = existingFolderTypes
-        .map((ft) => ft.name)
-        .filter((ftName) => ftName.toLowerCase().includes(name.toLowerCase()));
-      setFilteredSuggestions(filtered);
-    } else if (existingFolderTypes) {
-      setFilteredSuggestions(existingFolderTypes.map((ft) => ft.name));
-    } else {
-      setFilteredSuggestions([]);
-    }
-  }, [name, existingFolderTypes]);
-
-  // Close suggestions on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        suggestionsRef.current &&
-        !suggestionsRef.current.contains(event.target as Node) &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node)
-      ) {
-        setShowSuggestions(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelectSuggestion = (suggestionName: string) => {
-    setName(suggestionName);
-    setShowSuggestions(false);
-
-    // Pre-fill documents from existing folder type
-    const existingType = existingFolderTypes?.find(
-      (ft) => ft.name === suggestionName,
-    );
-    if (existingType?.requiredDocuments) {
-      setRequiredDocuments(
-        existingType.requiredDocuments.map((doc) => doc.id as DocumentTypeId),
-      );
-      if (existingType.description) {
-        setDescription(existingType.description);
-      }
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,12 +58,6 @@ export const FolderTypeForm = ({
     );
   };
 
-  const isNewType =
-    name.length > 0 &&
-    !existingFolderTypes?.some(
-      (ft) => ft.name.toLowerCase() === name.toLowerCase(),
-    );
-
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* Basic Information */}
@@ -145,47 +83,9 @@ export const FolderTypeForm = ({
             className="mt-1 block w-full px-3 py-2 border border-[var(--border)] rounded-md shadow-sm focus:outline-none focus:ring-[var(--documo-blue)] focus:border-[var(--documo-blue)]"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            onFocus={() => setShowSuggestions(true)}
             placeholder="Ex : Dossier locatif, Demande de vente..."
           />
 
-          {/* Autocomplete suggestions */}
-          {showSuggestions && (
-            <div
-              ref={suggestionsRef}
-              className="absolute z-10 mt-1 w-full bg-white border border-[var(--border)] rounded-md shadow-lg max-h-60 overflow-y-auto"
-            >
-              {/* Create new option */}
-              {name.length > 0 && isNewType && (
-                <button
-                  type="button"
-                  className="w-full px-3 py-2 text-left text-sm flex items-center gap-2 bg-[var(--documo-blue-light)] text-[var(--documo-blue-deep)] hover:bg-[var(--documo-blue)]/10 border-b border-[var(--border)]"
-                  onClick={() => setShowSuggestions(false)}
-                >
-                  <Plus className="h-4 w-4" />
-                  Créer « {name} »
-                </button>
-              )}
-
-              {/* Existing folder types */}
-              {filteredSuggestions.length > 0 ? (
-                filteredSuggestions.map((suggestion) => (
-                  <button
-                    key={suggestion}
-                    type="button"
-                    className="w-full px-3 py-2 text-left text-sm text-[var(--documo-black)] hover:bg-[var(--documo-bg-light)]"
-                    onClick={() => handleSelectSuggestion(suggestion)}
-                  >
-                    {suggestion}
-                  </button>
-                ))
-              ) : (
-                <div className="px-3 py-2 text-sm text-[var(--documo-text-tertiary)]">
-                  Aucun type de dossier existant
-                </div>
-              )}
-            </div>
-          )}
         </div>
 
         <div>
@@ -251,8 +151,8 @@ export const FolderTypeForm = ({
         )}
 
         {requiredDocuments.length === 0 && documentTypes.length > 0 && (
-          <p className="text-sm text-[var(--documo-error)]">
-            Sélectionne au moins un type de document
+          <p className="text-sm text-[var(--documo-text-tertiary)]">
+            * Sélectionnez au moins un type de document
           </p>
         )}
       </div>

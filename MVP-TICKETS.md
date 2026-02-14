@@ -218,10 +218,10 @@ Plusieurs corrections sur le formulaire de création de type de dossier.
 
 #### Critères d'acceptation
 
-- [ ] Wording corrigé
-- [ ] Autocomplete fonctionnel
-- [ ] Suggestions de documents affichées
-- [ ] Logique de création type + template
+- [x] Wording corrigé
+- [x] Autocomplete fonctionnel
+- [x] Suggestions de documents affichées
+- [x] Logique de création type + template
 
 ---
 
