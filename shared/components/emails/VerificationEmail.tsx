@@ -14,12 +14,12 @@ import {
 import type * as React from 'react';
 
 interface VerificationEmailProps {
-  firstName: string;
+  organizationName: string;
   verificationUrl: string;
 }
 
 export const VerificationEmail: React.FC<VerificationEmailProps> = ({
-  firstName,
+  organizationName,
   verificationUrl,
 }) => (
   <Html>
@@ -32,7 +32,7 @@ export const VerificationEmail: React.FC<VerificationEmailProps> = ({
         </Section>
 
         <Section style={heroSection}>
-          <Heading style={h2}>Welcome, {firstName}!</Heading>
+          <Heading style={h2}>Welcome, {organizationName}!</Heading>
           <Text style={text}>
             Merci d&apos;avoir créé un compte avec Documo. Pour finaliser votre
             inscription et commencer à utiliser notre plateforme sécurisée de

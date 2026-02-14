@@ -11,15 +11,15 @@ interface PublicGuardProps {
 }
 
 export default function PublicGuard({ children }: PublicGuardProps) {
-  const { user, isLoading } = useAuth();
+  const { organization, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // If not loading and user is authenticated, redirect to folders
-    if (!isLoading && user) {
+    // If not loading and organization is authenticated, redirect to folders
+    if (!isLoading && organization) {
       router.push(ROUTES.FOLDERS.HOME);
     }
-  }, [user, isLoading, router]);
+  }, [organization, isLoading, router]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -30,8 +30,8 @@ export default function PublicGuard({ children }: PublicGuardProps) {
     );
   }
 
-  // If user is authenticated, don't render children (will redirect)
-  if (user) {
+  // If organization is authenticated, don't render children (will redirect)
+  if (organization) {
     return null;
   }
 

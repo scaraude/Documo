@@ -9,7 +9,7 @@ const shareLinkWithRequest =
       request: {
         include: {
           requestedDocuments: true,
-          folder: { include: { createdBy: true } },
+          folder: { include: { createdByOrganization: true } },
         },
       },
     },
@@ -19,11 +19,9 @@ export const prismaShareLinkToExternalRequest = (
   shareLink: Prisma.RequestShareLinkGetPayload<typeof shareLinkWithRequest>,
 ): z.infer<typeof externalRequestSchema> => {
   const request = shareLink.request;
-  const createdBy = request.folder.createdBy;
+  const createdBy = request.folder.createdByOrganization;
   const requesterName =
-    createdBy.firstName && createdBy.lastName
-      ? `${createdBy.firstName} ${createdBy.lastName}`
-      : createdBy.email.split('@')[0];
+    createdBy.name || createdBy.email.split('@')[0];
 
   return {
     id: request.id,

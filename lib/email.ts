@@ -8,13 +8,13 @@ import type * as React from 'react';
 
 interface EmailVerificationOptions {
   to: string;
-  firstName: string;
+  organizationName: string;
   verificationToken: string;
 }
 
 export async function sendVerificationEmail({
   to,
-  firstName,
+  organizationName,
   verificationToken,
 }: EmailVerificationOptions): Promise<{ success: boolean; error?: string }> {
   try {
@@ -25,7 +25,7 @@ export async function sendVerificationEmail({
       to: [to.toLowerCase()],
       subject: 'Verify your email address',
       react: VerificationEmail({
-        firstName,
+        organizationName,
         verificationUrl,
       }) as React.ReactElement,
     });
@@ -66,13 +66,13 @@ export async function sendVerificationEmail({
 
 interface PasswordResetEmailOptions {
   to: string;
-  firstName?: string;
+  organizationName?: string;
   resetToken: string;
 }
 
 export async function sendPasswordResetEmail({
   to,
-  firstName,
+  organizationName,
   resetToken,
 }: PasswordResetEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
@@ -83,7 +83,7 @@ export async function sendPasswordResetEmail({
       to: [to.toLowerCase()],
       subject: 'Réinitialisation de votre mot de passe Documo',
       react: PasswordResetEmail({
-        firstName,
+        organizationName,
         resetUrl,
       }) as React.ReactElement,
     });

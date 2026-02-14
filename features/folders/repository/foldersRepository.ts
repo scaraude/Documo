@@ -27,33 +27,33 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
     expiresAt: prismaModel.expiresAt || undefined,
-    createdById: prismaModel.createdById || undefined,
+    createdByOrganizationId: prismaModel.createdByOrganizationId || undefined,
     lastActivityAt: prismaModel.lastActivityAt || prismaModel.updatedAt,
     completedAt: prismaModel.completedAt || undefined,
   };
 }
 
 // Get folders by user ID (security-aware)
-export async function getFoldersByUserId(userId: string): Promise<Folder[]> {
+export async function getFoldersByUserId(organizationId: string): Promise<Folder[]> {
   try {
-    logger.info({ userId }, 'Fetching folders for user');
+    logger.info({ organizationId }, 'Fetching folders for user');
 
     const folders = await prisma.folder.findMany({
       where: {
         archivedAt: null,
-        createdById: userId,
+        createdByOrganizationId: organizationId,
       },
       include: { requestedDocuments: true },
     });
 
     logger.info(
-      { userId, count: folders.length },
+      { organizationId, count: folders.length },
       'User folders fetched successfully',
     );
     return folders.map(toAppModel);
   } catch (error) {
     logger.error(
-      { userId, error: error instanceof Error ? error.message : error },
+      { organizationId, error: error instanceof Error ? error.message : error },
       'Error fetching user folders from database',
     );
     throw new Error('Failed to fetch user folders');
@@ -63,14 +63,14 @@ export async function getFoldersByUserId(userId: string): Promise<Folder[]> {
 // Get folder by ID for specific user (security-aware)
 export async function getFolderByIdForUser(
   id: string,
-  userId: string,
+  organizationId: string,
 ): Promise<Folder | null> {
   try {
     const folder = await prisma.folder.findUnique({
       where: {
         id,
         archivedAt: null,
-        createdById: userId,
+        createdByOrganizationId: organizationId,
       },
       include: { requestedDocuments: true },
     });
@@ -80,7 +80,7 @@ export async function getFolderByIdForUser(
     return toAppModel(folder);
   } catch (error) {
     console.error(
-      `Error fetching folder with ID ${id} for user ${userId}:`,
+      `Error fetching folder with ID ${id} for user ${organizationId}:`,
       error,
     );
     throw new Error('Failed to fetch folder');
@@ -90,14 +90,14 @@ export async function getFolderByIdForUser(
 // Get folder by ID with relations for specific user (security-aware)
 export async function getFolderByIdWithRelationsForUser(
   id: string,
-  userId: string,
+  organizationId: string,
 ): Promise<FolderWithRelations | null> {
   try {
     const folder = await prisma.folder.findUnique({
       where: {
         id,
         archivedAt: null,
-        createdById: userId,
+        createdByOrganizationId: organizationId,
       },
       include: {
         requestedDocuments: true,
@@ -123,7 +123,7 @@ export async function getFolderByIdWithRelationsForUser(
     };
   } catch (error) {
     console.error(
-      `Error fetching folder with ID ${id} for user ${userId}:`,
+      `Error fetching folder with ID ${id} for user ${organizationId}:`,
       error,
     );
     throw new Error('Failed to fetch folder');
@@ -133,10 +133,10 @@ export async function getFolderByIdWithRelationsForUser(
 // Check if user owns the folder containing a specific request (security-aware)
 export async function userOwnsRequestFolder(
   requestId: string,
-  userId: string,
+  organizationId: string,
 ): Promise<boolean> {
   try {
-    logger.info({ requestId, userId }, 'Checking folder ownership for request');
+    logger.info({ requestId, organizationId }, 'Checking folder ownership for request');
 
     const request = await prisma.documentRequest.findUnique({
       where: { id: requestId },
@@ -147,17 +147,17 @@ export async function userOwnsRequestFolder(
 
     if (!request || !request.folder) {
       logger.warn(
-        { requestId, userId },
+        { requestId, organizationId },
         'Request or folder not found during ownership check',
       );
       return false;
     }
 
-    const isOwner = request.folder.createdById === userId;
+    const isOwner = request.folder.createdByOrganizationId === organizationId;
 
     if (!isOwner) {
       logger.warn(
-        { requestId, userId, folderId: request.folder.id },
+        { requestId, organizationId, folderId: request.folder.id },
         'User does not own folder containing request',
       );
     }
@@ -167,7 +167,7 @@ export async function userOwnsRequestFolder(
     logger.error(
       {
         requestId,
-        userId,
+        organizationId,
         error: error instanceof Error ? error.message : error,
       },
       'Error checking folder ownership for request',
@@ -183,7 +183,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
       {
         folderName: data.name,
         folderTypeId: data.folderTypeId,
-        createdById: data.createdById,
+        createdByOrganizationId: data.createdByOrganizationId,
         requestedDocumentsCount: data.requestedDocumentIds.length,
       },
       'Creating new folder',
@@ -193,7 +193,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
     const newFolder = await prisma.folder.create({
       data: {
         ...folderData,
-        createdById: folderData.createdById || '', // Ensure string is provided
+        createdByOrganizationId: folderData.createdByOrganizationId || '', // Ensure string is provided
         requestedDocuments: {
           connect: requestedDocumentIds.map((id) => ({ id })),
         },
@@ -216,10 +216,10 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
         {
           folderId: newFolder.id,
           name: newFolder.name,
-          createdById: newFolder.createdById || '',
+          createdByOrganizationId: newFolder.createdByOrganizationId || '',
           folderTypeId: newFolder.folderTypeId,
         },
-        newFolder.createdById || undefined,
+        newFolder.createdByOrganizationId || undefined,
       ),
     );
 
@@ -228,7 +228,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
     logger.error(
       {
         folderName: data.name,
-        createdById: data.createdById,
+        createdByOrganizationId: data.createdByOrganizationId,
         error: error instanceof Error ? error.message : error,
       },
       'Error creating folder in database',
@@ -240,7 +240,7 @@ export async function createFolder(data: CreateFolderParams): Promise<Folder> {
 // Update a folder for specific user (security-aware)
 export async function updateFolderForUser(
   id: string,
-  userId: string,
+  organizationId: string,
   data: Partial<{
     name: string;
     description: string;
@@ -251,7 +251,7 @@ export async function updateFolderForUser(
 ): Promise<Folder> {
   try {
     // First verify ownership
-    const existingFolder = await getFolderByIdForUser(id, userId);
+    const existingFolder = await getFolderByIdForUser(id, organizationId);
     if (!existingFolder) {
       throw new Error('Folder not found or access denied');
     }
@@ -260,7 +260,7 @@ export async function updateFolderForUser(
     const updatedFolder = await prisma.folder.update({
       where: {
         id,
-        createdById: userId, // Double-check ownership at DB level
+        createdByOrganizationId: organizationId, // Double-check ownership at DB level
       },
       data: {
         ...updateData,
@@ -280,7 +280,7 @@ export async function updateFolderForUser(
     logger.error(
       {
         folderId: id,
-        userId,
+        organizationId,
         error: error instanceof Error ? error.message : error,
       },
       'Error updating folder for user',
@@ -316,11 +316,11 @@ export async function deleteFolder(id: string): Promise<void> {
 export async function addRequestToFolderForUser(
   folderId: string,
   requestId: string,
-  userId: string,
+  organizationId: string,
 ): Promise<void> {
   try {
     // First verify user owns the target folder
-    const folder = await getFolderByIdForUser(folderId, userId);
+    const folder = await getFolderByIdForUser(folderId, organizationId);
     if (!folder) {
       throw new Error('Folder not found or access denied');
     }
@@ -336,7 +336,7 @@ export async function addRequestToFolderForUser(
     }
 
     // If request is already in a folder, verify user owns that folder too
-    if (request.folder && request.folder.createdById !== userId) {
+    if (request.folder && request.folder.createdByOrganizationId !== organizationId) {
       throw new Error('Cannot move request from folder you do not own');
     }
 
@@ -346,7 +346,7 @@ export async function addRequestToFolderForUser(
     });
   } catch (error) {
     console.error(
-      `Error adding request ${requestId} to folder ${folderId} for user ${userId}:`,
+      `Error adding request ${requestId} to folder ${folderId} for user ${organizationId}:`,
       error,
     );
     throw new Error('Failed to add request to folder');
@@ -381,15 +381,15 @@ export async function removeRequestFromFolder(
 
 // Get user's folders with their requests count (security-aware)
 export async function getFoldersWithStatsForUser(
-  userId: string,
+  organizationId: string,
 ): Promise<Array<Folder & { requestsCount: number }>> {
   try {
-    logger.info({ userId }, 'Fetching folders with stats for user');
+    logger.info({ organizationId }, 'Fetching folders with stats for user');
 
     const folders = await prisma.folder.findMany({
       where: {
         archivedAt: null,
-        createdById: userId,
+        createdByOrganizationId: organizationId,
       },
       include: {
         requestedDocuments: true,
@@ -400,7 +400,7 @@ export async function getFoldersWithStatsForUser(
     });
 
     logger.info(
-      { userId, count: folders.length },
+      { organizationId, count: folders.length },
       'User folders with stats fetched successfully',
     );
 
@@ -411,7 +411,7 @@ export async function getFoldersWithStatsForUser(
   } catch (error) {
     logger.error(
       {
-        userId,
+        organizationId,
         error: error instanceof Error ? error.message : error,
       },
       'Error fetching folders with stats for user',

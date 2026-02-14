@@ -21,7 +21,7 @@ export class FolderAnalyticsHandler
         {
           folderId: event.data.folderId,
           folderTypeId: event.data.folderTypeId,
-          userId: event.data.createdById,
+          organizationId: event.data.createdByOrganizationId,
         },
         'Updated folder type analytics after folder creation',
       );
@@ -48,7 +48,7 @@ export class FolderAuditHandler implements EventHandler<FolderCreatedEvent> {
           eventType: 'FOLDER_CREATED',
           folderId: event.data.folderId,
           folderName: event.data.name,
-          createdById: event.data.createdById,
+          createdByOrganizationId: event.data.createdByOrganizationId,
           folderTypeId: event.data.folderTypeId,
           timestamp: event.occurredAt,
           eventId: event.eventId,
@@ -62,7 +62,7 @@ export class FolderAuditHandler implements EventHandler<FolderCreatedEvent> {
       //     eventType: 'FOLDER_CREATED',
       //     entityId: event.data.folderId,
       //     entityType: 'FOLDER',
-      //     userId: event.data.createdById,
+      //     organizationId: event.data.createdByOrganizationId,
       //     eventData: event.data,
       //     occurredAt: event.occurredAt,
       //   },
@@ -89,7 +89,7 @@ export class FolderNotificationHandler
       // This could integrate with your notification system
       logger.info(
         {
-          userId: event.data.createdById,
+          organizationId: event.data.createdByOrganizationId,
           folderId: event.data.folderId,
           folderName: event.data.name,
           notificationType: 'FOLDER_CREATED_SUCCESS',
@@ -99,7 +99,7 @@ export class FolderNotificationHandler
 
       // Example: Send email or push notification
       // await notificationService.send({
-      //   userId: event.data.createdById,
+      //   organizationId: event.data.createdByOrganizationId,
       //   type: 'FOLDER_CREATED',
       //   data: {
       //     folderName: event.data.name,

@@ -7,7 +7,7 @@ export interface FolderCreatedEvent extends DomainEvent {
   data: {
     folderId: string;
     name: string;
-    createdById: string;
+    createdByOrganizationId: string;
     folderTypeId: string;
   };
 }

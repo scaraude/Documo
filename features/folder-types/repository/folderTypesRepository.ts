@@ -23,7 +23,7 @@ export function toAppModel(prismaModel: PrismaFolderType): FolderType {
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
     deletedAt: prismaModel.deletedAt || undefined,
-    createdById: prismaModel.createdById || undefined,
+    createdByOrganizationId: prismaModel.createdByOrganizationId || undefined,
   };
 }
 
@@ -31,17 +31,17 @@ export function toAppModel(prismaModel: PrismaFolderType): FolderType {
  * Get folder types by user ID (user-scoped) - SECURE
  */
 export async function getFolderTypesByUserId(
-  userId: string,
+  organizationId: string,
 ): Promise<FolderType[]> {
   try {
     logger.info(
-      { userId, operation: 'getFolderTypesByUserId' },
+      { organizationId, operation: 'getFolderTypesByUserId' },
       'Fetching folder types for user',
     );
     const folderTypes = await prisma.folderType.findMany({
       where: {
         deletedAt: null,
-        createdById: userId, // Filter by owner
+        createdByOrganizationId: organizationId, // Filter by owner
       },
       include: {
         requiredDocuments: true,
@@ -52,14 +52,14 @@ export async function getFolderTypesByUserId(
     });
 
     logger.info(
-      { userId, count: folderTypes.length },
+      { organizationId, count: folderTypes.length },
       'Folder types fetched successfully',
     );
     return folderTypes.map(toAppModel);
   } catch (error) {
     logger.error(
       {
-        userId,
+        organizationId,
         operation: 'getFolderTypesByUserId',
         error: error instanceof Error ? error.message : error,
       },
@@ -74,18 +74,18 @@ export async function getFolderTypesByUserId(
  */
 export async function getFolderTypeByIdForUser(
   id: string,
-  userId: string,
+  organizationId: string,
 ): Promise<FolderType | null> {
   try {
     logger.info(
-      { folderTypeId: id, userId, operation: 'getFolderTypeByIdForUser' },
+      { folderTypeId: id, organizationId, operation: 'getFolderTypeByIdForUser' },
       'Fetching folder type with ownership check',
     );
     const folderType = await prisma.folderType.findFirst({
       where: {
         id,
         deletedAt: null,
-        createdById: userId, // Ownership check
+        createdByOrganizationId: organizationId, // Ownership check
       },
       include: {
         requiredDocuments: true,
@@ -94,7 +94,7 @@ export async function getFolderTypeByIdForUser(
 
     const result = folderType ? toAppModel(folderType) : null;
     logger.info(
-      { folderTypeId: id, userId, found: !!result },
+      { folderTypeId: id, organizationId, found: !!result },
       'Folder type fetch completed',
     );
     return result;
@@ -102,7 +102,7 @@ export async function getFolderTypeByIdForUser(
     logger.error(
       {
         folderTypeId: id,
-        userId,
+        organizationId,
         operation: 'getFolderTypeByIdForUser',
         error: error instanceof Error ? error.message : error,
       },
@@ -119,14 +119,14 @@ export async function createFolderType(
   params: CreateFolderTypeParams,
 ): Promise<FolderType> {
   try {
-    const { name, description, requiredDocuments, createdById } = params;
+    const { name, description, requiredDocuments, createdByOrganizationId } = params;
 
-    if (!createdById) {
+    if (!createdByOrganizationId) {
       throw new Error('User ID is required to create folder type');
     }
 
     logger.info(
-      { name, userId: createdById, operation: 'createFolderType' },
+      { name, organizationId: createdByOrganizationId, operation: 'createFolderType' },
       'Creating folder type',
     );
 
@@ -137,7 +137,7 @@ export async function createFolderType(
         requiredDocuments: {
           connect: requiredDocuments.map((id) => ({ id })),
         },
-        createdById,
+        createdByOrganizationId,
       },
       include: {
         requiredDocuments: true,
@@ -146,7 +146,7 @@ export async function createFolderType(
 
     const result = toAppModel(newFolderType);
     logger.info(
-      { folderTypeId: result.id, name: result.name, userId: createdById },
+      { folderTypeId: result.id, name: result.name, organizationId: createdByOrganizationId },
       'Folder type created successfully',
     );
     return result;
@@ -154,7 +154,7 @@ export async function createFolderType(
     logger.error(
       {
         name: params.name,
-        userId: params.createdById,
+        organizationId: params.createdByOrganizationId,
         operation: 'createFolderType',
         error: error instanceof Error ? error.message : error,
       },

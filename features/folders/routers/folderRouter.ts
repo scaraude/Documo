@@ -13,17 +13,17 @@ import {
 export const folderRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ userId: ctx.user.id }, 'Fetching user folders');
-      const result = await folderRepository.getFoldersByUserId(ctx.user.id);
+      logger.info({ organizationId: ctx.organization.id }, 'Fetching user folders');
+      const result = await folderRepository.getFoldersByUserId(ctx.organization.id);
       logger.info(
-        { userId: ctx.user.id, count: result.length },
+        { organizationId: ctx.organization.id, count: result.length },
         'User folders fetched successfully',
       );
       return result;
     } catch (error) {
       logger.error(
         {
-          userId: ctx.user.id,
+          organizationId: ctx.organization.id,
           error: error instanceof Error ? error.message : error,
         },
         'Error fetching user folders',
@@ -36,24 +36,24 @@ export const folderRouter = router({
     .query(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderId: input.id, userId: ctx.user.id },
+          { folderId: input.id, organizationId: ctx.organization.id },
           'Fetching folder by ID with relations',
         );
         const result = await folderRepository.getFolderByIdWithRelationsForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
 
         if (!result) {
           logger.warn(
-            { folderId: input.id, userId: ctx.user.id },
+            { folderId: input.id, organizationId: ctx.organization.id },
             'Folder not found or user not authorized',
           );
           throw new Error('Folder not found or access denied');
         }
 
         logger.info(
-          { folderId: input.id, userId: ctx.user.id },
+          { folderId: input.id, organizationId: ctx.organization.id },
           'Folder fetch completed',
         );
         return result;
@@ -61,7 +61,7 @@ export const folderRouter = router({
         logger.error(
           {
             folderId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error fetching folder',
@@ -80,7 +80,7 @@ export const folderRouter = router({
         const result = await folderRepository.createFolder({
           ...input,
           requestedDocumentIds: input.requestedDocumentIds,
-          createdById: ctx.user.id, // Use authenticated user's ID
+          createdByOrganizationId: ctx.organization.id, // Use authenticated user's ID
         });
         logger.info(
           { folderId: result.id, folderName: result.name },
@@ -103,13 +103,13 @@ export const folderRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderId: input.id, userId: ctx.user.id },
+          { folderId: input.id, organizationId: ctx.organization.id },
           'Updating folder',
         );
 
         const result = await folderRepository.updateFolderForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
           {
             ...input.data,
             requestedDocuments: input.data
@@ -118,7 +118,7 @@ export const folderRouter = router({
         );
 
         logger.info(
-          { folderId: input.id, userId: ctx.user.id },
+          { folderId: input.id, organizationId: ctx.organization.id },
           'Folder updated successfully',
         );
         return result;
@@ -126,7 +126,7 @@ export const folderRouter = router({
         logger.error(
           {
             folderId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error updating folder',
@@ -142,7 +142,7 @@ export const folderRouter = router({
           {
             folderId: input.folderId,
             requestId: input.requestId,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
           },
           'Adding request to folder',
         );
@@ -150,14 +150,14 @@ export const folderRouter = router({
         await folderRepository.addRequestToFolderForUser(
           input.folderId,
           input.requestId,
-          ctx.user.id,
+          ctx.organization.id,
         );
 
         logger.info(
           {
             folderId: input.folderId,
             requestId: input.requestId,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
           },
           'Request added to folder successfully',
         );
@@ -166,7 +166,7 @@ export const folderRouter = router({
           {
             folderId: input.folderId,
             requestId: input.requestId,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error adding request to folder',
@@ -176,19 +176,19 @@ export const folderRouter = router({
     }),
   getWithStats: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ userId: ctx.user.id }, 'Fetching user folders with stats');
+      logger.info({ organizationId: ctx.organization.id }, 'Fetching user folders with stats');
       const result = await folderRepository.getFoldersWithStatsForUser(
-        ctx.user.id,
+        ctx.organization.id,
       );
       logger.info(
-        { userId: ctx.user.id, count: result.length },
+        { organizationId: ctx.organization.id, count: result.length },
         'User folders with stats fetched successfully',
       );
       return result;
     } catch (error) {
       logger.error(
         {
-          userId: ctx.user.id,
+          organizationId: ctx.organization.id,
           error: error instanceof Error ? error.message : error,
         },
         'Error fetching user folders with stats',
@@ -201,18 +201,18 @@ export const folderRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderId: input.id, userId: ctx.user.id },
+          { folderId: input.id, organizationId: ctx.organization.id },
           'Deleting folder',
         );
 
         // Check ownership before deletion
         const folder = await folderRepository.getFolderByIdForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!folder) {
           logger.warn(
-            { folderId: input.id, userId: ctx.user.id },
+            { folderId: input.id, organizationId: ctx.organization.id },
             'Folder not found or user not authorized to delete',
           );
           throw new Error('Folder not found or access denied');
@@ -220,14 +220,14 @@ export const folderRouter = router({
 
         await folderRepository.deleteFolder(input.id);
         logger.info(
-          { folderId: input.id, userId: ctx.user.id },
+          { folderId: input.id, organizationId: ctx.organization.id },
           'Folder deleted successfully',
         );
       } catch (error) {
         logger.error(
           {
             folderId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error deleting folder',
@@ -240,18 +240,18 @@ export const folderRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { requestId: input.requestId, userId: ctx.user.id },
+          { requestId: input.requestId, organizationId: ctx.organization.id },
           'Removing request from folder',
         );
 
         // Check if user owns the folder containing this request
         const hasAccess = await folderRepository.userOwnsRequestFolder(
           input.requestId,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!hasAccess) {
           logger.warn(
-            { requestId: input.requestId, userId: ctx.user.id },
+            { requestId: input.requestId, organizationId: ctx.organization.id },
             'User not authorized to remove request from folder',
           );
           throw new Error('Request not found or access denied');
@@ -259,14 +259,14 @@ export const folderRouter = router({
 
         await folderRepository.removeRequestFromFolder(input.requestId);
         logger.info(
-          { requestId: input.requestId, userId: ctx.user.id },
+          { requestId: input.requestId, organizationId: ctx.organization.id },
           'Request removed from folder successfully',
         );
       } catch (error) {
         logger.error(
           {
             requestId: input.requestId,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error removing request from folder',

@@ -37,6 +37,23 @@ const DOCUMENT_TYPE_IDS = [
   'OTHER',
 ];
 
+const DEFAULT_DOCUMENT_TYPES = [
+  { id: 'IDENTITY_PROOF', label: "Pièce d'identité" },
+  { id: 'DRIVERS_LICENSE', label: 'Permis de conduire' },
+  { id: 'BANK_STATEMENT', label: 'Relevé bancaire' },
+  { id: 'RESIDENCY_PROOF', label: 'Justificatif de domicile' },
+  { id: 'TAX_RETURN', label: "Déclaration d'impôts" },
+  { id: 'EMPLOYMENT_CONTRACT', label: 'Contrat de travail' },
+  { id: 'SALARY_SLIP', label: 'Bulletin de salaire' },
+  { id: 'BIRTH_CERTIFICATE', label: 'Acte de naissance' },
+  { id: 'MARRIAGE_CERTIFICATE', label: 'Acte de mariage' },
+  { id: 'DIPLOMA', label: 'Diplôme' },
+  { id: 'MEDICAL_CERTIFICATE', label: 'Certificat médical' },
+  { id: 'LEASE_AGREEMENT', label: 'Contrat de location' },
+  { id: 'INSURANCE_CERTIFICATE', label: "Attestation d'assurance" },
+  { id: 'OTHER', label: 'Autre document' },
+] as const;
+
 // Helper function to get random subset of document types
 function getRandomDocumentTypes(min = 1, max = 4): string[] {
   const count = faker.number.int({ min, max });
@@ -49,42 +66,56 @@ function generateDEK(): string {
   return crypto.randomBytes(32).toString('base64');
 }
 
+async function ensureDefaultDocumentTypes() {
+  for (const docType of DEFAULT_DOCUMENT_TYPES) {
+    await prisma.documentType.upsert({
+      where: { id: docType.id },
+      create: {
+        id: docType.id,
+        label: docType.label,
+        acceptedFormats: ['pdf', 'jpg', 'png'],
+        maxSizeMB: 5,
+      },
+      update: {
+        label: docType.label,
+        acceptedFormats: ['pdf', 'jpg', 'png'],
+        maxSizeMB: 5,
+      },
+    });
+  }
+}
+
 // Test user data configuration
 export const TEST_USERS = {
   verified: {
     email: 'test@example.com',
     password: 'password123',
-    firstName: 'Test',
-    lastName: 'User',
-    initials: 'TU',
+    organizationName: 'Test Organization',
+    initials: 'TE',
   },
   unverified: {
     email: 'unverified@example.com',
     password: 'password123',
-    firstName: 'Unverified',
-    lastName: 'User',
-    initials: 'UU',
+    organizationName: 'Unverified Organization',
+    initials: 'UN',
   },
   admin: {
     email: 'admin@documo.com',
     password: 'SecureAdmin123!',
-    firstName: 'Admin',
-    lastName: 'User',
-    initials: 'AU',
+    organizationName: 'Admin Organization',
+    initials: 'AD',
   },
   activeSession: {
     email: 'active@example.com',
     password: 'SecurePass123!',
-    firstName: 'Active',
-    lastName: 'Session',
-    initials: 'AS',
+    organizationName: 'Active Organization',
+    initials: 'AC',
   },
   multipleSession: {
     email: 'multi@example.com',
     password: 'SecurePass123!',
-    firstName: 'Multiple',
-    lastName: 'Sessions',
-    initials: 'MS',
+    organizationName: 'Multiple Sessions Organization',
+    initials: 'MU',
   },
 } as const;
 
@@ -95,11 +126,10 @@ async function createTestUsers() {
   const users = [];
 
   // Create a verified test user
-  const testUser = await prisma.user.create({
+  const testUser = await prisma.organization.create({
     data: {
       email: TEST_USERS.verified.email,
-      firstName: TEST_USERS.verified.firstName,
-      lastName: TEST_USERS.verified.lastName,
+      name: TEST_USERS.verified.organizationName,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -107,7 +137,7 @@ async function createTestUsers() {
 
   await prisma.authProvider.create({
     data: {
-      userId: testUser.id,
+      organizationId: testUser.id,
       providerType: ProviderType.EMAIL_PASSWORD,
       providerId: TEST_USERS.verified.email,
       passwordHash: await hashPassword(TEST_USERS.verified.password),
@@ -119,11 +149,10 @@ async function createTestUsers() {
   users.push(testUser);
 
   // Create an unverified test user
-  const unverifiedUser = await prisma.user.create({
+  const unverifiedUser = await prisma.organization.create({
     data: {
       email: TEST_USERS.unverified.email,
-      firstName: TEST_USERS.unverified.firstName,
-      lastName: TEST_USERS.unverified.lastName,
+      name: TEST_USERS.unverified.organizationName,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -131,7 +160,7 @@ async function createTestUsers() {
 
   await prisma.authProvider.create({
     data: {
-      userId: unverifiedUser.id,
+      organizationId: unverifiedUser.id,
       providerType: ProviderType.EMAIL_PASSWORD,
       providerId: TEST_USERS.unverified.email,
       passwordHash: await hashPassword(TEST_USERS.unverified.password),
@@ -143,11 +172,10 @@ async function createTestUsers() {
   users.push(unverifiedUser);
 
   // Create admin user
-  const adminUser = await prisma.user.create({
+  const adminUser = await prisma.organization.create({
     data: {
       email: TEST_USERS.admin.email,
-      firstName: TEST_USERS.admin.firstName,
-      lastName: TEST_USERS.admin.lastName,
+      name: TEST_USERS.admin.organizationName,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -155,7 +183,7 @@ async function createTestUsers() {
 
   await prisma.authProvider.create({
     data: {
-      userId: adminUser.id,
+      organizationId: adminUser.id,
       providerType: ProviderType.EMAIL_PASSWORD,
       providerId: TEST_USERS.admin.email,
       passwordHash: await hashPassword(TEST_USERS.admin.password),
@@ -167,11 +195,10 @@ async function createTestUsers() {
   users.push(adminUser);
 
   // Create user with active session
-  const activeSessionUser = await prisma.user.create({
+  const activeSessionUser = await prisma.organization.create({
     data: {
       email: TEST_USERS.activeSession.email,
-      firstName: TEST_USERS.activeSession.firstName,
-      lastName: TEST_USERS.activeSession.lastName,
+      name: TEST_USERS.activeSession.organizationName,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -179,7 +206,7 @@ async function createTestUsers() {
 
   await prisma.authProvider.create({
     data: {
-      userId: activeSessionUser.id,
+      organizationId: activeSessionUser.id,
       providerType: ProviderType.EMAIL_PASSWORD,
       providerId: TEST_USERS.activeSession.email,
       passwordHash: await hashPassword(TEST_USERS.activeSession.password),
@@ -191,11 +218,10 @@ async function createTestUsers() {
   users.push(activeSessionUser);
 
   // Create user with multiple sessions
-  const multipleSessionUser = await prisma.user.create({
+  const multipleSessionUser = await prisma.organization.create({
     data: {
       email: TEST_USERS.multipleSession.email,
-      firstName: TEST_USERS.multipleSession.firstName,
-      lastName: TEST_USERS.multipleSession.lastName,
+      name: TEST_USERS.multipleSession.organizationName,
       createdAt: new Date(),
       updatedAt: new Date(),
     },
@@ -203,7 +229,7 @@ async function createTestUsers() {
 
   await prisma.authProvider.create({
     data: {
-      userId: multipleSessionUser.id,
+      organizationId: multipleSessionUser.id,
       providerType: ProviderType.EMAIL_PASSWORD,
       providerId: TEST_USERS.multipleSession.email,
       passwordHash: await hashPassword(TEST_USERS.multipleSession.password),
@@ -232,9 +258,9 @@ async function createTestSessions(users: any[]) {
   const sessions = [];
 
   // Create active session for activeSessionUser
-  const activeSession = await prisma.userSession.create({
+  const activeSession = await prisma.organizationSession.create({
     data: {
-      userId: users.find((u) => u.email === TEST_USERS.activeSession.email)?.id,
+      organizationId: users.find((u) => u.email === TEST_USERS.activeSession.email)?.id,
       token: `session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), 7),
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -272,9 +298,9 @@ async function createTestSessions(users: any[]) {
     ];
 
     for (const data of sessionData) {
-      const session = await prisma.userSession.create({
+      const session = await prisma.organizationSession.create({
         data: {
-          userId: multipleSessionUser.id,
+          organizationId: multipleSessionUser.id,
           token: `session_${crypto.randomBytes(32).toString('hex')}`,
           expiresAt: addDays(data.createdAt, 7),
           userAgent: data.userAgent,
@@ -288,9 +314,9 @@ async function createTestSessions(users: any[]) {
   }
 
   // Create expired session for testing
-  const expiredSession = await prisma.userSession.create({
+  const expiredSession = await prisma.organizationSession.create({
     data: {
-      userId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
+      organizationId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
       token: `expired_session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), -1), // Expired yesterday
       userAgent: 'Mozilla/5.0 (Test Browser)',
@@ -302,9 +328,9 @@ async function createTestSessions(users: any[]) {
   sessions.push(expiredSession);
 
   // Create revoked session for testing
-  const revokedSession = await prisma.userSession.create({
+  const revokedSession = await prisma.organizationSession.create({
     data: {
-      userId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
+      organizationId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
       token: `revoked_session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), 7),
       userAgent: 'Mozilla/5.0 (Revoked Browser)',
@@ -412,7 +438,7 @@ async function createTestPasswordResetTokens(_users: any[]) {
 }
 
 // Generate random folder type
-async function createRandomFolderType(createdById: string) {
+async function createRandomFolderType(createdByOrganizationId: string) {
   const folderTypeNames = [
     'Dossier Location Résidence Principale',
     'Dossier Location Commercial',
@@ -450,7 +476,7 @@ async function createRandomFolderType(createdById: string) {
       requiredDocuments: {
         connect: requiredDocuments.map((doc) => ({ id: doc })),
       },
-      createdById,
+      createdByOrganizationId,
       deletedAt: Math.random() < 0.1 ? faker.date.past() : null, // 10% chance of soft delete
     },
     include: {
@@ -463,7 +489,7 @@ async function createRandomFolderType(createdById: string) {
 async function createRandomFolder(
   folderTypeId: string,
   folderTypeRequiredDocs: DocumentType[],
-  createdById: string,
+  createdByOrganizationId: string,
 ) {
   const cities = [
     'Paris',
@@ -508,7 +534,7 @@ async function createRandomFolder(
       requestedDocuments: {
         connect: folderTypeRequiredDocs.map((doc) => ({ id: doc.id })),
       },
-      createdById,
+      createdByOrganizationId,
       expiresAt:
         Math.random() < 0.7
           ? addDays(new Date(), faker.number.int({ min: 7, max: 90 }))
@@ -684,12 +710,15 @@ async function seedDatabase(
   await prisma.folderType.deleteMany({});
   await prisma.passwordResetToken.deleteMany({});
   await prisma.emailVerificationToken.deleteMany({});
-  await prisma.userSession.deleteMany({});
+  await prisma.organizationSession.deleteMany({});
   await prisma.authProvider.deleteMany({});
-  await prisma.user.deleteMany({});
+  await prisma.organization.deleteMany({});
 
   // Create test users for authentication
   const { users } = await createTestUsers();
+
+  // Ensure required document types are present before creating folder templates
+  await ensureDefaultDocumentTypes();
 
   // Create auth test data
   await createTestSessions(users);
@@ -767,9 +796,9 @@ async function seedDatabase(
   }
 
   const stats = {
-    users: await prisma.user.count(),
+    users: await prisma.organization.count(),
     authProviders: await prisma.authProvider.count(),
-    userSessions: await prisma.userSession.count(),
+    organizationSessions: await prisma.organizationSession.count(),
     emailVerificationTokens: await prisma.emailVerificationToken.count(),
     passwordResetTokens: await prisma.passwordResetToken.count(),
     folderTypes: await prisma.folderType.count(),
@@ -787,6 +816,7 @@ async function seedDatabase(
 
 // Export functions for use in tests
 export {
+  ensureDefaultDocumentTypes,
   createTestUsers,
   createTestSessions,
   createTestEmailVerificationTokens,

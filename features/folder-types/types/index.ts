@@ -11,14 +11,14 @@ export interface FolderType {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date;
-  createdById?: string;
+  createdByOrganizationId?: string;
 }
 
 export interface CreateFolderTypeParams {
   name: string;
   description?: string;
   requiredDocuments: DocumentTypeId[];
-  createdById?: string;
+  createdByOrganizationId?: string;
 }
 
 export interface UpdateFolderTypeParams {

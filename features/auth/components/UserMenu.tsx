@@ -8,7 +8,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../hooks/useAuth';
 
 export const UserMenu: React.FC = () => {
-  const { user, logout, isLoading } = useAuth();
+  const { organization, logout, isLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -35,7 +35,7 @@ export const UserMenu: React.FC = () => {
     return <div className="w-10 h-10 rounded-full bg-gray-200 animate-pulse" />;
   }
 
-  if (!user) {
+  if (!organization) {
     return (
       <Button
         variant="outline"
@@ -48,9 +48,7 @@ export const UserMenu: React.FC = () => {
     );
   }
 
-  const initials =
-    `${user.firstName?.[0] || ''}${user.lastName?.[0] || ''}`.toUpperCase() ||
-    'U';
+  const initials = organization.name.slice(0, 2).toUpperCase() || 'OR';
 
   return (
     <div className="relative" ref={menuRef}>
@@ -71,9 +69,11 @@ export const UserMenu: React.FC = () => {
           {/* User Info */}
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="text-sm font-medium text-gray-900">
-              {user.firstName} {user.lastName}
+              {organization.name}
             </p>
-            <p className="text-sm text-gray-500 truncate">{user.email}</p>
+            <p className="text-sm text-gray-500 truncate">
+              {organization.email}
+            </p>
           </div>
 
           {/* Menu Items */}

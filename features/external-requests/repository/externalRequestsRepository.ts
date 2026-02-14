@@ -35,7 +35,7 @@ export async function getShareLinkByToken(token: string) {
           requestedDocuments: true,
           folder: {
             include: {
-              createdBy: true,
+              createdByOrganization: true,
             },
           },
         },

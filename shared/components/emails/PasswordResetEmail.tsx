@@ -14,12 +14,12 @@ import {
 import type * as React from 'react';
 
 interface PasswordResetEmailProps {
-  firstName?: string;
+  organizationName?: string;
   resetUrl: string;
 }
 
 export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
-  firstName,
+  organizationName,
   resetUrl,
 }) => (
   <Html>
@@ -34,7 +34,9 @@ export const PasswordResetEmail: React.FC<PasswordResetEmailProps> = ({
         <Section style={heroSection}>
           <Heading style={h2}>Réinitialisation de mot de passe</Heading>
           <Text style={text}>
-            {firstName ? `Bonjour ${firstName}, ` : 'Bonjour, '}
+            {organizationName
+              ? `Bonjour ${organizationName}, `
+              : 'Bonjour, '}
           </Text>
           <Text style={text}>
             Nous avons reçu une demande de réinitialisation de mot de passe pour

@@ -19,7 +19,7 @@ export interface Folder {
   lastActivityAt: Date;
 
   expiresAt?: Date;
-  createdById?: string;
+  createdByOrganizationId?: string;
 
   // Relations
   folderTypeId?: string;
@@ -46,7 +46,7 @@ export interface CreateFolderParams {
   folderTypeId: string;
   expiresAt: Date | null;
   requestedDocumentIds: AppDocumentType['id'][];
-  createdById?: string;
+  createdByOrganizationId?: string;
 }
 
 // Computed status type

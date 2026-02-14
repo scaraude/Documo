@@ -7,19 +7,19 @@ import { CreateFolderTypeSchema, UpdateFolderTypeSchema } from '../types/zod';
 export const folderTypesRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ userId: ctx.user.id }, 'Fetching folder types for user');
+      logger.info({ organizationId: ctx.organization.id }, 'Fetching folder types for user');
       const result = await folderTypesRepository.getFolderTypesByUserId(
-        ctx.user.id,
+        ctx.organization.id,
       );
       logger.info(
-        { userId: ctx.user.id, count: result.length },
+        { organizationId: ctx.organization.id, count: result.length },
         'Folder types fetched successfully',
       );
       return result;
     } catch (error) {
       logger.error(
         {
-          userId: ctx.user.id,
+          organizationId: ctx.organization.id,
           error: error instanceof Error ? error.message : error,
         },
         'Error fetching folder types',
@@ -32,22 +32,22 @@ export const folderTypesRouter = router({
     .query(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderTypeId: input.id, userId: ctx.user.id },
+          { folderTypeId: input.id, organizationId: ctx.organization.id },
           'Fetching folder type by ID',
         );
         const result = await folderTypesRepository.getFolderTypeByIdForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!result) {
           logger.warn(
-            { folderTypeId: input.id, userId: ctx.user.id },
+            { folderTypeId: input.id, organizationId: ctx.organization.id },
             'Folder type not found or access denied',
           );
           throw new Error('Folder type not found or access denied');
         }
         logger.info(
-          { folderTypeId: input.id, userId: ctx.user.id },
+          { folderTypeId: input.id, organizationId: ctx.organization.id },
           'Folder type fetch completed',
         );
         return result;
@@ -55,7 +55,7 @@ export const folderTypesRouter = router({
         logger.error(
           {
             folderTypeId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error fetching folder type',
@@ -70,7 +70,7 @@ export const folderTypesRouter = router({
         logger.info({ folderTypeName: input.name }, 'Creating folder type');
         const result = await folderTypesRepository.createFolderType({
           ...input,
-          createdById: ctx.user.id, // Use authenticated user's ID
+          createdByOrganizationId: ctx.organization.id, // Use authenticated user's ID
         });
         logger.info(
           { folderTypeId: result.id, folderTypeName: result.name },
@@ -93,24 +93,24 @@ export const folderTypesRouter = router({
     .query(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderTypeId: input.id, userId: ctx.user.id },
+          { folderTypeId: input.id, organizationId: ctx.organization.id },
           'Checking folder type usage',
         );
         // First verify ownership
         const folderType = await folderTypesRepository.getFolderTypeByIdForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!folderType) {
           logger.warn(
-            { folderTypeId: input.id, userId: ctx.user.id },
+            { folderTypeId: input.id, organizationId: ctx.organization.id },
             'Unauthorized folder type usage check attempt',
           );
           throw new Error('Folder type not found or access denied');
         }
         const result = await folderTypesRepository.isFolderTypeInUse(input.id);
         logger.info(
-          { folderTypeId: input.id, userId: ctx.user.id, inUse: result },
+          { folderTypeId: input.id, organizationId: ctx.organization.id, inUse: result },
           'Folder type usage check completed',
         );
         return result;
@@ -118,7 +118,7 @@ export const folderTypesRouter = router({
         logger.error(
           {
             folderTypeId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error checking folder type usage',
@@ -133,7 +133,7 @@ export const folderTypesRouter = router({
         logger.info(
           {
             folderTypeId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             updateData: input.params,
           },
           'Updating folder type',
@@ -141,11 +141,11 @@ export const folderTypesRouter = router({
         // Verify ownership before update
         const folderType = await folderTypesRepository.getFolderTypeByIdForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!folderType) {
           logger.warn(
-            { folderTypeId: input.id, userId: ctx.user.id },
+            { folderTypeId: input.id, organizationId: ctx.organization.id },
             'Unauthorized folder type update attempt',
           );
           throw new Error('Folder type not found or access denied');
@@ -157,7 +157,7 @@ export const folderTypesRouter = router({
         logger.info(
           {
             folderTypeId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             folderTypeName: result.name,
           },
           'Folder type updated successfully',
@@ -167,7 +167,7 @@ export const folderTypesRouter = router({
         logger.error(
           {
             folderTypeId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error updating folder type',
@@ -180,31 +180,31 @@ export const folderTypesRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { folderTypeId: input.id, userId: ctx.user.id },
+          { folderTypeId: input.id, organizationId: ctx.organization.id },
           'Deleting folder type',
         );
         // Verify ownership before deletion
         const folderType = await folderTypesRepository.getFolderTypeByIdForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!folderType) {
           logger.warn(
-            { folderTypeId: input.id, userId: ctx.user.id },
+            { folderTypeId: input.id, organizationId: ctx.organization.id },
             'Unauthorized folder type delete attempt',
           );
           throw new Error('Folder type not found or access denied');
         }
         await folderTypesRepository.deleteFolderType(input.id);
         logger.info(
-          { folderTypeId: input.id, userId: ctx.user.id },
+          { folderTypeId: input.id, organizationId: ctx.organization.id },
           'Folder type deleted successfully',
         );
       } catch (error) {
         logger.error(
           {
             folderTypeId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error deleting folder type',

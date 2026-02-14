@@ -43,8 +43,7 @@ export const SignupForm: React.FC<SignupFormProps> = ({
       const result = await signup(
         data.email,
         data.password,
-        data.firstName,
-        data.lastName,
+        data.organizationName,
       );
       sessionStorage.setItem('unverified_email', data.email);
       toast.success(result.message);
@@ -67,48 +66,25 @@ export const SignupForm: React.FC<SignupFormProps> = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="firstName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Prénom
-              </label>
-              <input
-                {...register('firstName')}
-                type="text"
-                id="firstName"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Jean"
-              />
-              {errors.firstName && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.firstName.message}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <label
-                htmlFor="lastName"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Nom
-              </label>
-              <input
-                {...register('lastName')}
-                type="text"
-                id="lastName"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Dupont"
-              />
-              {errors.lastName && (
-                <p className="text-red-500 text-sm mt-1">
-                  {errors.lastName.message}
-                </p>
-              )}
-            </div>
+          <div>
+            <label
+              htmlFor="organizationName"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Nom de l&apos;organisation
+            </label>
+            <input
+              {...register('organizationName')}
+              type="text"
+              id="organizationName"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Acme SAS"
+            />
+            {errors.organizationName && (
+              <p className="text-red-500 text-sm mt-1">
+                {errors.organizationName.message}
+              </p>
+            )}
           </div>
 
           <div>

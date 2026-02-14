@@ -2,23 +2,22 @@
 CREATE TYPE "ProviderType" AS ENUM ('EMAIL_PASSWORD', 'FRANCE_CONNECT');
 
 -- CreateTable
-CREATE TABLE "users" (
+CREATE TABLE "organizations" (
     "id" TEXT NOT NULL,
-    "email" TEXT,
-    "firstName" TEXT,
-    "lastName" TEXT,
+    "email" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
     "civilId" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
 
-    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "organizations_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "auth_providers" (
     "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "providerType" "ProviderType" NOT NULL,
     "providerId" TEXT NOT NULL,
     "providerData" JSONB,
@@ -32,9 +31,9 @@ CREATE TABLE "auth_providers" (
 );
 
 -- CreateTable
-CREATE TABLE "user_sessions" (
+CREATE TABLE "organization_sessions" (
     "id" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
+    "organizationId" TEXT NOT NULL,
     "token" TEXT NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -42,7 +41,7 @@ CREATE TABLE "user_sessions" (
     "userAgent" TEXT,
     "ipAddress" TEXT,
 
-    CONSTRAINT "user_sessions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "organization_sessions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -80,7 +79,7 @@ CREATE TABLE "folders" (
     "completedAt" TIMESTAMP(3),
     "lastActivityAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "expiresAt" TIMESTAMP(3),
-    "createdById" TEXT,
+    "createdByOrganizationId" TEXT NOT NULL,
     "folderTypeId" TEXT NOT NULL,
 
     CONSTRAINT "folders_pkey" PRIMARY KEY ("id")
@@ -94,7 +93,7 @@ CREATE TABLE "folder_types" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "deletedAt" TIMESTAMP(3),
-    "createdById" TEXT,
+    "createdByOrganizationId" TEXT NOT NULL,
 
     CONSTRAINT "folder_types_pkey" PRIMARY KEY ("id")
 );
@@ -108,6 +107,7 @@ CREATE TABLE "document_requests" (
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "acceptedAt" TIMESTAMP(3),
     "rejectedAt" TIMESTAMP(3),
+    "declineMessage" TEXT,
     "completedAt" TIMESTAMP(3),
     "firstDocumentUploadedAt" TIMESTAMP(3),
     "folderId" TEXT NOT NULL,
@@ -163,17 +163,41 @@ CREATE TABLE "document_types" (
     CONSTRAINT "document_types_pkey" PRIMARY KEY ("id")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+-- CreateTable
+CREATE TABLE "_RequestDocuments" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_RequestDocuments_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_FolderDocuments" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_FolderDocuments_AB_pkey" PRIMARY KEY ("A","B")
+);
+
+-- CreateTable
+CREATE TABLE "_FolderTypeDocuments" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL,
+
+    CONSTRAINT "_FolderTypeDocuments_AB_pkey" PRIMARY KEY ("A","B")
+);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "users_civilId_key" ON "users"("civilId");
+CREATE UNIQUE INDEX "organizations_email_key" ON "organizations"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "organizations_civilId_key" ON "organizations"("civilId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "auth_providers_providerType_providerId_key" ON "auth_providers"("providerType", "providerId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_sessions_token_key" ON "user_sessions"("token");
+CREATE UNIQUE INDEX "organization_sessions_token_key" ON "organization_sessions"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "email_verification_tokens_token_key" ON "email_verification_tokens"("token");
@@ -184,20 +208,29 @@ CREATE UNIQUE INDEX "password_reset_tokens_token_key" ON "password_reset_tokens"
 -- CreateIndex
 CREATE UNIQUE INDEX "request_share_links_token_key" ON "request_share_links"("token");
 
--- AddForeignKey
-ALTER TABLE "auth_providers" ADD CONSTRAINT "auth_providers_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+-- CreateIndex
+CREATE INDEX "_RequestDocuments_B_index" ON "_RequestDocuments"("B");
+
+-- CreateIndex
+CREATE INDEX "_FolderDocuments_B_index" ON "_FolderDocuments"("B");
+
+-- CreateIndex
+CREATE INDEX "_FolderTypeDocuments_B_index" ON "_FolderTypeDocuments"("B");
 
 -- AddForeignKey
-ALTER TABLE "user_sessions" ADD CONSTRAINT "user_sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "auth_providers" ADD CONSTRAINT "auth_providers_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "folders" ADD CONSTRAINT "folders_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "organization_sessions" ADD CONSTRAINT "organization_sessions_organizationId_fkey" FOREIGN KEY ("organizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "folders" ADD CONSTRAINT "folders_createdByOrganizationId_fkey" FOREIGN KEY ("createdByOrganizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "folders" ADD CONSTRAINT "folders_folderTypeId_fkey" FOREIGN KEY ("folderTypeId") REFERENCES "folder_types"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "folder_types" ADD CONSTRAINT "folder_types_createdById_fkey" FOREIGN KEY ("createdById") REFERENCES "users"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "folder_types" ADD CONSTRAINT "folder_types_createdByOrganizationId_fkey" FOREIGN KEY ("createdByOrganizationId") REFERENCES "organizations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "document_requests" ADD CONSTRAINT "document_requests_folderId_fkey" FOREIGN KEY ("folderId") REFERENCES "folders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -210,3 +243,22 @@ ALTER TABLE "documents" ADD CONSTRAINT "documents_typeId_fkey" FOREIGN KEY ("typ
 
 -- AddForeignKey
 ALTER TABLE "request_share_links" ADD CONSTRAINT "request_share_links_requestId_fkey" FOREIGN KEY ("requestId") REFERENCES "document_requests"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_RequestDocuments" ADD CONSTRAINT "_RequestDocuments_A_fkey" FOREIGN KEY ("A") REFERENCES "document_requests"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_RequestDocuments" ADD CONSTRAINT "_RequestDocuments_B_fkey" FOREIGN KEY ("B") REFERENCES "document_types"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_FolderDocuments" ADD CONSTRAINT "_FolderDocuments_A_fkey" FOREIGN KEY ("A") REFERENCES "document_types"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_FolderDocuments" ADD CONSTRAINT "_FolderDocuments_B_fkey" FOREIGN KEY ("B") REFERENCES "folders"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_FolderTypeDocuments" ADD CONSTRAINT "_FolderTypeDocuments_A_fkey" FOREIGN KEY ("A") REFERENCES "document_types"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_FolderTypeDocuments" ADD CONSTRAINT "_FolderTypeDocuments_B_fkey" FOREIGN KEY ("B") REFERENCES "folder_types"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+

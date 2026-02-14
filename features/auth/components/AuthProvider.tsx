@@ -3,7 +3,11 @@
 import logger from '@/lib/logger';
 import { trpc } from '@/lib/trpc/client';
 import React, { createContext, useCallback, useEffect, useState } from 'react';
-import type { AuthContextValue, User, UserSession } from '../types';
+import type {
+  AuthContextValue,
+  Organization,
+  OrganizationSession,
+} from '../types';
 
 export const AuthContext = createContext<AuthContextValue | undefined>(
   undefined,
@@ -14,11 +18,10 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<UserSession | null>(null);
+  const [organization, setOrganization] = useState<Organization | null>(null);
+  const [session, setSession] = useState<OrganizationSession | null>(null);
   const [authInitialized, setAuthInitialized] = useState(false);
 
-  // tRPC mutations
   const signupMutation = trpc.auth.signup.useMutation();
   const loginMutation = trpc.auth.login.useMutation();
   const logoutMutation = trpc.auth.logout.useMutation();
@@ -27,51 +30,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const forgotPasswordMutation = trpc.auth.forgotPassword.useMutation();
   const resetPasswordMutation = trpc.auth.resetPassword.useMutation();
 
-  // tRPC query for current user
-  const { data: currentUser, isLoading: isLoadingUser } = trpc.auth.me.useQuery(
-    undefined,
-    {
-      enabled: true,
-      retry: false,
-      // Don't throw on UNAUTHORIZED - treat it as "not authenticated"
-      throwOnError: (error) => {
-        // Only throw on unexpected errors, not auth errors
-        return error.data?.code !== 'UNAUTHORIZED';
-      },
+  const {
+    data: currentOrganization,
+    isLoading: isLoadingOrganization,
+  } = trpc.auth.me.useQuery(undefined, {
+    enabled: true,
+    retry: false,
+    throwOnError: (error) => {
+      return error.data?.code !== 'UNAUTHORIZED';
     },
-  );
+  });
 
   useEffect(() => {
-    if (!isLoadingUser) {
-      // Auth check is complete, set the final state
-      if (currentUser) {
-        setUser(currentUser);
+    if (!isLoadingOrganization) {
+      if (currentOrganization) {
+        setOrganization(currentOrganization);
       } else {
-        setUser(null);
+        setOrganization(null);
         setSession(null);
       }
       setAuthInitialized(true);
     }
-  }, [isLoadingUser, currentUser]);
+  }, [isLoadingOrganization, currentOrganization]);
 
   const signup = useCallback(
-    async (
-      email: string,
-      password: string,
-      firstName?: string,
-      lastName?: string,
-    ) => {
+    async (email: string, password: string, organizationName: string) => {
       try {
         const result = await signupMutation.mutateAsync({
           email,
           password,
-          firstName: firstName || '',
-          lastName: lastName || '',
+          organizationName,
         });
 
         logger.info(
           { email, operation: 'auth.signup.success' },
-          'User signed up successfully',
+          'Organization signed up successfully',
         );
         return result;
       } catch (error) {
@@ -89,14 +82,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (email: string, password: string) => {
       try {
         const result = await loginMutation.mutateAsync({ email, password });
-        console.log('Provider: Login result:', result);
-        if (result.success && result.user) {
-          setUser(result.user);
+        if (result.success && result.organization) {
+          setOrganization(result.organization);
         }
 
         logger.info(
           { email, operation: 'auth.login.success' },
-          'User logged in successfully',
+          'Organization logged in successfully',
         );
       } catch (error) {
         logger.error(
@@ -113,17 +105,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       await logoutMutation.mutateAsync();
 
-      setUser(null);
+      setOrganization(null);
       setSession(null);
 
       logger.info(
         { operation: 'auth.logout.success' },
-        'User logged out successfully',
+        'Organization logged out successfully',
       );
     } catch (error) {
       logger.error({ error: (error as Error).message }, 'Logout failed');
-      // Even if logout fails, clear local state
-      setUser(null);
+      setOrganization(null);
       setSession(null);
     }
   }, [logoutMutation]);
@@ -219,9 +210,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextValue = React.useMemo(
     () => ({
-      user,
+      organization,
       session,
-      isLoading: !authInitialized, // Only false when auth check is completely done
+      isLoading: !authInitialized,
       login,
       signup,
       logout,
@@ -231,7 +222,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       resetPassword,
     }),
     [
-      user,
+      organization,
       session,
       authInitialized,
       login,

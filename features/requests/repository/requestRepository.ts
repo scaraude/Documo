@@ -76,15 +76,15 @@ function toAppModelWithFolderAndDocuments(
  * Get all document requests for a specific user (security-aware)
  */
 export async function getRequestsForUser(
-  userId: string,
+  organizationId: string,
 ): Promise<DocumentRequestWithFolder[]> {
   try {
-    logger.info({ userId }, 'Fetching requests for user');
+    logger.info({ organizationId }, 'Fetching requests for user');
 
     const requests = await prisma.documentRequest.findMany({
       where: {
         folder: {
-          createdById: userId, // Only get requests from user's folders
+          createdByOrganizationId: organizationId, // Only get requests from user's folders
         },
       },
       include: {
@@ -94,13 +94,13 @@ export async function getRequestsForUser(
     });
 
     logger.info(
-      { userId, count: requests.length },
+      { organizationId, count: requests.length },
       'User requests fetched successfully',
     );
     return requests.map(toAppModelWithFolder);
   } catch (error) {
     logger.error(
-      { userId, error: error instanceof Error ? error.message : error },
+      { organizationId, error: error instanceof Error ? error.message : error },
       'Error fetching requests for user',
     );
     throw new Error('Failed to fetch requests');
@@ -137,7 +137,7 @@ export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
  */
 export async function createRequestForUser(
   params: CreateRequestParams,
-  userId: string,
+  organizationId: string,
 ): Promise<DocumentRequest> {
   try {
     const {
@@ -149,7 +149,7 @@ export async function createRequestForUser(
 
     logger.info(
       {
-        userId,
+        organizationId,
         email: email.replace(/(.{3}).*(@.*)/, '$1...$2'),
         folderId,
         requestedDocumentsCount: requestedDocumentIds.length,
@@ -161,14 +161,14 @@ export async function createRequestForUser(
     const folder = await prisma.folder.findUnique({
       where: {
         id: folderId,
-        createdById: userId,
+        createdByOrganizationId: organizationId,
         archivedAt: null,
       },
     });
 
     if (!folder) {
       logger.warn(
-        { userId, folderId },
+        { organizationId, folderId },
         'User attempted to create request for folder they do not own',
       );
       throw new Error('Folder not found or access denied');
@@ -194,14 +194,14 @@ export async function createRequestForUser(
     });
 
     logger.info(
-      { userId, requestId: newRequest.id, folderId },
+      { organizationId, requestId: newRequest.id, folderId },
       'Request created successfully for user',
     );
     return toAppModel(newRequest);
   } catch (error) {
     logger.error(
       {
-        userId,
+        organizationId,
         folderId: params.folderId,
         error: error instanceof Error ? error.message : error,
       },
@@ -263,10 +263,10 @@ export async function createRequest(
  */
 export async function deleteRequestForUser(
   id: string,
-  userId: string,
+  organizationId: string,
 ): Promise<void> {
   try {
-    logger.info({ requestId: id, userId }, 'Deleting request for user');
+    logger.info({ requestId: id, organizationId }, 'Deleting request for user');
 
     // First verify user owns the folder containing this request
     const request = await prisma.documentRequest.findUnique({
@@ -274,9 +274,9 @@ export async function deleteRequestForUser(
       include: { folder: true },
     });
 
-    if (!request || !request.folder || request.folder.createdById !== userId) {
+    if (!request || !request.folder || request.folder.createdByOrganizationId !== organizationId) {
       logger.warn(
-        { requestId: id, userId },
+        { requestId: id, organizationId },
         'User attempted to delete request they do not own',
       );
       throw new Error('Request not found or access denied');
@@ -287,28 +287,28 @@ export async function deleteRequestForUser(
       where: {
         id,
         folder: {
-          createdById: userId, // Double-check ownership at DB level
+          createdByOrganizationId: organizationId, // Double-check ownership at DB level
         },
       },
     });
 
     if (result.count === 0) {
       logger.warn(
-        { requestId: id, userId },
+        { requestId: id, organizationId },
         'No request was deleted - ownership mismatch',
       );
       throw new Error('Request not found or access denied');
     }
 
     logger.info(
-      { requestId: id, userId },
+      { requestId: id, organizationId },
       'Request deleted successfully for user',
     );
   } catch (error) {
     logger.error(
       {
         requestId: id,
-        userId,
+        organizationId,
         error: error instanceof Error ? error.message : error,
       },
       'Error deleting request for user',
@@ -344,16 +344,16 @@ export async function deleteRequest(id: string): Promise<void> {
  */
 export async function getRequestByIdForUser(
   id: string,
-  userId: string,
+  organizationId: string,
 ): Promise<DocumentRequestWithFolderAndDocuments | null> {
   try {
-    logger.info({ requestId: id, userId }, 'Fetching request by ID for user');
+    logger.info({ requestId: id, organizationId }, 'Fetching request by ID for user');
 
     const request = await prisma.documentRequest.findUnique({
       where: {
         id,
         folder: {
-          createdById: userId, // Only get request if user owns the folder
+          createdByOrganizationId: organizationId, // Only get request if user owns the folder
         },
       },
       include: {
@@ -369,12 +369,12 @@ export async function getRequestByIdForUser(
 
     if (request) {
       logger.info(
-        { requestId: id, userId },
+        { requestId: id, organizationId },
         'Request fetched successfully for user',
       );
     } else {
       logger.warn(
-        { requestId: id, userId },
+        { requestId: id, organizationId },
         'Request not found or user not authorized',
       );
     }
@@ -384,7 +384,7 @@ export async function getRequestByIdForUser(
     logger.error(
       {
         requestId: id,
-        userId,
+        organizationId,
         error: error instanceof Error ? error.message : error,
       },
       'Error fetching request for user',

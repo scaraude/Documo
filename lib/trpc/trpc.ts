@@ -1,5 +1,5 @@
 import { AuthRepository } from '@/features/auth/repository/authRepository';
-import type { User, UserSession } from '@/features/auth/types';
+import type { Organization, OrganizationSession } from '@/features/auth/types';
 import { prisma } from '@/lib/prisma';
 import { TRPCError, initTRPC } from '@trpc/server';
 import type { NextRequest } from 'next/server';
@@ -8,8 +8,8 @@ import superjson from 'superjson';
 interface Context {
   req?: NextRequest;
   resHeaders?: Headers;
-  user?: User;
-  session?: UserSession;
+  organization?: Organization;
+  session?: OrganizationSession;
 }
 
 const authRepository = new AuthRepository(prisma);
@@ -33,9 +33,10 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
   }
 
   // Validate session
-  const sessionWithUser = await authRepository.findSessionByToken(sessionToken);
+  const sessionWithOrganization =
+    await authRepository.findSessionByToken(sessionToken);
 
-  if (!sessionWithUser) {
+  if (!sessionWithOrganization) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'Invalid or expired session',
@@ -45,8 +46,8 @@ const isAuthenticated = t.middleware(async ({ ctx, next }) => {
   return next({
     ctx: {
       ...ctx,
-      user: sessionWithUser.user,
-      session: sessionWithUser,
+      organization: sessionWithOrganization.organization,
+      session: sessionWithOrganization,
     },
   });
 });

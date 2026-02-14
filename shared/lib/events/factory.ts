@@ -5,13 +5,13 @@ function createEvent<T extends Record<string, unknown>>(
   eventType: EventType,
   aggregateId: string,
   data: T,
-  userId?: string,
+  organizationId?: string,
 ): DomainEvent {
   return {
     eventType,
     eventId: crypto.randomUUID(),
     aggregateId,
-    userId,
+    organizationId,
     occurredAt: new Date(),
     data,
   };
@@ -22,7 +22,7 @@ export function createTypedEvent<T extends DomainEvent>(
   eventType: T['eventType'],
   aggregateId: string,
   data: T['data'],
-  userId?: string,
+  organizationId?: string,
 ): T {
-  return createEvent(eventType, aggregateId, data, userId) as T;
+  return createEvent(eventType, aggregateId, data, organizationId) as T;
 }

@@ -14,11 +14,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+model Organization {
   id        String    @id @default(uuid())
-  email     String   @unique
-  firstName String?
-  lastName  String?
+  email     String    @unique
+  name      String
   civilId   String?   @unique
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
@@ -26,17 +25,17 @@ model User {
 
   // Relations
   authProviders AuthProvider[]
-  sessions      UserSession[]
-  folders       Folder[]       @relation("CreatedByUser")
-  folderTypes   FolderType[]   @relation("CreatedByUser")
+  sessions      OrganizationSession[]
+  folders       Folder[]            @relation("CreatedByOrganization")
+  folderTypes   FolderType[]        @relation("CreatedByOrganization")
 
-  @@map("users")
+  @@map("organizations")
 }
 
 model AuthProvider {
   id              String       @id @default(uuid())
-  userId          String
-  user            User         @relation(fields: [userId], references: [id])
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
   providerType    ProviderType
   providerId      String
   providerData    Json?
@@ -50,18 +49,18 @@ model AuthProvider {
   @@map("auth_providers")
 }
 
-model UserSession {
-  id        String    @id @default(uuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id])
-  token     String    @unique
-  expiresAt DateTime
-  createdAt DateTime  @default(now())
-  revokedAt DateTime?
-  userAgent String?
-  ipAddress String?
+model OrganizationSession {
+  id             String       @id @default(uuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+  token          String       @unique
+  expiresAt      DateTime
+  createdAt      DateTime     @default(now())
+  revokedAt      DateTime?
+  userAgent      String?
+  ipAddress      String?
 
-  @@map("user_sessions")
+  @@map("organization_sessions")
 }
 
 model EmailVerificationToken {
@@ -98,8 +97,8 @@ model Folder {
   expiresAt   DateTime?
 
   // Relations
-  createdById String
-  createdBy   User     @relation("CreatedByUser", fields: [createdById], references: [id])
+  createdByOrganizationId String
+  createdByOrganization   Organization   @relation("CreatedByOrganization", fields: [createdByOrganizationId], references: [id])
   requestedDocuments DocumentType[] @relation("FolderDocuments")
   folderTypeId String
   folderType   FolderType        @relation(fields: [folderTypeId], references: [id])
@@ -116,8 +115,8 @@ model FolderType {
   updatedAt         DateTime       @updatedAt
   deletedAt         DateTime? // Soft delete
 
-  createdById       String
-  createdBy         User          @relation("CreatedByUser", fields: [createdById], references: [id])
+  createdByOrganizationId       String
+  createdByOrganization Organization  @relation("CreatedByOrganization", fields: [createdByOrganizationId], references: [id])
   requiredDocuments DocumentType[] @relation("FolderTypeDocuments")
   folders Folder[] // Relation to folders
 

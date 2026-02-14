@@ -38,7 +38,7 @@ export interface DomainEvent {
   eventType: EventType;
   eventId: string;
   aggregateId: string;
-  userId?: string;
+  organizationId?: string;
   occurredAt: Date;
   data: Record<string, unknown>;
 }

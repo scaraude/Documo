@@ -68,8 +68,10 @@ export const signupSchema = z.object({
     .email('Adresse email invalide')
     .transform((email) => email.toLowerCase()),
   password: passwordSchema,
-  firstName: z.string().min(1, 'Le prénom est requis').max(50),
-  lastName: z.string().min(1, 'Le nom est requis').max(50),
+  organizationName: z
+    .string()
+    .min(1, "Le nom de l'organisation est requis")
+    .max(120),
 });
 
 // Backend API schema without password confirmation
@@ -79,8 +81,10 @@ export const signupApiSchema = z.object({
     .email('Adresse email invalide')
     .transform((email) => email.toLowerCase()),
   password: passwordSchema,
-  firstName: z.string().min(1, 'Le prénom est requis').max(50),
-  lastName: z.string().min(1, 'Le nom est requis').max(50),
+  organizationName: z
+    .string()
+    .min(1, "Le nom de l'organisation est requis")
+    .max(120),
 });
 
 export const verifyEmailSchema = z.object({

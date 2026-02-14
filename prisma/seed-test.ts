@@ -7,6 +7,7 @@ import {
   createRandomFolderType,
   createRandomShareLink,
   createTestEmailVerificationTokens,
+  ensureDefaultDocumentTypes,
   createTestPasswordResetTokens,
   createTestSessions,
   createTestUsers,
@@ -23,6 +24,7 @@ export async function seedTestData() {
 
   // Create auth test data
   const { users } = await createTestUsers();
+  await ensureDefaultDocumentTypes();
   const sessions = await createTestSessions(users);
   const emailTokens = await createTestEmailVerificationTokens(users);
   const resetTokens = await createTestPasswordResetTokens(users);
@@ -89,9 +91,9 @@ async function cleanTestData() {
   await prisma.folderType.deleteMany({});
   await prisma.passwordResetToken.deleteMany({});
   await prisma.emailVerificationToken.deleteMany({});
-  await prisma.userSession.deleteMany({});
+  await prisma.organizationSession.deleteMany({});
   await prisma.authProvider.deleteMany({});
-  await prisma.user.deleteMany({});
+  await prisma.organization.deleteMany({});
 }
 
 // Main execution for direct running

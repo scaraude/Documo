@@ -3,9 +3,9 @@ import { type PrismaClient, ProviderType } from '@/lib/prisma/generated/client';
 import type {
   EmailVerificationToken,
   LoginCredentials,
+  Organization,
+  OrganizationSession,
   SignupCredentials,
-  User,
-  UserSession,
 } from '../types';
 import { hashPassword, verifyPassword } from '../utils/password';
 import {
@@ -21,24 +21,28 @@ import {
 export class AuthRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async createUser(credentials: SignupCredentials): Promise<User> {
-    const { email, password, firstName, lastName } = credentials;
+  async createOrganization(
+    credentials: SignupCredentials,
+  ): Promise<Organization> {
+    const { email, password, organizationName } = credentials;
 
-    logger.info({ email, operation: 'user.create' }, 'Creating new user');
+    logger.info(
+      { email, operation: 'organization.create' },
+      'Creating new organization',
+    );
 
     try {
-      const existingUser = await this.findUserByEmail(email);
-      if (existingUser) {
-        throw new Error('User already exists with this email');
+      const existingOrganization = await this.findOrganizationByEmail(email);
+      if (existingOrganization) {
+        throw new Error('Organization already exists with this email');
       }
 
       const hashedPassword = await hashPassword(password);
 
-      const user = await this.prisma.user.create({
+      const organization = await this.prisma.organization.create({
         data: {
           email,
-          firstName,
-          lastName,
+          name: organizationName,
           authProviders: {
             create: {
               providerType: ProviderType.EMAIL_PASSWORD,
@@ -48,32 +52,34 @@ export class AuthRepository {
             },
           },
         },
-        include: {
-          authProviders: true,
-        },
       });
 
       logger.info(
-        { userId: user.id, operation: 'user.created' },
-        'User created successfully',
+        { organizationId: organization.id, operation: 'organization.created' },
+        'Organization created successfully',
       );
-      return user;
+      return organization;
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to create user',
+        'Failed to create organization',
       );
       throw error;
     }
   }
 
-  async authenticateUser(credentials: LoginCredentials): Promise<User | null> {
+  async authenticateOrganization(
+    credentials: LoginCredentials,
+  ): Promise<Organization | null> {
     const { email, password } = credentials;
 
-    logger.info({ email, operation: 'auth.login' }, 'Authenticating user');
+    logger.info(
+      { email, operation: 'auth.login' },
+      'Authenticating organization',
+    );
 
     try {
-      const user = await this.prisma.user.findFirst({
+      const organization = await this.prisma.organization.findFirst({
         where: {
           email,
           deletedAt: null,
@@ -87,12 +93,15 @@ export class AuthRepository {
         },
       });
 
-      if (!user || user.authProviders.length === 0) {
-        logger.warn({ email, operation: 'auth.failed' }, 'User not found');
+      if (!organization || organization.authProviders.length === 0) {
+        logger.warn(
+          { email, operation: 'auth.failed' },
+          'Organization not found',
+        );
         return null;
       }
 
-      const authProvider = user.authProviders[0];
+      const authProvider = organization.authProviders[0];
       if (!authProvider.passwordHash) {
         logger.warn(
           { email, operation: 'auth.failed' },
@@ -101,7 +110,6 @@ export class AuthRepository {
         return null;
       }
 
-      // Check password first before checking verification
       const isValidPassword = await verifyPassword(
         password,
         authProvider.passwordHash,
@@ -111,22 +119,20 @@ export class AuthRepository {
         return null;
       }
 
-      // If password is valid but email not verified, throw specific error
       if (!authProvider.isVerified) {
         logger.warn(
           { email, operation: 'auth.unverified' },
-          'User email not verified',
+          'Organization email not verified',
         );
         throw new Error('UNVERIFIED_EMAIL');
       }
 
       logger.info(
-        { userId: user.id, operation: 'auth.success' },
-        'User authenticated successfully',
+        { organizationId: organization.id, operation: 'auth.success' },
+        'Organization authenticated successfully',
       );
-      return user;
+      return organization;
     } catch (error) {
-      // Re-throw specific errors that need special handling in the router
       if ((error as Error).message === 'UNVERIFIED_EMAIL') {
         throw error;
       }
@@ -140,22 +146,22 @@ export class AuthRepository {
   }
 
   async createSession(
-    userId: string,
+    organizationId: string,
     userAgent?: string,
     ipAddress?: string,
-  ): Promise<UserSession> {
+  ): Promise<OrganizationSession> {
     logger.info(
-      { userId, operation: 'session.create' },
-      'Creating user session',
+      { organizationId, operation: 'session.create' },
+      'Creating organization session',
     );
 
     try {
       const token = generateSessionToken();
       const expiresAt = getSessionExpiryDate();
 
-      const session = await this.prisma.userSession.create({
+      const session = await this.prisma.organizationSession.create({
         data: {
-          userId,
+          organizationId,
           token,
           expiresAt,
           userAgent,
@@ -164,13 +170,17 @@ export class AuthRepository {
       });
 
       logger.info(
-        { userId, sessionId: session.id, operation: 'session.created' },
+        {
+          organizationId,
+          sessionId: session.id,
+          operation: 'session.created',
+        },
         'Session created',
       );
       return session;
     } catch (error) {
       logger.error(
-        { userId, error: (error as Error).message },
+        { organizationId, error: (error as Error).message },
         'Failed to create session',
       );
       throw error;
@@ -179,20 +189,20 @@ export class AuthRepository {
 
   async findSessionByToken(
     token: string,
-  ): Promise<(UserSession & { user: User }) | null> {
+  ): Promise<(OrganizationSession & { organization: Organization }) | null> {
     try {
-      const session = await this.prisma.userSession.findFirst({
+      const session = await this.prisma.organizationSession.findFirst({
         where: {
           token,
           revokedAt: null,
-          user: { deletedAt: null },
+          organization: { deletedAt: null },
         },
         include: {
-          user: true,
+          organization: true,
         },
       });
 
-      if (!session || !session.user) {
+      if (!session || !session.organization) {
         return null;
       }
 
@@ -222,7 +232,7 @@ export class AuthRepository {
     logger.info({ sessionId, operation: 'session.revoke' }, 'Revoking session');
 
     try {
-      await this.prisma.userSession.update({
+      await this.prisma.organizationSession.update({
         where: { id: sessionId },
         data: { revokedAt: new Date() },
       });
@@ -240,28 +250,28 @@ export class AuthRepository {
     }
   }
 
-  async revokeAllUserSessions(userId: string): Promise<void> {
+  async revokeAllOrganizationSessions(organizationId: string): Promise<void> {
     logger.info(
-      { userId, operation: 'session.revokeAll' },
-      'Revoking all user sessions',
+      { organizationId, operation: 'session.revokeAll' },
+      'Revoking all organization sessions',
     );
 
     try {
-      await this.prisma.userSession.updateMany({
+      await this.prisma.organizationSession.updateMany({
         where: {
-          userId,
+          organizationId,
           revokedAt: null,
         },
         data: { revokedAt: new Date() },
       });
 
       logger.info(
-        { userId, operation: 'session.allRevoked' },
-        'All user sessions revoked',
+        { organizationId, operation: 'session.allRevoked' },
+        'All organization sessions revoked',
       );
     } catch (error) {
       logger.error(
-        { userId, error: (error as Error).message },
+        { organizationId, error: (error as Error).message },
         'Failed to revoke all sessions',
       );
       throw error;
@@ -277,7 +287,6 @@ export class AuthRepository {
     );
 
     try {
-      // Check rate limiting - max 3 attempts per 15 minutes
       const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
       const recentAttempts = await this.prisma.emailVerificationToken.count({
         where: {
@@ -302,7 +311,6 @@ export class AuthRepository {
         );
       }
 
-      // Clean up any existing unused tokens for this email
       await this.prisma.emailVerificationToken.deleteMany({
         where: {
           email,
@@ -377,13 +385,11 @@ export class AuthRepository {
         return false;
       }
 
-      // Mark token as used
       await this.prisma.emailVerificationToken.update({
         where: { id: verificationToken.id },
         data: { usedAt: new Date() },
       });
 
-      // Update auth provider to verified
       await this.prisma.authProvider.updateMany({
         where: {
           providerType: ProviderType.EMAIL_PASSWORD,
@@ -412,9 +418,9 @@ export class AuthRepository {
     }
   }
 
-  async findUserByEmail(email: string): Promise<User | null> {
+  async findOrganizationByEmail(email: string): Promise<Organization | null> {
     try {
-      return await this.prisma.user.findFirst({
+      return await this.prisma.organization.findFirst({
         where: {
           email,
           deletedAt: null,
@@ -423,15 +429,15 @@ export class AuthRepository {
     } catch (error) {
       logger.error(
         { email, error: (error as Error).message },
-        'Failed to find user by email',
+        'Failed to find organization by email',
       );
       return null;
     }
   }
 
-  async findUserById(id: string): Promise<User | null> {
+  async findOrganizationById(id: string): Promise<Organization | null> {
     try {
-      return await this.prisma.user.findFirst({
+      return await this.prisma.organization.findFirst({
         where: {
           id,
           deletedAt: null,
@@ -439,8 +445,8 @@ export class AuthRepository {
       });
     } catch (error) {
       logger.error(
-        { userId: id, error: (error as Error).message },
-        'Failed to find user by ID',
+        { organizationId: id, error: (error as Error).message },
+        'Failed to find organization by ID',
       );
       return null;
     }
@@ -472,15 +478,13 @@ export class AuthRepository {
     );
 
     try {
-      // Check if user exists and has email provider
-      const user = await this.findUserByEmail(email);
-      if (!user) {
-        // Don't reveal if email exists - return success anyway for security
+      const organization = await this.findOrganizationByEmail(email);
+      if (!organization) {
         logger.info(
           { email, operation: 'password_reset.email_not_found' },
           'Email not found for password reset',
         );
-        return { token: 'fake-token' }; // Return fake token to avoid email enumeration
+        return { token: 'fake-token' };
       }
 
       const authProvider = await this.prisma.authProvider.findFirst({
@@ -498,7 +502,6 @@ export class AuthRepository {
         return { token: 'fake-token' };
       }
 
-      // Rate limiting: max 3 reset attempts per 15 minutes
       const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
       const recentAttempts = await this.prisma.passwordResetToken.count({
         where: {
@@ -523,7 +526,6 @@ export class AuthRepository {
         );
       }
 
-      // Clean up any existing unused tokens for this email
       await this.prisma.passwordResetToken.deleteMany({
         where: {
           email,
@@ -605,13 +607,11 @@ export class AuthRepository {
         return false;
       }
 
-      // Mark token as used
       await this.prisma.passwordResetToken.update({
         where: { id: resetToken.id },
         data: { usedAt: new Date() },
       });
 
-      // Update password
       const hashedPassword = await hashPassword(newPassword);
       await this.prisma.authProvider.updateMany({
         where: {
@@ -624,10 +624,9 @@ export class AuthRepository {
         },
       });
 
-      // Revoke all existing sessions for security
-      await this.prisma.userSession.updateMany({
+      await this.prisma.organizationSession.updateMany({
         where: {
-          user: {
+          organization: {
             email: resetToken.email,
           },
           revokedAt: null,

@@ -7,7 +7,7 @@ export const CreateFolderSchema = z.object({
   description: z.string().optional(),
   expiresAt: z.date().nullable(),
   requestedDocumentIds: documentTypeIdsSchema,
-  createdById: z.string().uuid().optional(),
+  createdByOrganizationId: z.string().uuid().optional(),
 });
 
 const UpdateFolderSchema = z.object({

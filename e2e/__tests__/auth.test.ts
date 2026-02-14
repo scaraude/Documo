@@ -79,8 +79,7 @@ test.describe('Auth Feature E2E Tests', () => {
       await expect(page.locator('h2')).toContainText('Create Account');
       await expect(page.locator('input[type="email"]')).toBeVisible();
       await expect(page.locator('input[type="password"]')).toBeVisible();
-      await expect(page.locator('input[name="firstName"]')).toBeVisible();
-      await expect(page.locator('input[name="lastName"]')).toBeVisible();
+      await expect(page.locator('input[name="organizationName"]')).toBeVisible();
     });
 
     test('should show validation errors for empty signup fields', async ({
@@ -95,8 +94,9 @@ test.describe('Auth Feature E2E Tests', () => {
       await expect(
         page.locator('text=Password must be at least 6 characters'),
       ).toBeVisible();
-      await expect(page.locator('text=First name is required')).toBeVisible();
-      await expect(page.locator('text=Last name is required')).toBeVisible();
+      await expect(
+        page.locator("text=Le nom de l'organisation est requis"),
+      ).toBeVisible();
     });
 
     test('should successfully create account and show success', async ({
@@ -109,8 +109,7 @@ test.describe('Auth Feature E2E Tests', () => {
 
       await page.fill('input[type="email"]', email);
       await page.fill('input[type="password"]', 'password123');
-      await page.fill('input[name="firstName"]', 'Test');
-      await page.fill('input[name="lastName"]', 'User');
+      await page.fill('input[name="organizationName"]', 'Test Organization');
       await page.click('button[type="submit"]');
 
       // Wait for the signup attempt to complete
@@ -132,8 +131,7 @@ test.describe('Auth Feature E2E Tests', () => {
 
       await page.fill('input[type="email"]', TEST_USERS.verified.email); // Existing user
       await page.fill('input[type="password"]', TEST_USERS.verified.password);
-      await page.fill('input[name="firstName"]', 'Test');
-      await page.fill('input[name="lastName"]', 'User');
+      await page.fill('input[name="organizationName"]', 'Test Organization');
       await page.click('button[type="submit"]');
 
       await page.waitForTimeout(1000);

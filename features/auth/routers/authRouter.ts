@@ -25,24 +25,22 @@ export const authRouter = createTRPCRouter({
   signup: publicProcedure.input(signupApiSchema).mutation(async ({ input }) => {
     try {
       logger.info('Starting signup process');
-      const user = await authRepository.createUser(input);
+      const organization = await authRepository.createOrganization(input);
 
-      // Create email verification token
       const verificationToken =
-        await authRepository.createEmailVerificationToken(user.email);
+        await authRepository.createEmailVerificationToken(organization.email);
 
-      // Send verification email
       const emailResult = await sendVerificationEmail({
-        to: user.email,
-        firstName: user.firstName || 'User',
+        to: organization.email,
+        organizationName: organization.name,
         verificationToken: verificationToken.token,
       });
 
       if (!emailResult.success) {
         logger.error(
           {
-            userId: user.id,
-            email: user.email,
+            organizationId: organization.id,
+            email: organization.email,
             error: emailResult.error,
             operation: 'auth.signup',
           },
@@ -52,21 +50,20 @@ export const authRouter = createTRPCRouter({
 
       logger.info(
         {
-          userId: user.id,
-          email: user.email,
+          organizationId: organization.id,
+          email: organization.email,
           emailSent: emailResult.success,
           operation: 'auth.signup',
         },
-        'User signed up, verification email sent',
+        'Organization signed up, verification email sent',
       );
 
       return {
         success: true,
         message:
           'Account created successfully. Please check your email to verify your account.',
-        userId: user.id,
-        // In development, return the token for testing
-        ...(isProduction && {
+        organizationId: organization.id,
+        ...(isDevelopment && {
           verificationToken: verificationToken.token,
         }),
       };
@@ -92,26 +89,23 @@ export const authRouter = createTRPCRouter({
 
   login: publicProcedure.input(loginSchema).mutation(async ({ input, ctx }) => {
     try {
-      const user = await authRepository.authenticateUser(input);
+      const organization = await authRepository.authenticateOrganization(input);
 
-      if (!user) {
-        console.log('Login failed: User not found or password mismatch');
+      if (!organization) {
         throw new TRPCError({
           code: 'UNAUTHORIZED',
           message: 'email ou mot de passe incorrect',
         });
       }
 
-      // Create session
       const session = await authRepository.createSession(
-        user.id,
+        organization.id,
         ctx.req?.headers.get('user-agent') || undefined,
         ctx.req?.headers.get('x-forwarded-for') ||
           ctx.req?.headers.get('x-real-ip') ||
           undefined,
       );
 
-      // Set session cookie
       if (ctx.resHeaders) {
         const cookieValue = `session=${session.token}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=lax`;
         ctx.resHeaders.set('Set-Cookie', cookieValue);
@@ -119,11 +113,10 @@ export const authRouter = createTRPCRouter({
 
       return {
         success: true,
-        user: {
-          id: user.id,
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
+        organization: {
+          id: organization.id,
+          email: organization.email,
+          name: organization.name,
         },
       };
     } catch (error) {
@@ -131,7 +124,6 @@ export const authRouter = createTRPCRouter({
         throw error;
       }
 
-      // Handle specific unverified email error
       if ((error as Error).message === 'UNVERIFIED_EMAIL') {
         throw error;
       }
@@ -153,20 +145,22 @@ export const authRouter = createTRPCRouter({
         await authRepository.revokeSession(ctx.session.id);
       }
 
-      // Clear session cookie using resHeaders
       if (ctx.resHeaders) {
         const cookieValue = `session=; Path=/; Max-Age=0; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=lax`;
         ctx.resHeaders.set('Set-Cookie', cookieValue);
       }
 
       logger.info(
-        { userId: ctx.user?.id, operation: 'auth.logout.success' },
-        'User logged out successfully',
+        { organizationId: ctx.organization?.id, operation: 'auth.logout.success' },
+        'Organization logged out successfully',
       );
       return { success: true };
     } catch (error) {
       logger.error(
-        { userId: ctx.user?.id, error: (error as Error).message },
+        {
+          organizationId: ctx.organization?.id,
+          error: (error as Error).message,
+        },
         'Logout failed',
       );
       throw new TRPCError({
@@ -216,10 +210,11 @@ export const authRouter = createTRPCRouter({
     .input(resendVerificationSchema)
     .mutation(async ({ input }) => {
       try {
-        const user = await authRepository.findUserByEmail(input.email);
+        const organization = await authRepository.findOrganizationByEmail(
+          input.email,
+        );
 
-        if (!user) {
-          // Don't reveal if user exists or not for security
+        if (!organization) {
           return {
             success: true,
             message:
@@ -227,10 +222,9 @@ export const authRouter = createTRPCRouter({
           };
         }
 
-        // Check if already verified
         const authProvider = await prisma.authProvider.findFirst({
           where: {
-            userId: user.id,
+            organizationId: organization.id,
             providerType: 'EMAIL_PASSWORD',
           },
         });
@@ -243,20 +237,19 @@ export const authRouter = createTRPCRouter({
         }
 
         const verificationToken =
-          await authRepository.createEmailVerificationToken(user.email);
+          await authRepository.createEmailVerificationToken(organization.email);
 
-        // Send verification email
         const emailResult = await sendVerificationEmail({
-          to: user.email,
-          firstName: user.firstName || 'User',
+          to: organization.email,
+          organizationName: organization.name,
           verificationToken: verificationToken.token,
         });
 
         if (!emailResult.success) {
           logger.error(
             {
-              userId: user.id,
-              email: user.email,
+              organizationId: organization.id,
+              email: organization.email,
               error: emailResult.error,
               operation: 'auth.resendVerification',
             },
@@ -266,8 +259,8 @@ export const authRouter = createTRPCRouter({
 
         logger.info(
           {
-            userId: user.id,
-            email: user.email,
+            organizationId: organization.id,
+            email: organization.email,
             emailSent: emailResult.success,
             operation: 'auth.resendVerification',
           },
@@ -277,7 +270,6 @@ export const authRouter = createTRPCRouter({
         return {
           success: true,
           message: 'Verification email sent. Please check your inbox.',
-          // In development, return the token for testing
           ...(isDevelopment && {
             verificationToken: verificationToken.token,
           }),
@@ -300,18 +292,17 @@ export const authRouter = createTRPCRouter({
 
   me: protectedProcedure.query(({ ctx }) => {
     return {
-      id: ctx.user.id,
-      email: ctx.user.email,
-      firstName: ctx.user.firstName,
-      lastName: ctx.user.lastName,
+      id: ctx.organization.id,
+      email: ctx.organization.email,
+      name: ctx.organization.name,
     };
   }),
 
   sessions: protectedProcedure.query(async ({ ctx }) => {
     try {
-      const sessions = await prisma.userSession.findMany({
+      const sessions = await prisma.organizationSession.findMany({
         where: {
-          userId: ctx.user.id,
+          organizationId: ctx.organization.id,
           revokedAt: null,
         },
         select: {
@@ -329,7 +320,7 @@ export const authRouter = createTRPCRouter({
       return sessions;
     } catch (error) {
       logger.error(
-        { userId: ctx.user.id, error: (error as Error).message },
+        { organizationId: ctx.organization.id, error: (error as Error).message },
         'Failed to fetch sessions',
       );
       throw new TRPCError({
@@ -343,11 +334,10 @@ export const authRouter = createTRPCRouter({
     .input(z.object({ sessionId: z.string() }))
     .mutation(async ({ input, ctx }) => {
       try {
-        // Verify the session belongs to the user
-        const session = await prisma.userSession.findFirst({
+        const session = await prisma.organizationSession.findFirst({
           where: {
             id: input.sessionId,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             revokedAt: null,
           },
         });
@@ -369,7 +359,7 @@ export const authRouter = createTRPCRouter({
 
         logger.error(
           {
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             sessionId: input.sessionId,
             error: (error as Error).message,
           },
@@ -416,14 +406,14 @@ export const authRouter = createTRPCRouter({
           input.email,
         );
 
-        // Only send email if it's a real token (not fake)
         if (token !== 'fake-token') {
-          // Get user's first name for personalized email
-          const user = await authRepository.findUserByEmail(input.email);
+          const organization = await authRepository.findOrganizationByEmail(
+            input.email,
+          );
 
           const emailResult = await sendPasswordResetEmail({
             to: input.email,
-            firstName: user?.firstName || undefined,
+            organizationName: organization?.name,
             resetToken: token,
           });
 

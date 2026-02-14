@@ -1,8 +1,7 @@
-export interface User {
+export interface Organization {
   id: string;
   email: string;
-  firstName: string | null;
-  lastName: string | null;
+  name: string;
   civilId?: string | null;
   createdAt?: Date;
   updatedAt?: Date;
@@ -10,7 +9,7 @@ export interface User {
 
 export interface AuthProvider {
   id: string;
-  userId: string;
+  organizationId: string;
   providerType: ProviderType;
   providerId: string;
   isVerified: boolean;
@@ -19,9 +18,9 @@ export interface AuthProvider {
   updatedAt: Date;
 }
 
-export interface UserSession {
+export interface OrganizationSession {
   id: string;
-  userId: string;
+  organizationId: string;
   token: string;
   expiresAt: Date;
   createdAt: Date;
@@ -45,19 +44,18 @@ enum ProviderType {
 }
 
 export interface AuthContextValue {
-  user: User | null;
-  session: UserSession | null;
+  organization: Organization | null;
+  session: OrganizationSession | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (
     email: string,
     password: string,
-    firstName?: string,
-    lastName?: string,
+    organizationName: string,
   ) => Promise<{
     success: boolean;
     message: string;
-    userId: string;
+    organizationId: string;
     verificationToken?: string;
   }>;
   logout: () => Promise<void>;
@@ -91,8 +89,7 @@ export interface LoginCredentials {
 export interface SignupCredentials {
   email: string;
   password: string;
-  firstName?: string;
-  lastName?: string;
+  organizationName: string;
 }
 
 interface AuthError {

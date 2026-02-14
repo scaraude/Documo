@@ -13,16 +13,16 @@ interface AuthGuardProps {
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-  const { user, isLoading } = useAuth();
+  const { organization, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // If not loading and no user, redirect to login
-    if (!isLoading && !user) {
+    // If not loading and no organization, redirect to login
+    if (!isLoading && !organization) {
       router.push(ROUTES.AUTH.LOGIN);
       toast.error('Veuillez vous connecter');
     }
-  }, [user, isLoading, router]);
+  }, [organization, isLoading, router]);
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -33,8 +33,8 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // If no user, don't render children (will redirect)
-  if (!user) {
+  // If no organization, don't render children (will redirect)
+  if (!organization) {
     return null;
   }
 

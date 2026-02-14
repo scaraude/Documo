@@ -19,6 +19,7 @@ export default defineConfig({
       '**/e2e/**',
       '**/repository/__tests__/**',
       '**/integration/__tests__/**',
+      '**/__tests__/integration/**',
     ],
     coverage: {
       provider: 'v8',

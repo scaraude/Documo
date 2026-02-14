@@ -16,17 +16,17 @@ import * as requestRepository from './../repository/requestRepository';
 export const requestsRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ userId: ctx.user.id }, 'Fetching all requests for user');
-      const result = await requestRepository.getRequestsForUser(ctx.user.id);
+      logger.info({ organizationId: ctx.organization.id }, 'Fetching all requests for user');
+      const result = await requestRepository.getRequestsForUser(ctx.organization.id);
       logger.info(
-        { userId: ctx.user.id, count: result.length },
+        { organizationId: ctx.organization.id, count: result.length },
         'User requests fetched successfully',
       );
       return result;
     } catch (error) {
       logger.error(
         {
-          userId: ctx.user.id,
+          organizationId: ctx.organization.id,
           error: error instanceof Error ? error.message : error,
         },
         'Error fetching requests for user',
@@ -40,24 +40,24 @@ export const requestsRouter = router({
     .query(async ({ input, ctx }) => {
       try {
         logger.info(
-          { requestId: input.id, userId: ctx.user.id },
+          { requestId: input.id, organizationId: ctx.organization.id },
           'Fetching request by ID for user',
         );
         const result = await requestRepository.getRequestByIdForUser(
           input.id,
-          ctx.user.id,
+          ctx.organization.id,
         );
 
         if (!result) {
           logger.warn(
-            { requestId: input.id, userId: ctx.user.id },
+            { requestId: input.id, organizationId: ctx.organization.id },
             'Request not found or user not authorized',
           );
           throw new Error('Request not found or access denied');
         }
 
         logger.info(
-          { requestId: input.id, userId: ctx.user.id },
+          { requestId: input.id, organizationId: ctx.organization.id },
           'Request fetch completed for user',
         );
         return result;
@@ -65,7 +65,7 @@ export const requestsRouter = router({
         logger.error(
           {
             requestId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error fetching request for user',
@@ -90,13 +90,13 @@ export const requestsRouter = router({
         // Create the request with ownership validation
         const documentRequest = await requestRepository.createRequestForUser(
           input,
-          ctx.user.id,
+          ctx.organization.id,
         );
 
         // Get folder information for the email (ownership already validated in createRequestForUser)
         const folder = await foldersRepository.getFolderByIdForUser(
           input.folderId,
-          ctx.user.id,
+          ctx.organization.id,
         );
         if (!folder) {
           throw new Error('Folder not found');
@@ -178,22 +178,22 @@ export const requestsRouter = router({
     .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { requestId: input.id, userId: ctx.user.id },
+          { requestId: input.id, organizationId: ctx.organization.id },
           'Deleting request for user',
         );
 
         // Use security-aware delete function
-        await requestRepository.deleteRequestForUser(input.id, ctx.user.id);
+        await requestRepository.deleteRequestForUser(input.id, ctx.organization.id);
 
         logger.info(
-          { requestId: input.id, userId: ctx.user.id },
+          { requestId: input.id, organizationId: ctx.organization.id },
           'Request deleted successfully for user',
         );
       } catch (error) {
         logger.error(
           {
             requestId: input.id,
-            userId: ctx.user.id,
+            organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
           'Error deleting request for user',
