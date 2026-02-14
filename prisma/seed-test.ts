@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { PrismaClient } from '../lib/prisma/generated/client';
 import { getPrismaClientOptions } from '../lib/prisma/clientOptions';
 import {
@@ -90,6 +91,7 @@ async function cleanTestData() {
   await prisma.documentRequest.deleteMany({});
   await prisma.folder.deleteMany({});
   await prisma.folderType.deleteMany({});
+  await prisma.documentType.deleteMany({});
   await prisma.passwordResetToken.deleteMany({});
   await prisma.emailVerificationToken.deleteMany({});
   await prisma.organizationSession.deleteMany({});

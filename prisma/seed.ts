@@ -13,6 +13,7 @@
  * - Documents with various states (uploaded, validated, etc.)
  */
 
+import 'dotenv/config';
 import * as crypto from 'crypto';
 import { faker } from '@faker-js/faker';
 import { addDays, addHours } from 'date-fns';
@@ -25,40 +26,62 @@ import {
 } from '../lib/prisma/generated/client';
 const prisma = new PrismaClient(getPrismaClientOptions());
 
-// Document type IDs from seed-document-types.ts
-const DOCUMENT_TYPE_IDS = [
-  'IDENTITY_PROOF',
-  'DRIVERS_LICENSE',
-  'BANK_STATEMENT',
-  'RESIDENCY_PROOF',
-  'TAX_RETURN',
-  'EMPLOYMENT_CONTRACT',
-  'SALARY_SLIP',
-  'INSURANCE_CERTIFICATE',
-  'OTHER',
+// Stable UUIDs for seeded document types
+const DOCUMENT_TYPE_IDS = {
+  IDENTITY_PROOF: 'e30329a4-dc0d-46d1-91ef-007d6e4e1cf9',
+  DRIVERS_LICENSE: 'f761a5d9-a30b-455e-ac05-04c13a089f6d',
+  BANK_STATEMENT: '7a36f121-80d9-4408-9e55-3160b77b8326',
+  RESIDENCY_PROOF: '0078acd6-835e-4432-a658-8b5b4845e742',
+  TAX_RETURN: 'b53294df-4360-44a8-a518-43e8a65911fc',
+  EMPLOYMENT_CONTRACT: 'b057e48f-2480-4235-841d-32ad928495fd',
+  SALARY_SLIP: '068e9a50-6259-4802-94c1-945eefc4a67a',
+  BIRTH_CERTIFICATE: '44e4f3ad-89aa-4120-a780-ff578b7ba691',
+  MARRIAGE_CERTIFICATE: '45165177-f04b-47bc-a582-c46c8000bc6b',
+  DIPLOMA: 'faeff0f5-e3d5-4463-b4c4-ba6088f4d8eb',
+  MEDICAL_CERTIFICATE: '026464ee-1052-48fa-9b66-ec30f73907d8',
+  LEASE_AGREEMENT: '6110c7de-e5ac-4624-a2da-c3f8750259b2',
+  INSURANCE_CERTIFICATE: 'ccd92a08-7c58-476c-8081-5b8c72572a9c',
+  OTHER: '3bd3e5b3-9c07-4479-b355-1d312a9529f7',
+} as const;
+
+const FOLDER_TEMPLATE_DOCUMENT_TYPE_IDS = [
+  DOCUMENT_TYPE_IDS.IDENTITY_PROOF,
+  DOCUMENT_TYPE_IDS.DRIVERS_LICENSE,
+  DOCUMENT_TYPE_IDS.BANK_STATEMENT,
+  DOCUMENT_TYPE_IDS.RESIDENCY_PROOF,
+  DOCUMENT_TYPE_IDS.TAX_RETURN,
+  DOCUMENT_TYPE_IDS.EMPLOYMENT_CONTRACT,
+  DOCUMENT_TYPE_IDS.SALARY_SLIP,
+  DOCUMENT_TYPE_IDS.INSURANCE_CERTIFICATE,
+  DOCUMENT_TYPE_IDS.OTHER,
 ];
 
 const DEFAULT_DOCUMENT_TYPES = [
-  { id: 'IDENTITY_PROOF', label: "Pièce d'identité" },
-  { id: 'DRIVERS_LICENSE', label: 'Permis de conduire' },
-  { id: 'BANK_STATEMENT', label: 'Relevé bancaire' },
-  { id: 'RESIDENCY_PROOF', label: 'Justificatif de domicile' },
-  { id: 'TAX_RETURN', label: "Déclaration d'impôts" },
-  { id: 'EMPLOYMENT_CONTRACT', label: 'Contrat de travail' },
-  { id: 'SALARY_SLIP', label: 'Bulletin de salaire' },
-  { id: 'BIRTH_CERTIFICATE', label: 'Acte de naissance' },
-  { id: 'MARRIAGE_CERTIFICATE', label: 'Acte de mariage' },
-  { id: 'DIPLOMA', label: 'Diplôme' },
-  { id: 'MEDICAL_CERTIFICATE', label: 'Certificat médical' },
-  { id: 'LEASE_AGREEMENT', label: 'Contrat de location' },
-  { id: 'INSURANCE_CERTIFICATE', label: "Attestation d'assurance" },
-  { id: 'OTHER', label: 'Autre document' },
+  { id: DOCUMENT_TYPE_IDS.IDENTITY_PROOF, label: "Pièce d'identité" },
+  { id: DOCUMENT_TYPE_IDS.DRIVERS_LICENSE, label: 'Permis de conduire' },
+  { id: DOCUMENT_TYPE_IDS.BANK_STATEMENT, label: 'Relevé bancaire' },
+  { id: DOCUMENT_TYPE_IDS.RESIDENCY_PROOF, label: 'Justificatif de domicile' },
+  { id: DOCUMENT_TYPE_IDS.TAX_RETURN, label: "Déclaration d'impôts" },
+  { id: DOCUMENT_TYPE_IDS.EMPLOYMENT_CONTRACT, label: 'Contrat de travail' },
+  { id: DOCUMENT_TYPE_IDS.SALARY_SLIP, label: 'Bulletin de salaire' },
+  { id: DOCUMENT_TYPE_IDS.BIRTH_CERTIFICATE, label: 'Acte de naissance' },
+  { id: DOCUMENT_TYPE_IDS.MARRIAGE_CERTIFICATE, label: 'Acte de mariage' },
+  { id: DOCUMENT_TYPE_IDS.DIPLOMA, label: 'Diplôme' },
+  { id: DOCUMENT_TYPE_IDS.MEDICAL_CERTIFICATE, label: 'Certificat médical' },
+  { id: DOCUMENT_TYPE_IDS.LEASE_AGREEMENT, label: 'Contrat de location' },
+  {
+    id: DOCUMENT_TYPE_IDS.INSURANCE_CERTIFICATE,
+    label: "Attestation d'assurance",
+  },
+  { id: DOCUMENT_TYPE_IDS.OTHER, label: 'Autre document' },
 ] as const;
 
 // Helper function to get random subset of document types
 function getRandomDocumentTypes(min = 1, max = 4): string[] {
   const count = faker.number.int({ min, max });
-  const shuffled = [...DOCUMENT_TYPE_IDS].sort(() => 0.5 - Math.random());
+  const shuffled = [...FOLDER_TEMPLATE_DOCUMENT_TYPE_IDS].sort(
+    () => 0.5 - Math.random(),
+  );
   return shuffled.slice(0, count);
 }
 
@@ -709,6 +732,7 @@ async function seedDatabase(
   await prisma.documentRequest.deleteMany({});
   await prisma.folder.deleteMany({});
   await prisma.folderType.deleteMany({});
+  await prisma.documentType.deleteMany({});
   await prisma.passwordResetToken.deleteMany({});
   await prisma.emailVerificationToken.deleteMany({});
   await prisma.organizationSession.deleteMany({});
