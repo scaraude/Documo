@@ -5,83 +5,113 @@ import {
   Clock,
   FileText,
   FolderOpen,
-  Lock,
   Mail,
+  RefreshCw,
   Shield,
-  Star,
-  Users,
-  Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen overflow-hidden">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8 pt-20 pb-32">
-          <div className="mx-auto max-w-5xl text-center">
-            {/* Main title */}
-            <h1 className="text-6xl font-bold tracking-tight text-gray-900 sm:text-8xl mb-8 animate-fadeInUp delay-200 flex items-center justify-center gap-4">
+    <div className="min-h-screen bg-white">
+      {/* Header */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <Link href="/" className="flex items-center gap-3">
               <Image
                 src={APP_ICON_PATH}
-                alt="Documo Logo"
-                width={100}
-                height={100}
-                className="rounded-lg mr-4"
+                alt="Documo"
+                width={32}
+                height={32}
+                className="rounded-md"
               />
-              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+              <span className="text-xl font-semibold text-[var(--documo-blue)]">
                 Documo
               </span>
-            </h1>
-
-            {/* Slogan */}
-            <p className="text-3xl sm:text-4xl font-medium text-gray-700 mb-8 animate-fadeInUp delay-500">
-              l&apos;échange de document à l&apos;ère moderne
-            </p>
-
-            {/* Description */}
-            <p className="mt-8 text-xl leading-relaxed text-gray-600 max-w-4xl mx-auto mb-12 animate-fadeInUp delay-700">
-              La plateforme sécurisée qui révolutionne la gestion documentaire
-              entre organisations et citoyens.
-              <span className="font-semibold text-gray-800">
-                {' '}
-                Fini les envois d&apos;emails non sécurisés
-              </span>{' '}
-              et les processus complexes.
-            </p>
-
-            {/* CTA Buttons */}
-            <div className="flex items-center justify-center gap-6 flex-wrap mb-16 animate-fadeInUp delay-1000">
+            </Link>
+            <nav className="flex items-center gap-6">
+              <a
+                href="#fonctionnalites"
+                className="text-sm text-[var(--documo-text-secondary)] hover:text-[var(--documo-black)] transition-colors"
+              >
+                Fonctionnalités
+              </a>
+              <a
+                href="#comment-ca-marche"
+                className="text-sm text-[var(--documo-text-secondary)] hover:text-[var(--documo-black)] transition-colors"
+              >
+                Comment ça marche
+              </a>
+              <Link
+                href={ROUTES.AUTH.LOGIN}
+                className="text-sm font-medium text-[var(--documo-blue)] hover:text-[var(--documo-blue-deep)] transition-colors"
+              >
+                Se connecter
+              </Link>
               <Link
                 href={ROUTES.AUTH.SIGNUP}
-                className="inline-flex items-center justify-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-md"
+                className="inline-flex items-center justify-center bg-[var(--documo-blue)] hover:bg-[var(--documo-blue-deep)] text-white px-4 py-2 text-sm font-medium rounded-md transition-colors"
+              >
+                Commencer
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="pt-32 pb-24 bg-white">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <Image
+                src={APP_ICON_PATH}
+                alt="Documo"
+                width={64}
+                height={64}
+                className="rounded-lg"
+              />
+              <h1 className="text-5xl font-bold text-[var(--documo-blue)]">
+                Documo
+              </h1>
+            </div>
+
+            <p className="text-2xl font-medium text-[var(--documo-text-secondary)] mb-6">
+              L&apos;échange de documents à l&apos;ère moderne
+            </p>
+
+            <p className="text-lg text-[var(--documo-text-secondary)] mb-10 max-w-2xl mx-auto leading-relaxed">
+              Documo automatise la collecte : demande, relance, centralisation.
+              Tout se fait par email, sans que tes clients aient besoin
+              d&apos;installer quoi que ce soit.
+            </p>
+
+            <div className="flex items-center justify-center gap-4 mb-12">
+              <Link
+                href={ROUTES.AUTH.SIGNUP}
+                className="inline-flex items-center justify-center bg-[var(--documo-blue)] hover:bg-[var(--documo-blue-deep)] text-white px-6 py-3 text-base font-medium rounded-md transition-colors"
               >
                 Commencer gratuitement
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
               <a
-                href="#features"
-                className="inline-flex items-center justify-center px-10 py-4 text-lg border-2 border-gray-300 hover:border-gray-400 hover:shadow-lg transform hover:scale-105 transition-all duration-200 rounded-md text-gray-700 hover:text-gray-900"
+                href="#fonctionnalites"
+                className="inline-flex items-center justify-center px-6 py-3 text-base font-medium border border-gray-200 hover:border-gray-300 rounded-md text-[var(--documo-text-secondary)] hover:text-[var(--documo-black)] transition-colors"
               >
-                Découvrir les fonctionnalités
+                En savoir plus
               </a>
             </div>
 
-            {/* Trust indicators */}
-            <div className="flex items-center justify-center gap-12 text-sm text-gray-500 flex-wrap animate-fadeInUp delay-1000">
-              <div className="flex items-center group">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-2 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Gratuit pour débuter</span>
+            <div className="flex items-center justify-center gap-8 text-sm text-[var(--documo-text-tertiary)]">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="h-4 w-4 text-[var(--documo-success)]" />
+                <span>Gratuit pour débuter</span>
               </div>
-              <div className="flex items-center group">
-                <Shield className="h-5 w-5 text-green-500 mr-2 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Sécurisé et conforme RGPD</span>
-              </div>
-              <div className="flex items-center group">
-                <Zap className="h-5 w-5 text-green-500 mr-2 group-hover:scale-110 transition-transform" />
-                <span className="font-medium">Déploiement instantané</span>
+              <div className="flex items-center gap-2">
+                <Shield className="h-4 w-4 text-[var(--documo-success)]" />
+                <span>Conforme RGPD</span>
               </div>
             </div>
           </div>
@@ -89,313 +119,259 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section
-        id="features"
-        className="py-24 bg-white relative overflow-hidden"
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-gray-50/50 to-white" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-20">
-            <h2 className="text-5xl font-bold tracking-tight text-gray-900 mb-6">
-              Pourquoi choisir{' '}
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Documo
-              </span>{' '}
-              ?
+      <section id="fonctionnalites" className="py-24 bg-[var(--documo-bg-light)]">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold text-[var(--documo-black)] mb-4">
+              Pourquoi <span className="text-[var(--documo-blue)]">Documo</span> ?
             </h2>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Une solution complète qui simplifie la gestion documentaire tout
-              en garantissant la sécurité maximale
+            <p className="text-lg text-[var(--documo-text-secondary)]">
+              Moins de relances, moins de dossiers incomplets, plus de temps
+              pour ce qui compte.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Feature cards with enhanced design */}
-            <div className="group relative p-8 bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-blue-100">
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-400/10 to-blue-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <Shield className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-blue-900 transition-colors">
-                  Sécurité maximale
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Chiffrement end-to-end, authentification sécurisée et
-                  conformité RGPD pour protéger vos données sensibles.
-                </p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+              <div className="h-12 w-12 rounded-lg bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <Mail className="h-6 w-6 text-[var(--documo-blue)]" />
               </div>
+              <h3 className="text-lg font-semibold text-[var(--documo-black)] mb-3">
+                Workflow par email
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Tes clients reçoivent un email avec un lien sécurisé. Ils
+                déposent leurs documents sans créer de compte. Simple.
+              </p>
             </div>
 
-            <div className="group relative p-8 bg-gradient-to-br from-green-50 to-green-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-green-100">
-              <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 to-green-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <Mail className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-green-900 transition-colors">
-                  Demandes par email
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Envoyez des demandes de documents personnalisées par email
-                  avec des liens sécurisés pour le téléchargement.
-                </p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+              <div className="h-12 w-12 rounded-lg bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <RefreshCw className="h-6 w-6 text-[var(--documo-blue)]" />
               </div>
+              <h3 className="text-lg font-semibold text-[var(--documo-black)] mb-3">
+                Relances automatiques
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Plus besoin de courir après les documents manquants. Les
+                relances partent toutes seules jusqu&apos;à réception.
+              </p>
             </div>
 
-            <div className="group relative p-8 bg-gradient-to-br from-purple-50 to-purple-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-purple-100">
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-400/10 to-purple-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <FolderOpen className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-purple-900 transition-colors">
-                  Organisation intelligente
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Créez des types de dossiers personnalisés et organisez vos
-                  documents selon vos processus métier.
-                </p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+              <div className="h-12 w-12 rounded-lg bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <FolderOpen className="h-6 w-6 text-[var(--documo-blue)]" />
               </div>
+              <h3 className="text-lg font-semibold text-[var(--documo-black)] mb-3">
+                Centralisation sécurisée
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Tout est au même endroit, pour tout le monde. Fini les pièces
+                jointes perdues dans les emails.
+              </p>
             </div>
 
-            <div className="group relative p-8 bg-gradient-to-br from-orange-50 to-orange-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-orange-100">
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/10 to-orange-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <Clock className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-orange-900 transition-colors">
-                  Gain de temps
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Automatisez vos processus de collecte de documents et réduisez
-                  le temps de traitement de 80%.
-                </p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+              <div className="h-12 w-12 rounded-lg bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <Clock className="h-6 w-6 text-[var(--documo-blue)]" />
               </div>
+              <h3 className="text-lg font-semibold text-[var(--documo-black)] mb-3">
+                Dossiers complets
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Définis les documents requis une fois. Documo vérifie que chaque
+                dossier est complet avant de te notifier.
+              </p>
             </div>
 
-            <div className="group relative p-8 bg-gradient-to-br from-teal-50 to-teal-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-teal-100">
-              <div className="absolute inset-0 bg-gradient-to-br from-teal-400/10 to-teal-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-teal-500 to-teal-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <Users className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-teal-900 transition-colors">
-                  Collaboration fluide
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Facilitez les échanges entre équipes et avec vos usagers grâce
-                  à une interface intuitive.
-                </p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+              <div className="h-12 w-12 rounded-lg bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <Shield className="h-6 w-6 text-[var(--documo-blue)]" />
               </div>
+              <h3 className="text-lg font-semibold text-[var(--documo-black)] mb-3">
+                Sécurité maximale
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Chiffrement, authentification sécurisée, conformité RGPD. Les
+                documents sensibles sont protégés.
+              </p>
             </div>
 
-            <div className="group relative p-8 bg-gradient-to-br from-rose-50 to-rose-100 rounded-3xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 border border-rose-100">
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-400/10 to-rose-600/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              <div className="relative">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-200">
-                  <Zap className="h-7 w-7 text-white" />
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-rose-900 transition-colors">
-                  Déploiement rapide
-                </h3>
-                <p className="text-gray-600 leading-relaxed">
-                  Mettez en place votre solution en quelques minutes. Aucune
-                  infrastructure complexe requise.
-                </p>
+            <div className="bg-white p-8 rounded-lg shadow-sm border border-gray-100">
+              <div className="h-12 w-12 rounded-lg bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <FileText className="h-6 w-6 text-[var(--documo-blue)]" />
               </div>
+              <h3 className="text-lg font-semibold text-[var(--documo-black)] mb-3">
+                Prise en main rapide
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Crée un dossier, envoie la demande, attends la réponse.
+                C&apos;est tout. Pas de formation nécessaire.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* How it Works Section */}
-      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 right-0 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
-          <div className="absolute bottom-1/4 left-0 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20" />
-        </div>
-
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-20">
-            <h2 className="text-5xl font-bold tracking-tight text-gray-900 mb-6">
+      <section id="comment-ca-marche" className="py-24 bg-white">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold text-[var(--documo-black)] mb-4">
               Comment ça marche ?
             </h2>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Un processus simple en 3 étapes pour révolutionner votre gestion
-              documentaire
+            <p className="text-lg text-[var(--documo-text-secondary)]">
+              Trois étapes pour ne plus jamais relancer à la main.
             </p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="relative text-center group">
-              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <FolderOpen className="h-12 w-12 text-white" />
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16 rounded-full bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <span className="text-2xl font-bold text-[var(--documo-blue)]">
+                  1
+                </span>
               </div>
-              {/* Connection line */}
-              <div className="absolute top-12 left-full w-12 h-0.5 bg-gradient-to-r from-blue-300 to-purple-300 hidden lg:block transform translate-x-6" />
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  <span className="bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                    1.
-                  </span>{' '}
-                  Configurez vos types de dossiers
-                </h3>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  Définissez quels documents sont nécessaires pour chaque
-                  processus de votre organisation.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold text-[var(--documo-black)] mb-4">
+                Crée un type de dossier
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Définis les documents nécessaires pour chaque type de demande.
+                Par exemple : dossier locatif, dossier d&apos;achat, demande de
+                vente.
+              </p>
             </div>
 
-            <div className="relative text-center group">
-              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <Mail className="h-12 w-12 text-white" />
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16 rounded-full bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <span className="text-2xl font-bold text-[var(--documo-blue)]">
+                  2
+                </span>
               </div>
-              {/* Connection line */}
-              <div className="absolute top-12 left-full w-12 h-0.5 bg-gradient-to-r from-green-300 to-purple-300 hidden lg:block transform translate-x-6" />
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  <span className="bg-gradient-to-r from-green-600 to-green-700 bg-clip-text text-transparent">
-                    2.
-                  </span>{' '}
-                  Envoyez des demandes sécurisées
-                </h3>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  Créez un dossier et envoyez des emails personnalisés avec des
-                  liens de téléchargement sécurisés.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold text-[var(--documo-black)] mb-4">
+                Envoie la demande
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Ton client reçoit un email avec un lien sécurisé. Il dépose ses
+                documents depuis n&apos;importe quel appareil. Pas de compte à
+                créer.
+              </p>
             </div>
 
-            <div className="relative text-center group">
-              <div className="mx-auto h-24 w-24 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mb-8 shadow-xl group-hover:shadow-2xl transform group-hover:scale-110 transition-all duration-300">
-                <FileText className="h-12 w-12 text-white" />
+            <div className="text-center">
+              <div className="mx-auto h-16 w-16 rounded-full bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <span className="text-2xl font-bold text-[var(--documo-blue)]">
+                  3
+                </span>
               </div>
-              <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">
-                  <span className="bg-gradient-to-r from-purple-600 to-purple-700 bg-clip-text text-transparent">
-                    3.
-                  </span>{' '}
-                  Recevez et organisez
-                </h3>
-                <p className="text-lg text-gray-600 leading-relaxed">
-                  Les documents arrivent automatiquement organisés et sécurisés
-                  dans votre tableau de bord.
-                </p>
-              </div>
+              <h3 className="text-xl font-semibold text-[var(--documo-black)] mb-4">
+                C&apos;est prêt
+              </h3>
+              <p className="text-[var(--documo-text-secondary)] leading-relaxed">
+                Les documents arrivent organisés dans ton tableau de bord. Tu es
+                notifié quand le dossier est complet. Les relances sont
+                automatiques.
+              </p>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 relative overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/4 w-72 h-72 bg-white rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse" />
-          <div className="absolute bottom-0 right-1/4 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-10 animate-pulse delay-1000" />
-        </div>
-
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-4xl text-center">
-            <h2 className="text-5xl font-bold text-white mb-8">
-              Prêt à moderniser votre gestion documentaire ?
+      <section className="py-24 bg-[var(--documo-blue)]">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold text-white mb-6">
+              Prêt à gagner du temps ?
             </h2>
-            <p className="text-xl text-blue-100 mb-16 max-w-3xl mx-auto leading-relaxed">
-              Rejoignez les organisations qui ont choisi Documo pour simplifier
-              leurs processus et sécuriser leurs échanges.
+            <p className="text-lg text-blue-100 mb-10">
+              Rejoins les professionnels qui ont automatisé leur collecte de
+              documents.
             </p>
 
-            <div className="flex items-center justify-center gap-8 flex-wrap mb-20">
-              <Link
-                href={ROUTES.AUTH.SIGNUP}
-                className="inline-flex items-center justify-center bg-white text-blue-600 hover:bg-gray-50 px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-md"
-              >
-                Commencer maintenant
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
+            <Link
+              href={ROUTES.AUTH.SIGNUP}
+              className="inline-flex items-center justify-center bg-white hover:bg-gray-50 text-[var(--documo-blue)] px-8 py-4 text-base font-semibold rounded-md transition-colors"
+            >
+              Commencer gratuitement
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
 
-              <Link
-                href={ROUTES.AUTH.LOGIN}
-                className="inline-flex items-center justify-center border-2 border-white text-white hover:bg-white hover:text-blue-600 px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-200 rounded-md"
-              >
-                Se connecter
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="group">
-                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
-                  100%
-                </div>
-                <div className="text-blue-100 font-medium">Sécurisé</div>
+            <div className="grid grid-cols-3 gap-8 mt-16 max-w-lg mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white mb-1">100%</div>
+                <div className="text-sm text-blue-100">Sécurisé</div>
               </div>
-              <div className="group">
-                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
-                  -80%
-                </div>
-                <div className="text-blue-100 font-medium">
-                  Temps de traitement
-                </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white mb-1">0</div>
+                <div className="text-sm text-blue-100">Relance manuelle</div>
               </div>
-              <div className="group">
-                <div className="text-4xl font-bold text-white mb-2 group-hover:scale-110 transition-transform">
-                  0€
-                </div>
-                <div className="text-blue-100 font-medium">Pour commencer</div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-white mb-1">0€</div>
+                <div className="text-sm text-blue-100">Pour commencer</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="py-20 bg-white border-t border-gray-200 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-50/50 via-white to-gray-50/50" />
-        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-lg font-medium text-gray-500 mb-12">
-              Ils nous font confiance pour sécuriser leurs échanges
-              documentaires
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
-              <div className="flex flex-col items-center group">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
-                  <Shield className="h-8 w-8 text-white" />
-                </div>
-                <span className="font-semibold text-gray-700 group-hover:text-blue-600 transition-colors">
-                  RGPD Compliant
-                </span>
+      {/* Contact Section */}
+      <section className="py-20 bg-[var(--documo-bg-light)]">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="mx-auto h-14 w-14 rounded-full bg-[var(--documo-blue-light)] flex items-center justify-center mb-6">
+                <Mail className="h-7 w-7 text-[var(--documo-blue)]" />
               </div>
-              <div className="flex flex-col items-center group">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
-                  <Lock className="h-8 w-8 text-white" />
-                </div>
-                <span className="font-semibold text-gray-700 group-hover:text-green-600 transition-colors">
-                  Chiffrement SSL
-                </span>
-              </div>
-              <div className="flex flex-col items-center group">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
-                  <CheckCircle className="h-8 w-8 text-white" />
-                </div>
-                <span className="font-semibold text-gray-700 group-hover:text-purple-600 transition-colors">
-                  ISO 27001
-                </span>
-              </div>
-              <div className="flex flex-col items-center group">
-                <div className="h-16 w-16 rounded-2xl bg-gradient-to-r from-orange-500 to-orange-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-200 shadow-lg">
-                  <Star className="h-8 w-8 text-white" />
-                </div>
-                <span className="font-semibold text-gray-700 group-hover:text-orange-600 transition-colors">
-                  99.9% Uptime
-                </span>
-              </div>
+              <h2 className="text-2xl font-bold text-[var(--documo-black)] mb-3">
+                Une question ?
+              </h2>
+              <p className="text-[var(--documo-text-secondary)] mb-8 max-w-md mx-auto">
+                Notre équipe est disponible pour répondre à toutes tes questions
+                et t&apos;accompagner dans ta prise en main.
+              </p>
+              <a
+                href="mailto:support@documo.fr"
+                className="inline-flex items-center justify-center gap-2 bg-[var(--documo-blue)] hover:bg-[var(--documo-blue-deep)] text-white px-6 py-3 text-base font-medium rounded-md transition-colors"
+              >
+                <Mail className="h-5 w-5" />
+                Nous contacter
+              </a>
+              <p className="mt-4 text-sm text-[var(--documo-text-tertiary)]">
+                support@documo.fr
+              </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer className="py-8 bg-white border-t border-gray-100">
+        <div className="mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="flex items-center justify-center">
+            <div className="flex items-center gap-3">
+              <Image
+                src={APP_ICON_PATH}
+                alt="Documo"
+                width={24}
+                height={24}
+                className="rounded"
+              />
+              <span className="text-sm text-[var(--documo-text-tertiary)]">
+                © 2026 Documo. Tous droits réservés.
+              </span>
+            </div>
+            {/* <div className="flex items-end gap-6">
+              <Link
+                href="/gcu"
+                className="text-sm text-[var(--documo-text-tertiary)] hover:text-[var(--documo-text-secondary)] transition-colors"
+              >
+                CGU
+              </Link>
+            </div> */}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
