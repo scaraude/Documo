@@ -359,7 +359,6 @@ export class AuthRepository {
         await this.prisma.emailVerificationToken.findFirst({
           where: {
             token,
-            usedAt: null,
           },
         });
 
@@ -381,6 +380,35 @@ export class AuthRepository {
             operation: 'verification.expired',
           },
           'Token expired',
+        );
+        return false;
+      }
+
+      if (verificationToken.usedAt) {
+        const authProvider = await this.prisma.authProvider.findFirst({
+          where: {
+            providerType: ProviderType.EMAIL_PASSWORD,
+            providerId: verificationToken.email,
+          },
+        });
+
+        if (authProvider?.isVerified) {
+          logger.info(
+            {
+              email: verificationToken.email,
+              operation: 'verification.already_verified',
+            },
+            'Email already verified, returning success',
+          );
+          return true;
+        }
+
+        logger.warn(
+          {
+            email: verificationToken.email,
+            operation: 'verification.used_token_unverified',
+          },
+          'Used verification token found for unverified email',
         );
         return false;
       }

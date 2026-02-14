@@ -1,4 +1,5 @@
 import { isDevelopment, isProduction } from '@/lib/config/env';
+import { getPrismaClientOptions } from './clientOptions';
 import { PrismaClient } from './generated/client';
 
 // Exporter explicitement le namespace Prisma
@@ -13,6 +14,7 @@ const globalForPrisma = global as unknown as { prisma: PrismaClient };
 export const prisma =
   globalForPrisma.prisma ||
   new PrismaClient({
+    ...getPrismaClientOptions(),
     log: isDevelopment ? ['error', 'warn'] : ['error'],
   });
 

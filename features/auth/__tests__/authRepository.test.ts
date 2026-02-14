@@ -173,4 +173,54 @@ describe('AuthRepository', () => {
       authRepository.createPasswordResetToken('test@example.com'),
     ).rejects.toThrow('Too many password reset attempts');
   });
+
+  it('returns success for already-used verification token if email is already verified', async () => {
+    const usedAt = new Date();
+
+    mockPrisma.emailVerificationToken.findFirst.mockResolvedValue({
+      id: 'verification-token-id',
+      email: 'verified@example.com',
+      token: 'used-token',
+      expiresAt: new Date(Date.now() + 60_000),
+      createdAt: new Date(),
+      usedAt,
+    });
+
+    mockPrisma.authProvider.findFirst.mockResolvedValue({
+      id: 'provider-id',
+      organizationId: 'org-id',
+      providerType: 'EMAIL_PASSWORD',
+      providerId: 'verified@example.com',
+      providerData: null,
+      isVerified: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      passwordHash: '$2b$12$hashed...',
+      emailVerifiedAt: new Date(),
+    });
+
+    const result = await authRepository.verifyEmail('used-token');
+
+    expect(result).toBe(true);
+    expect(mockPrisma.emailVerificationToken.update).not.toHaveBeenCalled();
+    expect(mockPrisma.authProvider.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('returns false for expired verification token even if it was already used', async () => {
+    mockPrisma.emailVerificationToken.findFirst.mockResolvedValue({
+      id: 'verification-token-id',
+      email: 'verified@example.com',
+      token: 'expired-used-token',
+      expiresAt: new Date(Date.now() - 60_000),
+      createdAt: new Date(),
+      usedAt: new Date(Date.now() - 120_000),
+    });
+
+    const result = await authRepository.verifyEmail('expired-used-token');
+
+    expect(result).toBe(false);
+    expect(mockPrisma.authProvider.findFirst).not.toHaveBeenCalled();
+    expect(mockPrisma.emailVerificationToken.update).not.toHaveBeenCalled();
+    expect(mockPrisma.authProvider.updateMany).not.toHaveBeenCalled();
+  });
 });

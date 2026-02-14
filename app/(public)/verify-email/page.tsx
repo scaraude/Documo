@@ -15,6 +15,9 @@ function VerifyEmailContent() {
     'loading',
   );
   const [message, setMessage] = useState('');
+  const [redirectTarget, setRedirectTarget] = useState<'login' | 'app'>(
+    'login',
+  );
   const [email, setEmail] = useState('');
   const [hasVerified, setHasVerified] = useState(false);
   const router = useRouter();
@@ -54,16 +57,20 @@ function VerifyEmailContent() {
     const verify = async () => {
       try {
         setHasVerified(true); // Prevent multiple calls
-        await verifyEmail(token);
+        const result = await verifyEmail(token);
+        clearSession();
         setStatus('success');
-        setMessage(
-          'Email vérifié avec succès. Vous pouvez maintenant vous connecter.',
-        );
+        setMessage(result.message);
 
-        // Redirect to login after 3 seconds
+        const shouldAutoLogin = result.autoLogin;
+        setRedirectTarget(shouldAutoLogin ? 'app' : 'login');
+
+        // Redirect to app when auto-login works, otherwise fallback to login
         setTimeout(() => {
-          router.push(ROUTES.AUTH.LOGIN);
-        }, 3000);
+          router.push(
+            shouldAutoLogin ? ROUTES.FOLDERS.HOME : ROUTES.AUTH.LOGIN,
+          );
+        }, shouldAutoLogin ? 1500 : 3000);
       } catch (error) {
         setStatus('error');
         setMessage(
@@ -231,7 +238,9 @@ function VerifyEmailContent() {
               <div className="text-green-600 text-6xl mb-4">✓</div>
               <p className="text-green-700 mb-4">{message}</p>
               <p className="text-gray-600">
-                Redirection vers la page de connexion...
+                {redirectTarget === 'app'
+                  ? "Redirection vers l'application..."
+                  : 'Redirection vers la page de connexion...'}
               </p>
             </div>
           )}

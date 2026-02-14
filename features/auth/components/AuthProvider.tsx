@@ -123,6 +123,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     async (token: string) => {
       try {
         const result = await verifyEmailMutation.mutateAsync({ token });
+        if (result.success && result.organization) {
+          setOrganization(result.organization);
+        }
         logger.info(
           { operation: 'auth.verifyEmail.success' },
           'Email verified successfully',

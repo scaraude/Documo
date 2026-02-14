@@ -172,8 +172,13 @@ export const authRouter = createTRPCRouter({
 
   verifyEmail: publicProcedure
     .input(verifyEmailSchema)
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       try {
+        const verificationToken = await prisma.emailVerificationToken.findFirst({
+          where: { token: input.token },
+          select: { email: true, usedAt: true },
+        });
+
         const success = await authRepository.verifyEmail(input.token);
 
         if (!success) {
@@ -183,9 +188,43 @@ export const authRouter = createTRPCRouter({
           });
         }
 
+        if (verificationToken?.email && !verificationToken.usedAt) {
+          const organization = await authRepository.findOrganizationByEmail(
+            verificationToken.email,
+          );
+
+          if (organization) {
+            const session = await authRepository.createSession(
+              organization.id,
+              ctx.req?.headers.get('user-agent') || undefined,
+              ctx.req?.headers.get('x-forwarded-for') ||
+                ctx.req?.headers.get('x-real-ip') ||
+                undefined,
+            );
+
+            if (ctx.resHeaders) {
+              const cookieValue = `session=${session.token}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; ${isProduction ? 'Secure; ' : ''}SameSite=lax`;
+              ctx.resHeaders.set('Set-Cookie', cookieValue);
+            }
+
+            return {
+              success: true,
+              message:
+                'Email verified successfully. You are now logged in.',
+              autoLogin: true,
+              organization: {
+                id: organization.id,
+                email: organization.email,
+                name: organization.name,
+              },
+            };
+          }
+        }
+
         return {
           success: true,
           message: 'Email verified successfully. You can now log in.',
+          autoLogin: false,
         };
       } catch (error) {
         if (error instanceof TRPCError) {

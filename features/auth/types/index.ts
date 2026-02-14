@@ -62,6 +62,8 @@ export interface AuthContextValue {
   verifyEmail: (token: string) => Promise<{
     success: boolean;
     message: string;
+    autoLogin: boolean;
+    organization?: Organization;
   }>;
   resendVerification: (email: string) => Promise<{
     success: boolean;

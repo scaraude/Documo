@@ -17,12 +17,13 @@ import * as crypto from 'crypto';
 import { faker } from '@faker-js/faker';
 import { addDays, addHours } from 'date-fns';
 import { hashPassword } from '../features/auth/utils/password';
+import { getPrismaClientOptions } from '../lib/prisma/clientOptions';
 import {
   type DocumentType,
   PrismaClient,
   ProviderType,
 } from '../lib/prisma/generated/client';
-const prisma = new PrismaClient();
+const prisma = new PrismaClient(getPrismaClientOptions());
 
 // Document type IDs from seed-document-types.ts
 const DOCUMENT_TYPE_IDS = [

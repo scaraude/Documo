@@ -1,4 +1,5 @@
 import { PrismaClient } from '../lib/prisma/generated/client';
+import { getPrismaClientOptions } from '../lib/prisma/clientOptions';
 import {
   TEST_USERS,
   createRandomDocument,
@@ -13,7 +14,7 @@ import {
   createTestUsers,
 } from './seed';
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient(getPrismaClientOptions());
 
 // Lightweight test seeding function
 export async function seedTestData() {
