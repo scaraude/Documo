@@ -1,7 +1,7 @@
 'use client';
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
-import { Badge, Button } from '@/shared/components';
+import { Button } from '@/shared/components';
 import type {
   ComputedRequestStatus,
   DocumentRequest,
@@ -10,15 +10,11 @@ import type {
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
-  Calendar,
   ChevronDown,
   ChevronRight,
-  Clock,
-  Eye,
+  ExternalLink,
   FileText,
   FolderOpen,
-  Hash,
-  User,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
@@ -37,18 +33,18 @@ export const RequestAccordion = ({
   const { getLabelById } = useDocumentTypes();
   const status = getRequestStatus(request);
 
-  const getStatusColor = (status: ComputedRequestStatus) => {
+  const getStatusStyle = (status: ComputedRequestStatus) => {
     switch (status) {
       case 'PENDING':
-        return 'bg-yellow-50 text-yellow-600 border-yellow-200';
+        return 'bg-[var(--documo-warning)]/10 text-[var(--documo-warning)]';
       case 'ACCEPTED':
-        return 'bg-green-50 text-green-600 border-green-200';
+        return 'bg-[var(--documo-success)]/10 text-[var(--documo-success)]';
       case 'REJECTED':
-        return 'bg-red-50 text-red-600 border-red-200';
+        return 'bg-[var(--documo-error)]/10 text-[var(--documo-error)]';
       case 'COMPLETED':
-        return 'bg-blue-50 text-blue-600 border-blue-200';
+        return 'bg-[var(--documo-blue-light)] text-[var(--documo-blue)]';
       default:
-        return 'bg-gray-50 text-gray-600 border-gray-200';
+        return 'bg-[var(--documo-bg-light)] text-[var(--documo-text-secondary)]';
     }
   };
 
@@ -71,165 +67,134 @@ export const RequestAccordion = ({
     return formatDistanceToNow(new Date(date), { addSuffix: true, locale: fr });
   };
 
-  const formatDateTime = (date: Date) => {
+  const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('fr-FR', {
       day: 'numeric',
-      month: 'long',
+      month: 'short',
       year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
   return (
-    <div className="bg-transparent rounded-3xl">
-      {/* Collapsed Header */}
-      <div
-        className="px-6 py-5 cursor-pointer select-none group"
+    <div className="bg-white rounded-lg border border-[var(--border)] overflow-hidden">
+      {/* Header */}
+      <button
+        type="button"
+        className="w-full px-4 py-3 flex items-center gap-4 text-left hover:bg-[var(--documo-bg-light)]/50 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-6 min-w-0 flex-1">
-            {/* Expand Icon */}
-            <div className="flex-shrink-0">
-              {isExpanded ? (
-                <ChevronDown className="h-5 w-5 text-blue-500 transition-colors" />
-              ) : (
-                <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-500 transition-colors" />
-              )}
-            </div>
+        {/* Chevron */}
+        <span className="text-[var(--documo-text-tertiary)]">
+          {isExpanded ? (
+            <ChevronDown className="h-4 w-4" />
+          ) : (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </span>
 
-            {/* Email and Folder */}
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Hash className="h-4 w-4 text-blue-600" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-semibold text-gray-900">
-                  {request.email}
-                </span>
-                {request.folder && (
-                  <span className="text-xs text-gray-500 font-medium flex items-center">
-                    <FolderOpen className="h-3 w-3 mr-1" />
-                    {request.folder.name}
-                  </span>
-                )}
-              </div>
-            </div>
+        {/* Email */}
+        <span className="flex-1 min-w-0">
+          <span className="block text-sm font-medium text-[var(--documo-black)] truncate">
+            {request.folder.name}
 
-            {/* Documents Count */}
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <FileText className="h-4 w-4 text-gray-600" />
-              </div>
-              <span className="text-sm text-gray-700 font-medium">
-                {request.requestedDocumentIds.length} document
-                {request.requestedDocumentIds.length > 1 ? 's' : ''}
-              </span>
-            </div>
+          </span>
+          {request.folder && (
+            <span className="flex items-center gap-1 text-xs text-[var(--documo-text-tertiary)] mt-0.5">
+              <FolderOpen className="h-3 w-3" />
+              {request.email}
+            </span>
+          )}
+        </span>
 
-            {/* Time */}
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gray-100 rounded-lg">
-                <Clock className="h-4 w-4 text-gray-600" />
-              </div>
-              <span className="text-sm text-gray-600 font-medium">
-                {formatRelativeTime(request.createdAt)}
-              </span>
-            </div>
-          </div>
+        {/* Documents count */}
+        <span className="hidden sm:flex items-center gap-1.5 text-xs text-[var(--documo-text-secondary)]">
+          <FileText className="h-3.5 w-3.5" />
+          {request.requestedDocumentIds.length} document{request.requestedDocumentIds.length !== 1 ? 's' : ''}
+        </span>
 
-          {/* Status Badge */}
-          <Badge
-            className={`text-sm font-semibold border-1 ${getStatusColor(status)} shadow-sm`}
-          >
-            {getStatusLabel(status)}
-          </Badge>
-        </div>
-      </div>
+        {/* Time */}
+        <span className="hidden md:block text-xs text-[var(--documo-text-tertiary)] tabular-nums">
+          {formatRelativeTime(request.createdAt)}
+        </span>
+
+        {/* Status */}
+        <span
+          className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusStyle(status)}`}
+        >
+          {getStatusLabel(status)}
+        </span>
+      </button>
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="border-t border-gray-100 px-6 py-6 bg-gray-50 rounded-3xl">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column */}
-            <div className="space-y-6">
-              {/* Request Info */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
-                  <User className="h-4 w-4 mr-2" />
-                  Informations de la demande
-                </h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Email:</span>
-                    <span className="font-medium">{request.email}</span>
-                  </div>
-                  {request.folder && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-500">Dossier:</span>
-                      <span className="font-medium flex items-center">
-                        <FolderOpen className="h-3 w-3 mr-1" />
-                        {request.folder.name}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Créée le:</span>
-                    <span>{formatDateTime(request.createdAt)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Expire le:</span>
-                    <span>{formatDateTime(request.expiresAt)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-500">Statut:</span>
-                    <Badge
-                      className={`px-2 py-0.5 text-xs ${getStatusColor(status)}`}
-                    >
-                      {getStatusLabel(status)}
-                    </Badge>
-                  </div>
+        <div className="border-t border-[var(--border)] bg-[var(--documo-bg-light)]/30 px-4 py-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Left: Details */}
+            <div className="space-y-4">
+              {/* Info */}
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-[var(--documo-text-tertiary)]">
+                    Créée le
+                  </span>
+                  <span className="text-[var(--documo-black)]">
+                    {formatDate(request.createdAt)}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-[var(--documo-text-tertiary)]">
+                    Expire le
+                  </span>
+                  <span className="text-[var(--documo-black)]">
+                    {formatDate(request.expiresAt)}
+                  </span>
                 </div>
               </div>
 
               {/* Timeline */}
-              <div>
-                <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Chronologie
+              <div className="space-y-2">
+                <h4 className="text-xs font-medium text-[var(--documo-text-tertiary)] uppercase tracking-wide">
+                  Historique
                 </h4>
-                <div className="space-y-2">
-                  <div className="flex items-center text-sm">
-                    <div className="w-2 h-2 bg-yellow-600 rounded-full mr-3" />
-                    <span className="text-gray-600">Demande créée</span>
-                    <span className="text-gray-400 ml-auto">
+                <div className="space-y-1.5 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[var(--documo-text-tertiary)]" />
+                    <span className="text-[var(--documo-text-secondary)]">
+                      Créée
+                    </span>
+                    <span className="ml-auto text-[var(--documo-text-tertiary)] text-xs">
                       {formatRelativeTime(request.createdAt)}
                     </span>
                   </div>
                   {request.acceptedAt && (
-                    <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-green-600 rounded-full mr-3" />
-                      <span className="text-gray-600">Demande acceptée</span>
-                      <span className="text-gray-400 ml-auto">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--documo-success)]" />
+                      <span className="text-[var(--documo-text-secondary)]">
+                        Acceptée
+                      </span>
+                      <span className="ml-auto text-[var(--documo-text-tertiary)] text-xs">
                         {formatRelativeTime(request.acceptedAt)}
                       </span>
                     </div>
                   )}
                   {request.rejectedAt && (
-                    <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-red-600 rounded-full mr-3" />
-                      <span className="text-gray-600">Demande refusée</span>
-                      <span className="text-gray-400 ml-auto">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--documo-error)]" />
+                      <span className="text-[var(--documo-text-secondary)]">
+                        Refusée
+                      </span>
+                      <span className="ml-auto text-[var(--documo-text-tertiary)] text-xs">
                         {formatRelativeTime(request.rejectedAt)}
                       </span>
                     </div>
                   )}
                   {request.completedAt && (
-                    <div className="flex items-center text-sm">
-                      <div className="w-2 h-2 bg-blue-600 rounded-full mr-3" />
-                      <span className="text-gray-600">Demande terminée</span>
-                      <span className="text-gray-400 ml-auto">
+                    <div className="flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--documo-blue)]" />
+                      <span className="text-[var(--documo-text-secondary)]">
+                        Terminée
+                      </span>
+                      <span className="ml-auto text-[var(--documo-text-tertiary)] text-xs">
                         {formatRelativeTime(request.completedAt)}
                       </span>
                     </div>
@@ -238,28 +203,34 @@ export const RequestAccordion = ({
               </div>
             </div>
 
-            {/* Right Column */}
+            {/* Right: Documents & Actions */}
             <div className="space-y-4">
               {/* Documents */}
               <div>
-                <div className="text-xs text-gray-500 mb-2">
-                  {request.requestedDocumentIds.length} documents
-                </div>
-                <div className="space-y-1">
+                <h4 className="text-xs font-medium text-[var(--documo-text-tertiary)] uppercase tracking-wide mb-2">
+                  Documents demandés
+                </h4>
+                <ul className="space-y-1">
                   {request.requestedDocumentIds.map((docTypeId) => (
-                    <div key={docTypeId} className="text-sm text-gray-700">
-                      • {getLabelById(docTypeId)}
-                    </div>
+                    <li
+                      key={docTypeId}
+                      className="text-sm text-[var(--documo-text-secondary)] flex items-start gap-2"
+                    >
+                      <span className="text-[var(--documo-text-tertiary)] mt-1">
+                        •
+                      </span>
+                      {getLabelById(docTypeId)}
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
 
               {/* Actions */}
-              <div className="flex flex-col gap-2 ">
+              <div className="flex flex-wrap gap-2 pt-2">
                 <Link href={ROUTES.REQUESTS.DETAIL(request.id)}>
-                  <Button className="w-full" variant="outline" size="sm">
-                    <Eye className="h-4 w-4" />
-                    Voir les détails
+                  <Button variant="outline" size="sm" className="gap-1.5">
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Détails
                   </Button>
                 </Link>
 
@@ -273,9 +244,9 @@ export const RequestAccordion = ({
                   <Link
                     href={`${ROUTES.REQUESTS.DETAIL(request.id)}?tab=documents`}
                   >
-                    <Button className="w-full" variant="outline" size="sm">
-                      <FileText className="h-4 w-4" />
-                      Voir les documents
+                    <Button variant="outline" size="sm" className="gap-1.5">
+                      <FileText className="h-3.5 w-3.5" />
+                      Documents
                     </Button>
                   </Link>
                 )}

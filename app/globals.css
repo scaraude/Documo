@@ -73,6 +73,7 @@ body {
   --documo-text-secondary: #4A4A5A;
   --documo-text-tertiary: #8E8E9E;
   --documo-bg-light: #F4F5F7;
+  --documo-bg-lighter: #ffffff;
 
   /* Functional Colors */
   --documo-success: #34C759;
