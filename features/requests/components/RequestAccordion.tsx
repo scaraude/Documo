@@ -96,7 +96,6 @@ export const RequestAccordion = ({
         <span className="flex-1 min-w-0">
           <span className="block text-sm font-medium text-[var(--documo-black)] truncate">
             {request.folder.name}
-
           </span>
           {request.folder && (
             <span className="flex items-center gap-1 text-xs text-[var(--documo-text-tertiary)] mt-0.5">
@@ -109,7 +108,8 @@ export const RequestAccordion = ({
         {/* Documents count */}
         <span className="hidden sm:flex items-center gap-1.5 text-xs text-[var(--documo-text-secondary)]">
           <FileText className="h-3.5 w-3.5" />
-          {request.requestedDocumentIds.length} document{request.requestedDocumentIds.length !== 1 ? 's' : ''}
+          {request.requestedDocumentIds.length} document
+          {request.requestedDocumentIds.length !== 1 ? 's' : ''}
         </span>
 
         {/* Time */}

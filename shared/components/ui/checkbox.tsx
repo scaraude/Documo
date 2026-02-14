@@ -7,11 +7,7 @@ interface CheckboxProps
   onCheckedChange?: (checked: boolean) => void;
 }
 
-function Checkbox({
-  className,
-  onCheckedChange,
-  ...props
-}: CheckboxProps) {
+function Checkbox({ className, onCheckedChange, ...props }: CheckboxProps) {
   return (
     <input
       type="checkbox"

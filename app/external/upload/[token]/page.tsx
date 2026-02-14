@@ -24,8 +24,8 @@ export default function ExternalUploadPage() {
     if (request) {
       const docTypeIdsMissing = documents
         ? request.requestedDocumentIds.filter(
-          (doc) => !documents.some((d) => d.typeId === doc),
-        )
+            (doc) => !documents.some((d) => d.typeId === doc),
+          )
         : request.requestedDocumentIds;
       setDocumentTypesMissing(docTypeIdsMissing);
     }
@@ -34,13 +34,19 @@ export default function ExternalUploadPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F4F5F7' }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: '#F4F5F7' }}
+      >
         <div className="text-center">
           <div
             className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl"
             style={{ backgroundColor: '#E8F1FC' }}
           >
-            <Loader2 className="w-8 h-8 animate-spin" style={{ color: '#2B7AE8' }} />
+            <Loader2
+              className="w-8 h-8 animate-spin"
+              style={{ color: '#2B7AE8' }}
+            />
           </div>
           <p className="text-base font-medium" style={{ color: '#1A1A2E' }}>
             Chargement de ta demande...
@@ -53,7 +59,10 @@ export default function ExternalUploadPage() {
   // Error or not found state
   if (error || !request) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ backgroundColor: '#F4F5F7' }}>
+      <div
+        className="min-h-screen flex items-center justify-center p-6"
+        style={{ backgroundColor: '#F4F5F7' }}
+      >
         <div
           className="max-w-md w-full bg-white rounded-lg p-10 text-center"
           style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
@@ -62,15 +71,31 @@ export default function ExternalUploadPage() {
             className="inline-flex items-center justify-center w-16 h-16 mb-6 rounded-xl"
             style={{ backgroundColor: '#FEE2E2' }}
           >
-            <svg className="w-8 h-8" style={{ color: '#DC2626' }} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+            <svg
+              className="w-8 h-8"
+              style={{ color: '#DC2626' }}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={1.5}
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+              />
             </svg>
           </div>
-          <h1 className="text-xl font-semibold mb-3" style={{ color: '#1A1A2E' }}>
+          <h1
+            className="text-xl font-semibold mb-3"
+            style={{ color: '#1A1A2E' }}
+          >
             Demande introuvable
           </h1>
           <p className="text-sm leading-relaxed" style={{ color: '#4A4A5A' }}>
-            Ce lien n'est plus valide ou a expiré. Contacte la personne qui t'a envoyé cette demande.
+            Ce lien n'est plus valide ou a expiré. Contacte la personne qui t'a
+            envoyé cette demande.
           </p>
         </div>
       </div>
@@ -104,12 +129,17 @@ export default function ExternalUploadPage() {
       <main className="max-w-4xl mx-auto px-6 py-12">
         {/* Page header */}
         <div className="mb-10">
-          <h1 className="text-2xl font-semibold mb-2" style={{ color: '#1A1A2E' }}>
+          <h1
+            className="text-2xl font-semibold mb-2"
+            style={{ color: '#1A1A2E' }}
+          >
             Demande de documents
           </h1>
           <p className="text-base" style={{ color: '#4A4A5A' }}>
-            <span className="font-medium" style={{ color: '#1A1A2E' }}>{request.requesterName}</span>
-            {' '}a envoyé une demande pour les documents suivants:{' '}
+            <span className="font-medium" style={{ color: '#1A1A2E' }}>
+              {request.requesterName}
+            </span>{' '}
+            a envoyé une demande pour les documents suivants:{' '}
           </p>
         </div>
 
@@ -123,10 +153,7 @@ export default function ExternalUploadPage() {
             {request.requestedDocumentIds.map((docTypeId) => {
               const isUploaded = !documentTypesMissing.includes(docTypeId);
               return (
-                <div
-                  key={docTypeId}
-                  className="flex items-center gap-3"
-                >
+                <div key={docTypeId} className="flex items-center gap-3">
                   <div
                     className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
                     style={{
@@ -139,7 +166,7 @@ export default function ExternalUploadPage() {
                     className="text-sm"
                     style={{
                       color: isUploaded ? '#8E8E9E' : '#1A1A2E',
-                      textDecoration: isUploaded ? 'line-through' : 'none'
+                      textDecoration: isUploaded ? 'line-through' : 'none',
                     }}
                   >
                     {getLabelById(docTypeId)}
@@ -154,7 +181,8 @@ export default function ExternalUploadPage() {
               Progression
             </span>
             <span className="text-sm" style={{ color: '#4A4A5A' }}>
-              {uploadedCount} sur {totalDocuments} document{totalDocuments > 1 ? 's' : ''}
+              {uploadedCount} sur {totalDocuments} document
+              {totalDocuments > 1 ? 's' : ''}
             </span>
           </div>
           {/* Progress bar */}
@@ -165,19 +193,21 @@ export default function ExternalUploadPage() {
             <div
               className="h-full rounded-full transition-all duration-500"
               style={{
-                backgroundColor: uploadedCount === totalDocuments ? '#16A34A' : '#2B7AE8',
-                width: `${(uploadedCount / totalDocuments) * 100}%`
+                backgroundColor:
+                  uploadedCount === totalDocuments ? '#16A34A' : '#2B7AE8',
+                width: `${(uploadedCount / totalDocuments) * 100}%`,
               }}
             />
           </div>
-
-
         </div>
 
         {/* Upload section */}
         {documentTypesMissing.length > 0 ? (
           <div>
-            <h2 className="text-lg font-semibold mb-6" style={{ color: '#1A1A2E' }}>
+            <h2
+              className="text-lg font-semibold mb-6"
+              style={{ color: '#1A1A2E' }}
+            >
               Documents à envoyer
             </h2>
             <DocumentUploader
@@ -197,11 +227,15 @@ export default function ExternalUploadPage() {
             >
               <Check className="w-8 h-8" style={{ color: '#16A34A' }} />
             </div>
-            <h3 className="text-xl font-semibold mb-2" style={{ color: '#1A1A2E' }}>
+            <h3
+              className="text-xl font-semibold mb-2"
+              style={{ color: '#1A1A2E' }}
+            >
               C'est envoyé.
             </h3>
             <p className="text-sm" style={{ color: '#4A4A5A' }}>
-              Tous les documents ont été transmis. Tu recevras une confirmation par email.
+              Tous les documents ont été transmis. Tu recevras une confirmation
+              par email.
             </p>
           </div>
         )}

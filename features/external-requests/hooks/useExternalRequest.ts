@@ -7,10 +7,7 @@ export const useExternalRequest = () => {
     trpc.external.getRequestByToken.useQuery({ token });
 
   const getDocumentsByToken = (token: string) =>
-    trpc.external.getDocumentsByToken.useQuery(
-      { token },
-      { enabled: !!token },
-    );
+    trpc.external.getDocumentsByToken.useQuery({ token }, { enabled: !!token });
 
   const generateShareLink = trpc.external.generateShareLink.useMutation();
   const acceptRequest = trpc.external.acceptRequest.useMutation();

@@ -19,25 +19,25 @@ export default function NewFolderTypePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Créer un nouveau type de dossier
+      <h1 className="text-2xl font-bold text-[var(--documo-black)] mb-6">
+        Créer un type de dossier
       </h1>
 
-      <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-md">
-        <h3 className="text-sm font-medium text-blue-800 mb-1">
+      <div className="mb-6 p-4 bg-[var(--documo-blue-light)] border border-[var(--documo-blue)]/20 rounded-md">
+        <h3 className="text-sm font-medium text-[var(--documo-blue-deep)] mb-1">
           Qu&apos;est-ce qu&apos;un type de dossier ?
         </h3>
-        <p className="text-sm text-blue-700">
+        <p className="text-sm text-[var(--documo-text-secondary)]">
           Un type de dossier est un modèle qui définit quels documents sont
-          nécessaires pour un processus spécifique (ex: dossier locatif, demande
-          de crédit, inscription scolaire). Une fois créé, vous pourrez créer
-          plusieurs dossiers basés sur ce type.
+          nécessaires pour un processus spécifique (ex : dossier locatif,
+          demande de vente, dossier d&apos;achat). Une fois créé, tu pourras
+          ouvrir plusieurs dossiers basés sur ce type.
         </p>
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-50 border border-red-100 rounded-md">
-          <p className="text-sm text-red-800">{error}</p>
+        <div className="mb-4 p-4 bg-[var(--documo-error)]/5 border border-[var(--documo-error)]/20 rounded-md">
+          <p className="text-sm text-[var(--documo-error)]">{error}</p>
         </div>
       )}
 

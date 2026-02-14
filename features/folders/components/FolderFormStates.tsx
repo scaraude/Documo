@@ -16,7 +16,7 @@ export const EmptyFolderTypesState = () => (
         Aucun type de dossier disponible
       </h3>
       <p className="text-gray-500 mb-6">
-        Vous devez d&apos;abord créer un type de dossier avant de pouvoir créer
+        Vous devez d&apos;abord créer un type de dossier avant de pouvoir ouvrir
         un dossier
       </p>
       <Button asChild>

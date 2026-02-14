@@ -4,9 +4,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 export const metadata = {
-  title: 'Conditions Générales d\'Utilisation - Documo',
+  title: "Conditions Générales d'Utilisation - Documo",
   description:
-    'Conditions générales d\'utilisation de la plateforme Documo pour l\'échange de documents sécurisé.',
+    "Conditions générales d'utilisation de la plateforme Documo pour l'échange de documents sécurisé.",
 };
 
 export default function GCUPage() {

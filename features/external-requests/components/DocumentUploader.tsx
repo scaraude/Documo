@@ -3,16 +3,8 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/button';
 import { ROUTES } from '@/shared/constants';
-import {
-  formatAcceptedFormats,
-  formatsToFileExtensions,
-} from '@/shared/utils';
-import {
-  Check,
-  Loader2,
-  Upload,
-  X,
-} from 'lucide-react';
+import { formatAcceptedFormats, formatsToFileExtensions } from '@/shared/utils';
+import { Check, Loader2, Upload, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import {
   type Dispatch,
@@ -114,7 +106,7 @@ export const DocumentUploader = ({
         [documentTypeId]: {
           progress: 0,
           status: 'error',
-          error: error instanceof Error ? error.message : 'Échec de l\'envoi',
+          error: error instanceof Error ? error.message : "Échec de l'envoi",
           file,
         },
       }));
@@ -192,10 +184,7 @@ export const DocumentUploader = ({
                 {getLabelById(docTypeIdMissing)}
               </h3>
               {documentType?.description && (
-                <p
-                  className="text-xs mt-1"
-                  style={{ color: '#8E8E9E' }}
-                >
+                <p className="text-xs mt-1" style={{ color: '#8E8E9E' }}>
                   {documentType.description}
                 </p>
               )}
@@ -212,7 +201,9 @@ export const DocumentUploader = ({
                     onDrop={(e) => handleDrop(e, docTypeIdMissing)}
                     className={cn(
                       'relative rounded-lg border-2 border-dashed transition-colors cursor-pointer',
-                      isDragging ? 'border-[#2B7AE8] bg-[#E8F1FC]' : 'border-[#E5E7EB] hover:border-[#2B7AE8]',
+                      isDragging
+                        ? 'border-[#2B7AE8] bg-[#E8F1FC]'
+                        : 'border-[#E5E7EB] hover:border-[#2B7AE8]',
                     )}
                   >
                     <input
@@ -223,7 +214,9 @@ export const DocumentUploader = ({
                       className="hidden"
                       accept={
                         documentType
-                          ? formatsToFileExtensions(documentType.acceptedFormats)
+                          ? formatsToFileExtensions(
+                              documentType.acceptedFormats,
+                            )
                           : '.pdf,.jpg,.jpeg,.png'
                       }
                       onChange={(e) => {
@@ -242,7 +235,10 @@ export const DocumentUploader = ({
                         className="w-12 h-12 rounded-lg flex items-center justify-center mb-4"
                         style={{ backgroundColor: '#E8F1FC' }}
                       >
-                        <Upload className="w-5 h-5" style={{ color: '#2B7AE8' }} />
+                        <Upload
+                          className="w-5 h-5"
+                          style={{ color: '#2B7AE8' }}
+                        />
                       </div>
                       <p
                         className="text-sm font-medium mb-1"
@@ -250,10 +246,7 @@ export const DocumentUploader = ({
                       >
                         Glisse ton fichier ici
                       </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: '#8E8E9E' }}
-                      >
+                      <p className="text-xs" style={{ color: '#8E8E9E' }}>
                         ou clique pour parcourir
                       </p>
                     </button>
@@ -298,10 +291,7 @@ export const DocumentUploader = ({
                       >
                         {status.file.name}
                       </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: '#8E8E9E' }}
-                      >
+                      <p className="text-xs" style={{ color: '#8E8E9E' }}>
                         {formatFileSize(status.file.size)}
                       </p>
                     </div>
@@ -346,10 +336,7 @@ export const DocumentUploader = ({
                       >
                         {status.file.name}
                       </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: '#16A34A' }}
-                      >
+                      <p className="text-xs" style={{ color: '#16A34A' }}>
                         Envoyé
                       </p>
                     </div>
@@ -374,10 +361,7 @@ export const DocumentUploader = ({
                       >
                         {status.file.name}
                       </p>
-                      <p
-                        className="text-xs"
-                        style={{ color: '#DC2626' }}
-                      >
+                      <p className="text-xs" style={{ color: '#DC2626' }}>
                         {status.error}
                       </p>
                     </div>

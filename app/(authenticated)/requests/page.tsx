@@ -182,9 +182,7 @@ export default function RequestsPage() {
               <div className="bg-white rounded-lg border border-[var(--border)] p-12 text-center">
                 <FileText className="h-12 w-12 text-[var(--documo-text-tertiary)] mx-auto mb-4" />
                 <h3 className="text-base font-medium text-[var(--documo-black)] mb-1">
-                  {requests.length === 0
-                    ? 'Aucune demande'
-                    : 'Aucun résultat'}
+                  {requests.length === 0 ? 'Aucune demande' : 'Aucun résultat'}
                 </h3>
                 <p className="text-sm text-[var(--documo-text-secondary)]">
                   {requests.length === 0

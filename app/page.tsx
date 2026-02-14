@@ -119,11 +119,15 @@ export default function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section id="fonctionnalites" className="py-24 bg-[var(--documo-bg-light)]">
+      <section
+        id="fonctionnalites"
+        className="py-24 bg-[var(--documo-bg-light)]"
+      >
         <div className="mx-auto max-w-6xl px-6 lg:px-8">
           <div className="mx-auto max-w-2xl text-center mb-16">
             <h2 className="text-3xl font-bold text-[var(--documo-black)] mb-4">
-              Pourquoi <span className="text-[var(--documo-blue)]">Documo</span> ?
+              Pourquoi <span className="text-[var(--documo-blue)]">Documo</span>{' '}
+              ?
             </h2>
             <p className="text-lg text-[var(--documo-text-secondary)]">
               Moins de relances, moins de dossiers incomplets, plus de temps

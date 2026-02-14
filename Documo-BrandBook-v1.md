@@ -51,12 +51,12 @@ Documo est l'infrastructure invisible de l'administratif. Les organismes défini
 
 ### Différenciation
 
-| Les autres | Documo |
-|---|---|
-| Stockent tes fichiers | Achemine tes documents |
+| Les autres               | Documo                                   |
+| ------------------------ | ---------------------------------------- |
+| Stockent tes fichiers    | Achemine tes documents                   |
 | Tu prépares tes dossiers | Les organismes définissent leurs besoins |
-| Effort constant | Effort dégressif |
-| Outil de plus à gérer | Disparaît dans le quotidien |
+| Effort constant          | Effort dégressif                         |
+| Outil de plus à gérer    | Disparaît dans le quotidien              |
 
 ### Public cible
 
@@ -129,29 +129,29 @@ En dessous de ces seuils, la lisibilité n'est plus garantie.
 
 La palette est construite autour du bleu du logo, avec des tons neutres pour l'équilibre et la lisibilité. Le bleu est réservé aux éléments d'action et d'identité. Les gris structurent le contenu.
 
-| Nom | Hex | Utilisation |
-|---|---|---|
-| **Bleu Documo** | `#2B7AE8` | Couleur d'accent principale : boutons, liens, éléments interactifs |
-| **Bleu Profond** | `#1A5BB5` | Hover states, éléments appuyés |
-| **Bleu Clair** | `#E8F1FC` | Fonds de mise en avant, badges |
-| **Noir Doux** | `#1A1A2E` | Texte principal (jamais de noir pur #000) |
+| Nom              | Hex       | Utilisation                                                        |
+| ---------------- | --------- | ------------------------------------------------------------------ |
+| **Bleu Documo**  | `#2B7AE8` | Couleur d'accent principale : boutons, liens, éléments interactifs |
+| **Bleu Profond** | `#1A5BB5` | Hover states, éléments appuyés                                     |
+| **Bleu Clair**   | `#E8F1FC` | Fonds de mise en avant, badges                                     |
+| **Noir Doux**    | `#1A1A2E` | Texte principal (jamais de noir pur #000)                          |
 
 ### Couleurs secondaires
 
-| Nom | Hex | Utilisation |
-|---|---|---|
+| Nom                  | Hex       | Utilisation               |
+| -------------------- | --------- | ------------------------- |
 | **Texte secondaire** | `#4A4A5A` | Corps de texte secondaire |
-| **Texte tertiaire** | `#8E8E9E` | Labels, placeholders |
-| **Fond clair** | `#F4F5F7` | Arrière-plans de sections |
-| **Blanc** | `#FFFFFF` | Fond de page principal |
+| **Texte tertiaire**  | `#8E8E9E` | Labels, placeholders      |
+| **Fond clair**       | `#F4F5F7` | Arrière-plans de sections |
+| **Blanc**            | `#FFFFFF` | Fond de page principal    |
 
 ### Couleurs fonctionnelles
 
-| Nom | Hex | Utilisation |
-|---|---|---|
-| **Succès** | `#34C759` | Validation, confirmation |
+| Nom           | Hex       | Utilisation                   |
+| ------------- | --------- | ----------------------------- |
+| **Succès**    | `#34C759` | Validation, confirmation      |
 | **Attention** | `#FF9500` | Avertissement, action requise |
-| **Erreur** | `#FF3B30` | Erreur, suppression |
+| **Erreur**    | `#FF3B30` | Erreur, suppression           |
 
 ### Règles d'utilisation
 
@@ -183,14 +183,14 @@ Si Inter n'est pas disponible, on utilise la police système native. L'expérien
 
 ### Échelle typographique
 
-| Rôle | Taille | Graisse | Utilisation |
-|---|---|---|---|
-| Display | 32–40px | Bold (700) | Page d'accueil, titres de section |
-| Heading 1 | 24–28px | Semi-Bold (600) | Titres de page |
-| Heading 2 | 20–22px | Semi-Bold (600) | Sous-titres |
-| Body | 16px | Regular (400) | Texte courant |
-| Small | 14px | Regular (400) | Labels, légendes |
-| Caption | 12px | Medium (500) | Mentions légales, notes |
+| Rôle      | Taille  | Graisse         | Utilisation                       |
+| --------- | ------- | --------------- | --------------------------------- |
+| Display   | 32–40px | Bold (700)      | Page d'accueil, titres de section |
+| Heading 1 | 24–28px | Semi-Bold (600) | Titres de page                    |
+| Heading 2 | 20–22px | Semi-Bold (600) | Sous-titres                       |
+| Body      | 16px    | Regular (400)   | Texte courant                     |
+| Small     | 14px    | Regular (400)   | Labels, légendes                  |
+| Caption   | 12px    | Medium (500)    | Mentions légales, notes           |
 
 ### Règles typographiques
 
@@ -236,16 +236,16 @@ Documo parle comme un ami compétent : clairement, simplement, sans condescendan
 
 ### Spectre tonal
 
-| ✅ On est | ❌ On n'est pas | 🎯 Exemple |
-|---|---|---|
-| Clair | Vague | « Ajoute ta pièce d'identité » — Pas : « Téléverse ton document d'identification » |
-| Sobre | Excité | « C'est envoyé. » — Pas : « Super, ton document a été transmis avec succès ! 🎉 » |
-| Rassurant | Anxiogène | « On gère la transmission. » — Pas : « Attention, vérifie que tout est correct avant envoi » |
-| Humain | Corporate | « Tu n'as rien à faire. » — Pas : « Le processus est entièrement automatisé » |
+| ✅ On est | ❌ On n'est pas | 🎯 Exemple                                                                                   |
+| --------- | --------------- | -------------------------------------------------------------------------------------------- |
+| Clair     | Vague           | « Ajoute ta pièce d'identité » — Pas : « Téléverse ton document d'identification »           |
+| Sobre     | Excité          | « C'est envoyé. » — Pas : « Super, ton document a été transmis avec succès ! 🎉 »            |
+| Rassurant | Anxiogène       | « On gère la transmission. » — Pas : « Attention, vérifie que tout est correct avant envoi » |
+| Humain    | Corporate       | « Tu n'as rien à faire. » — Pas : « Le processus est entièrement automatisé »                |
 
-### Tutoiement
+### Vouvoiment
 
-Documo tutoie ses utilisateurs. C'est un choix délibéré de proximité : l'administratif est déjà assez froid, on n'en rajoute pas.
+Documo vouvoie ses utilisateurs.
 
 ### Messages d'interface
 

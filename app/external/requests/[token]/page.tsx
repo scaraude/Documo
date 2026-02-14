@@ -150,7 +150,10 @@ export default function ExternalRequestPage() {
             </div>
 
             <p className="text-sm text-muted-foreground mb-6">
-              <span className="text-[var(--documo-black)] font-bold">{request.requesterName}</span> vous demande les documents suivants :
+              <span className="text-[var(--documo-black)] font-bold">
+                {request.requesterName}
+              </span>{' '}
+              vous demande les documents suivants :
             </p>
 
             <div className="mb-6">

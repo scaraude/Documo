@@ -78,7 +78,9 @@ export const RequestSearchAndSort = ({
               onSortOrderChange(sortOrder === 'asc' ? 'desc' : 'asc')
             }
             className="px-3 py-2 bg-white border border-[var(--border)] rounded-md text-[var(--documo-text-secondary)] hover:bg-[var(--documo-bg-light)] focus:outline-none focus:ring-2 focus:ring-[var(--documo-blue)] focus:ring-offset-1 transition-all"
-            aria-label={sortOrder === 'asc' ? 'Tri décroissant' : 'Tri croissant'}
+            aria-label={
+              sortOrder === 'asc' ? 'Tri décroissant' : 'Tri croissant'
+            }
           >
             {sortOrder === 'asc' ? (
               <ArrowUp className="h-4 w-4" />
