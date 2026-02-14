@@ -140,7 +140,7 @@ export default function ExternalRequestPage() {
       <div className="max-w-2xl w-full mx-auto p-6">
         <Card className="border-t-4 border-blue-500">
           <CardContent className="pt-6">
-            <div className="flex items-center mb-6">
+            <div className="flex items-center mb-4">
               <div className="rounded-full bg-blue-100 p-2 mr-3">
                 <FileText className="h-6 w-6 text-blue-500" />
               </div>
@@ -149,10 +149,11 @@ export default function ExternalRequestPage() {
               </h2>
             </div>
 
+            <p className="text-sm text-muted-foreground mb-6">
+              <span className="text-[var(--documo-black)] font-bold">{request.requesterName}</span> vous demande les documents suivants :
+            </p>
+
             <div className="mb-6">
-              <div className="text-sm text-gray-500 mb-1">
-                Documents demandés
-              </div>
               <div className="space-y-2">
                 {request.requestedDocumentIds.map((docTypeId) => (
                   <div
@@ -247,7 +248,7 @@ export default function ExternalRequestPage() {
                     <Button
                       onClick={handleDecline}
                       disabled={isProcessing}
-                      variant="destructive"
+                      className="bg-red-600 hover:bg-red-700"
                     >
                       {isProcessing ? 'Traitement...' : 'Confirmer le refus'}
                     </Button>
@@ -262,11 +263,6 @@ export default function ExternalRequestPage() {
                 </div>
               </div>
             )}
-
-            <p className="text-xs text-gray-500 text-center mt-4">
-              Vos documents seront stockés de manière sécurisée et pourront être
-              réutilisés pour de futures demandes.
-            </p>
           </CardContent>
         </Card>
       </div>

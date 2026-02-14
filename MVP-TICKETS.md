@@ -190,8 +190,8 @@ Sous le titre "Demande de documents", ajouter :
 
 #### Critères d'acceptation
 
-- [ ] Sous-titre dynamique avec le nom du demandeur
-- [ ] Style texte secondaire (`#4A4A5A`)
+- [x] Sous-titre dynamique avec le nom du demandeur
+- [x] Style texte secondaire (`#4A4A5A`)
 
 ---
 
