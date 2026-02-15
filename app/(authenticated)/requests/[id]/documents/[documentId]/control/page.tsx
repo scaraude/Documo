@@ -44,9 +44,7 @@ function DocumentControlWorkspace({
   const [zoom, setZoom] = useState(100);
   const [isRejecting, setIsRejecting] = useState(false);
   const [reason, setReason] = useState('');
-  const canZoom =
-    !!objectUrl &&
-    document.mimeType.startsWith('image/');
+  const canZoom = !!objectUrl && document.mimeType.startsWith('image/');
 
   const isMutating =
     validateDocumentMutation.isPending || invalidateDocumentMutation.isPending;
@@ -280,9 +278,7 @@ function DocumentControlWorkspace({
               variant="outline"
               onClick={() => setIsRejecting((previous) => !previous)}
               disabled={isMutating}
-              className={
-                'border-red-300 text-red-700 hover:bg-red-50'
-              }
+              className={'border-red-300 text-red-700 hover:bg-red-50'}
             >
               <XCircle className="h-4 w-4 mr-2" />
               Refuser

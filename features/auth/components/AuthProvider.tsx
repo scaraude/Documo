@@ -30,16 +30,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const forgotPasswordMutation = trpc.auth.forgotPassword.useMutation();
   const resetPasswordMutation = trpc.auth.resetPassword.useMutation();
 
-  const {
-    data: currentOrganization,
-    isLoading: isLoadingOrganization,
-  } = trpc.auth.me.useQuery(undefined, {
-    enabled: true,
-    retry: false,
-    throwOnError: (error) => {
-      return error.data?.code !== 'UNAUTHORIZED';
-    },
-  });
+  const { data: currentOrganization, isLoading: isLoadingOrganization } =
+    trpc.auth.me.useQuery(undefined, {
+      enabled: true,
+      retry: false,
+      throwOnError: (error) => {
+        return error.data?.code !== 'UNAUTHORIZED';
+      },
+    });
 
   useEffect(() => {
     if (!isLoadingOrganization) {

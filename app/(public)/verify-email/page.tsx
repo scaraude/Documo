@@ -66,11 +66,14 @@ function VerifyEmailContent() {
         setRedirectTarget(shouldAutoLogin ? 'app' : 'login');
 
         // Redirect to app when auto-login works, otherwise fallback to login
-        setTimeout(() => {
-          router.push(
-            shouldAutoLogin ? ROUTES.FOLDERS.HOME : ROUTES.AUTH.LOGIN,
-          );
-        }, shouldAutoLogin ? 1500 : 3000);
+        setTimeout(
+          () => {
+            router.push(
+              shouldAutoLogin ? ROUTES.FOLDERS.HOME : ROUTES.AUTH.LOGIN,
+            );
+          },
+          shouldAutoLogin ? 1500 : 3000,
+        );
       } catch (error) {
         setStatus('error');
         setMessage(

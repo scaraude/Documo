@@ -20,8 +20,7 @@ export const prismaShareLinkToExternalRequest = (
 ): z.infer<typeof externalRequestSchema> => {
   const request = shareLink.request;
   const createdBy = request.folder.createdByOrganization;
-  const requesterName =
-    createdBy.name || createdBy.email.split('@')[0];
+  const requesterName = createdBy.name || createdBy.email.split('@')[0];
 
   return {
     id: request.id,

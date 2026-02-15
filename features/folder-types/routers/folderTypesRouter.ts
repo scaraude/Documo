@@ -7,7 +7,10 @@ import { CreateFolderTypeSchema, UpdateFolderTypeSchema } from '../types/zod';
 export const folderTypesRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ organizationId: ctx.organization.id }, 'Fetching folder types for user');
+      logger.info(
+        { organizationId: ctx.organization.id },
+        'Fetching folder types for user',
+      );
       const result = await folderTypesRepository.getFolderTypesByUserId(
         ctx.organization.id,
       );
@@ -110,7 +113,11 @@ export const folderTypesRouter = router({
         }
         const result = await folderTypesRepository.isFolderTypeInUse(input.id);
         logger.info(
-          { folderTypeId: input.id, organizationId: ctx.organization.id, inUse: result },
+          {
+            folderTypeId: input.id,
+            organizationId: ctx.organization.id,
+            inUse: result,
+          },
           'Folder type usage check completed',
         );
         return result;

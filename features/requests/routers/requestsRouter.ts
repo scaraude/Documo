@@ -16,8 +16,13 @@ import * as requestRepository from './../repository/requestRepository';
 export const requestsRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ organizationId: ctx.organization.id }, 'Fetching all requests for user');
-      const result = await requestRepository.getRequestsForUser(ctx.organization.id);
+      logger.info(
+        { organizationId: ctx.organization.id },
+        'Fetching all requests for user',
+      );
+      const result = await requestRepository.getRequestsForUser(
+        ctx.organization.id,
+      );
       logger.info(
         { organizationId: ctx.organization.id, count: result.length },
         'User requests fetched successfully',
@@ -183,7 +188,10 @@ export const requestsRouter = router({
         );
 
         // Use security-aware delete function
-        await requestRepository.deleteRequestForUser(input.id, ctx.organization.id);
+        await requestRepository.deleteRequestForUser(
+          input.id,
+          ctx.organization.id,
+        );
 
         logger.info(
           { requestId: input.id, organizationId: ctx.organization.id },

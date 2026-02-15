@@ -286,14 +286,14 @@ export async function invalidateDocumentForUser(
       const uploadToken = existingShareLink
         ? existingShareLink.token
         : (
-          await tx.requestShareLink.create({
-            data: {
-              requestId: document.request.id,
-              token: await generateSecureToken(),
-              expiresAt: inSevenDays,
-            },
-          })
-        ).token;
+            await tx.requestShareLink.create({
+              data: {
+                requestId: document.request.id,
+                token: await generateSecureToken(),
+                expiresAt: inSevenDays,
+              },
+            })
+          ).token;
 
       return {
         requestId: document.request.id,

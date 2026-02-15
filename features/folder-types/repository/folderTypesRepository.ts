@@ -78,7 +78,11 @@ export async function getFolderTypeByIdForUser(
 ): Promise<FolderType | null> {
   try {
     logger.info(
-      { folderTypeId: id, organizationId, operation: 'getFolderTypeByIdForUser' },
+      {
+        folderTypeId: id,
+        organizationId,
+        operation: 'getFolderTypeByIdForUser',
+      },
       'Fetching folder type with ownership check',
     );
     const folderType = await prisma.folderType.findFirst({
@@ -119,14 +123,19 @@ export async function createFolderType(
   params: CreateFolderTypeParams,
 ): Promise<FolderType> {
   try {
-    const { name, description, requiredDocuments, createdByOrganizationId } = params;
+    const { name, description, requiredDocuments, createdByOrganizationId } =
+      params;
 
     if (!createdByOrganizationId) {
       throw new Error('User ID is required to create folder type');
     }
 
     logger.info(
-      { name, organizationId: createdByOrganizationId, operation: 'createFolderType' },
+      {
+        name,
+        organizationId: createdByOrganizationId,
+        operation: 'createFolderType',
+      },
       'Creating folder type',
     );
 
@@ -146,7 +155,11 @@ export async function createFolderType(
 
     const result = toAppModel(newFolderType);
     logger.info(
-      { folderTypeId: result.id, name: result.name, organizationId: createdByOrganizationId },
+      {
+        folderTypeId: result.id,
+        name: result.name,
+        organizationId: createdByOrganizationId,
+      },
       'Folder type created successfully',
     );
     return result;

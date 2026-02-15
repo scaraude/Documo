@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from './generated/client';
+import { Prisma, type PrismaClient } from './generated/client';
 
 type AdapterConstructor = new (pool: unknown) => unknown;
 type PoolConstructor = new (options: { connectionString: string }) => unknown;

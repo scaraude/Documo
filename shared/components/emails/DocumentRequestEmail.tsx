@@ -1,6 +1,7 @@
 import {
   Body,
   Button,
+  Column,
   Container,
   Head,
   Heading,
@@ -10,7 +11,6 @@ import {
   Link,
   Preview,
   Row,
-  Column,
   Section,
   Text,
 } from '@react-email/components';
@@ -27,11 +27,7 @@ interface DocumentRequestEmailProps {
 export const DocumentRequestEmail = ({
   recipientEmail = 'destinataire@exemple.fr',
   organizationName = 'Acme Corp',
-  requestedDocuments = [
-    "Pièce d'identité",
-    'Justificatif de domicile',
-    'RIB',
-  ],
+  requestedDocuments = ["Pièce d'identité", 'Justificatif de domicile', 'RIB'],
   uploadUrl = 'https://documo.app/upload/abc123',
   expirationDate = '15 mars 2026',
   folderName = 'Dossier de location',
@@ -183,7 +179,8 @@ export const DocumentRequestEmail = ({
             <Text style={disclaimer}>
               Cet email a été envoyé à {recipientEmail}.
               <br />
-              Si vous avez reçu cet email par erreur, vous pouvez l&apos;ignorer.
+              Si vous avez reçu cet email par erreur, vous pouvez
+              l&apos;ignorer.
             </Text>
 
             <Text style={brandFooter}>

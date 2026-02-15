@@ -151,7 +151,10 @@ export const authRouter = createTRPCRouter({
       }
 
       logger.info(
-        { organizationId: ctx.organization?.id, operation: 'auth.logout.success' },
+        {
+          organizationId: ctx.organization?.id,
+          operation: 'auth.logout.success',
+        },
         'Organization logged out successfully',
       );
       return { success: true };
@@ -174,10 +177,12 @@ export const authRouter = createTRPCRouter({
     .input(verifyEmailSchema)
     .mutation(async ({ input, ctx }) => {
       try {
-        const verificationToken = await prisma.emailVerificationToken.findFirst({
-          where: { token: input.token },
-          select: { email: true, usedAt: true },
-        });
+        const verificationToken = await prisma.emailVerificationToken.findFirst(
+          {
+            where: { token: input.token },
+            select: { email: true, usedAt: true },
+          },
+        );
 
         const success = await authRepository.verifyEmail(input.token);
 
@@ -209,8 +214,7 @@ export const authRouter = createTRPCRouter({
 
             return {
               success: true,
-              message:
-                'Email verified successfully. You are now logged in.',
+              message: 'Email verified successfully. You are now logged in.',
               autoLogin: true,
               organization: {
                 id: organization.id,
@@ -359,7 +363,10 @@ export const authRouter = createTRPCRouter({
       return sessions;
     } catch (error) {
       logger.error(
-        { organizationId: ctx.organization.id, error: (error as Error).message },
+        {
+          organizationId: ctx.organization.id,
+          error: (error as Error).message,
+        },
         'Failed to fetch sessions',
       );
       throw new TRPCError({
