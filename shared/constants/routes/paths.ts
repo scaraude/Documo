@@ -34,7 +34,3 @@ export const ROUTES = {
     GCU: '/gcu',
   },
 } as const;
-
-// Type utilities for routes
-type AppRoutes = typeof ROUTES;
-type RouteKeys = keyof typeof ROUTES;

@@ -21,10 +21,13 @@ import { hashPassword } from '../features/auth/utils/password';
 import { getPrismaClientOptions } from '../lib/prisma/clientOptions';
 import {
   type DocumentType,
+  type Organization,
   PrismaClient,
   ProviderType,
 } from '../lib/prisma/generated/client';
 const prisma = new PrismaClient(getPrismaClientOptions());
+
+type SeedUser = Pick<Organization, 'id' | 'email'>;
 
 // Stable UUIDs for seeded document types
 const DOCUMENT_TYPE_IDS = {
@@ -275,16 +278,33 @@ async function createTestUsers() {
   };
 }
 
+function getSeedUserByEmail(users: SeedUser[], email: string): SeedUser {
+  const user = users.find((candidate) => candidate.email === email);
+  if (!user) {
+    throw new Error(`Missing seeded user for email: ${email}`);
+  }
+  return user;
+}
+
 // Create test sessions for testing session management
-async function createTestSessions(users: any[]) {
+async function createTestSessions(users: SeedUser[]) {
   console.log('🔑 Creating test sessions...');
 
   const sessions = [];
+  const activeSessionUserId = getSeedUserByEmail(
+    users,
+    TEST_USERS.activeSession.email,
+  ).id;
+  const multipleSessionUser = getSeedUserByEmail(
+    users,
+    TEST_USERS.multipleSession.email,
+  );
+  const verifiedUserId = getSeedUserByEmail(users, TEST_USERS.verified.email).id;
 
   // Create active session for activeSessionUser
   const activeSession = await prisma.organizationSession.create({
     data: {
-      organizationId: users.find((u) => u.email === TEST_USERS.activeSession.email)?.id,
+      organizationId: activeSessionUserId,
       token: `session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), 7),
       userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
@@ -296,51 +316,46 @@ async function createTestSessions(users: any[]) {
   sessions.push(activeSession);
 
   // Create multiple sessions for multipleSessionUser
-  const multipleSessionUser = users.find(
-    (u) => u.email === TEST_USERS.multipleSession.email,
-  );
-  if (multipleSessionUser) {
-    const sessionData = [
-      {
-        userAgent:
-          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        ipAddress: '192.168.1.101',
-        createdAt: new Date(),
-      },
-      {
-        userAgent:
-          'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
-        ipAddress: '192.168.1.102',
-        createdAt: addHours(new Date(), -2),
-      },
-      {
-        userAgent:
-          'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-        ipAddress: '192.168.1.103',
-        createdAt: addHours(new Date(), -4),
-      },
-    ];
+  const sessionData = [
+    {
+      userAgent:
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      ipAddress: '192.168.1.101',
+      createdAt: new Date(),
+    },
+    {
+      userAgent:
+        'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1',
+      ipAddress: '192.168.1.102',
+      createdAt: addHours(new Date(), -2),
+    },
+    {
+      userAgent:
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      ipAddress: '192.168.1.103',
+      createdAt: addHours(new Date(), -4),
+    },
+  ];
 
-    for (const data of sessionData) {
-      const session = await prisma.organizationSession.create({
-        data: {
-          organizationId: multipleSessionUser.id,
-          token: `session_${crypto.randomBytes(32).toString('hex')}`,
-          expiresAt: addDays(data.createdAt, 7),
-          userAgent: data.userAgent,
-          ipAddress: data.ipAddress,
-          createdAt: data.createdAt,
-          revokedAt: null,
-        },
-      });
-      sessions.push(session);
-    }
+  for (const data of sessionData) {
+    const session = await prisma.organizationSession.create({
+      data: {
+        organizationId: multipleSessionUser.id,
+        token: `session_${crypto.randomBytes(32).toString('hex')}`,
+        expiresAt: addDays(data.createdAt, 7),
+        userAgent: data.userAgent,
+        ipAddress: data.ipAddress,
+        createdAt: data.createdAt,
+        revokedAt: null,
+      },
+    });
+    sessions.push(session);
   }
 
   // Create expired session for testing
   const expiredSession = await prisma.organizationSession.create({
     data: {
-      organizationId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
+      organizationId: verifiedUserId,
       token: `expired_session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), -1), // Expired yesterday
       userAgent: 'Mozilla/5.0 (Test Browser)',
@@ -354,7 +369,7 @@ async function createTestSessions(users: any[]) {
   // Create revoked session for testing
   const revokedSession = await prisma.organizationSession.create({
     data: {
-      organizationId: users.find((u) => u.email === TEST_USERS.verified.email)?.id,
+      organizationId: verifiedUserId,
       token: `revoked_session_${crypto.randomBytes(32).toString('hex')}`,
       expiresAt: addDays(new Date(), 7),
       userAgent: 'Mozilla/5.0 (Revoked Browser)',
@@ -370,7 +385,7 @@ async function createTestSessions(users: any[]) {
 }
 
 // Create test email verification tokens
-async function createTestEmailVerificationTokens(_users: any[]) {
+async function createTestEmailVerificationTokens() {
   console.log('📧 Creating test email verification tokens...');
 
   const tokens = [];
@@ -416,7 +431,7 @@ async function createTestEmailVerificationTokens(_users: any[]) {
 }
 
 // Create test password reset tokens
-async function createTestPasswordResetTokens(_users: any[]) {
+async function createTestPasswordResetTokens() {
   console.log('🔐 Creating test password reset tokens...');
 
   const tokens = [];
@@ -747,8 +762,8 @@ async function seedDatabase(
 
   // Create auth test data
   await createTestSessions(users);
-  await createTestEmailVerificationTokens(users);
-  await createTestPasswordResetTokens(users);
+  await createTestEmailVerificationTokens();
+  await createTestPasswordResetTokens();
 
   console.log('🏗️ Creating folder types...');
   const folderTypeIds = [];

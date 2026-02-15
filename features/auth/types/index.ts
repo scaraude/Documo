@@ -93,8 +93,3 @@ export interface SignupCredentials {
   password: string;
   organizationName: string;
 }
-
-interface AuthError {
-  code: string;
-  message: string;
-}

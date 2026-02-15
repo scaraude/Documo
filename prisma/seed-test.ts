@@ -28,8 +28,8 @@ export async function seedTestData() {
   const { users } = await createTestUsers();
   await ensureDefaultDocumentTypes();
   const sessions = await createTestSessions(users);
-  const emailTokens = await createTestEmailVerificationTokens(users);
-  const resetTokens = await createTestPasswordResetTokens(users);
+  const emailTokens = await createTestEmailVerificationTokens();
+  const resetTokens = await createTestPasswordResetTokens();
 
   // Create minimal business data
   const folderType = await createRandomFolderType(users[0].id);

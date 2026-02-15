@@ -1,12 +1,15 @@
 import type { DomainEvent, EventType } from './types';
 
 // Event factory with automatic ID generation
-function createEvent<T extends Record<string, unknown>>(
-  eventType: EventType,
+function createEvent<
+  TData extends Record<string, unknown>,
+  TEventType extends EventType,
+>(
+  eventType: TEventType,
   aggregateId: string,
-  data: T,
+  data: TData,
   organizationId?: string,
-): DomainEvent {
+): DomainEvent<TData, TEventType> {
   return {
     eventType,
     eventId: crypto.randomUUID(),
@@ -24,5 +27,10 @@ export function createTypedEvent<T extends DomainEvent>(
   data: T['data'],
   organizationId?: string,
 ): T {
-  return createEvent(eventType, aggregateId, data, organizationId) as T;
+  return createEvent<T['data'], T['eventType']>(
+    eventType,
+    aggregateId,
+    data,
+    organizationId,
+  ) as T;
 }

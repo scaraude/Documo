@@ -1,114 +1,125 @@
-import type { DocumentEventTypes, DomainEvent, EventTypes } from './types';
+import type { DomainEvent, EventTypes } from './types';
 
 // Domain-specific event interfaces
 // Folder events
-export interface FolderCreatedEvent extends DomainEvent {
-  eventType: EventTypes['FOLDER']['CREATED'];
-  data: {
-    folderId: string;
-    name: string;
-    createdByOrganizationId: string;
-    folderTypeId: string;
-  };
-}
+export interface FolderCreatedEvent
+  extends DomainEvent<
+    {
+      folderId: string;
+      name: string;
+      createdByOrganizationId: string;
+      folderTypeId: string;
+    },
+    EventTypes['FOLDER']['CREATED']
+  > {}
 
-interface FolderCompletedEvent extends DomainEvent {
-  eventType: EventTypes['FOLDER']['COMPLETED'];
-  data: {
-    folderId: string;
-    completedAt: Date;
-    documentCount: number;
-  };
-}
+interface FolderCompletedEvent
+  extends DomainEvent<
+    {
+      folderId: string;
+      completedAt: Date;
+      documentCount: number;
+    },
+    EventTypes['FOLDER']['COMPLETED']
+  > {}
 
-interface FolderUpdatedEvent extends DomainEvent {
-  eventType: EventTypes['FOLDER']['UPDATED'];
-  data: {
-    folderId: string;
-    changes: Record<string, unknown>;
-    updatedById: string;
-  };
-}
+interface FolderUpdatedEvent
+  extends DomainEvent<
+    {
+      folderId: string;
+      changes: Record<string, unknown>;
+      updatedById: string;
+    },
+    EventTypes['FOLDER']['UPDATED']
+  > {}
 
-interface FolderDeletedEvent extends DomainEvent {
-  eventType: EventTypes['FOLDER']['DELETED'];
-  data: {
-    folderId: string;
-    deletedById: string;
-    deletedAt: Date;
-  };
-}
+interface FolderDeletedEvent
+  extends DomainEvent<
+    {
+      folderId: string;
+      deletedById: string;
+      deletedAt: Date;
+    },
+    EventTypes['FOLDER']['DELETED']
+  > {}
 
 // Request events
-interface RequestCreatedEvent extends DomainEvent {
-  eventType: EventTypes['REQUEST']['CREATED'];
-  data: {
-    requestId: string;
-    email: string;
-    folderId: string;
-    documentTypes: string[];
-  };
-}
+interface RequestCreatedEvent
+  extends DomainEvent<
+    {
+      requestId: string;
+      email: string;
+      folderId: string;
+      documentTypes: string[];
+    },
+    EventTypes['REQUEST']['CREATED']
+  > {}
 
-interface RequestAcceptedEvent extends DomainEvent {
-  eventType: EventTypes['REQUEST']['ACCEPTED'];
-  data: {
-    requestId: string;
-    acceptedAt: Date;
-  };
-}
+interface RequestAcceptedEvent
+  extends DomainEvent<
+    {
+      requestId: string;
+      acceptedAt: Date;
+    },
+    EventTypes['REQUEST']['ACCEPTED']
+  > {}
 
-interface RequestCompletedEvent extends DomainEvent {
-  eventType: EventTypes['REQUEST']['COMPLETED'];
-  data: {
-    requestId: string;
-    completedAt: Date;
-    documentCount: number;
-  };
-}
+interface RequestCompletedEvent
+  extends DomainEvent<
+    {
+      requestId: string;
+      completedAt: Date;
+      documentCount: number;
+    },
+    EventTypes['REQUEST']['COMPLETED']
+  > {}
 
-interface RequestRejectedEvent extends DomainEvent {
-  eventType: EventTypes['REQUEST']['REJECTED'];
-  data: {
-    requestId: string;
-    rejectedAt: Date;
-    reason?: string;
-  };
-}
+interface RequestRejectedEvent
+  extends DomainEvent<
+    {
+      requestId: string;
+      rejectedAt: Date;
+      reason?: string;
+    },
+    EventTypes['REQUEST']['REJECTED']
+  > {}
 
 // Document events
-interface DocumentUploadedEvent extends DomainEvent {
-  eventType: DocumentEventTypes;
-  data: {
-    documentId: string;
-    requestId: string;
-    fileName: string;
-    fileSize: number;
-    mimeType?: string;
-  };
-}
+interface DocumentUploadedEvent
+  extends DomainEvent<
+    {
+      documentId: string;
+      requestId: string;
+      fileName: string;
+      fileSize: number;
+      mimeType?: string;
+    },
+    EventTypes['DOCUMENT']['UPLOADED']
+  > {}
 
-interface DocumentValidatedEvent extends DomainEvent {
-  eventType: DocumentEventTypes;
-  data: {
-    documentId: string;
-    validatedAt: Date;
-    validatedBy: string;
-  };
-}
+interface DocumentValidatedEvent
+  extends DomainEvent<
+    {
+      documentId: string;
+      validatedAt: Date;
+      validatedBy: string;
+    },
+    EventTypes['DOCUMENT']['VALIDATED']
+  > {}
 
-interface DocumentRejectedEvent extends DomainEvent {
-  eventType: DocumentEventTypes;
-  data: {
-    documentId: string;
-    rejectedAt: Date;
-    rejectedBy: string;
-    reason: string;
-  };
-}
+interface DocumentRejectedEvent
+  extends DomainEvent<
+    {
+      documentId: string;
+      rejectedAt: Date;
+      rejectedBy: string;
+      reason: string;
+    },
+    EventTypes['DOCUMENT']['REJECTED']
+  > {}
 
 // Union type of all specific events
-type AllDomainEvents =
+export type AllDomainEvents =
   | FolderCreatedEvent
   | FolderCompletedEvent
   | FolderUpdatedEvent

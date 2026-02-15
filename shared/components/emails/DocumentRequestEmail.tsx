@@ -441,5 +441,3 @@ const brandFooter = {
   paddingTop: '16px',
   borderTop: `1px solid ${colors.bordure}`,
 };
-
-export default DocumentRequestEmail;

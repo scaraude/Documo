@@ -47,9 +47,3 @@ export function setupEventHandlers(): void {
     throw new Error('Event handler setup failed');
   }
 }
-
-// Cleanup function for testing or graceful shutdown
-function cleanupEventHandlers(): void {
-  handlersRegistered = false;
-  logger.info('Event handlers cleanup completed');
-}

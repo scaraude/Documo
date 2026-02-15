@@ -6,7 +6,7 @@ export const documentTypeIdSchema = z
   .uuid('ID de type de document invalide');
 
 // Base DocumentType schema
-export const documentTypeSchema = z.object({
+const documentTypeSchema = z.object({
   id: documentTypeIdSchema,
   label: z.string().min(1, 'Le libellé est requis'),
   description: z.string().nullable(),
@@ -16,26 +16,6 @@ export const documentTypeSchema = z.object({
   maxSizeMB: z.number().int().positive('La taille maximale doit être positive'),
   createdAt: z.date(),
 });
-
-// Schema for creating a DocumentType
-export const createDocumentTypeSchema = z.object({
-  id: z.string().min(1, "L'ID est requis"),
-  label: z.string().min(1, 'Le libellé est requis'),
-  description: z.string().nullable().optional(),
-  acceptedFormats: z
-    .array(z.string())
-    .min(1, 'Au moins un format doit être accepté'),
-  maxSizeMB: z
-    .number()
-    .int()
-    .positive('La taille maximale doit être positive')
-    .default(5),
-});
-
-// Schema for updating a DocumentType
-export const updateDocumentTypeSchema = createDocumentTypeSchema
-  .partial()
-  .omit({ id: true });
 
 // Schema for arrays of document type IDs
 export const documentTypeIdsSchema = z
@@ -49,17 +29,6 @@ export const documentFileValidationSchema = z.object({
   mimeType: z.string().min(1, 'Le type MIME est requis'),
 });
 
-// Schema for validation result
-export const documentValidationResultSchema = z.object({
-  isValid: z.boolean(),
-  errors: z.array(z.string()),
-});
-
 // Type exports
 export type AppDocumentType = z.infer<typeof documentTypeSchema>;
-// type CreateDocumentType = z.infer<typeof createDocumentTypeSchema>;
-// type UpdateDocumentType = z.infer<typeof updateDocumentTypeSchema>;
 export type DocumentTypeId = z.infer<typeof documentTypeIdSchema>;
-// type DocumentTypeIds = z.infer<typeof documentTypeIdsSchema>;
-// type DocumentFileValidation = z.infer<typeof documentFileValidationSchema>;
-// type DocumentValidationResult = z.infer<typeof documentValidationResultSchema>;

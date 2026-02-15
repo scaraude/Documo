@@ -34,13 +34,16 @@ export type EventType =
   | RequestEventTypes;
 
 // Base domain event interface
-export interface DomainEvent {
-  eventType: EventType;
+export interface DomainEvent<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+  TEventType extends EventType = EventType,
+> {
+  eventType: TEventType;
   eventId: string;
   aggregateId: string;
   organizationId?: string;
   occurredAt: Date;
-  data: Record<string, unknown>;
+  data: TData;
 }
 
 export interface EventHandler<T extends DomainEvent = DomainEvent> {

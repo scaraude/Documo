@@ -90,18 +90,3 @@ export const isDevelopment = env.NODE_ENV === 'development';
  * Check if running in production mode
  */
 export const isProduction = env.NODE_ENV === 'production';
-
-/**
- * Check if running in test mode
- */
-export const isTest = env.NODE_ENV === 'test';
-
-/**
- * Get the active database URL based on environment
- */
-const getDatabaseUrl = (): string => {
-  if (isTest && env.TEST_DATABASE_URL) {
-    return env.TEST_DATABASE_URL;
-  }
-  return env.DATABASE_URL;
-};

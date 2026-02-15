@@ -398,5 +398,3 @@ export const externalRouter = router({
       }
     }),
 });
-
-type ExternalRouter = typeof externalRouter;

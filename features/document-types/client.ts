@@ -5,4 +5,3 @@ export { useDocumentTypes } from './hooks/useDocumentTypes';
 
 // Export Zod schemas and types (safe for client)
 export * from './types/zod';
-export * from './types/api';

@@ -18,19 +18,3 @@ export const APP_DOCUMENT_TYPES = {
 
 export type AppDocumentType =
   (typeof APP_DOCUMENT_TYPES)[keyof typeof APP_DOCUMENT_TYPES];
-
-const ALLOWED_FILE_TYPES = {
-  PDF: 'application/pdf',
-  JPEG: 'image/jpeg',
-  PNG: 'image/png',
-} as const;
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-
-interface DocumentValidationResult {
-  isValid: boolean;
-  errors: string[];
-}
-
-// Validation will now be handled by the DocumentType repository
-// which will fetch rules from the database

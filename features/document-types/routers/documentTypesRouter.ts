@@ -37,5 +37,3 @@ export const documentTypesRouter = createTRPCRouter({
       return result;
     }),
 });
-
-type DocumentTypesRouter = typeof documentTypesRouter;

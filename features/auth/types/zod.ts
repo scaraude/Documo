@@ -121,17 +121,7 @@ export const resetPasswordApiSchema = z.object({
   password: passwordSchema,
 });
 
-const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Le mot de passe actuel est requis'),
-  newPassword: passwordSchema,
-});
-
 export type LoginInput = z.infer<typeof loginSchema>;
 export type SignupInput = z.infer<typeof signupSchema>;
-type SignupApiInput = z.infer<typeof signupApiSchema>;
-type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
-type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>;
-type ResetPasswordApiInput = z.infer<typeof resetPasswordApiSchema>;
-type ChangePasswordInput = z.infer<typeof changePasswordSchema>;

@@ -10,13 +10,6 @@ export const CreateFolderSchema = z.object({
   createdByOrganizationId: z.string().uuid().optional(),
 });
 
-const UpdateFolderSchema = z.object({
-  name: z.string().min(1, 'Le nom est requis').optional(),
-  description: z.string().optional(),
-  expiresAt: z.date().nullable().optional(),
-  requestedDocuments: documentTypeIdsSchema.optional(),
-});
-
 // Router input schemas
 export const UpdateFolderInputSchema = z.object({
   id: z.string().uuid('ID de dossier invalide'),
@@ -44,11 +37,3 @@ export const RemoveRequestFromFolderSchema = z.object({
 export const FolderIdSchema = z.object({
   id: z.string().uuid('ID de dossier invalide'),
 });
-
-// Type exports
-type CreateFolder = z.infer<typeof CreateFolderSchema>;
-type UpdateFolder = z.infer<typeof UpdateFolderSchema>;
-type UpdateFolderInput = z.infer<typeof UpdateFolderInputSchema>;
-type AddRequestToFolder = z.infer<typeof AddRequestToFolderSchema>;
-type RemoveRequestFromFolder = z.infer<typeof RemoveRequestFromFolderSchema>;
-type FolderId = z.infer<typeof FolderIdSchema>;

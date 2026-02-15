@@ -37,46 +37,6 @@ export const getCurrentStepFromUrl = (
 };
 
 /**
- * Check if current URL has a preselected folder
- * @param searchParams - URL search parameters
- * @returns True if a folder is preselected
- */
-const hasPreselectedFolder = (searchParams: URLSearchParams): boolean => {
-  return searchParams.has('folderId');
-};
-
-/**
- * Check if current URL has a preselected folder type
- * @param searchParams - URL search parameters
- * @returns True if a folder type is preselected
- */
-const hasPreselectedFolderType = (searchParams: URLSearchParams): boolean => {
-  return searchParams.has('typeId');
-};
-
-/**
- * Get preselected folder ID from URL
- * @param searchParams - URL search parameters
- * @returns Folder ID if present, null otherwise
- */
-const getPreselectedFolderId = (
-  searchParams: URLSearchParams,
-): string | null => {
-  return searchParams.get('folderId');
-};
-
-/**
- * Get preselected folder type ID from URL
- * @param searchParams - URL search parameters
- * @returns Folder type ID if present, null otherwise
- */
-const getPreselectedFolderTypeId = (
-  searchParams: URLSearchParams,
-): string | null => {
-  return searchParams.get('typeId');
-};
-
-/**
  * Generate URL to navigate to fillForm step with selected type
  * @param typeId - The folder type ID to preselect
  * @returns URL for fillForm step with typeId
