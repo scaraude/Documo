@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "skipLibCheck": true,
     "strict": true,
     "noEmit": true,
@@ -10,7 +14,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -18,17 +22,38 @@
       }
     ],
     "paths": {
-      "@/hooks/*": ["./hooks/*"],
-      "@/components/*": ["./components/*"],
-      "@/lib/*": ["./lib/*"],
-      "@/*": ["./*"],
-      "@/shared/*": ["./shared/*"],
-      "@/features/*": ["./features/*"]
+      "@/hooks/*": [
+        "./hooks/*"
+      ],
+      "@/components/*": [
+        "./components/*"
+      ],
+      "@/lib/*": [
+        "./lib/*"
+      ],
+      "@/*": [
+        "./*"
+      ],
+      "@/shared/*": [
+        "./shared/*"
+      ],
+      "@/features/*": [
+        "./features/*"
+      ]
     },
     "allowJs": true,
-    "types": ["node", "@testing-library/jest-dom/vitest"]
+    "types": [
+      "node",
+      "@testing-library/jest-dom/vitest"
+    ]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     "lib/prisma/generated",

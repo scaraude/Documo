@@ -61,13 +61,13 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.511.0",
-    "next": "15.3.1",
+    "next": "16.1.6",
     "pg": "^8.16.3",
     "pino": "^9.7.0",
     "pino-pretty": "^13.0.0",
     "prisma": "^7.4.0",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-hook-form": "^7.57.0",
     "resend": "^4.5.2",
     "sonner": "^2.0.5",
@@ -86,10 +86,12 @@
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^3.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.1.6",
     "happy-dom": "^15.11.7",
     "jsdom": "^27.2.0",
     "knip": "^5.70.2",
@@ -100,5 +102,9 @@
     "vite": "^7.2.4",
     "vitest": "^3.0.0",
     "vitest-mock-extended": "^3.1.0"
+  },
+  "resolutions": {
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3"
   }
 }
