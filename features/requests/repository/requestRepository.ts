@@ -446,7 +446,7 @@ export async function getRequestByIdForUser(
         folder: true,
         requestedDocuments: true,
         documents: {
-          where: { deletedAt: null },
+          where: { deletedAt: null, invalidatedAt: null },
           orderBy: { uploadedAt: 'desc' },
           include: { type: true },
         },
@@ -507,7 +507,7 @@ export async function getRequestById(
         folder: true,
         requestedDocuments: true,
         documents: {
-          where: { deletedAt: null },
+          where: { deletedAt: null, invalidatedAt: null },
           orderBy: { uploadedAt: 'desc' },
           include: { type: true },
         },

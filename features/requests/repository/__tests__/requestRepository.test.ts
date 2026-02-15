@@ -242,7 +242,7 @@ describe('Request Repository', () => {
           folder: true,
           requestedDocuments: true,
           documents: {
-            where: { deletedAt: null },
+            where: { deletedAt: null, invalidatedAt: null },
             orderBy: { uploadedAt: 'desc' },
             include: { type: true },
           },

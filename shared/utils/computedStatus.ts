@@ -28,7 +28,9 @@ export const computeRequestStatus = (
 
   const hasUploadedDocument =
     request.documents !== undefined
-      ? request.documents.some((document) => !document.deletedAt)
+      ? request.documents.some(
+          (document) => !document.deletedAt && !document.invalidatedAt,
+        )
       : Boolean(request.firstDocumentUploadedAt);
 
   if (request.completedAt || hasAllRequestedDocuments(request)) {
@@ -49,7 +51,7 @@ function hasAllRequestedDocuments(
 
   const uploadedDocumentTypeIds = new Set(
     request.documents
-      .filter((document) => !document.deletedAt)
+      .filter((document) => !document.deletedAt && !document.invalidatedAt)
       .map((document) => document.typeId),
   );
 
