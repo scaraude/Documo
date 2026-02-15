@@ -7,21 +7,6 @@ import {
 } from '../mappers';
 
 /**
- * Get all documents
- */
-async function getDocuments(): Promise<AppDocument[]> {
-  try {
-    const documents = await prisma.document.findMany({
-      include: { type: true },
-    });
-    return documents.map(prismaDocumentToAppDocument);
-  } catch (error) {
-    console.error('Error fetching documents from database:', error);
-    throw new Error('Failed to fetch documents');
-  }
-}
-
-/**
  * Upload a new document
  */
 export async function uploadDocument(
@@ -97,44 +82,6 @@ export async function uploadDocument(
   } catch (error) {
     console.error('Error uploading document to database:', error);
     throw new Error('Failed to upload document');
-  }
-}
-
-/**
- * Delete a document
- */
-async function deleteDocument(id: string): Promise<void> {
-  try {
-    await prisma.document.update({
-      where: { id },
-      data: { deletedAt: new Date() },
-    });
-    // biome-ignore lint/suspicious/noExplicitAny: any needed for error handling
-  } catch (error: any) {
-    // Gérer les erreurs spécifiques
-    if (error?.code === 'P2025') {
-      throw new Error(`Document with ID ${id} not found`);
-    }
-
-    console.error('Error deleting document from database:', error);
-    throw new Error('Failed to delete document');
-  }
-}
-
-/**
- * Get a document by ID
- */
-async function getDocument(documentId: string): Promise<AppDocument | null> {
-  try {
-    const document = await prisma.document.findUnique({
-      where: { id: documentId, deletedAt: null },
-      include: { type: true },
-    });
-
-    return document ? prismaDocumentToAppDocument(document) : null;
-  } catch (error) {
-    console.error('Error fetching document from database:', error);
-    throw new Error('Failed to fetch document');
   }
 }
 
@@ -339,14 +286,14 @@ export async function invalidateDocumentForUser(
       const uploadToken = existingShareLink
         ? existingShareLink.token
         : (
-            await tx.requestShareLink.create({
-              data: {
-                requestId: document.request.id,
-                token: await generateSecureToken(),
-                expiresAt: inSevenDays,
-              },
-            })
-          ).token;
+          await tx.requestShareLink.create({
+            data: {
+              requestId: document.request.id,
+              token: await generateSecureToken(),
+              expiresAt: inSevenDays,
+            },
+          })
+        ).token;
 
       return {
         requestId: document.request.id,
