@@ -4,6 +4,7 @@ import { RequestAccordion } from '@/features/requests/components/RequestAccordio
 import { RequestFilters } from '@/features/requests/components/RequestFilters';
 import { RequestSearchAndSort } from '@/features/requests/components/RequestSearchAndSort';
 import { useRequests } from '@/features/requests/hooks/useRequests';
+import { REQUEST_STATUS_ORDER } from '@/shared/constants';
 import type { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
 import { computeRequestStatus } from '@/shared/utils/computedStatus';
 import { FileText } from 'lucide-react';
@@ -74,16 +75,9 @@ export default function RequestsPage() {
           break;
         case 'status':
           {
-            const statusOrder: ComputedRequestStatus[] = [
-              'PENDING',
-              'ACCEPTED',
-              'IN_PROGRESS',
-              'COMPLETED',
-              'REJECTED',
-            ];
             comparison =
-              statusOrder.indexOf(getRequestStatus(a)) -
-              statusOrder.indexOf(getRequestStatus(b));
+              REQUEST_STATUS_ORDER.indexOf(getRequestStatus(a)) -
+              REQUEST_STATUS_ORDER.indexOf(getRequestStatus(b));
           }
           break;
       }

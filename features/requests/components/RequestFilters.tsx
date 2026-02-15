@@ -1,5 +1,6 @@
 // features/requests/components/RequestFilters.tsx
 'use client';
+import { REQUEST_STATUS_META } from '@/shared/constants';
 import type { ComputedRequestStatus } from '@/shared/types';
 
 interface RequestFiltersProps {
@@ -26,27 +27,27 @@ export const RequestFilters = ({
     },
     {
       value: 'PENDING' as const,
-      label: 'En attente',
+      label: REQUEST_STATUS_META.PENDING.label,
       count: statusCounts?.PENDING || 0,
     },
     {
       value: 'ACCEPTED' as const,
-      label: 'Acceptées (attente)',
+      label: REQUEST_STATUS_META.ACCEPTED.label,
       count: statusCounts?.ACCEPTED || 0,
     },
     {
       value: 'IN_PROGRESS' as const,
-      label: 'En cours',
+      label: REQUEST_STATUS_META.IN_PROGRESS.label,
       count: statusCounts?.IN_PROGRESS || 0,
     },
     {
       value: 'COMPLETED' as const,
-      label: 'Terminées',
+      label: REQUEST_STATUS_META.COMPLETED.label,
       count: statusCounts?.COMPLETED || 0,
     },
     {
       value: 'REJECTED' as const,
-      label: 'Refusées',
+      label: REQUEST_STATUS_META.REJECTED.label,
       count: statusCounts?.REJECTED || 0,
     },
   ];

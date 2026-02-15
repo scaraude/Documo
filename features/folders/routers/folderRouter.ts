@@ -6,15 +6,20 @@ import {
   AddRequestToFolderSchema,
   CreateFolderSchema,
   FolderIdSchema,
-  RequestIdSchema,
+  RemoveRequestFromFolderSchema,
   UpdateFolderInputSchema,
 } from '../types/zod';
 
 export const folderRouter = router({
   getAll: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ organizationId: ctx.organization.id }, 'Fetching user folders');
-      const result = await folderRepository.getFoldersByUserId(ctx.organization.id);
+      logger.info(
+        { organizationId: ctx.organization.id },
+        'Fetching user folders',
+      );
+      const result = await folderRepository.getFoldersByUserId(
+        ctx.organization.id,
+      );
       logger.info(
         { organizationId: ctx.organization.id, count: result.length },
         'User folders fetched successfully',
@@ -176,7 +181,10 @@ export const folderRouter = router({
     }),
   getWithStats: protectedProcedure.query(async ({ ctx }) => {
     try {
-      logger.info({ organizationId: ctx.organization.id }, 'Fetching user folders with stats');
+      logger.info(
+        { organizationId: ctx.organization.id },
+        'Fetching user folders with stats',
+      );
       const result = await folderRepository.getFoldersWithStatsForUser(
         ctx.organization.id,
       );
@@ -236,12 +244,16 @@ export const folderRouter = router({
       }
     }),
   removeRequestFromFolder: protectedProcedure
-    .input(RequestIdSchema)
+    .input(RemoveRequestFromFolderSchema)
     .mutation(async ({ input, ctx }) => {
       try {
         logger.info(
-          { requestId: input.requestId, organizationId: ctx.organization.id },
-          'Removing request from folder',
+          {
+            requestId: input.requestId,
+            folderId: input.folderId,
+            organizationId: ctx.organization.id,
+          },
+          'Archiving request from folder',
         );
 
         // Check if user owns the folder containing this request
@@ -251,25 +263,34 @@ export const folderRouter = router({
         );
         if (!hasAccess) {
           logger.warn(
-            { requestId: input.requestId, organizationId: ctx.organization.id },
-            'User not authorized to remove request from folder',
+            {
+              requestId: input.requestId,
+              folderId: input.folderId,
+              organizationId: ctx.organization.id,
+            },
+            'User not authorized to archive request from folder',
           );
           throw new Error('Request not found or access denied');
         }
 
         await folderRepository.removeRequestFromFolder(input.requestId);
         logger.info(
-          { requestId: input.requestId, organizationId: ctx.organization.id },
-          'Request removed from folder successfully',
+          {
+            requestId: input.requestId,
+            folderId: input.folderId,
+            organizationId: ctx.organization.id,
+          },
+          'Request archived from folder successfully',
         );
       } catch (error) {
         logger.error(
           {
             requestId: input.requestId,
+            folderId: input.folderId,
             organizationId: ctx.organization.id,
             error: error instanceof Error ? error.message : error,
           },
-          'Error removing request from folder',
+          'Error archiving request from folder',
         );
         throw error;
       }

@@ -3,6 +3,7 @@ import { toAppModel as resquestToAppModel } from '@/features/requests/repository
 import logger from '@/lib/logger';
 // features/folders/repository/folderRepository.ts
 import { type Prisma, prisma } from '@/lib/prisma';
+import { ARCHIVED_REQUEST_DECLINE_MESSAGE } from '@/shared/constants';
 import type { AppDocumentType } from '@/shared/constants';
 import {
   EVENT_TYPES,
@@ -48,6 +49,16 @@ export async function getFoldersByUserId(
       include: {
         requestedDocuments: true,
         requests: {
+          where: {
+            OR: [
+              { declineMessage: null },
+              {
+                declineMessage: {
+                  not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+                },
+              },
+            ],
+          },
           select: {
             completedAt: true,
           },
@@ -136,6 +147,16 @@ export async function getFolderByIdWithRelationsForUser(
       include: {
         requestedDocuments: true,
         requests: {
+          where: {
+            OR: [
+              { declineMessage: null },
+              {
+                declineMessage: {
+                  not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+                },
+              },
+            ],
+          },
           include: {
             requestedDocuments: true,
           },
@@ -176,7 +197,17 @@ export async function userOwnsRequestFolder(
     );
 
     const request = await prisma.documentRequest.findUnique({
-      where: { id: requestId },
+      where: {
+        id: requestId,
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
+      },
       include: {
         folder: true,
       },
@@ -393,29 +424,59 @@ export async function addRequestToFolderForUser(
   }
 }
 
-// Remove a request from a folder (⚠️ WARNING: Not security-aware - verify ownership before calling)
-// This function only performs the removal operation, ownership must be verified beforehand
+// Archive a request from a folder (append-only behavior).
+// This function only performs the archive operation, ownership must be verified beforehand.
 export async function removeRequestFromFolder(
   requestId: string,
 ): Promise<void> {
   try {
-    logger.info({ requestId }, 'Removing request from folder');
+    logger.info({ requestId }, 'Archiving request from folder');
 
-    await prisma.documentRequest.update({
-      where: { id: requestId },
-      data: { folderId: undefined },
+    const now = new Date();
+
+    await prisma.$transaction(async (tx) => {
+      const request = await tx.documentRequest.findUnique({
+        where: {
+          id: requestId,
+          OR: [
+            { declineMessage: null },
+            {
+              declineMessage: {
+                not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+              },
+            },
+          ],
+        },
+      });
+
+      if (!request) {
+        throw new Error('Request not found');
+      }
+
+      await tx.documentRequest.update({
+        where: { id: requestId },
+        data: {
+          rejectedAt: request.rejectedAt || now,
+          declineMessage: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+        },
+      });
+
+      await tx.folder.update({
+        where: { id: request.folderId },
+        data: { lastActivityAt: now },
+      });
     });
 
-    logger.info({ requestId }, 'Request removed from folder successfully');
+    logger.info({ requestId }, 'Request archived successfully from folder');
   } catch (error) {
     logger.error(
       {
         requestId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error removing request from folder',
+      'Error archiving request from folder',
     );
-    throw new Error('Failed to remove request from folder');
+    throw new Error('Failed to archive request');
   }
 }
 

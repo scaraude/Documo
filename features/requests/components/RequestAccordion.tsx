@@ -2,6 +2,7 @@
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { ShareLinkButton } from '@/features/external-requests/components/ShareLinkButton';
 import { Button } from '@/shared/components';
+import { REQUEST_STATUS_META } from '@/shared/constants';
 import type {
   ComputedRequestStatus,
   DocumentRequest,
@@ -32,40 +33,6 @@ export const RequestAccordion = ({
   const [isExpanded, setIsExpanded] = useState(false);
   const { getLabelById } = useDocumentTypes();
   const status = getRequestStatus(request);
-
-  const getStatusStyle = (status: ComputedRequestStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-[var(--documo-warning)]/10 text-[var(--documo-warning)]';
-      case 'ACCEPTED':
-        return 'bg-[var(--documo-blue-light)] text-[var(--documo-blue)]';
-      case 'IN_PROGRESS':
-        return 'bg-[var(--documo-warning)]/10 text-[var(--documo-warning)]';
-      case 'REJECTED':
-        return 'bg-[var(--documo-error)]/10 text-[var(--documo-error)]';
-      case 'COMPLETED':
-        return 'bg-[var(--documo-success)]/10 text-[var(--documo-success)]';
-      default:
-        return 'bg-[var(--documo-bg-light)] text-[var(--documo-text-secondary)]';
-    }
-  };
-
-  const getStatusLabel = (status: ComputedRequestStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'En attente';
-      case 'ACCEPTED':
-        return 'Acceptée (attente docs)';
-      case 'IN_PROGRESS':
-        return 'En cours';
-      case 'REJECTED':
-        return 'Refusée';
-      case 'COMPLETED':
-        return 'Terminée';
-      default:
-        return status;
-    }
-  };
 
   const formatRelativeTime = (date: Date) => {
     return formatDistanceToNow(new Date(date), { addSuffix: true, locale: fr });
@@ -123,9 +90,9 @@ export const RequestAccordion = ({
 
         {/* Status */}
         <span
-          className={`px-2 py-0.5 rounded text-xs font-medium ${getStatusStyle(status)}`}
+          className={`px-2 py-0.5 rounded border text-xs font-medium ${REQUEST_STATUS_META[status].badgeClass}`}
         >
-          {getStatusLabel(status)}
+          {REQUEST_STATUS_META[status].label}
         </span>
       </button>
 

@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components';
+import { REQUEST_STATUS_META } from '@/shared/constants';
 import type {
   ComputedRequestStatus,
   DocumentRequestWithStatue,
@@ -16,6 +17,7 @@ import type {
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
+  Archive,
   Calendar,
   CheckCircle,
   Clock,
@@ -95,23 +97,6 @@ export const FolderRequestManager = ({
     }
   };
 
-  const getStatusColor = (status: ComputedRequestStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'bg-yellow-50 text-yellow-700 border-yellow-200';
-      case 'ACCEPTED':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'IN_PROGRESS':
-        return 'bg-amber-50 text-amber-700 border-amber-200';
-      case 'REJECTED':
-        return 'bg-red-50 text-red-700 border-red-200';
-      case 'COMPLETED':
-        return 'bg-green-50 text-green-700 border-green-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
-
   const getStatusIcon = (status: ComputedRequestStatus) => {
     switch (status) {
       case 'PENDING':
@@ -126,23 +111,6 @@ export const FolderRequestManager = ({
         return <FileCheck className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
-    }
-  };
-
-  const getStatusLabel = (status: ComputedRequestStatus) => {
-    switch (status) {
-      case 'PENDING':
-        return 'En attente';
-      case 'ACCEPTED':
-        return 'Acceptée (attente docs)';
-      case 'IN_PROGRESS':
-        return 'En cours';
-      case 'REJECTED':
-        return 'Refusée';
-      case 'COMPLETED':
-        return 'Terminée';
-      default:
-        return status;
     }
   };
 
@@ -286,9 +254,7 @@ export const FolderRequestManager = ({
               request={request}
               folderId={folder.id}
               onRemoveRequest={onRemoveRequest}
-              getStatusColor={getStatusColor}
               getStatusIcon={getStatusIcon}
-              getStatusLabel={getStatusLabel}
               formatRelativeTime={formatRelativeTime}
             />
           ))}
@@ -302,9 +268,7 @@ interface RequestCardProps {
   request: DocumentRequestWithStatue;
   folderId: string;
   onRemoveRequest: (folderId: string, requestId: string) => Promise<void>;
-  getStatusColor: (status: ComputedRequestStatus) => string;
   getStatusIcon: (status: ComputedRequestStatus) => React.ReactNode;
-  getStatusLabel: (status: ComputedRequestStatus) => string;
   formatRelativeTime: (date: Date) => string;
 }
 
@@ -312,9 +276,7 @@ const RequestCard = ({
   request,
   folderId,
   onRemoveRequest,
-  getStatusColor,
   getStatusIcon,
-  getStatusLabel,
   formatRelativeTime,
 }: RequestCardProps) => {
   return (
@@ -330,11 +292,11 @@ const RequestCard = ({
             </div>
 
             <Badge
-              className={`px-3 py-1 text-xs font-medium border ${getStatusColor(request.status)}`}
+              className={`px-3 py-1 text-xs font-medium border ${REQUEST_STATUS_META[request.status].badgeClass}`}
             >
               <span className="flex items-center gap-1">
                 {getStatusIcon(request.status)}
-                {getStatusLabel(request.status)}
+                {REQUEST_STATUS_META[request.status].label}
               </span>
             </Badge>
 
@@ -354,10 +316,18 @@ const RequestCard = ({
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onRemoveRequest(folderId, request.id)}
-              className="text-red-600 hover:text-red-700"
+              onClick={() => {
+                const confirmed = window.confirm(
+                  'Archiver cette demande ? Elle sera retirée de la vue active.',
+                );
+                if (confirmed) {
+                  void onRemoveRequest(folderId, request.id);
+                }
+              }}
+              className="text-amber-700 hover:text-amber-800"
             >
-              <Trash2 className="h-4 w-4" />
+              <Archive className="h-4 w-4 mr-2" />
+              Archiver
             </Button>
           </div>
         </div>

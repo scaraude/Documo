@@ -20,7 +20,7 @@ export default function FolderDetailPage() {
 
   const handleDelete = async (id: string) => {
     try {
-      deleteFolderMutation.mutate({ id });
+      await deleteFolderMutation.mutateAsync({ id });
       router.push(ROUTES.FOLDERS.HOME);
     } catch {
       toast.error('Impossible de supprimer le dossier');
@@ -28,12 +28,15 @@ export default function FolderDetailPage() {
     }
   };
 
-  const handleRemoveRequest = async (_folderId: string, requestId: string) => {
+  const handleRemoveRequest = async (folderId: string, requestId: string) => {
     try {
-      removeRequestFromFolderMutation.mutate({ requestId });
+      await removeRequestFromFolderMutation.mutateAsync({
+        folderId,
+        requestId,
+      });
     } catch {
-      toast.error('Impossible de retirer la demande du dossier');
-      setError('Impossible de retirer la demande du dossier');
+      toast.error("Impossible d'archiver la demande");
+      setError("Impossible d'archiver la demande");
     }
   };
 

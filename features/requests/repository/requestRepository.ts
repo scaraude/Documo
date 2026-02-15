@@ -1,5 +1,6 @@
 import logger from '@/lib/logger';
 import { type Prisma, prisma } from '@/lib/prisma';
+import { ARCHIVED_REQUEST_DECLINE_MESSAGE } from '@/shared/constants';
 import type { AppDocumentType } from '@/shared/constants';
 import type {
   DocumentRequest,
@@ -86,6 +87,14 @@ export async function getRequestsForUser(
         folder: {
           createdByOrganizationId: organizationId, // Only get requests from user's folders
         },
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
       },
       include: {
         folder: true,
@@ -117,6 +126,16 @@ export async function getRequests(): Promise<DocumentRequestWithFolder[]> {
     );
 
     const requests = await prisma.documentRequest.findMany({
+      where: {
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
+      },
       include: {
         folder: true,
         requestedDocuments: true,
@@ -290,7 +309,10 @@ export async function deleteRequestForUser(
   organizationId: string,
 ): Promise<void> {
   try {
-    logger.info({ requestId: id, organizationId }, 'Deleting request for user');
+    logger.info(
+      { requestId: id, organizationId },
+      'Archiving request for user',
+    );
 
     // First verify user owns the folder containing this request
     const request = await prisma.documentRequest.findUnique({
@@ -310,27 +332,48 @@ export async function deleteRequestForUser(
       throw new Error('Request not found or access denied');
     }
 
-    // Perform the deletion with ownership constraint
-    const result = await prisma.documentRequest.deleteMany({
+    const now = new Date();
+
+    // Perform a soft archive with ownership constraint.
+    const result = await prisma.documentRequest.updateMany({
       where: {
         id,
         folder: {
           createdByOrganizationId: organizationId, // Double-check ownership at DB level
         },
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
+      },
+      data: {
+        rejectedAt: request.rejectedAt || now,
+        declineMessage: ARCHIVED_REQUEST_DECLINE_MESSAGE,
       },
     });
 
     if (result.count === 0) {
       logger.warn(
         { requestId: id, organizationId },
-        'No request was deleted - ownership mismatch',
+        'No request was archived - ownership mismatch',
       );
       throw new Error('Request not found or access denied');
     }
 
+    await prisma.folder.update({
+      where: { id: request.folderId },
+      data: {
+        lastActivityAt: now,
+      },
+    });
+
     logger.info(
       { requestId: id, organizationId },
-      'Request deleted successfully for user',
+      'Request archived successfully for user',
     );
   } catch (error) {
     logger.error(
@@ -339,7 +382,7 @@ export async function deleteRequestForUser(
         organizationId,
         error: error instanceof Error ? error.message : error,
       },
-      'Error deleting request for user',
+      'Error archiving request for user',
     );
     throw error;
   }
@@ -352,18 +395,22 @@ export async function deleteRequest(id: string): Promise<void> {
   try {
     logger.warn(
       { requestId: id },
-      'Using deprecated deleteRequest - use deleteRequestForUser instead',
+      'Using deprecated deleteRequest - this now archives the request',
     );
 
-    await prisma.documentRequest.delete({
+    await prisma.documentRequest.update({
       where: { id },
+      data: {
+        rejectedAt: new Date(),
+        declineMessage: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+      },
     });
   } catch (error) {
     logger.error(
       { requestId: id, error: error instanceof Error ? error.message : error },
-      'Error deleting request from database',
+      'Error archiving request in database',
     );
-    throw new Error('Failed to delete request');
+    throw new Error('Failed to archive request');
   }
 }
 
@@ -386,6 +433,14 @@ export async function getRequestByIdForUser(
         folder: {
           createdByOrganizationId: organizationId, // Only get request if user owns the folder
         },
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
       },
       include: {
         folder: true,
@@ -437,7 +492,17 @@ export async function getRequestById(
     );
 
     const request = await prisma.documentRequest.findUnique({
-      where: { id },
+      where: {
+        id,
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
+      },
       include: {
         folder: true,
         requestedDocuments: true,

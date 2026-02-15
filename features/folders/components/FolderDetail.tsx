@@ -1,16 +1,13 @@
 // features/folders/components/FolderDetail.tsx
 'use client';
 import { ROUTES } from '@/shared/constants';
+import { FOLDER_STATUS_META } from '@/shared/constants';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import type React from 'react';
 import { useDocumentTypes } from '../../document-types/client';
 import { useDocument } from '../../documents/hooks/useDocument';
-import type {
-  ComputedFolderStatus,
-  FolderWithRelationsAndStatus,
-} from '../types';
+import type { FolderWithRelationsAndStatus } from '../types';
 import { FolderDocumentList } from './FolderDocumentList';
 import { FolderRequestManager } from './FolderRequestManager';
 
@@ -26,7 +23,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
   onRemoveRequest,
 }) => {
   const { getDocumentsByRequestIds } = useDocument();
-  const router = useRouter();
   const { getLabel } = useDocumentTypes();
   const { data: documents } = getDocumentsByRequestIds(
     folder.requests?.map((request) => request.id) || [],
@@ -38,37 +34,6 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
   const handleDelete = async () => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?')) {
       await onDelete(folder.id);
-      router.push(ROUTES.FOLDERS.HOME);
-    }
-  };
-
-  const getFolderStatusText = (status: ComputedFolderStatus) => {
-    switch (status) {
-      case 'ARCHIVED':
-        return 'Archivé';
-      case 'COMPLETED':
-        return 'Complété';
-      case 'PENDING':
-        return 'En attente';
-      default: {
-        const never: never = status;
-        return never;
-      }
-    }
-  };
-
-  const getFolderStatusClass = (status: ComputedFolderStatus) => {
-    switch (status) {
-      case 'ARCHIVED':
-        return 'bg-gray-100 text-gray-800';
-      case 'COMPLETED':
-        return 'bg-blue-100 text-blue-800';
-      case 'PENDING':
-        return 'bg-yellow-100 text-yellow-800';
-      default: {
-        const never: never = status;
-        return never;
-      }
     }
   };
 
@@ -163,11 +128,9 @@ export const FolderDetail: React.FC<FolderDetailProps> = ({
               <dt className="text-sm font-medium text-gray-500">Statut</dt>
               <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                 <span
-                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getFolderStatusClass(
-                    folder.status,
-                  )}`}
+                  className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full border ${FOLDER_STATUS_META[folder.status].badgeClass}`}
                 >
-                  {getFolderStatusText(folder.status)}
+                  {FOLDER_STATUS_META[folder.status].label}
                 </span>
               </dd>
             </div>

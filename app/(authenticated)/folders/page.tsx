@@ -5,43 +5,13 @@ import type {
   FolderWithStatus,
 } from '@/features/folders/types';
 import { Badge, Button, Card, CardContent } from '@/shared/components';
+import { FOLDER_STATUS_META } from '@/shared/constants';
 import { ROUTES } from '@/shared/constants';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { FileText, FolderOpen, Plus, Search } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
-
-const STATUS_CONFIG: Record<
-  ComputedFolderStatus,
-  {
-    label: string;
-    badgeClass: string;
-    filterClass: string;
-  }
-> = {
-  PENDING: {
-    label: 'En cours',
-    badgeClass:
-      'border-[var(--documo-blue)]/25 bg-[var(--documo-blue-light)] text-[var(--documo-blue-deep)]',
-    filterClass:
-      'data-[active=true]:border-[var(--documo-blue)] data-[active=true]:bg-[var(--documo-blue-light)] data-[active=true]:text-[var(--documo-blue-deep)]',
-  },
-  COMPLETED: {
-    label: 'Terminé',
-    badgeClass:
-      'border-[var(--documo-success)]/25 bg-[var(--documo-success)]/10 text-[var(--documo-success)]',
-    filterClass:
-      'data-[active=true]:border-[var(--documo-success)] data-[active=true]:bg-[var(--documo-success)]/10 data-[active=true]:text-[var(--documo-success)]',
-  },
-  ARCHIVED: {
-    label: 'Archivé',
-    badgeClass:
-      'border-[var(--documo-text-tertiary)]/30 bg-[var(--documo-bg-light)] text-[var(--documo-text-secondary)]',
-    filterClass:
-      'data-[active=true]:border-[var(--documo-text-secondary)] data-[active=true]:bg-[var(--documo-bg-light)] data-[active=true]:text-[var(--documo-text-secondary)]',
-  },
-};
 
 export default function FoldersPage() {
   const { getAllFolders } = useFolders();
@@ -86,8 +56,8 @@ export default function FoldersPage() {
     searchTerm.length > 0 || selectedFilters.length > 0;
 
   const getStatusBadge = (status: ComputedFolderStatus) => (
-    <Badge variant="outline" className={STATUS_CONFIG[status].badgeClass}>
-      {STATUS_CONFIG[status].label}
+    <Badge variant="outline" className={FOLDER_STATUS_META[status].badgeClass}>
+      {FOLDER_STATUS_META[status].label}
     </Badge>
   );
 
@@ -177,7 +147,7 @@ export default function FoldersPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {(Object.keys(STATUS_CONFIG) as ComputedFolderStatus[]).map(
+            {(Object.keys(FOLDER_STATUS_META) as ComputedFolderStatus[]).map(
               (status) => {
                 const isActive = selectedFilters.includes(status);
                 return (
@@ -188,9 +158,9 @@ export default function FoldersPage() {
                     variant="outline"
                     data-active={isActive}
                     onClick={() => toggleFilter(status)}
-                    className={STATUS_CONFIG[status].filterClass}
+                    className={FOLDER_STATUS_META[status].filterClass}
                   >
-                    {STATUS_CONFIG[status].label}
+                    {FOLDER_STATUS_META[status].label}
                   </Button>
                 );
               },

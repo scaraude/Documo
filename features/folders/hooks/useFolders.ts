@@ -42,18 +42,25 @@ export function useFolders() {
 
   const createFolderMutation = trpc.folder.create.useMutation({
     onError: createErrorHandler(),
-    onSuccess: () => {
-      // Invalidate all folders list
-      utils.folder.getAll.invalidate();
+    onSuccess: async (folder) => {
+      // Keep list and detail pages in sync after creation.
+      await Promise.all([
+        utils.folder.getAll.invalidate(),
+        utils.folder.getByIdWithRelations.invalidate({ id: folder.id }),
+      ]);
       toast.success('Dossier créé avec succès');
     },
   });
 
   const deleteFolderMutation = trpc.folder.delete.useMutation({
     onError: createErrorHandler(),
-    onSuccess: () => {
-      // Invalidate all folders list since one was deleted
-      utils.folder.getAll.invalidate();
+    onSuccess: async (_result, variables) => {
+      // Remove stale data in list and detail.
+      await Promise.all([
+        utils.folder.getAll.invalidate(),
+        utils.folder.getByIdWithRelations.invalidate({ id: variables.id }),
+        utils.requests.getAll.invalidate(),
+      ]);
       toast.success('Dossier supprimé avec succès');
     },
   });
@@ -61,13 +68,17 @@ export function useFolders() {
   const removeRequestFromFolderMutation =
     trpc.folder.removeRequestFromFolder.useMutation({
       onError: createErrorHandler(),
-      onSuccess: () => {
-        // Invalidate the specific folder since its requests changed
-        // We need to extract the folder ID from the request
-        utils.folder.getAll.invalidate();
-        // Also invalidate requests if we have request queries
-        utils.requests?.getAll?.invalidate?.();
-        toast.success('Demande retirée du dossier avec succès');
+      onSuccess: async (_result, variables) => {
+        // Update impacted views after archival.
+        await Promise.all([
+          utils.folder.getAll.invalidate(),
+          utils.folder.getByIdWithRelations.invalidate({
+            id: variables.folderId,
+          }),
+          utils.requests.getAll.invalidate(),
+          utils.requests.getById.invalidate({ id: variables.requestId }),
+        ]);
+        toast.success('Demande archivée avec succès');
       },
     });
 

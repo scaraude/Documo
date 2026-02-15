@@ -1,5 +1,6 @@
 // features/external-requests/repository/externalRequestsRepository.ts
 import { prisma } from '@/lib/prisma';
+import { ARCHIVED_REQUEST_DECLINE_MESSAGE } from '@/shared/constants';
 import { generateSecureToken } from '../../../lib/utils';
 import type { CreateShareLinkParams } from '../types/api';
 
@@ -27,6 +28,16 @@ export async function getShareLinkByToken(token: string) {
       token,
       expiresAt: {
         gt: new Date(), // Only return non-expired tokens
+      },
+      request: {
+        OR: [
+          { declineMessage: null },
+          {
+            declineMessage: {
+              not: ARCHIVED_REQUEST_DECLINE_MESSAGE,
+            },
+          },
+        ],
       },
     },
     include: {
