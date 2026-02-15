@@ -38,11 +38,13 @@ export const RequestAccordion = ({
       case 'PENDING':
         return 'bg-[var(--documo-warning)]/10 text-[var(--documo-warning)]';
       case 'ACCEPTED':
-        return 'bg-[var(--documo-success)]/10 text-[var(--documo-success)]';
+        return 'bg-[var(--documo-blue-light)] text-[var(--documo-blue)]';
+      case 'IN_PROGRESS':
+        return 'bg-[var(--documo-warning)]/10 text-[var(--documo-warning)]';
       case 'REJECTED':
         return 'bg-[var(--documo-error)]/10 text-[var(--documo-error)]';
       case 'COMPLETED':
-        return 'bg-[var(--documo-blue-light)] text-[var(--documo-blue)]';
+        return 'bg-[var(--documo-success)]/10 text-[var(--documo-success)]';
       default:
         return 'bg-[var(--documo-bg-light)] text-[var(--documo-text-secondary)]';
     }
@@ -53,7 +55,9 @@ export const RequestAccordion = ({
       case 'PENDING':
         return 'En attente';
       case 'ACCEPTED':
-        return 'Acceptée';
+        return 'Acceptée (attente docs)';
+      case 'IN_PROGRESS':
+        return 'En cours';
       case 'REJECTED':
         return 'Refusée';
       case 'COMPLETED':
@@ -168,7 +172,7 @@ export const RequestAccordion = ({
                   </div>
                   {request.acceptedAt && (
                     <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--documo-success)]" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-[var(--documo-blue)]" />
                       <span className="text-[var(--documo-text-secondary)]">
                         Acceptée
                       </span>
@@ -240,7 +244,9 @@ export const RequestAccordion = ({
                   size="sm"
                 />
 
-                {status === 'ACCEPTED' && (
+                {(status === 'ACCEPTED' ||
+                  status === 'IN_PROGRESS' ||
+                  status === 'COMPLETED') && (
                   <Link
                     href={`${ROUTES.REQUESTS.DETAIL(request.id)}?tab=documents`}
                   >

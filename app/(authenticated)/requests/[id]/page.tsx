@@ -21,7 +21,10 @@ import type {
   ComputedRequestStatus,
   DocumentRequest,
 } from '@/shared/types';
-import { computeDocumentStatus } from '@/shared/utils/computedStatus';
+import {
+  computeDocumentStatus,
+  computeRequestStatus,
+} from '@/shared/utils/computedStatus';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
@@ -52,25 +55,21 @@ function RequestDetailContent() {
     }
   }, [searchParams]);
 
-  const getRequestStatus = (
-    request: DocumentRequest,
-  ): ComputedRequestStatus => {
-    if (request.completedAt) return 'COMPLETED';
-    if (request.rejectedAt) return 'REJECTED';
-    if (request.acceptedAt) return 'ACCEPTED';
-    return 'PENDING';
-  };
+  const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus =>
+    computeRequestStatus(request);
 
   const getStatusColor = (status: ComputedRequestStatus) => {
     switch (status) {
       case 'PENDING':
         return 'bg-yellow-50 text-yellow-700 border-yellow-200';
       case 'ACCEPTED':
-        return 'bg-green-50 text-green-700 border-green-200';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'IN_PROGRESS':
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'REJECTED':
         return 'bg-red-50 text-red-700 border-red-200';
       case 'COMPLETED':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'bg-green-50 text-green-700 border-green-200';
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
@@ -81,7 +80,9 @@ function RequestDetailContent() {
       case 'PENDING':
         return 'En attente';
       case 'ACCEPTED':
-        return 'Acceptée';
+        return 'Acceptée (attente docs)';
+      case 'IN_PROGRESS':
+        return 'En cours';
       case 'REJECTED':
         return 'Refusée';
       case 'COMPLETED':
@@ -278,7 +279,7 @@ function RequestDetailContent() {
                     {request.acceptedAt && (
                       <div className="flex items-center space-x-3">
                         <div className="flex-shrink-0">
-                          <CheckCircle className="h-5 w-5 text-green-500" />
+                          <CheckCircle className="h-5 w-5 text-blue-500" />
                         </div>
                         <div>
                           <p className="text-sm font-medium">

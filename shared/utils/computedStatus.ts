@@ -6,20 +6,57 @@ import type {
   DocumentRequest,
 } from '@/shared/types';
 
-export const computeFolderStatus = (folder: Folder): ComputedFolderStatus => {
+export const computeFolderStatus = (
+  folder: Folder & { requests?: Array<Pick<DocumentRequest, 'completedAt'>> },
+): ComputedFolderStatus => {
   if (folder.archivedAt) return 'ARCHIVED';
+  if (
+    folder.requests &&
+    folder.requests.length > 0 &&
+    folder.requests.every((request) => Boolean(request.completedAt))
+  ) {
+    return 'COMPLETED';
+  }
   if (folder.completedAt) return 'COMPLETED';
   return 'PENDING';
 };
 
 export const computeRequestStatus = (
-  request: DocumentRequest,
+  request: DocumentRequest & { documents?: AppDocument[] },
 ): ComputedRequestStatus => {
-  if (request.completedAt) return 'COMPLETED';
   if (request.rejectedAt) return 'REJECTED';
+
+  const hasUploadedDocument =
+    request.documents !== undefined
+      ? request.documents.some((document) => !document.deletedAt)
+      : Boolean(request.firstDocumentUploadedAt);
+
+  if (request.completedAt || hasAllRequestedDocuments(request)) {
+    return 'COMPLETED';
+  }
+  if (!request.acceptedAt) return 'PENDING';
+  if (hasUploadedDocument) return 'IN_PROGRESS';
   if (request.acceptedAt) return 'ACCEPTED';
   return 'PENDING';
 };
+
+function hasAllRequestedDocuments(
+  request: DocumentRequest & { documents?: AppDocument[] },
+): boolean {
+  if (!request.documents || request.requestedDocumentIds.length === 0) {
+    return false;
+  }
+
+  const uploadedDocumentTypeIds = new Set(
+    request.documents
+      .filter((document) => !document.deletedAt)
+      .map((document) => document.typeId),
+  );
+
+  return request.requestedDocumentIds.every((documentTypeId) =>
+    uploadedDocumentTypeIds.has(documentTypeId),
+  );
+}
 
 export const computeDocumentStatus = (
   document: AppDocument,

@@ -27,10 +27,69 @@ export async function uploadDocument(
   document: AppDocumentToUpload,
 ): Promise<AppDocument> {
   try {
-    // Créer l'entrée en base de données
-    const createdDocument = await prisma.document.create({
-      data: inputToPrismaCreateInput(document),
-      include: { type: true },
+    const createdDocument = await prisma.$transaction(async (tx) => {
+      // Créer l'entrée en base de données
+      const documentRecord = await tx.document.create({
+        data: inputToPrismaCreateInput(document),
+        include: { type: true },
+      });
+
+      const request = await tx.documentRequest.findUnique({
+        where: { id: document.requestId },
+        include: {
+          requestedDocuments: { select: { id: true } },
+          documents: {
+            where: { deletedAt: null },
+            select: { typeId: true },
+          },
+          folder: {
+            select: { id: true },
+          },
+        },
+      });
+
+      if (request) {
+        const now = new Date();
+        const uploadedDocumentTypeIds = new Set(
+          request.documents.map((existingDocument) => existingDocument.typeId),
+        );
+        const hasUploadedAllRequestedDocuments =
+          request.requestedDocuments.length > 0 &&
+          request.requestedDocuments.every((requestedDocument) =>
+            uploadedDocumentTypeIds.has(requestedDocument.id),
+          );
+
+        await tx.documentRequest.update({
+          where: { id: request.id },
+          data: {
+            firstDocumentUploadedAt: request.firstDocumentUploadedAt ?? now,
+            completedAt: hasUploadedAllRequestedDocuments
+              ? (request.completedAt ?? now)
+              : null,
+          },
+        });
+
+        const folderRequests = await tx.documentRequest.findMany({
+          where: { folderId: request.folder.id },
+          select: { completedAt: true },
+        });
+
+        const isFolderCompleted =
+          folderRequests.length > 0 &&
+          folderRequests.every((folderRequest) =>
+            Boolean(folderRequest.completedAt),
+          );
+
+        await tx.folder.update({
+          where: { id: request.folder.id },
+          data: {
+            lastActivityAt: now,
+            completedAt: isFolderCompleted ? now : null,
+          },
+        });
+      }
+
+      return documentRecord;
     });
 
     return prismaDocumentToAppDocument(createdDocument);

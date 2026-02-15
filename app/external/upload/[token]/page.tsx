@@ -2,8 +2,10 @@
 
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
 import { APP_ICON_PATH } from '@/shared/constants';
+import { ROUTES } from '@/shared/constants/routes/paths';
 import { Check, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import * as React from 'react';
@@ -97,6 +99,66 @@ export default function ExternalUploadPage() {
             Ce lien n'est plus valide ou a expiré. Contacte la personne qui t'a
             envoyé cette demande.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (request.rejectedAt) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center p-6"
+        style={{ backgroundColor: '#F4F5F7' }}
+      >
+        <div
+          className="max-w-md w-full bg-white rounded-lg p-10 text-center"
+          style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
+        >
+          <h1
+            className="text-xl font-semibold mb-3"
+            style={{ color: '#1A1A2E' }}
+          >
+            Demande refusée
+          </h1>
+          <p className="text-sm leading-relaxed" style={{ color: '#4A4A5A' }}>
+            Cette demande a été refusée. Tu ne peux plus envoyer de documents
+            pour ce lien.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!request.acceptedAt) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center p-6"
+        style={{ backgroundColor: '#F4F5F7' }}
+      >
+        <div
+          className="max-w-md w-full bg-white rounded-lg p-10 text-center"
+          style={{ boxShadow: '0 1px 3px rgba(0, 0, 0, 0.08)' }}
+        >
+          <h1
+            className="text-xl font-semibold mb-3"
+            style={{ color: '#1A1A2E' }}
+          >
+            Acceptation requise
+          </h1>
+          <p
+            className="text-sm leading-relaxed mb-6"
+            style={{ color: '#4A4A5A' }}
+          >
+            Tu dois d&apos;abord accepter la demande avant de pouvoir envoyer
+            des documents.
+          </p>
+          <Link
+            href={ROUTES.EXTERNAL.REQUEST(token)}
+            className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-white"
+            style={{ backgroundColor: '#2B7AE8' }}
+          >
+            Revenir à la demande
+          </Link>
         </div>
       </div>
     );

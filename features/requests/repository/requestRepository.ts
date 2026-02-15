@@ -179,18 +179,30 @@ export async function createRequestForUser(
       now.getTime() + expirationDays * 24 * 60 * 60 * 1000,
     );
 
-    const newRequest = await prisma.documentRequest.create({
-      data: {
-        email,
-        requestedDocuments: {
-          connect: requestedDocumentIds.map((id) => ({ id })),
+    const newRequest = await prisma.$transaction(async (tx) => {
+      const createdRequest = await tx.documentRequest.create({
+        data: {
+          email,
+          requestedDocuments: {
+            connect: requestedDocumentIds.map((id) => ({ id })),
+          },
+          expiresAt,
+          folderId,
         },
-        expiresAt,
-        folderId,
-      },
-      include: {
-        requestedDocuments: true,
-      },
+        include: {
+          requestedDocuments: true,
+        },
+      });
+
+      await tx.folder.update({
+        where: { id: folderId },
+        data: {
+          lastActivityAt: now,
+          completedAt: null,
+        },
+      });
+
+      return createdRequest;
     });
 
     logger.info(
@@ -234,18 +246,30 @@ export async function createRequest(
       now.getTime() + expirationDays * 24 * 60 * 60 * 1000,
     );
 
-    const newRequest = await prisma.documentRequest.create({
-      data: {
-        email,
-        requestedDocuments: {
-          connect: requestedDocumentIds.map((id) => ({ id })),
+    const newRequest = await prisma.$transaction(async (tx) => {
+      const createdRequest = await tx.documentRequest.create({
+        data: {
+          email,
+          requestedDocuments: {
+            connect: requestedDocumentIds.map((id) => ({ id })),
+          },
+          expiresAt,
+          folderId,
         },
-        expiresAt,
-        folderId,
-      },
-      include: {
-        requestedDocuments: true,
-      },
+        include: {
+          requestedDocuments: true,
+        },
+      });
+
+      await tx.folder.update({
+        where: { id: folderId },
+        data: {
+          lastActivityAt: now,
+          completedAt: null,
+        },
+      });
+
+      return createdRequest;
     });
 
     return toAppModel(newRequest);
@@ -274,7 +298,11 @@ export async function deleteRequestForUser(
       include: { folder: true },
     });
 
-    if (!request || !request.folder || request.folder.createdByOrganizationId !== organizationId) {
+    if (
+      !request ||
+      !request.folder ||
+      request.folder.createdByOrganizationId !== organizationId
+    ) {
       logger.warn(
         { requestId: id, organizationId },
         'User attempted to delete request they do not own',
@@ -347,7 +375,10 @@ export async function getRequestByIdForUser(
   organizationId: string,
 ): Promise<DocumentRequestWithFolderAndDocuments | null> {
   try {
-    logger.info({ requestId: id, organizationId }, 'Fetching request by ID for user');
+    logger.info(
+      { requestId: id, organizationId },
+      'Fetching request by ID for user',
+    );
 
     const request = await prisma.documentRequest.findUnique({
       where: {

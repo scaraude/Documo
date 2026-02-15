@@ -2,10 +2,8 @@
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/button';
-import { ROUTES } from '@/shared/constants';
 import { formatAcceptedFormats, formatsToFileExtensions } from '@/shared/utils';
 import { Check, Loader2, Upload, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import {
   type Dispatch,
   type DragEvent,
@@ -38,7 +36,6 @@ export const DocumentUploader = ({
   documentTypeIdsMissing,
   setDocumentTypeMissing,
 }: DocumentUploaderProps) => {
-  const router = useRouter();
   const { getLabelById, getDocumentTypeById } = useDocumentTypes();
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>({});
   const [draggedOver, setDraggedOver] = useState<string | null>(null);
@@ -87,19 +84,6 @@ export const DocumentUploader = ({
         ...prev,
         [documentTypeId]: { progress: 100, status: 'completed', file },
       }));
-
-      // Check if all documents are uploaded
-      setUploadStatus((currentStatus) => {
-        const allCompleted = Object.values(currentStatus).every(
-          (status) => status.status === 'completed',
-        );
-
-        if (allCompleted) {
-          router.push(ROUTES.EXTERNAL.UPLOAD_SUCCESS(token));
-        }
-
-        return currentStatus;
-      });
     } catch (error) {
       setUploadStatus((prev) => ({
         ...prev,

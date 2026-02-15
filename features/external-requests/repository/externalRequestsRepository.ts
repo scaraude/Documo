@@ -61,12 +61,44 @@ export async function deleteExpiredShareLinks() {
  * Accept a document request
  */
 export async function acceptRequest(requestId: string) {
-  return await prisma.documentRequest.update({
-    where: { id: requestId },
-    data: {
-      acceptedAt: new Date(),
-      // Keep existing email from the request - no need to update
-    },
+  return await prisma.$transaction(async (tx) => {
+    const request = await tx.documentRequest.findUnique({
+      where: { id: requestId },
+    });
+
+    if (!request) {
+      throw new Error('Request not found');
+    }
+
+    if (request.rejectedAt) {
+      throw new Error('Cannot accept a rejected request');
+    }
+
+    if (request.completedAt) {
+      throw new Error('Cannot accept a completed request');
+    }
+
+    if (request.acceptedAt) {
+      return request;
+    }
+
+    const now = new Date();
+    const updatedRequest = await tx.documentRequest.update({
+      where: { id: requestId },
+      data: {
+        acceptedAt: now,
+      },
+    });
+
+    await tx.folder.update({
+      where: { id: request.folderId },
+      data: {
+        lastActivityAt: now,
+        completedAt: null,
+      },
+    });
+
+    return updatedRequest;
   });
 }
 
@@ -74,11 +106,44 @@ export async function acceptRequest(requestId: string) {
  * Decline a document request
  */
 export async function declineRequest(requestId: string, message?: string) {
-  return await prisma.documentRequest.update({
-    where: { id: requestId },
-    data: {
-      rejectedAt: new Date(),
-      declineMessage: message,
-    },
+  return await prisma.$transaction(async (tx) => {
+    const request = await tx.documentRequest.findUnique({
+      where: { id: requestId },
+    });
+
+    if (!request) {
+      throw new Error('Request not found');
+    }
+
+    if (request.acceptedAt) {
+      throw new Error('Cannot decline an accepted request');
+    }
+
+    if (request.completedAt) {
+      throw new Error('Cannot decline a completed request');
+    }
+
+    if (request.rejectedAt) {
+      return request;
+    }
+
+    const now = new Date();
+    const updatedRequest = await tx.documentRequest.update({
+      where: { id: requestId },
+      data: {
+        rejectedAt: now,
+        declineMessage: message,
+      },
+    });
+
+    await tx.folder.update({
+      where: { id: request.folderId },
+      data: {
+        lastActivityAt: now,
+        completedAt: null,
+      },
+    });
+
+    return updatedRequest;
   });
 }

@@ -31,8 +31,13 @@ export const RequestFilters = ({
     },
     {
       value: 'ACCEPTED' as const,
-      label: 'Acceptées',
+      label: 'Acceptées (attente)',
       count: statusCounts?.ACCEPTED || 0,
+    },
+    {
+      value: 'IN_PROGRESS' as const,
+      label: 'En cours',
+      count: statusCounts?.IN_PROGRESS || 0,
     },
     {
       value: 'COMPLETED' as const,

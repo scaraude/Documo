@@ -5,6 +5,7 @@ import { RequestFilters } from '@/features/requests/components/RequestFilters';
 import { RequestSearchAndSort } from '@/features/requests/components/RequestSearchAndSort';
 import { useRequests } from '@/features/requests/hooks/useRequests';
 import type { ComputedRequestStatus, DocumentRequest } from '@/shared/types';
+import { computeRequestStatus } from '@/shared/utils/computedStatus';
 import { FileText } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
@@ -18,26 +19,27 @@ export default function RequestsPage() {
   const [sortBy, setSortBy] = useState<'date' | 'status' | 'email'>('date');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
-  const getRequestStatus = (
-    request: DocumentRequest,
-  ): ComputedRequestStatus => {
-    if (request.completedAt) return 'COMPLETED';
-    if (request.rejectedAt) return 'REJECTED';
-    if (request.acceptedAt) return 'ACCEPTED';
-    return 'PENDING';
-  };
+  const getRequestStatus = (request: DocumentRequest): ComputedRequestStatus =>
+    computeRequestStatus(request);
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: loop
   const { filteredAndSortedRequests, statusCounts } = useMemo(() => {
     if (!requests)
       return {
         filteredAndSortedRequests: [],
-        statusCounts: { PENDING: 0, ACCEPTED: 0, REJECTED: 0, COMPLETED: 0 },
+        statusCounts: {
+          PENDING: 0,
+          ACCEPTED: 0,
+          IN_PROGRESS: 0,
+          REJECTED: 0,
+          COMPLETED: 0,
+        },
       };
 
     const counts = {
       PENDING: 0,
       ACCEPTED: 0,
+      IN_PROGRESS: 0,
       REJECTED: 0,
       COMPLETED: 0,
     };
@@ -71,7 +73,18 @@ export default function RequestsPage() {
           comparison = a.email.localeCompare(b.email);
           break;
         case 'status':
-          comparison = getRequestStatus(a).localeCompare(getRequestStatus(b));
+          {
+            const statusOrder: ComputedRequestStatus[] = [
+              'PENDING',
+              'ACCEPTED',
+              'IN_PROGRESS',
+              'COMPLETED',
+              'REJECTED',
+            ];
+            comparison =
+              statusOrder.indexOf(getRequestStatus(a)) -
+              statusOrder.indexOf(getRequestStatus(b));
+          }
           break;
       }
 

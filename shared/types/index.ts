@@ -44,6 +44,7 @@ export interface DocumentRequestWithStatue extends DocumentRequest {
 export type ComputedRequestStatus =
   | 'PENDING'
   | 'ACCEPTED'
+  | 'IN_PROGRESS'
   | 'REJECTED'
   | 'COMPLETED';
 

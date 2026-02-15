@@ -24,6 +24,8 @@ export const uploadDocument = async ({
   onProgress,
 }: UploadDocumentOptions): Promise<void> => {
   try {
+    onProgress?.(10);
+
     // Create document metadata
     const documentId = uuidv4();
     const fileHash = await computeFileHash(file);
@@ -40,27 +42,18 @@ export const uploadDocument = async ({
     };
 
     const { encryptedFile, encryptionKey } = await encryptFile(file);
+    onProgress?.(40);
 
     const keyBase64 = await exportedKeyBase64(encryptionKey);
+    onProgress?.(70);
 
-    trpcVanilla.external.createDocument.mutate({
+    await trpcVanilla.external.createDocument.mutate({
       document,
       encryptedFile,
       token,
       dek: keyBase64,
     });
-
-    // Simulate upload progress for now
-    if (onProgress) {
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += 10;
-        onProgress(Math.min(progress, 100));
-        if (progress >= 100) {
-          clearInterval(interval);
-        }
-      }, 500);
-    }
+    onProgress?.(100);
   } catch (error) {
     console.error('Error uploading document:', error);
     throw error;

@@ -100,11 +100,13 @@ export const FolderRequestManager = ({
       case 'PENDING':
         return 'bg-yellow-50 text-yellow-700 border-yellow-200';
       case 'ACCEPTED':
-        return 'bg-green-50 text-green-700 border-green-200';
+        return 'bg-blue-50 text-blue-700 border-blue-200';
+      case 'IN_PROGRESS':
+        return 'bg-amber-50 text-amber-700 border-amber-200';
       case 'REJECTED':
         return 'bg-red-50 text-red-700 border-red-200';
       case 'COMPLETED':
-        return 'bg-blue-50 text-blue-700 border-blue-200';
+        return 'bg-green-50 text-green-700 border-green-200';
       default:
         return 'bg-gray-50 text-gray-700 border-gray-200';
     }
@@ -116,6 +118,8 @@ export const FolderRequestManager = ({
         return <Clock className="h-4 w-4" />;
       case 'ACCEPTED':
         return <CheckCircle className="h-4 w-4" />;
+      case 'IN_PROGRESS':
+        return <Clock className="h-4 w-4" />;
       case 'REJECTED':
         return <XCircle className="h-4 w-4" />;
       case 'COMPLETED':
@@ -130,7 +134,9 @@ export const FolderRequestManager = ({
       case 'PENDING':
         return 'En attente';
       case 'ACCEPTED':
-        return 'Acceptée';
+        return 'Acceptée (attente docs)';
+      case 'IN_PROGRESS':
+        return 'En cours';
       case 'REJECTED':
         return 'Refusée';
       case 'COMPLETED':

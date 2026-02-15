@@ -8,7 +8,7 @@ import { Checkbox } from '@/shared/components/ui/checkbox';
 import { ROUTES } from '@/shared/constants/routes/paths';
 import { CheckCircle, FileText, XCircle } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { useExternalRequest } from '../../../../features/external-requests/hooks/useExternalRequest';
 
@@ -24,6 +24,14 @@ export default function ExternalRequestPage() {
   const [declineMessage, setDeclineMessage] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasAcceptedDpa, setHasAcceptedDpa] = useState(false);
+  const isAccepted = request?.acceptedAt;
+  const isDeclined = request?.rejectedAt;
+
+  useEffect(() => {
+    if (isAccepted) {
+      router.replace(ROUTES.EXTERNAL.UPLOAD(token));
+    }
+  }, [isAccepted, router, token]);
 
   const handleAccept = async () => {
     setIsProcessing(true);
@@ -94,14 +102,17 @@ export default function ExternalRequestPage() {
     );
   }
 
-  // Check if request has already been accepted or declined
-  const isAccepted = request.acceptedAt;
-  const isDeclined = request.rejectedAt;
-
   if (isAccepted) {
-    // If already accepted, redirect to upload page
-    router.push(ROUTES.EXTERNAL.UPLOAD(token));
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
+          <p className="text-sm text-gray-600 mt-3">
+            Redirection vers le formulaire d&apos;upload...
+          </p>
+        </div>
+      </div>
+    );
   }
 
   if (isDeclined) {

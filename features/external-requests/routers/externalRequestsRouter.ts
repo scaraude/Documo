@@ -102,6 +102,28 @@ export const externalRouter = router({
         }
 
         const requestId = shareLink.request.id;
+        const request = shareLink.request;
+
+        if (request.rejectedAt) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'This request has been declined',
+          });
+        }
+
+        if (!request.acceptedAt) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'Request must be accepted before uploading documents',
+          });
+        }
+
+        if (request.completedAt) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'This request is already completed',
+          });
+        }
 
         if (!file || !documentData) {
           logger.error(
@@ -139,6 +161,10 @@ export const externalRouter = router({
         );
         return result;
       } catch (error) {
+        if (error instanceof TRPCError) {
+          throw error;
+        }
+
         logger.error(
           {
             token: `${input.token.substring(0, 8)}...`,
@@ -194,8 +220,9 @@ export const externalRouter = router({
 
         const shareLink =
           await externalRequestsRepository.getShareLinkByToken(token);
+        const request = shareLink?.request;
 
-        if (!shareLink) {
+        if (!shareLink || !request) {
           logger.warn(
             { token: `${token.substring(0, 8)}...` },
             'Share link not found for accept request',
@@ -204,6 +231,17 @@ export const externalRouter = router({
             code: 'NOT_FOUND',
             message: 'Request not found',
           });
+        }
+
+        if (request.rejectedAt) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Request already declined',
+          });
+        }
+
+        if (request.acceptedAt) {
+          return request;
         }
 
         const result = await externalRequestsRepository.acceptRequest(
@@ -307,8 +345,9 @@ export const externalRouter = router({
 
         const shareLink =
           await externalRequestsRepository.getShareLinkByToken(token);
+        const request = shareLink?.request;
 
-        if (!shareLink) {
+        if (!shareLink || !request) {
           logger.warn(
             { token: `${token.substring(0, 8)}...` },
             'Share link not found for decline request',
@@ -317,6 +356,17 @@ export const externalRouter = router({
             code: 'NOT_FOUND',
             message: 'Request not found',
           });
+        }
+
+        if (request.acceptedAt) {
+          throw new TRPCError({
+            code: 'BAD_REQUEST',
+            message: 'Accepted requests cannot be declined',
+          });
+        }
+
+        if (request.rejectedAt) {
+          return request;
         }
 
         const result = await externalRequestsRepository.declineRequest(

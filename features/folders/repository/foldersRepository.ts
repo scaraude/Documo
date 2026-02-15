@@ -34,7 +34,9 @@ function toAppModel(prismaModel: PrismaFolder): Folder {
 }
 
 // Get folders by user ID (security-aware)
-export async function getFoldersByUserId(organizationId: string): Promise<Folder[]> {
+export async function getFoldersByUserId(
+  organizationId: string,
+): Promise<Folder[]> {
   try {
     logger.info({ organizationId }, 'Fetching folders for user');
 
@@ -43,14 +45,46 @@ export async function getFoldersByUserId(organizationId: string): Promise<Folder
         archivedAt: null,
         createdByOrganizationId: organizationId,
       },
-      include: { requestedDocuments: true },
+      include: {
+        requestedDocuments: true,
+        requests: {
+          select: {
+            completedAt: true,
+          },
+        },
+      },
     });
 
     logger.info(
       { organizationId, count: folders.length },
       'User folders fetched successfully',
     );
-    return folders.map(toAppModel);
+    return folders.map((folder) => {
+      const allRequestsCompleted =
+        folder.requests.length > 0 &&
+        folder.requests.every((request) => Boolean(request.completedAt));
+
+      const latestRequestCompletionDate = folder.requests.reduce<Date | null>(
+        (latestDate, request) => {
+          if (!request.completedAt) return latestDate;
+          if (!latestDate) return request.completedAt;
+          return request.completedAt > latestDate
+            ? request.completedAt
+            : latestDate;
+        },
+        null,
+      );
+
+      const { requests: _requests, ...folderWithoutRequests } = folder;
+      const folderForMapping: PrismaFolder = {
+        ...folderWithoutRequests,
+        completedAt: allRequestsCompleted
+          ? folder.completedAt || latestRequestCompletionDate
+          : null,
+      };
+
+      return toAppModel(folderForMapping);
+    });
   } catch (error) {
     logger.error(
       { organizationId, error: error instanceof Error ? error.message : error },
@@ -136,7 +170,10 @@ export async function userOwnsRequestFolder(
   organizationId: string,
 ): Promise<boolean> {
   try {
-    logger.info({ requestId, organizationId }, 'Checking folder ownership for request');
+    logger.info(
+      { requestId, organizationId },
+      'Checking folder ownership for request',
+    );
 
     const request = await prisma.documentRequest.findUnique({
       where: { id: requestId },
@@ -336,7 +373,10 @@ export async function addRequestToFolderForUser(
     }
 
     // If request is already in a folder, verify user owns that folder too
-    if (request.folder && request.folder.createdByOrganizationId !== organizationId) {
+    if (
+      request.folder &&
+      request.folder.createdByOrganizationId !== organizationId
+    ) {
       throw new Error('Cannot move request from folder you do not own');
     }
 
