@@ -1,6 +1,7 @@
 import { env } from '@/lib/config/env';
 import logger from '@/lib/logger';
 import { resend } from '@/lib/resend';
+import { DocumentInvalidatedEmail } from '@/shared/components/emails/DocumentInvalidatedEmail';
 import { DocumentRequestEmail } from '@/shared/components/emails/DocumentRequestEmail';
 import { PasswordResetEmail } from '@/shared/components/emails/PasswordResetEmail';
 import { VerificationEmail } from '@/shared/components/emails/VerificationEmail';
@@ -189,6 +190,77 @@ export async function sendDocumentRequestEmail({
         operation: 'email.document_request.failed',
       },
       'Failed to send document request email',
+    );
+    return { success: false, error: errorMessage };
+  }
+}
+
+interface DocumentInvalidatedEmailOptions {
+  to: string;
+  organizationName?: string;
+  folderName: string;
+  documentLabel: string;
+  reason: string;
+  uploadUrl: string;
+}
+
+export async function sendDocumentInvalidatedEmail({
+  to,
+  organizationName,
+  folderName,
+  documentLabel,
+  reason,
+  uploadUrl,
+}: DocumentInvalidatedEmailOptions): Promise<{
+  success: boolean;
+  error?: string;
+}> {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: `Documo <${env.FROM_EMAIL}>`,
+      to: [to.toLowerCase()],
+      subject: `Document a corriger - ${folderName}`,
+      react: DocumentInvalidatedEmail({
+        organizationName,
+        folderName,
+        documentLabel,
+        reason,
+        uploadUrl,
+      }) as React.ReactElement,
+    });
+
+    if (error) {
+      logger.error(
+        {
+          to: to.replace(/(.{3}).*(@.*)/, '$1...$2'),
+          error: error.message,
+          operation: 'email.document_invalidation.failed',
+        },
+        'Failed to send document invalidation email',
+      );
+      return { success: false, error: error.message };
+    }
+
+    logger.info(
+      {
+        to: to.replace(/(.{3}).*(@.*)/, '$1...$2'),
+        messageId: data?.id,
+        folderName,
+        operation: 'email.document_invalidation.sent',
+      },
+      'Document invalidation email sent successfully',
+    );
+
+    return { success: true };
+  } catch (error) {
+    const errorMessage = (error as Error).message;
+    logger.error(
+      {
+        to: to.replace(/(.{3}).*(@.*)/, '$1...$2'),
+        error: errorMessage,
+        operation: 'email.document_invalidation.failed',
+      },
+      'Failed to send document invalidation email',
     );
     return { success: false, error: errorMessage };
   }

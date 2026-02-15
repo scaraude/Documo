@@ -25,7 +25,12 @@ export function prismaDocumentToAppDocument(
     dek: prismaModel.DEK,
     createdAt: prismaModel.createdAt,
     updatedAt: prismaModel.updatedAt,
+    deletedAt: prismaModel.deletedAt || undefined,
     uploadedAt: prismaModel.uploadedAt,
+    validatedAt: prismaModel.validatedAt || undefined,
+    invalidatedAt: prismaModel.invalidatedAt || undefined,
+    errorAt: prismaModel.errorAt || undefined,
+    errorMessage: prismaModel.errorMessage || undefined,
   };
 }
 

@@ -79,12 +79,13 @@ export function buildRequestHistory(
     }
 
     if (document.invalidatedAt) {
+      const invalidationReason = document.validationErrors?.[0];
       events.push({
         id: `document-rejected-${document.id}`,
         kind: 'DOCUMENT_REJECTED',
         occurredAt: new Date(document.invalidatedAt),
         title: `Document refusé: ${documentTypeLabel}`,
-        description: document.fileName,
+        description: invalidationReason || document.fileName,
       });
     }
 

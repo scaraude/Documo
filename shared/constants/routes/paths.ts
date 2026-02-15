@@ -22,6 +22,8 @@ export const ROUTES = {
   REQUESTS: {
     HOME: '/requests',
     DETAIL: (id: string) => `/requests/${id}`,
+    DOCUMENT_CONTROL: (requestId: string, documentId: string) =>
+      `/requests/${requestId}/documents/${documentId}/control`,
   },
   EXTERNAL: {
     REQUEST: (token: string) => `/external/requests/${token}`,

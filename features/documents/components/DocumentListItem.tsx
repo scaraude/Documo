@@ -1,8 +1,10 @@
 import { useDocumentTypes } from '@/features/document-types/hooks/useDocumentTypes';
+import { ROUTES } from '@/shared/constants';
 import { DOCUMENT_STATUS_META } from '@/shared/constants';
 import type { AppDocument } from '@/shared/types';
 import { computeDocumentStatus } from '@/shared/utils/computedStatus';
-import { Eye } from 'lucide-react';
+import { Eye, ShieldCheck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { DocumentViewer } from './DocumentViewer';
 import { DownloadButton } from './DownloadButton';
@@ -13,15 +15,23 @@ interface DocumentListItemProps {
 
 export const DocumentListItem = ({ document }: DocumentListItemProps) => {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
+  const router = useRouter();
   const { getLabelById } = useDocumentTypes();
   const status = computeDocumentStatus(document);
+  const isValidated = status === 'VALID';
 
   return (
     <>
       <li
         key={document.id}
-        onClick={() => setIsViewerOpen(true)}
-        className="px-4 py-4 flex items-center hover:bg-gray-50"
+        onClick={() => {
+          if (isValidated) {
+            setIsViewerOpen(true);
+          }
+        }}
+        className={`px-4 py-4 flex items-center ${
+          isValidated ? 'hover:bg-gray-50 cursor-pointer' : ''
+        }`}
       >
         <div className="min-w-0 flex-1 flex items-center">
           <div className="flex-shrink-0">
@@ -57,23 +67,49 @@ export const DocumentListItem = ({ document }: DocumentListItemProps) => {
           </div>
         </div>
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setIsViewerOpen(true)}
-            className="inline-flex items-center shadow-sm px-2.5 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
-          >
-            <Eye className="h-4 w-4 mr-1" />
-            Voir
-          </button>
-          <DownloadButton document={document} />
+          {isValidated ? (
+            <>
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setIsViewerOpen(true);
+                }}
+                className="inline-flex items-center shadow-sm px-2.5 py-2 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50"
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                Voir
+              </button>
+              <DownloadButton document={document} />
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={(event) => {
+                event.stopPropagation();
+                router.push(
+                  ROUTES.REQUESTS.DOCUMENT_CONTROL(
+                    document.requestId,
+                    document.id,
+                  ),
+                );
+              }}
+              className="inline-flex items-center shadow-sm px-2.5 py-2 border border-amber-300 text-sm leading-5 font-medium rounded-full text-amber-700 bg-amber-50 hover:bg-amber-100"
+            >
+              <ShieldCheck className="h-4 w-4 mr-1" />
+              Control
+            </button>
+          )}
         </div>
       </li>
 
-      <DocumentViewer
-        document={document}
-        open={isViewerOpen}
-        onOpenChange={setIsViewerOpen}
-      />
+      {isValidated && (
+        <DocumentViewer
+          document={document}
+          open={isViewerOpen}
+          onOpenChange={setIsViewerOpen}
+        />
+      )}
     </>
   );
 };
