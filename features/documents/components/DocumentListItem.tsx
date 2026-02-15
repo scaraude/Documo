@@ -43,13 +43,10 @@ export const DocumentListItem = ({ document }: DocumentListItemProps) => {
           </div>
           <div className="min-w-0 flex-1 px-4">
             <div>
-              <p className="text-sm font-medium text-blue-600 truncate">
-                {document.fileName}
+              <p className="text-sm font-medium text-[var(--documo-black)] truncate">
+                {getLabelById(document.typeId)}
               </p>
               <p className="mt-1 flex items-center text-sm text-gray-500">
-                <span className="truncate">
-                  {getLabelById(document.typeId)}
-                </span>
                 <span
                   className={`ml-1.5 flex-shrink-0 inline-block px-2 py-0.5 text-xs font-medium rounded-full border ${DOCUMENT_STATUS_META[status].badgeClass}`}
                 >
