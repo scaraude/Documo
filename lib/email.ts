@@ -126,7 +126,7 @@ export async function sendPasswordResetEmail({
 
 interface DocumentRequestEmailOptions {
   to: string;
-  requesterName?: string;
+  organizationName?: string;
   requestedDocuments: string[];
   uploadUrl: string;
   expirationDate: string;
@@ -135,7 +135,7 @@ interface DocumentRequestEmailOptions {
 
 export async function sendDocumentRequestEmail({
   to,
-  requesterName,
+  organizationName,
   requestedDocuments,
   uploadUrl,
   expirationDate,
@@ -148,7 +148,7 @@ export async function sendDocumentRequestEmail({
       subject: `Demande de documents - ${folderName}`,
       react: DocumentRequestEmail({
         recipientEmail: to,
-        requesterName,
+        organizationName,
         requestedDocuments,
         uploadUrl,
         expirationDate,

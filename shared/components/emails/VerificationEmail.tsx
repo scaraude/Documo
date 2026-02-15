@@ -1,13 +1,16 @@
 import {
   Body,
   Button,
+  Column,
   Container,
   Head,
   Heading,
   Hr,
   Html,
+  Img,
   Link,
   Preview,
+  Row,
   Section,
   Text,
 } from '@react-email/components';
@@ -19,160 +22,288 @@ interface VerificationEmailProps {
 }
 
 export const VerificationEmail: React.FC<VerificationEmailProps> = ({
-  organizationName,
-  verificationUrl,
-}) => (
-  <Html>
-    <Head />
-    <Preview>Vérifiez votre adresse email pour Documo</Preview>
-    <Body style={main}>
-      <Container style={container}>
-        <Section style={logoSection}>
-          <Heading style={h1}>Documo</Heading>
-        </Section>
+  organizationName = 'Acme Corp',
+  verificationUrl = 'https://documo.app/verify/abc123',
+}) => {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_APP_URL ||
+    (process.env.NODE_ENV === 'development'
+      ? 'http://localhost:3000'
+      : 'https://documo.app');
 
-        <Section style={heroSection}>
-          <Heading style={h2}>Welcome, {organizationName}!</Heading>
-          <Text style={text}>
-            Merci d&apos;avoir créé un compte avec Documo. Pour finaliser votre
-            inscription et commencer à utiliser notre plateforme sécurisée de
-            partage de documents, veuillez vérifier votre adresse email.
-          </Text>
-        </Section>
+  return (
+    <Html>
+      <Head>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </Head>
+      <Preview>Vérifiez votre adresse email pour Documo</Preview>
+      <Body style={main}>
+        <Container style={container}>
+          {/* Header avec logo */}
+          <Section style={header}>
+            <table cellPadding="0" cellSpacing="0" style={logoTable}>
+              <tr>
+                <td style={logoTd}>
+                  <Img
+                    src={`${baseUrl}/documo-icon.webp`}
+                    width="40"
+                    height="40"
+                    alt="Documo"
+                    style={logoImg}
+                  />
+                </td>
+                <td style={logoTextTd}>
+                  <Text style={logoText}>Documo</Text>
+                </td>
+              </tr>
+            </table>
+          </Section>
 
-        <Section style={buttonSection}>
-          <Button style={button} href={verificationUrl}>
-            Vérifier mon adresse email
-          </Button>
-        </Section>
+          {/* Contenu principal */}
+          <Section style={content}>
+            <Heading style={h2}>Bienvenue, {organizationName}</Heading>
+            <Text style={text}>
+              Merci d&apos;avoir créé un compte Documo. Pour finaliser votre
+              inscription, veuillez vérifier votre adresse email en cliquant sur
+              le bouton ci-dessous.
+            </Text>
+          </Section>
 
-        <Section style={linkSection}>
-          <Text style={smallText}>
-            Si le bouton ci-dessus ne fonctionne pas, vous pouvez copier et
-            coller ce lien dans votre navigateur :
-          </Text>
-          <Link style={link} href={verificationUrl}>
-            {verificationUrl}
-          </Link>
-        </Section>
+          {/* Bouton CTA */}
+          <Section style={buttonSection}>
+            <Button style={button} href={verificationUrl}>
+              Vérifier mon adresse email
+            </Button>
+          </Section>
 
-        <Hr style={hr} />
+          {/* Lien alternatif */}
+          <Section style={linkSection}>
+            <Text style={smallText}>
+              Si le bouton ne fonctionne pas, copiez ce lien :
+            </Text>
+            <Link style={link} href={verificationUrl}>
+              {verificationUrl}
+            </Link>
+          </Section>
 
-        <Section style={footerSection}>
-          <Text style={footerText}>
-            Ce lien de vérification expire dans 24 heures. Si vous n&apos;avez
-            pas créé de compte chez nous, vous pouvez ignorer cet email en toute
-            sécurité.
-          </Text>
-          <Text style={footerText}>
-            Cordialement,
-            <br />
-            L&apos;équipe Documo
-          </Text>
-        </Section>
-      </Container>
-    </Body>
-  </Html>
-);
+          <Hr style={hr} />
+
+          {/* Informations */}
+          <Section style={infoSection}>
+            <Row style={infoRow}>
+              <Column style={infoIconColumn}>
+                <Text style={infoIcon}>⏱️</Text>
+              </Column>
+              <Column>
+                <Text style={infoText}>
+                  Ce lien expire dans <strong>24 heures</strong>
+                </Text>
+              </Column>
+            </Row>
+            <Row style={infoRow}>
+              <Column style={infoIconColumn}>
+                <Text style={infoIcon}>ℹ️</Text>
+              </Column>
+              <Column>
+                <Text style={infoText}>
+                  Si vous n&apos;avez pas créé de compte, ignorez cet email
+                </Text>
+              </Column>
+            </Row>
+          </Section>
+
+          <Hr style={hr} />
+
+          {/* Footer */}
+          <Section style={footerSection}>
+            <Text style={signature}>
+              Cordialement,
+              <br />
+              L&apos;équipe Documo
+            </Text>
+
+            <Text style={brandFooter}>
+              Propulsé par <strong>Documo</strong> — L&apos;échange de documents
+              à l&apos;ère moderne
+            </Text>
+          </Section>
+        </Container>
+      </Body>
+    </Html>
+  );
+};
+
+// Brand Book Documo - Palette de couleurs
+const colors = {
+  bleuDocumo: '#2B7AE8',
+  bleuProfond: '#1A5BB5',
+  bleuClair: '#E8F1FC',
+  noirDoux: '#1A1A2E',
+  texteSecondaire: '#4A4A5A',
+  texteTertiaire: '#8E8E9E',
+  fondClair: '#F4F5F7',
+  blanc: '#FFFFFF',
+  bordure: '#E5E7EB',
+};
 
 const main = {
-  backgroundColor: '#f6f9fc',
-  fontFamily: '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif',
+  backgroundColor: colors.fondClair,
+  fontFamily:
+    'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  padding: '40px 0',
 };
 
 const container = {
-  backgroundColor: '#ffffff',
+  backgroundColor: colors.blanc,
   margin: '0 auto',
-  padding: '20px 0 48px',
-  marginBottom: '64px',
+  maxWidth: '600px',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.05)',
 };
 
-const logoSection = {
-  padding: '0 48px',
+const header = {
+  backgroundColor: colors.bleuDocumo,
+  padding: '24px 32px',
   textAlign: 'center' as const,
-  backgroundColor: '#2563eb',
-  paddingTop: '32px',
-  paddingBottom: '32px',
 };
 
-const h1 = {
-  color: '#ffffff',
-  fontSize: '28px',
+const logoTable = {
+  margin: '0 auto',
+};
+
+const logoTd = {
+  verticalAlign: 'middle' as const,
+};
+
+const logoTextTd = {
+  verticalAlign: 'middle' as const,
+  paddingLeft: '12px',
+};
+
+const logoImg = {
+  borderRadius: '8px',
+  display: 'block' as const,
+};
+
+const logoText = {
+  color: colors.blanc,
+  fontSize: '24px',
   fontWeight: '600',
-  lineHeight: '40px',
   margin: '0',
+  lineHeight: '1',
 };
 
-const heroSection = {
-  padding: '0 48px',
-  paddingTop: '40px',
-  paddingBottom: '40px',
+const content = {
+  padding: '32px 32px 24px',
 };
 
 const h2 = {
-  color: '#1f2937',
-  fontSize: '24px',
+  color: colors.noirDoux,
+  fontSize: '22px',
   fontWeight: '600',
-  lineHeight: '32px',
-  margin: '0 0 20px 0',
+  lineHeight: '1.3',
+  margin: '0 0 16px 0',
 };
 
 const text = {
-  color: '#374151',
-  fontSize: '16px',
-  lineHeight: '24px',
-  margin: '0 0 20px 0',
+  color: colors.texteSecondaire,
+  fontSize: '15px',
+  lineHeight: '1.6',
+  margin: '0',
 };
 
 const buttonSection = {
-  padding: '0 48px',
+  padding: '24px 32px',
   textAlign: 'center' as const,
-  paddingBottom: '40px',
 };
 
 const button = {
-  backgroundColor: '#2563eb',
-  borderRadius: '6px',
-  color: '#ffffff',
-  fontSize: '16px',
+  backgroundColor: colors.bleuDocumo,
+  borderRadius: '8px',
+  color: colors.blanc,
+  fontSize: '15px',
   fontWeight: '600',
   textDecoration: 'none',
   textAlign: 'center' as const,
   display: 'inline-block',
-  padding: '14px 28px',
+  padding: '14px 32px',
 };
 
 const linkSection = {
-  padding: '0 48px',
-  paddingBottom: '40px',
+  padding: '0 32px 24px',
 };
 
 const smallText = {
-  color: '#6b7280',
-  fontSize: '14px',
-  lineHeight: '20px',
-  margin: '0 0 10px 0',
+  color: colors.texteTertiaire,
+  fontSize: '13px',
+  lineHeight: '1.4',
+  margin: '0 0 8px 0',
 };
 
 const link = {
-  color: '#2563eb',
-  fontSize: '14px',
+  color: colors.bleuDocumo,
+  fontSize: '13px',
   textDecoration: 'underline',
   wordBreak: 'break-all' as const,
 };
 
 const hr = {
-  borderColor: '#e5e7eb',
-  margin: '20px 0',
+  borderColor: colors.bordure,
+  borderStyle: 'solid',
+  borderWidth: '1px 0 0 0',
+  margin: '0 32px',
+};
+
+const infoSection = {
+  padding: '24px 32px',
+};
+
+const infoRow = {
+  marginBottom: '12px',
+};
+
+const infoIconColumn = {
+  width: '32px',
+  verticalAlign: 'top' as const,
+};
+
+const infoIcon = {
+  fontSize: '16px',
+  margin: '0',
+  lineHeight: '1.4',
+};
+
+const infoText = {
+  color: colors.texteSecondaire,
+  fontSize: '14px',
+  lineHeight: '1.4',
+  margin: '0',
 };
 
 const footerSection = {
-  padding: '0 48px',
+  padding: '24px 32px 32px',
+  backgroundColor: colors.fondClair,
 };
 
-const footerText = {
-  color: '#6b7280',
+const signature = {
+  color: colors.texteSecondaire,
   fontSize: '14px',
-  lineHeight: '20px',
-  margin: '0 0 10px 0',
+  lineHeight: '1.5',
+  margin: '0 0 20px 0',
 };
+
+const brandFooter = {
+  color: colors.texteTertiaire,
+  fontSize: '11px',
+  lineHeight: '1.4',
+  margin: '0',
+  textAlign: 'center' as const,
+  paddingTop: '16px',
+  borderTop: `1px solid ${colors.bordure}`,
+};
+
+export default VerificationEmail;
