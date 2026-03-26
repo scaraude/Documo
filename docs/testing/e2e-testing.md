@@ -25,17 +25,17 @@ Your End-to-End testing environment is now fully configured and working! Here's 
 
 ```bash
 # Run all E2E tests (15 tests across 3 browsers)
-yarn test:e2e
+pnpm test:e2e
 
 # Run with visible browser (for debugging)
-yarn test:e2e:headed
+pnpm test:e2e:headed
 
 # Run with Playwright UI (interactive debugging)
-yarn test:e2e:ui
+pnpm test:e2e:ui
 
 # Complete E2E workflow (requires Docker)
 # docker compose -f docker-compose.test.yaml up -d
-# yarn test:e2e
+# pnpm test:e2e
 # docker compose -f docker-compose.test.yaml down -v
 ```
 
@@ -43,30 +43,30 @@ yarn test:e2e:ui
 
 ```bash
 # Setup test database (Docker)
-yarn test:db:up
+pnpm test:db:up
 
 # Teardown test database (Docker)
-yarn test:db:down
+pnpm test:db:down
 
 # Seed test database
-yarn test:seed
+pnpm test:seed
 ```
 
 #### Complete Testing Workflow
 
 ```bash
 # Unit tests
-yarn test
+pnpm test
 
 # Integration tests (requires test database)
-yarn test:db:up
-yarn test:integration
-yarn test:db:down
+pnpm test:db:up
+pnpm test:integration
+pnpm test:db:down
 
 # E2E tests (requires test database)
-yarn test:db:up
-yarn test:e2e
-yarn test:db:down
+pnpm test:db:up
+pnpm test:e2e
+pnpm test:db:down
 ```
 
 ### 🎨 **File Structure**

@@ -24,7 +24,7 @@ cp .env.example .env.local
 Then, run the development server:
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
@@ -38,16 +38,16 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 - **Email**: Resend with React Email templates
 - **API**: tRPC for type-safe APIs
 - **Testing**: Jest, Playwright for E2E testing
-- **Package Manager**: Yarn
+- **Package Manager**: pnpm
 
 ## Development Commands
 
-- `yarn dev`: Start development server
-- `yarn build`: Build for production
-- `yarn test`: Run unit tests
-- `yarn test:e2e`: Run end-to-end tests
-- `yarn lint`: Run ESLint
-- `yarn prisma:studio`: Open Prisma database UI
+- `pnpm dev`: Start development server
+- `pnpm build`: Build for production
+- `pnpm test`: Run unit tests
+- `pnpm test:e2e`: Run end-to-end tests
+- `pnpm lint`: Run ESLint
+- `pnpm prisma:studio`: Open Prisma database UI
 
 ## Project Structure
 

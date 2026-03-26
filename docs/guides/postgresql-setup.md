@@ -5,7 +5,7 @@ This guide outlines how to set up and use PostgreSQL with Documo.
 ## Prerequisites
 
 - Docker and Docker Compose (for local development)
-- Node.js and Yarn
+- Node.js and pnpm
 - PostgreSQL (for production)
 
 ## Setup Instructions
@@ -46,13 +46,13 @@ Customize the `DATABASE_URL` if needed.
 ### 3. Generate Prisma Client
 
 ```bash
-yarn prisma:generate
+pnpm prisma:generate
 ```
 
 ### 4. Run Migrations
 
 ```bash
-yarn prisma:migrate
+pnpm prisma:migrate
 ```
 
 This will create all necessary database tables.
@@ -68,7 +68,7 @@ This will populate the database with initial data for development.
 ### 6. Explore the Database (Optional)
 
 ```bash
-yarn prisma:studio
+pnpm prisma:studio
 ```
 
 Prisma Studio will open in your browser, providing a visual interface to view and edit your data.
@@ -118,5 +118,5 @@ For production, make sure to:
 
 1. Set up a production PostgreSQL database
 2. Update the `DATABASE_URL` environment variable
-3. Run migrations in production using `yarn prisma:deploy`
+3. Run migrations in production using `pnpm prisma:deploy`
 4. Ensure database credentials are kept secure

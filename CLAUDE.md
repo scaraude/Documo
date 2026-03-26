@@ -12,35 +12,35 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build & Development Commands
 
-- `yarn dev`: Start dev server with database setup
-- `yarn build`: Build for production
-- `yarn start`: Start production server
-- `yarn lint`: Run Biome linting and formatting checks
-- `yarn lint:fix`: Run Biome with auto-fix
-- `yarn format`: Format code with Biome
-- `yarn format:check`: Check code formatting with Biome
-- `yarn test`: Run unit tests with Vitest
-- `yarn test:watch`: Run tests in watch mode
-- `yarn test:coverage`: Run tests with coverage report
-- `yarn test:integration`: Run integration tests with database isolation
-- `yarn test:integration:watch`: Run integration tests in watch mode
-- `yarn test:db:up`: Start test database with Docker
-- `yarn test:db:down`: Stop and remove test database
-- `yarn test:seed`: Manually seed test database with test data
-- `yarn test:e2e`: Run end-to-end tests with Playwright
-- `yarn test:e2e:ui`: Run E2E tests with Playwright UI mode
-- `yarn test:e2e:headed`: Run E2E tests with visible browser
-- `yarn prisma:generate`: Generate Prisma client
-- `yarn prisma:migrate`: Run database migrations
-- `yarn prisma:studio`: Open Prisma database UI
-- `yarn unused`: Check for unused files, exports, and dependencies with Knip
-- `yarn unused:files`: Check for unused files only
-- `yarn unused:exports`: Check for unused exports only
-- `yarn unused:deps`: Check for unused dependencies only
-- `yarn unused:fix`: Auto-fix unused exports
-- `yarn clean`: Auto-fix unused exports and run linter
-- `yarn ts`: Type-check TypeScript without emitting files
-- `yarn ts-watch`: Type-check TypeScript in watch mode
+- `pnpm dev`: Start dev server with database setup
+- `pnpm build`: Build for production
+- `pnpm start`: Start production server
+- `pnpm lint`: Run Biome linting and formatting checks
+- `pnpm lint:fix`: Run Biome with auto-fix
+- `pnpm format`: Format code with Biome
+- `pnpm format:check`: Check code formatting with Biome
+- `pnpm test`: Run unit tests with Vitest
+- `pnpm test:watch`: Run tests in watch mode
+- `pnpm test:coverage`: Run tests with coverage report
+- `pnpm test:integration`: Run integration tests with database isolation
+- `pnpm test:integration:watch`: Run integration tests in watch mode
+- `pnpm test:db:up`: Start test database with Docker
+- `pnpm test:db:down`: Stop and remove test database
+- `pnpm test:seed`: Manually seed test database with test data
+- `pnpm test:e2e`: Run end-to-end tests with Playwright
+- `pnpm test:e2e:ui`: Run E2E tests with Playwright UI mode
+- `pnpm test:e2e:headed`: Run E2E tests with visible browser
+- `pnpm prisma:generate`: Generate Prisma client
+- `pnpm prisma:migrate`: Run database migrations
+- `pnpm prisma:studio`: Open Prisma database UI
+- `pnpm unused`: Check for unused files, exports, and dependencies with Knip
+- `pnpm unused:files`: Check for unused files only
+- `pnpm unused:exports`: Check for unused exports only
+- `pnpm unused:deps`: Check for unused dependencies only
+- `pnpm unused:fix`: Auto-fix unused exports
+- `pnpm clean`: Auto-fix unused exports and run linter
+- `pnpm ts`: Type-check TypeScript without emitting files
+- `pnpm ts-watch`: Type-check TypeScript in watch mode
 
 ## Code Style Guidelines
 
@@ -71,7 +71,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - **Frontend**: Use React and Next.js.
 - **Styling**: Use Tailwind CSS and Shadcn.
-- **Package Manager**: Use Yarn.
+- **Package Manager**: Use pnpm.
 
 ## Workspace Context
 
@@ -137,7 +137,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Dependencies
 
-- **Installation**: Use Yarn to install dependencies.
+- **Installation**: Use pnpm to install dependencies.
 - **Updates**: Regularly update dependencies to their latest stable versions.
 
 ## Logging Guidelines
@@ -156,7 +156,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   logger.info({ token: token.substring(0, 8) + '...' }, 'Processing token');
   ```
 - **Error Handling**: Always log errors with context before throwing
-- **Development**: Run `yarn dev` for pretty-formatted logs in development
+- **Development**: Run `pnpm dev` for pretty-formatted logs in development
 - **Production**: Logs output as JSON for structured parsing in production
 
 ## Environment Validation Guidelines

@@ -38,7 +38,7 @@ Welcome to the Documo documentation! This directory contains comprehensive guide
 - **Database**: PostgreSQL
 - **Testing**: Vitest (unit/integration), Playwright (E2E)
 - **Linting/Formatting**: Biome
-- **Package Manager**: Yarn
+- **Package Manager**: pnpm
 
 ## Development Workflow
 

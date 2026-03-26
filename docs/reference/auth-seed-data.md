@@ -105,20 +105,20 @@ await authRepository.resetPassword('used_reset_def456...', 'NewPassword123!');
 
 ```bash
 # Lightweight test data (recommended for tests)
-yarn test:seed
+pnpm test:seed
 
 # Full development data
-yarn seed
+pnpm seed
 ```
 
 ### Environment-Specific Seeding
 
 ```bash
 # Development database
-yarn seed
+pnpm seed
 
 # Test database (isolated)
-TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/documo_test yarn seed
+TEST_DATABASE_URL=postgresql://postgres:password@localhost:5433/documo_test pnpm seed
 ```
 
 ## Seed Statistics

@@ -12,7 +12,7 @@
 
 - **Frontend**: Use React and Next.js.
 - **Styling**: Use Tailwind CSS and Shadcn.
-- **Package Manager**: Use Yarn.
+- **Package Manager**: Use pnpm.
 
 ## Workspace Context
 
@@ -87,7 +87,7 @@ When adding a new feature:
 
 ## Dependencies
 
-- **Installation**: Use Yarn to install dependencies.
+- **Installation**: Use pnpm to install dependencies.
 - **Updates**: Regularly update dependencies to their latest stable versions.
 
 ## User Stories
